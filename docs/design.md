@@ -277,7 +277,7 @@ Allocation is a lambda function that allocates an existing environment upon requ
 
 In order for integration tests to interact with the target environment, the service will provide it with explicit AWS credentials obtained by assuming an Admin role on its behalf. Session duration will be set to the allocation timeout, ensuring tests cannot create resources after the allocation has ended.
 
-<img src="./images/allocation-diagram.png" width="250"/>
+<img src="./images/allocatie-diagram.png" width="250"/>
 
 1. Discover all registered environments from [Configuration (S3 Bucket)](#configuration-s3-bucket).
 2. Update status in [Environments (DynamoDB Table)](#environments-dynamodb-table).
@@ -299,7 +299,7 @@ In order for integration tests to interact with the target environment, the serv
 Deallocation is a lambda function that releases an environment from its current allocation.
 It is invoked either upon integration test request, or by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule).
 
-<img src="./images/deallocation-diagram.png" width="250"/>
+<img src="./images/deallocate-diagram.png" width="250"/>
 
 1. Update Allocations (DynamoDB Table) to mark that the allocation has ended. Event payload
 will be used to determine and mark whether the lambda was invoked by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule) or by the integration test.
