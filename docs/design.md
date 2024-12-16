@@ -154,7 +154,7 @@ authentication and authorization.
 * `POST /allocations` → [Allocation (Lambda Function)](#allocation-lambda-function).
 * `DELETE /allocations/{id}` → [Deallocation (Lambda Function)](#deallocation-lambda-function)
 
-![API Diagram](./images/api-diagram.png)
+<img src="./images/api-diagram.png" width="250"/>
 
 #### Authentication & Authorization
 
@@ -277,7 +277,7 @@ Allocation is a lambda function that allocates an existing environment upon requ
 
 In order for integration tests to interact with the target environment, the service will provide it with explicit AWS credentials obtained by assuming an Admin role on its behalf. Session duration will be set to the allocation timeout, ensuring tests cannot create resources after the allocation has ended.
 
-![Allocation Diagram](./images/allocation-diagram.png)
+<img src="./images/allocation-diagram.png" width="250"/>
 
 1. Discover all registered environments from [Configuration (S3 Bucket)](#configuration-s3-bucket).
 2. Update status in [Environments (DynamoDB Table)](#environments-dynamodb-table).
@@ -299,7 +299,7 @@ In order for integration tests to interact with the target environment, the serv
 Deallocation is a lambda function that releases an environment from its current allocation.
 It is invoked either upon integration test request, or by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule).
 
-![Deallocation Diagram](./images/deallocation-diagram.png)
+<img src="./images/deallocation-diagram.png" width="250"/>
 
 1. Update Allocations (DynamoDB Table) to mark that the allocation has ended. Event payload
 will be used to determine and mark whether the lambda was invoked by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule) or by the integration test.
@@ -323,7 +323,7 @@ will be used to determine and mark whether the lambda was invoked by the [Alloca
 Cleanup is an ECS task that restores an environment back to its original state. It runs in the
 background and is started by the [Deallocation (Lambda Function)](#deallocation-lambda-function).
 
-![Cleanup Diagram](./images/cleanup-diagram.png)
+<img src="./images/cleanup-diagram.png" width="250"/>
 
 1. Assume the Admin role in the environment and:
     * Delete leftover resources.
@@ -354,7 +354,7 @@ created at runtime by the appropriate logical component.
 
 The allocation timeout event is created by the [Allocation (Lambda Function)](#allocation-lambda-function) and is responsible for deallocating an environment in case the integration test neglected to send the deallocation request. It uses the Lambda universal target to invoke the [Deallocation (Lambda Function)](#deallocation-lambda-function).
 
-![Allocation Timeout Event Diagram](./images/allocation-timeout-event-diagram.png)
+<img src="./images/allocation-timeout-event-diagram.png" width="250"/>
 
 In order to distinguish between this event and a client requested allocation, the event will
 send an additional property in the lambda payload, which will be read by the [Deallocation (Lambda Function)](#deallocation-lambda-function).
@@ -365,4 +365,4 @@ The cleanup timeout event is created by the [Deallocation (Lambda Function)](#de
 responsible for marking an environment as dirty in case the cleanup process has timed out. It uses the
 DynamoDB universal target to update the [Environments (DynamoDB Table)](#environments-dynamodb-table)
 
-![Cleanup Timeout Event Diagram](./images/cleanup-timeout-event-diagram.png)
+<img src="./images/cleanup-timeout-event-diagram.png" width="250"/>
