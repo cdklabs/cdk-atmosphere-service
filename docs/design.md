@@ -149,9 +149,220 @@ Api Gateway will provide the public HTTP endpoint for clients to interact with. 
 individual lambda functions using the Lambda Proxy Integration. In addition, the endpoint will handle
 authentication and authorization.
 
-**Routes:**
+#### Routes
 
-* `POST /allocations` → Allocation (Lambda Function).
-* `DELETE /allocations/{id}` → Deallocation (Lambda Function)
+* `POST /allocations` → [Allocation (Lambda Function)](#allocation-lambda-function).
+* `DELETE /allocations/{id}` → [Deallocation (Lambda Function)](#deallocation-lambda-function)
 
 ![API Diagram](./images/api-diagram.png)
+
+#### Authentication & Authorization
+
+While the service is accessible over the public internet, it will reject anonymous user access.
+A [resource policy](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-resource-policy-only) on the API will ensure that access is allowed only
+to authenticated AWS users who have permissions to invoke its various routes. This requires HTTP clients to sign their
+request with [AWS Signature V4](https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html).
+
+* During service deployment, authorized AWS accounts will be added to an [account allow list](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-cross-account-example),
+which will be used in the resource policy.
+
+### Storage Layer
+
+All service state will be stored in DynamoDB regional tables.
+
+* [Point-in-time backups](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Point-in-time-recovery.html) enable full disaster recovery.
+* [Secondary indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html) will allow for increased query performance in case of bottlenecks.
+* [On-demand Capacity](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html) will accommodate throughput requirements.
+
+> Note: DynamoDB has a default quota of 20 secondary indexes per table, which should be plenty for us, though an increase request is also possible.
+
+**Data Sizes:**
+
+* DynamoDB has a maximum item size of 400KB. Our items will not exceed that.
+* DynamoDB slices table data into 10GB sized partitions. If the data grows larger than that, it will automatically split the data into more and more partitions. Having multiple partitions requires careful partition planning as it has implications on performance and cost. We will not require that as our table data is not expected to grow beyond 10GB.
+
+#### `Environments (DynamoDB Table)`
+
+A list of registered environments and their runtime state. It is used to determine whether an environment
+is available for allocation. The service starts with an empty table, and maintains it during its
+operation. Rows are uniquely identified by the account + region primary key.
+
+**Schema:**
+
+```yaml
+# the account id of the environment
+account: string | required
+
+# the region of the environment
+region: string | required
+
+# free - the environment is available for allocation.
+# cleaning - the environment is current being cleaned.
+# in-use - the environment is not available for allocation.
+# dirty - cleanup failed. requires human attention.
+status: string | required
+```
+
+**Access Patterns:**
+
+* Runtime insertion when an environment is allocated.
+* Runtime updates when an environment is being cleaned.
+* Runtime deletion of rows when an environment deallocated.
+
+Secondary indexes are not needed because all access is done using the primary key. No scans required.
+
+#### `Allocations (DynamoDB Table)`
+
+A list of allocations. An allocation is an assignment of a single environment to a specific integration test.
+If an integration test requires N environments, N allocations will be created.  Rows are uniquely identifier
+by an allocation id, which serves as the primary key.
+
+**Historical Data:**
+
+In order to troubleshoot environment problems, we would like to retain historical allocations data in easily
+queryable form. It would allow us to answer questions like:
+
+* Which integration tests acquired environment E in the past X months?
+* Which environments were acquired by integration test T in the past X months?
+
+We will retain allocations for a period of 6 months.
+
+**Schema:**
+
+```yaml
+# auto generated 36 character GUID.
+id: string | required
+
+# the account id of the allocated environment
+account: string | required
+
+# the region of the allocated environment
+region: string | required
+
+# who created the allocation. 
+# controlled by the integration test. 
+# max 1024 chars.
+requester: string | required
+
+# when did the allocation start (ISO-8601)
+start: string | required
+
+# when did the allocation end (ISO-8601)
+end: string | required
+
+# what was the outcome of the allocation. 
+# controlled by the integration test
+outcome: string | optional
+```
+
+**Access Patterns:**
+
+* Runtime insertion following an allocation request.
+* Runtime lookup of account and region based on primary key.
+* Automatic row deletion using a [TTL](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html).
+
+Secondary indexes are not needed because table scans are not performed and updates always use the primary key.
+
+### Logical Layer
+
+All service logical components are implemented by server-less compute platforms. When accessing state,
+components will employ [Conditional writes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html#WorkingWithItems.ConditionalUpdate) to allow for concurrent executions and remain idempotent.
+This allows the service to scale in response of higher demand.
+
+#### `Allocation (Lambda Function)`
+
+Allocation is a lambda function that allocates an existing environment upon request. It is invoked upon integration test request. Environments are allocated until the integration test relinquishes them, or until the 60 min allocation session expires. During the allocation duration, an environment is locked, and cannot be allocated to any other integration test.
+
+**Environment Credentials:**
+
+In order for integration tests to interact with the target environment, the service will provide it with explicit AWS credentials obtained by assuming an Admin role on its behalf. Session duration will be set to the allocation timeout, ensuring tests cannot create resources after the allocation has ended.
+
+![Allocation Diagram](./images/allocation-diagram.png)
+
+1. Discover all registered environments from [Configuration (S3 Bucket)](#configuration-s3-bucket).
+2. Update status in [Environments (DynamoDB Table)](#environments-dynamodb-table).
+3. Grab credentials.
+4. Create allocation in [Allocations (DynamoDB Table)](#allocations-dynamodb-table).
+5. Create [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule).
+
+> Steps 2 through 5 are executed in a transactional manner.
+
+**Response Status Codes:**
+
+* 200 (Ok) → Environment has been allocated.
+* 423 (Locked) → Environment is not available.
+* 400 (Bad Request) → Invalid request.
+* 500 (Error) → Unexpected error.
+
+#### `Deallocation (Lambda Function)`
+
+Deallocation is a lambda function that releases an environment from its current allocation.
+It is invoked either upon integration test request, or by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule).
+
+![Deallocation Diagram](./images/deallocation-diagram.png)
+
+1. Update Allocations (DynamoDB Table) to mark that the allocation has ended. Event payload
+will be used to determine and mark whether the lambda was invoked by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule) or by the integration test.
+2. Deactivate all credentials that were provided to the integration test.
+3. Update [Environments (DynamoDB Table)](#environments-dynamodb-table) to mark the allocated environment is currently being cleaned.
+4. Create [Cleanup Timeout Event (EventBridge Schedule)](#cleanup-timeout-event-eventbridge-schedule) to ensure cleanup doesn’t hold the environment forever.
+5. Start [Cleanup (ECS Task)](#cleanup-ecs-task) to kick-off the environment cleanup process.
+
+> Steps 1 through 5 are executed in a transactional manner.
+
+**Response Status Codes:**
+
+* 200 (Ok) → Environment has been deallocated. It will become available once cleanup completes.
+* 400 (Bad Request) → Invalid request.
+* 500 (Error) → Unexpected error.
+
+#### `Cleanup (ECS Task)`
+
+> Why ECS and not Lambda? Because we anticipate the cleanup task to take more than 15 minutes, which is the maximum lambda runtime.
+
+Cleanup is an ECS task that restores an environment back to its original state. It runs in the
+background and is started by the [Deallocation (Lambda Function)](#deallocation-lambda-function).
+
+![Cleanup Diagram](./images/cleanup-diagram.png)
+
+1. Assume the Admin role in the environment and:
+    * Delete leftover resources.
+    * Restore state of pre-provisioned resources.
+2. Update [Environments (DynamoDB Table)](#environments-dynamodb-table) to mark the environment as available for allocation.
+
+The cleanup process will make use of our existing Test Reaper, which needs to be enhanced with the following features:
+
+1. Ability to delete resources not managed by CFN.
+2. Ability to restore resources to the original state.
+
+> Note: we might end up using aws-nuke instead, if it meets out requirements.
+
+If the task fails, the environment is marked as dirty in the database. Dirty environments require
+human intervention before they can be reinstated back as available.
+
+### Scheduler Layer
+
+A one time scheduled event is used in order to impose timeouts on various operations. Events are
+created at runtime by the appropriate logical component.
+
+* [Universal scheduler targets](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets-universal.html) are used to define the action an event will take.
+* Events are [automatically deleted upon completion](https://aws.amazon.com/blogs/compute/automatically-delete-schedules-upon-completion-with-amazon-eventbridge-scheduler/), so that quotas are not exhausted.
+* Events are [guaranteed at-least-once delivery](https://aws.amazon.com/blogs/compute/introducing-amazon-eventbridge-scheduler/).
+* Events that could not be successfully delivered are sent to a DLQ.
+
+#### `Allocation Timeout Event (EventBridge Schedule)`
+
+The allocation timeout event is created by the [Allocation (Lambda Function)](#allocation-lambda-function) and is responsible for deallocating an environment in case the integration test neglected to send the deallocation request. It uses the Lambda universal target to invoke the [Deallocation (Lambda Function)](#deallocation-lambda-function).
+
+![Allocation Timeout Event Diagram](./images/allocation-timeout-event-diagram.png)
+
+In order to distinguish between this event and a client requested allocation, the event will
+send an additional property in the lambda payload, which will be read by the [Deallocation (Lambda Function)](#deallocation-lambda-function).
+
+#### `Cleanup Timeout Event (EventBridge Schedule)`
+
+The cleanup timeout event is created by the [Deallocation (Lambda Function)](#deallocation-lambda-function) and is
+responsible for marking an environment as dirty in case the cleanup process has timed out. It uses the
+DynamoDB universal target to update the [Environments (DynamoDB Table)](#environments-dynamodb-table)
+
+![Cleanup Timeout Event Diagram](./images/cleanup-timeout-event-diagram.png)
