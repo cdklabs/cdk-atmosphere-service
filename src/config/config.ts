@@ -1,9 +1,9 @@
+import { RemovalPolicy } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { RegisteredEnvironment } from '../types';
-import { RemovalPolicy } from 'aws-cdk-lib';
 
 /**
  * Configuration Data.
@@ -31,7 +31,7 @@ export interface ConfigurationProps {
 /**
  * Service configuration construct.
  *
- * Configuration data will be written to a JSON file and stored in a dedicated s3 bucket. 
+ * Configuration data will be written to a JSON file and stored in a dedicated s3 bucket.
  * Logical components that needs access should use the `grantRead` method and then
  * download the file whenever they need to.
  */
@@ -50,7 +50,7 @@ export class Configuration extends Construct {
   constructor(scope: Construct, id: string, props: ConfigurationProps) {
     super(scope, id);
 
-    this.bucket = new s3.Bucket(this, 'Bucket', { 
+    this.bucket = new s3.Bucket(this, 'Bucket', {
       // makes it easier in integ test cycles.
       // the bucket doesn't store state so its
       // ok to delete its data.

@@ -7,7 +7,7 @@ import { Configuration, ConfigurationData } from './config/config';
 export interface AtmosphereServiceProps {
 
   /**
-   * Service Configuration.
+   * Service Configuration, stored in a dedicated s3 bucket.
    */
   readonly config: ConfigurationData;
 

@@ -7,8 +7,11 @@ An HTTP service that manages a collection of pre-existing environments and alloc
 ## Usage
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
 import { AtmosphereService } from '@cdklabs/cdk-atmosphere-service';
 
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
 new AtmosphereService(stack, 'AtmosphereService', {
   config: {
     environments: [
