@@ -456,3 +456,15 @@ definitely increase. This makes this metric a good detector of overall system he
 
 Whenever the [Cleanup (ECS Task)](#cleanup-ecs-task) fails or times out, the environment it was cleaning
 remains dirty and need human attention. We will directly create a SEV3 SIM ticket every time this happens.
+
+### TypeScript Client
+
+While the service exposes a simple HTTP endpoint, it poses a few characteristics
+that make interacting with it a non trivial task:
+
+* Requires signing requests with SigV4.
+* Requires a retry mechanism in case no environments are currently available.
+
+In order to prevent effort duplication, a TypeScript client library will be provided that implements
+the above requirements and eases interaction with the service.
+
