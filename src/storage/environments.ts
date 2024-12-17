@@ -27,7 +27,6 @@ export class Environments extends Construct {
 
   public grantReadWrite(identity: iam.IGrantable) {
     this.table.grantReadWriteData(identity);
-    return this;
   }
 
 }
