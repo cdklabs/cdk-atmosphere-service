@@ -87,7 +87,7 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | Provides access to the service configuration file. |
 
 ---
 
@@ -110,6 +110,8 @@ public readonly config: Configuration;
 ```
 
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
+
+Provides access to the service configuration file.
 
 ---
 
@@ -310,19 +312,19 @@ const configurationData: ConfigurationData = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment">RegisteredEnvironment</a>[]</code> | List of registered environments, configured by the service operator. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environment">Environment</a>[]</code> | List of environments, configured by the service operator. |
 
 ---
 
 ##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.ConfigurationData.property.environments"></a>
 
 ```typescript
-public readonly environments: RegisteredEnvironment[];
+public readonly environments: Environment[];
 ```
 
-- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment">RegisteredEnvironment</a>[]
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environment">Environment</a>[]
 
-List of registered environments, configured by the service operator.
+List of environments, configured by the service operator.
 
 ---
 
@@ -358,30 +360,30 @@ Data of the configuration file.
 
 ---
 
-### RegisteredEnvironment <a name="RegisteredEnvironment" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment"></a>
+### Environment <a name="Environment" id="@cdklabs/cdk-atmosphere-service.Environment"></a>
 
-Registered Environment.
+Environment Configuration.
 
-#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.Initializer"></a>
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.Environment.Initializer"></a>
 
 ```typescript
-import { RegisteredEnvironment } from '@cdklabs/cdk-atmosphere-service'
+import { Environment } from '@cdklabs/cdk-atmosphere-service'
 
-const registeredEnvironment: RegisteredEnvironment = { ... }
+const environment: Environment = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.account">account</a></code> | <code>string</code> | Account ID. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.adminRoleArn">adminRoleArn</a></code> | <code>string</code> | ARN of an Admin role in the account. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.pool">pool</a></code> | <code>string</code> | Which pool does this environment belong to. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.region">region</a></code> | <code>string</code> | Region. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.account">account</a></code> | <code>string</code> | Account ID. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.adminRoleArn">adminRoleArn</a></code> | <code>string</code> | ARN of an Admin role in the account. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.pool">pool</a></code> | <code>string</code> | Which pool does this environment belong to. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.region">region</a></code> | <code>string</code> | Region. |
 
 ---
 
-##### `account`<sup>Required</sup> <a name="account" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.account"></a>
+##### `account`<sup>Required</sup> <a name="account" id="@cdklabs/cdk-atmosphere-service.Environment.property.account"></a>
 
 ```typescript
 public readonly account: string;
@@ -393,7 +395,7 @@ Account ID.
 
 ---
 
-##### `adminRoleArn`<sup>Required</sup> <a name="adminRoleArn" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.adminRoleArn"></a>
+##### `adminRoleArn`<sup>Required</sup> <a name="adminRoleArn" id="@cdklabs/cdk-atmosphere-service.Environment.property.adminRoleArn"></a>
 
 ```typescript
 public readonly adminRoleArn: string;
@@ -408,7 +410,7 @@ and allow the service to assume it.
 
 ---
 
-##### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.pool"></a>
+##### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Environment.property.pool"></a>
 
 ```typescript
 public readonly pool: string;
@@ -420,7 +422,7 @@ Which pool does this environment belong to.
 
 ---
 
-##### `region`<sup>Required</sup> <a name="region" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.region"></a>
+##### `region`<sup>Required</sup> <a name="region" id="@cdklabs/cdk-atmosphere-service.Environment.property.region"></a>
 
 ```typescript
 public readonly region: string;
