@@ -28,7 +28,7 @@
      "Key": "\"configuration.json\""
     },
     "flattenResponse": "false",
-    "salt": "1734347576582"
+    "salt": "1734431652083"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -62,6 +62,24 @@
         {
          "Action": [
           "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:PutItem"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:PutItem"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -101,6 +119,70 @@
      ]
     }
    }
+  },
+  "AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBputItem",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "DynamoDB",
+    "api": "putItem",
+    "parameters": {
+     "TableName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Item": "{\"account\":{\"S\":\"1111\"},\"region\":{\"S\":\"us-east-1\"}}"
+    },
+    "flattenResponse": "false",
+    "salt": "1734431652083"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBputItem",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "DynamoDB",
+    "api": "putItem",
+    "parameters": {
+     "TableName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Item": "{\"id\":{\"S\":\"allocation-id\"}}"
+    },
+    "flattenResponse": "false",
+    "salt": "1734431652083"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

@@ -67,7 +67,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AtmosphereServiceConfigurationBucketAutoDeleteObjectsCustomResource84931DCB": {
    "Type": "Custom::S3AutoDeleteObjects",
@@ -95,10 +97,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6620cb784ea0d3cf3a6e3e128827087f88e7e9999cd41b0be7c50431fbf12026.zip"
+     "S3Key": "09ee37fb9a746a9dea0618b3024913848346b4b63d08d3fae387b9a11ac83a01.zip"
     },
     "Description": "/opt/awscli/aws"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AtmosphereServiceConfigurationDeploymentCustomResource6B1124B2": {
    "Type": "Custom::CDKBucketDeployment",
@@ -125,6 +129,64 @@
     },
     "Prune": true,
     "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereServiceEnvironmentsTable2E9F23CB": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "account",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "region",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "account",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "region",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereServiceAllocationsTable151A0750": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -486,6 +548,22 @@
    },
    "Export": {
     "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
+   }
+  },
+  "ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8": {
+   "Value": {
+    "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
+   },
+   "Export": {
+    "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8"
+   }
+  },
+  "ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542": {
+   "Value": {
+    "Ref": "AtmosphereServiceAllocationsTable151A0750"
+   },
+   "Export": {
+    "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542"
    }
   }
  },
