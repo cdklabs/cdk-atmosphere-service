@@ -93,12 +93,14 @@ Arrows correspond to the direction of access.
 
 ### Config Layer
 
-#### Configuration (S3 Bucket)
+Configuration will be stored in a `configuration.json` file inside a dedicated S3 bucket.
+Logical components that need access to it may download it from the bucket whenever they need to.
 
-Environments are registered and de-registered from the service via a configuration
-option of the service construct. The configuration will be stored in an S3 bucket
-so that it can be accessed at runtime by logical components of the service. It contains
-a list of all possible environments that the service can select for allocation.
+#### `Environments`
+
+Environments are registered and de-registered from the service via a configuration option of the service construct.
+They will be stored inside the `environments` key of the configuration file. It contains a list of all
+possible environments that the service can select for allocation.
 
 > Note: In order to allocate an environment, it must be both registered and not allocated.
 
