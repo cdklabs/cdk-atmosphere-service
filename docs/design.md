@@ -279,7 +279,7 @@ Allocation is a lambda function that allocates an existing environment upon requ
 
 In order for integration tests to interact with the target environment, the service will provide it with explicit AWS credentials obtained by assuming an Admin role on its behalf. Session duration will be set to the allocation timeout, ensuring tests cannot create resources after the allocation has ended.
 
-<img src="./images/allocatie-diagram.png" width="250"/>
+<img src="./images/allocate-diagram.png" width="250"/>
 
 1. Discover all registered environments from [Configuration (S3 Bucket)](#configuration-s3-bucket).
 2. Update status in [Environments (DynamoDB Table)](#environments-dynamodb-table).
