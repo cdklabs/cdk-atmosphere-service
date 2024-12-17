@@ -6,7 +6,7 @@ const project = new CdklabsConstructLibrary({
   defaultReleaseBranch: 'main',
   devDeps: [
     'cdklabs-projen-project-types',
-    'aws-cdk'
+    'aws-cdk',
   ],
   name: '@cdklabs/cdk-atmosphere-service',
   projenrcTs: true,
