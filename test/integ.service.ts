@@ -1,7 +1,7 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
-import { ConfigurationData } from '../src/config/config';
+import { ConfigurationData } from '../src/config/configuration';
 import { AtmosphereService } from '../src/service';
 
 export class DestroyAspect implements cdk.IAspect {

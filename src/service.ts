@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Configuration, ConfigurationData } from './config/config';
+import { Configuration, ConfigurationData } from './config/configuration';
 import { Allocations, Environments } from './storage';
 
 /**
