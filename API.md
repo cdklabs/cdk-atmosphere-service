@@ -53,7 +53,7 @@ Returns a string representation of this construct.
 ##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite"></a>
 
 ```typescript
-public grantReadWrite(identity: IGrantable): Allocations
+public grantReadWrite(identity: IGrantable): void
 ```
 
 ###### `identity`<sup>Required</sup> <a name="identity" id="@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite.parameter.identity"></a>
@@ -457,7 +457,7 @@ Returns a string representation of this construct.
 ##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite"></a>
 
 ```typescript
-public grantReadWrite(identity: IGrantable): Environments
+public grantReadWrite(identity: IGrantable): void
 ```
 
 ###### `identity`<sup>Required</sup> <a name="identity" id="@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite.parameter.identity"></a>
