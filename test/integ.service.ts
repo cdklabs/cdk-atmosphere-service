@@ -1,14 +1,14 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { IConstruct } from 'constructs';
 import { ConfigurationData } from '../src/config/config';
 import { AtmosphereService } from '../src/service';
-import { IConstruct } from 'constructs';
 
 export class DestroyAspect implements cdk.IAspect {
 
   visit(node: IConstruct): void {
     if (cdk.CfnResource.isCfnResource(node)) {
-      node.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)
+      node.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
     }
   }
 
@@ -52,11 +52,11 @@ integ.assertions.awsApiCall('DynamoDB', 'putItem', {
     account: { S: '1111' },
     region: { S: 'us-east-1' },
   },
-})
+});
 
 integ.assertions.awsApiCall('DynamoDB', 'putItem', {
   TableName: service.allocations.table.tableName,
   Item: {
     id: { S: 'allocation-id' },
   },
-})
+});

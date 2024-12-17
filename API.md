@@ -2,6 +2,124 @@
 
 ## Constructs <a name="Constructs" id="Constructs"></a>
 
+### Allocations <a name="Allocations" id="@cdklabs/cdk-atmosphere-service.Allocations"></a>
+
+Allocations table.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.Allocations.Initializer"></a>
+
+```typescript
+import { Allocations } from '@cdklabs/cdk-atmosphere-service'
+
+new Allocations(scope: Construct, id: string)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.Allocations.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.Allocations.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite">grantReadWrite</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.Allocations.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite"></a>
+
+```typescript
+public grantReadWrite(identity: IGrantable): Allocations
+```
+
+###### `identity`<sup>Required</sup> <a name="identity" id="@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite.parameter.identity"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.Allocations.isConstruct"></a>
+
+```typescript
+import { Allocations } from '@cdklabs/cdk-atmosphere-service'
+
+Allocations.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.Allocations.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.property.table">table</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.Allocations.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `table`<sup>Required</sup> <a name="table" id="@cdklabs/cdk-atmosphere-service.Allocations.property.table"></a>
+
+```typescript
+public readonly table: Table;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.Table
+
+---
+
+
 ### AtmosphereService <a name="AtmosphereService" id="@cdklabs/cdk-atmosphere-service.AtmosphereService"></a>
 
 Atmosphere service to allocate AWS environments on-demand.
@@ -87,7 +205,9 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Provides access to the allocations table. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | Provides access to the service configuration file. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Provides access to the environments table. |
 
 ---
 
@@ -103,6 +223,18 @@ The tree node.
 
 ---
 
+##### `allocations`<sup>Required</sup> <a name="allocations" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.allocations"></a>
+
+```typescript
+public readonly allocations: Allocations;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
+
+Provides access to the allocations table.
+
+---
+
 ##### `config`<sup>Required</sup> <a name="config" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.config"></a>
 
 ```typescript
@@ -112,6 +244,18 @@ public readonly config: Configuration;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
 
 Provides access to the service configuration file.
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.environments"></a>
+
+```typescript
+public readonly environments: Environments;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
+
+Provides access to the environments table.
 
 ---
 
@@ -258,6 +402,124 @@ public readonly key: string;
 - *Type:* string
 
 S3 Object key of configuration file.
+
+---
+
+
+### Environments <a name="Environments" id="@cdklabs/cdk-atmosphere-service.Environments"></a>
+
+Environments table.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.Environments.Initializer"></a>
+
+```typescript
+import { Environments } from '@cdklabs/cdk-atmosphere-service'
+
+new Environments(scope: Construct, id: string)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.Environments.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.Environments.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite">grantReadWrite</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.Environments.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite"></a>
+
+```typescript
+public grantReadWrite(identity: IGrantable): Environments
+```
+
+###### `identity`<sup>Required</sup> <a name="identity" id="@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite.parameter.identity"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.Environments.isConstruct"></a>
+
+```typescript
+import { Environments } from '@cdklabs/cdk-atmosphere-service'
+
+Environments.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.Environments.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.property.table">table</a></code> | <code>aws-cdk-lib.aws_dynamodb.Table</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.Environments.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `table`<sup>Required</sup> <a name="table" id="@cdklabs/cdk-atmosphere-service.Environments.property.table"></a>
+
+```typescript
+public readonly table: Table;
+```
+
+- *Type:* aws-cdk-lib.aws_dynamodb.Table
 
 ---
 
