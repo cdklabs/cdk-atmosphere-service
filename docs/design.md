@@ -368,3 +368,91 @@ responsible for marking an environment as dirty in case the cleanup process has 
 DynamoDB universal target to update the [Environments (DynamoDB Table)](#environments-dynamodb-table)
 
 <img src="./images/cleanup-timeout-event-diagram.png" width="250"/>
+
+## Operational Excellence
+
+### Metrics
+
+CloudWatch metrics are used to measure how the system behaves over time and alert us if the system requires human attention. 
+We will track the following metrics:
+
+#### `Allocation Status Code / Environment Pool / Environment Capacility`
+
+* **Emitter:** [Allocation (Lambda Function)](#allocation-lambda-function)
+* **Purpose:** Diagnosing
+
+We will track the rate of allocation requests responding with each of the Response Status Codes. Each environment pool is
+tracked separately because they don’t affect one another. To provide higher granularity, the capabilities of the environment
+are used as the metric dimensions. It will allow us to diagnose when:
+
+* More environments with a specific capability are needed for a specific pool.
+* A specific pool or capability is causing the service to malfunction.
+
+![Allocation Status Code Graphs](./images/allocation-status-code-graphs.png)
+
+Note that apart from an elevated 500 Error count, all other status codes don’t necessarily indicate a service problem.
+Values may greatly differ based on the rate of client requests; there is no threshold we can define an alarm on.
+
+> For example: It might be that we see more 423 Locked responses due to an increase in integration tests,
+but they all still pass within their allocated timeout.
+
+This metric will be used for root analysis only, while service malfunction is detected in other ways.
+
+#### `Allocation Outcome / Environment Pool / Environment Capability`
+
+* **Emitter:** [Allocation (Lambda Function)](#allocation-lambda-function)
+* **Purpose:** Diagnosing
+
+We will track the rate allocation requests ending with a specific outcome. Outcomes are reported by integration
+tests when the environment is deallocated. Most commonly, they will contain the outcome of the test
+itself (e.g success, failure). Each environment pool is tracked separately because they don’t affect one another.
+To provide higher granularity, the capabilities of the environment are used as the metric dimensions.
+It will allow us to diagnose when:
+
+* A specific environment capability is exhibiting (and possibly causing) more test failures.
+* A specific pool is exhibiting more test failures.
+
+![Allocation Outcome Graphs](./images/allocation-outcome-graphs.png)
+
+Note that this metric alone does not necessarily indicate a service problem. Tests might be failing for
+their own reasons, unrelated to environment allocation. We use this metric only to identify patterns
+in correlation with other metrics.
+
+> For example: It might be that we see an increase in total suite duration in conjunction with a specific
+environment capability that exhibits many test failures.
+
+#### `Unexpected Lambda Invocation Failures`
+
+* **Emitter:** Built-in by Lambda
+* **Purpose:** Alarming
+
+We will keep track of lambda functions that fail in unexpected ways which our code does not catch. No function should
+be failing in such ways for an extended period of time.
+
+#### `Events DLQ Size`
+
+* **Emitter:** Built-in by SQS
+* **Purpose:** Alarming
+
+Track the number of messages in the event DLQ. When this number is larger than 0, it signifies that some events
+have not been successfully delivered, and likely require human intervention.
+
+#### `Integration Test Stage Failure Rate`
+
+* **Emitter:** Built-in by CodeBuild*
+* **Purpose:** Alarming
+
+> *Other execution platforms will most likely also have this capability.
+
+This alert corresponds to our Integration Test Stage Duration KPI and is tracked on the client side.
+This is our main health indicator. As long as stages are executed successfully, the service does not require
+immediate human attention. Note that a high failure rate doesn’t necessary indicate a service problem; it may
+be that the tests themselves are failing. However, if a severe service problem exists, the failure rate will
+definitely increase. This makes this metric a good detector of overall system health.
+
+### Direct Tickets
+
+#### `Dirty Environment (SIM Ticket)`
+
+Whenever the [Cleanup (ECS Task)](#cleanup-ecs-task) fails or times out, the environment it was cleaning
+remains dirty and need human attention. We will directly create a SEV3 SIM ticket every time this happens.
