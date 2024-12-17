@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/32091a62a11826b25834e275aad3cdf17655c6022d2b837e4a20d2b1df2d29ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f71e28e8882f1f2e50888931468c422a03a8a97d900c3de312a114bb0f7ca5d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -62,6 +62,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereServiceConfigurationDeploymentCustomResource6B1124B2"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Environments/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEnvironmentsTable2E9F23CB"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Allocations/Table/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceAllocationsTable151A0750"
           }
         ],
         "/integ-service-stack/LatestNodeRuntimeMap": [
@@ -122,6 +134,18 @@
             "data": "ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
           }
         ],
+        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEnvironmentsTable2E9F23CB\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8"
+          }
+        ],
+        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceAllocationsTable151A0750\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542"
+          }
+        ],
         "/integ-service-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -154,7 +178,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b2557dad0dbe9aef8b992a4abfe4cc40b397142f955767c8c02e4fda084acb4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66aa8713ce1c7fce20918f964ca336aa05263c5c47f6f5c56fc5f2297125db82.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,6 +223,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92"
+          }
+        ],
+        "/integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0"
           }
         ],
         "/integ-service-stack-assertions/BootstrapVersion": [
