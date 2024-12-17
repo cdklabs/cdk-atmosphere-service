@@ -18,6 +18,9 @@ export interface AtmosphereServiceProps {
  */
 export class AtmosphereService extends Construct {
 
+  /**
+   * Provides access to the service configuration file.
+   */
   public readonly config: Configuration;
 
   constructor(scope: Construct, id: string, props: AtmosphereServiceProps) {

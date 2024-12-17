@@ -3,7 +3,34 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
-import { RegisteredEnvironment } from '../types';
+
+/**
+ * Environment Configuration.
+ */
+export interface Environment {
+
+  /**
+   * Account ID.
+   */
+  readonly account: string;
+
+  /**
+   * Region.
+   */
+  readonly region: string;
+
+  /**
+   * Which pool does this environment belong to.
+   */
+  readonly pool: string;
+
+  /**
+   * ARN of an Admin role in the account. This role must be pre-created
+   * and allow the service to assume it.
+   */
+  readonly adminRoleArn: string;
+
+}
 
 /**
  * Configuration Data.
@@ -11,9 +38,9 @@ import { RegisteredEnvironment } from '../types';
 export interface ConfigurationData {
 
   /**
-   * List of registered environments, configured by the service operator.
+   * List of environments, configured by the service operator.
    */
-  readonly environments: RegisteredEnvironment[];
+  readonly environments: Environment[];
 
 }
 
