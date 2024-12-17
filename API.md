@@ -118,7 +118,7 @@ public readonly config: Configuration;
 
 Service configuration construct.
 
-Configuration data will be written to a JSON file and stored in a dedicated s3 bucket. 
+Configuration data will be written to a JSON file and stored in a dedicated s3 bucket.
 Logical components that needs access should use the `grantRead` method and then
 download the file whenever they need to.
 
@@ -278,7 +278,7 @@ const atmosphereServiceProps: AtmosphereServiceProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereServiceProps.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData">ConfigurationData</a></code> | Service Configuration. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereServiceProps.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData">ConfigurationData</a></code> | Service Configuration, stored in a dedicated s3 bucket. |
 
 ---
 
@@ -290,9 +290,7 @@ public readonly config: ConfigurationData;
 
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData">ConfigurationData</a>
 
-Service Configuration.
-
-The data passed here will be stored in a dedicated s3 bucket
+Service Configuration, stored in a dedicated s3 bucket.
 
 ---
 
