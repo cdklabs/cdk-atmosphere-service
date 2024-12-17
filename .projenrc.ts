@@ -1,4 +1,8 @@
 import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
+import { JsonPatch } from 'projen';
+
+const coverageThreshold = 95;
+
 const project = new CdklabsConstructLibrary({
   author: 'AWS',
   authorAddress: 'aws-cdk-dev@amazon.com',
@@ -7,9 +11,30 @@ const project = new CdklabsConstructLibrary({
   devDeps: [
     'cdklabs-projen-project-types',
     'aws-cdk',
+    '@aws-sdk/client-s3',
+    '@smithy/util-stream',
+    'aws-sdk-client-mock',
+    'aws-sdk-client-mock-jest',
   ],
   name: '@cdklabs/cdk-atmosphere-service',
   projenrcTs: true,
   release: false,
+  jestOptions: {
+    jestConfig: {
+      coverageThreshold: {
+        statements: coverageThreshold,
+        lines: coverageThreshold,
+        functions: coverageThreshold,
+        branches: coverageThreshold,
+      },
+      coveragePathIgnorePatterns: [
+        '<rootDir>/node_modules/',
+        '<rootDir>/test/',
+      ],
+    },
+  },
 });
+
+project.package.file.patch(JsonPatch.add('/jest/randomize', true));
+
 project.synth();

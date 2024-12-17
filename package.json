@@ -42,6 +42,8 @@
   "devDependencies": {
     "@aws-cdk/integ-runner": "latest",
     "@aws-cdk/integ-tests-alpha": "latest",
+    "@aws-sdk/client-s3": "^3.713.0",
+    "@smithy/util-stream": "^3.3.2",
     "@stylistic/eslint-plugin": "^2",
     "@types/jest": "^29.5.14",
     "@types/node": "^18",
@@ -49,6 +51,8 @@
     "@typescript-eslint/parser": "^8",
     "aws-cdk": "^2.173.1",
     "aws-cdk-lib": "2.173.1",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
     "cdklabs-projen-project-types": "^0.1.211",
     "constructs": "10.0.5",
     "eslint": "^9",
@@ -81,6 +85,18 @@
   "version": "0.0.0",
   "jest": {
     "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "statements": 95,
+        "lines": 95,
+        "functions": 95,
+        "branches": 95
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
+    ],
     "testMatch": [
       "<rootDir>/@(src|test)/**/*(*.)@(spec|test).ts?(x)",
       "<rootDir>/@(src|test)/**/__tests__/**/*.ts?(x)",
@@ -97,9 +113,6 @@
       "text"
     ],
     "coverageDirectory": "coverage",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ],
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],
@@ -122,7 +135,8 @@
           "tsconfig": "tsconfig.dev.json"
         }
       ]
-    }
+    },
+    "randomize": true
   },
   "types": "lib/index.d.ts",
   "stability": "experimental",
