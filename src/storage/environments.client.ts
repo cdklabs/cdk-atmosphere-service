@@ -62,25 +62,7 @@ export class EnvironmentsClient {
    * If the environment is already in a 'cleaning' status, this will fail.
    */
   public async cleaning(account: string, region: string) {
-    await this.ddbClient.updateItem({
-      TableName: this.tableName,
-      Key: {
-        account: { S: account },
-        region: { S: region },
-      },
-      // 'status' is a reserved keyword so we need attribute aliasing.
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
-      ExpressionAttributeNames: {
-        '#status': 'status',
-      },
-      ExpressionAttributeValues: {
-        ':status_value': { S: 'cleaning' },
-      },
-      UpdateExpression: 'SET #status = :status_value',
-      // ensures update.
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html#WorkingWithItems.ConditionalUpdate
-      ConditionExpression: '#status <> :status_value',
-    });
+    await this.setStatus(account, region, 'cleaning');
   }
 
   /**
@@ -88,6 +70,10 @@ export class EnvironmentsClient {
    * If the environment is already in a 'dirty' status, this will fail.
    */
   public async dirty(account: string, region: string) {
+    await this.setStatus(account, region, 'dirty');
+  }
+
+  private async setStatus(account: string, region: string, status: string) {
     await this.ddbClient.updateItem({
       TableName: this.tableName,
       Key: {
@@ -100,7 +86,7 @@ export class EnvironmentsClient {
         '#status': 'status',
       },
       ExpressionAttributeValues: {
-        ':status_value': { S: 'dirty' },
+        ':status_value': { S: status },
       },
       UpdateExpression: 'SET #status = :status_value',
       // ensures update.
