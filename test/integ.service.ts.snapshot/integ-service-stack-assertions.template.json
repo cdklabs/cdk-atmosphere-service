@@ -28,7 +28,7 @@
      "Key": "\"configuration.json\""
     },
     "flattenResponse": "false",
-    "salt": "1734431652083"
+    "salt": "1734527153325"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -147,7 +147,7 @@
      "Item": "{\"account\":{\"S\":\"1111\"},\"region\":{\"S\":\"us-east-1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1734431652083"
+    "salt": "1734527153326"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -179,7 +179,7 @@
      "Item": "{\"id\":{\"S\":\"allocation-id\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1734431652083"
+    "salt": "1734527153326"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
