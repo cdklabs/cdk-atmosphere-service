@@ -12,6 +12,7 @@ const project = new CdklabsConstructLibrary({
     'cdklabs-projen-project-types',
     'aws-cdk',
     '@aws-sdk/client-s3',
+    '@aws-sdk/client-dynamodb',
     '@smithy/util-stream',
     'aws-sdk-client-mock',
     'aws-sdk-client-mock-jest',
