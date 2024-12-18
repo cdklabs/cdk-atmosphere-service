@@ -42,9 +42,10 @@ describe('EnvironmentsClient', () => {
 
       // kind of a silly assertion but there's not much more we can in unit tests
       const expected = {
-        ConditionExpression: 'attribute_not_exists(account) AND attribute_not_exists(#region)',
+        ConditionExpression: 'attribute_not_exists(#account) AND attribute_not_exists(#region)',
         ExpressionAttributeNames: {
           '#region': 'region',
+          '#account': 'account',
         },
         Item: {
           account: { S: '1111' },
@@ -93,9 +94,10 @@ describe('EnvironmentsClient', () => {
 
       // kind of a silly assertion but there's not much more we can in unit tests
       const expected = {
-        ConditionExpression: 'attribute_exists(account) AND attribute_exists(#region)',
+        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region)',
         ExpressionAttributeNames: {
           '#region': 'region',
+          '#account': 'account',
         },
         Key: {
           account: { S: '1111' },
