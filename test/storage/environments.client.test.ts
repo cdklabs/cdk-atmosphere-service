@@ -1,6 +1,6 @@
-import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { EnvironmentsClient } from '../../src/storage/environments.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('EnvironmentsClient', () => {
@@ -12,6 +12,28 @@ describe('EnvironmentsClient', () => {
   });
 
   describe('acquire', () => {
+
+    test('re-throws on unexpected error', async () => {
+
+      ddbMock.on(PutItemCommand).rejectsOnce(new Error('unexpected'));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.acquire('1111', 'us-east-1')).rejects.toThrow('unexpected');
+
+    });
+
+    test('throws explicit error when an environment is already acquired', async () => {
+
+      ddbMock.on(PutItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.acquire('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyAcquiredError);
+
+    });
 
     test('inserts a new item to the table', async () => {
 
@@ -41,6 +63,29 @@ describe('EnvironmentsClient', () => {
 
   describe('release', () => {
 
+    test('re-throws on unexpected error', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new Error('unexpected'));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('1111', 'us-east-1')).rejects.toThrow('unexpected');
+
+    });
+
+    test('throws explicit error when an environment is already released', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReleasedError);
+
+    });
+
     test('deletes an item from the table', async () => {
 
       const client = new EnvironmentsClient('table');
@@ -68,6 +113,29 @@ describe('EnvironmentsClient', () => {
 
   describe('cleaning', () => {
 
+    test('re-throws on unexpected error', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new Error('unexpected'));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.cleaning('1111', 'us-east-1')).rejects.toThrow('unexpected');
+
+    });
+
+    test('throws explicit error when an environment is already cleaning', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.cleaning('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyCleaningError);
+
+    });
+
     test('sets the status to cleaning', async () => {
 
       const client = new EnvironmentsClient('table');
@@ -94,6 +162,29 @@ describe('EnvironmentsClient', () => {
   });
 
   describe('dirty', () => {
+
+    test('re-throws on unexpected error', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new Error('unexpected'));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.dirty('1111', 'us-east-1')).rejects.toThrow('unexpected');
+
+    });
+
+    test('throws explicit error when an environment is already dirty', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.dirty('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyDirtyError);
+
+    });
 
     test('sets the status to dirty', async () => {
 
