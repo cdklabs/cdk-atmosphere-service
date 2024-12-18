@@ -70,14 +70,15 @@ export class EnvironmentsClient {
           region: { S: region },
           status: { S: 'in-use' },
         },
-        // 'region' is a reserved keyword so we need attribute aliasing.
+        // avoid attribute name collisions with reserved keywords.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
         ExpressionAttributeNames: {
           '#region': 'region',
+          '#account': 'account',
         },
         // ensures insertion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: 'attribute_not_exists(account) AND attribute_not_exists(#region)',
+        ConditionExpression: 'attribute_not_exists(#account) AND attribute_not_exists(#region)',
       });
     } catch (e: any) {
       if (e instanceof ddb.ConditionalCheckFailedException) {
@@ -99,14 +100,15 @@ export class EnvironmentsClient {
           account: { S: account },
           region: { S: region },
         },
-        // 'region' is a reserved keyword so we need attribute aliasing.
+        // avoid attribute name collisions with reserved keywords.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
         ExpressionAttributeNames: {
           '#region': 'region',
+          '#account': 'account',
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: 'attribute_exists(account) AND attribute_exists(#region)',
+        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region)',
       });
     } catch (e: any) {
       if (e instanceof ddb.ConditionalCheckFailedException) {
@@ -153,7 +155,7 @@ export class EnvironmentsClient {
         account: { S: account },
         region: { S: region },
       },
-      // 'status' is a reserved keyword so we need attribute aliasing.
+      // avoid attribute name collisions with reserved keywords.
       // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
       ExpressionAttributeNames: {
         '#status': 'status',
