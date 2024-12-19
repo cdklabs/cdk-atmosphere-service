@@ -29,6 +29,11 @@ export interface AllocationsStartOptions {
   readonly region: string;
 
   /**
+   * Which pool the environment belongs to.
+   */
+  readonly pool: string;
+
+  /**
    * Identifier for the requester.
    */
   readonly requester: string;
@@ -64,6 +69,11 @@ export interface Allocation {
    * Region of the environment to be allocated.
    */
   readonly region: string;
+
+  /**
+   * Which pool the allocation is in.
+   */
+  readonly pool: string;
 
   /**
    * Start date of the allocation.
@@ -116,6 +126,7 @@ export class AllocationsClient {
         id: { S: uuid },
         account: { S: opts.account },
         region: { S: opts.region },
+        pool: { S: opts.pool },
         start: { S: new Date().toISOString() },
         requester: { S: opts.requester },
         ttl: { N: `${nowSeconds + sixMonthsSeconds}` },
@@ -158,6 +169,7 @@ export class AllocationsClient {
       return {
         account: value('account', response.Attributes),
         region: value('region', response.Attributes),
+        pool: value('pool', response.Attributes),
         start: value('start', response.Attributes),
         end: value('end', response.Attributes),
         requester: value('requester', response.Attributes),

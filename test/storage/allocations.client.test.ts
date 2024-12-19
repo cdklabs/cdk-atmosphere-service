@@ -21,13 +21,14 @@ describe('AllocationsClient', () => {
       const sixMonthsFromNow = new Date(now.getTime() + 26 * 7 * 24 * 60 * 60 * 1000);
 
       const client = new AllocationsClient('table');
-      const id = await client.start({ account: '1111', region: 'us-east-1', requester: 'user1' });
+      const id = await client.start({ account: '1111', region: 'us-east-1', requester: 'user1', pool: 'canary' });
 
       const expected = {
         Item: {
           account: { S: '1111' },
           id: { S: id },
           region: { S: 'us-east-1' },
+          pool: { S: 'canary' },
           requester: { S: 'user1' },
           start: { S: now.toISOString() },
           ttl: { N: `${Math.floor(sixMonthsFromNow.getTime() / 1000)}` },
@@ -51,6 +52,7 @@ describe('AllocationsClient', () => {
         Attributes: {
           // missing account attribute
           region: { S: 'us-east-1' },
+          pool: { S: 'canary' },
           start: { S: '2022-01-01T00:00:00.000Z' },
           end: { S: '2022-01-02T00:00:00.000Z' },
           requester: { S: 'user1' },
@@ -70,6 +72,7 @@ describe('AllocationsClient', () => {
         Attributes: {
           account: { S: undefined as unknown as string },
           region: { S: 'us-east-1' },
+          pool: { S: 'canary' },
           start: { S: '2022-01-01T00:00:00.000Z' },
           end: { S: '2022-01-02T00:00:00.000Z' },
           requester: { S: 'user1' },
@@ -113,6 +116,7 @@ describe('AllocationsClient', () => {
         Attributes: {
           account: { S: '1111' },
           region: { S: 'us-east-1' },
+          pool: { S: 'canary' },
           start: { S: '2022-01-01T00:00:00.000Z' },
           end: { S: '2022-01-02T00:00:00.000Z' },
           requester: { S: 'user1' },
@@ -126,6 +130,7 @@ describe('AllocationsClient', () => {
 
       expect(allocation).toEqual({
         account: '1111',
+        pool: 'canary',
         end: '2022-01-02T00:00:00.000Z',
         id: '1234',
         outcome: 'fail',
