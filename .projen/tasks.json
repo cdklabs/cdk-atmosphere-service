@@ -333,13 +333,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-dynamodb,@aws-sdk/client-s3,@smithy/util-stream,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-dynamodb,@aws-sdk/client-s3,@smithy/util-stream,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-dynamodb @aws-sdk/client-s3 @smithy/util-stream @stylistic/eslint-plugin @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-dynamodb @aws-sdk/client-s3 @smithy/util-stream @stylistic/eslint-plugin @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"
