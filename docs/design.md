@@ -241,6 +241,9 @@ account: string | required
 # the region of the allocated environment
 region: string | required
 
+# the pool the environment belongs to.
+pool: string | required
+
 # who created the allocation. 
 # controlled by the integration test. 
 # max 1024 chars.
@@ -373,7 +376,7 @@ DynamoDB universal target to update the [Environments (DynamoDB Table)](#environ
 
 ### Metrics
 
-CloudWatch metrics are used to measure how the system behaves over time and alert us if the system requires human attention. 
+CloudWatch metrics are used to measure how the system behaves over time and alert us if the system requires human attention.
 We will track the following metrics:
 
 #### `Allocation Status Code / Environment Pool / Environment Capacility`
@@ -467,4 +470,3 @@ that make interacting with it a non trivial task:
 
 In order to prevent effort duplication, a TypeScript client library will be provided that implements
 the above requirements and eases interaction with the service.
-
