@@ -1,6 +1,6 @@
 import { ConditionalCheckFailedException, DynamoDBClient, PutItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { AllocationAlreadyEndedError, AllocationsClient } from '../../src/storage/allocations.client';
+import { AllocationAlreadyEndedError, AllocationsClient, InvalidInputError } from '../../src/storage/allocations.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('AllocationsClient', () => {
@@ -12,6 +12,18 @@ describe('AllocationsClient', () => {
   });
 
   describe('start', () => {
+
+    test('throws if requester exceeds max length', async () => {
+
+      const client = new AllocationsClient('table');
+      await expect(client.start({
+        account: '1111',
+        region: 'us-east-1',
+        requester: 'a'.repeat(1025),
+        pool: 'canary',
+      })).rejects.toThrow(InvalidInputError);
+
+    });
 
     test('inserts a new item to the table', async () => {
 
@@ -45,6 +57,16 @@ describe('AllocationsClient', () => {
   });
 
   describe('end', () => {
+
+    test('throws if outcome exceeds max length', async () => {
+
+      const client = new AllocationsClient('table');
+      await expect(client.end({
+        id: '1234',
+        outcome: 'a'.repeat(101),
+      })).rejects.toThrow(InvalidInputError);
+
+    });
 
     test('throws if an attribute doesnt exist in the response', async () => {
 

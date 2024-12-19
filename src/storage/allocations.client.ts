@@ -14,6 +14,15 @@ export class AllocationAlreadyEndedError extends Error {
 }
 
 /**
+ * Error thrown if the input is invalid.
+ */
+export class InvalidInputError extends Error {
+  constructor(message: string) {
+    super(`Invalid input: ${message}`);
+  }
+}
+
+/**
  * Options for `start`.
  */
 export interface AllocationsStartOptions {
@@ -117,6 +126,12 @@ export class AllocationsClient {
    * Start an allocation for a specific environment. Returns the allocation id.
    */
   public async start(opts: AllocationsStartOptions): Promise<string> {
+
+    if (Buffer.byteLength(opts.requester) > 1024) {
+      // this is user controlled so we impose a max length
+      throw new InvalidInputError('requester must be less than 1024 bytes');
+    }
+
     const uuid = uuidv4();
     const nowSeconds = Math.floor(Date.now() / 1000);
     const sixMonthsSeconds = 26 * 7 * 24 * 60 * 60;
@@ -139,6 +154,12 @@ export class AllocationsClient {
    * End the allocation. Throws if the allocation has already ended.
    */
   public async end(opts: AllocationsEndOptions): Promise<Allocation> {
+
+    if (Buffer.byteLength(opts.outcome) > 100) {
+      // this is user controlled so we impose a max length
+      throw new InvalidInputError('outcome must be less than 100 bytes');
+    }
+
     try {
       const response = await this.ddbClient.updateItem({
         TableName: this.tableName,
