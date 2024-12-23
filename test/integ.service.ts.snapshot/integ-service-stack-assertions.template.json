@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744": {
-   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+  "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-api-gatewayTestI",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,26 +9,43 @@
       "Arn"
      ]
     },
-    "service": "S3",
-    "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"environments\\\":[{\\\"account\\\":\\\"1111\\\",\\\"region\\\":\\\"us-east-1\\\",\\\"pool\\\":\\\"release\\\",\\\"adminRoleArn\\\":\\\"arn:aws:iam::1111:role/Admin\\\"}]}\"}}",
+    "service": "@aws-sdk/client-api-gateway",
+    "api": "TestInvokeMethodCommand",
     "parameters": {
-     "Bucket": {
+     "restApiId": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
         },
         "\""
        ]
       ]
      },
-     "Key": "\"configuration.json\""
+     "resourceId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsC4A631D01D8D305F"
+        },
+        "\""
+       ]
+      ]
+     },
+     "httpMethod": "\"POST\"",
+     "pathWithQueryString": "\"/allocations\"",
+     "body": "\"{\\\"pool\\\":\\\"release\\\",\\\"requester\\\":\\\"user1\\\"}\""
     },
-    "flattenResponse": "false",
-    "salt": "1734947763773"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "body",
+     "body.id"
+    ],
+    "salt": "1734964212129"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -59,33 +76,6 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
-        {
-         "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "dynamodb:PutItem"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "dynamodb:PutItem"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
         {
          "Action": [
           "apigateway:TestInvokeMethod"
@@ -119,6 +109,24 @@
             ]
            ]
           }
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:GetItem"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:GetItem"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
          ]
         },
         {
@@ -190,8 +198,8 @@
     }
    }
   },
-  "AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92": {
-   "Type": "Custom::DeployAssert@SdkCallDynamoDBputItem",
+  "AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBgetItem",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -200,7 +208,9 @@
      ]
     },
     "service": "DynamoDB",
-    "api": "putItem",
+    "api": "getItem",
+    "expected": "{\"$StringLike\":\"in-use\"}",
+    "actualPath": "Item.status.S",
     "parameters": {
      "TableName": {
       "Fn::Join": [
@@ -214,16 +224,22 @@
        ]
       ]
      },
-     "Item": "{\"account\":{\"S\":\"1111\"},\"region\":{\"S\":\"us-east-1\"}}"
+     "Key": "{\"account\":{\"S\":\"1111\"},\"region\":{\"S\":\"us-east-1\"}}"
     },
-    "flattenResponse": "false",
-    "salt": "1734947763774"
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Item.status.S"
+    ],
+    "salt": "1734964212130"
    },
+   "DependsOn": [
+    "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0": {
-   "Type": "Custom::DeployAssert@SdkCallDynamoDBputItem",
+  "AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBgetItem",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -232,7 +248,9 @@
      ]
     },
     "service": "DynamoDB",
-    "api": "putItem",
+    "api": "getItem",
+    "expected": "{\"$StringLike\":\"release\"}",
+    "actualPath": "Item.pool.S",
     "parameters": {
      "TableName": {
       "Fn::Join": [
@@ -246,59 +264,34 @@
        ]
       ]
      },
-     "Item": "{\"id\":{\"S\":\"allocation-id\"}}"
-    },
-    "flattenResponse": "false",
-    "salt": "1734947763774"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61": {
-   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-api-gatewayTestI",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "@aws-sdk/client-api-gateway",
-    "api": "TestInvokeMethodCommand",
-    "parameters": {
-     "restApiId": {
+     "Key": {
       "Fn::Join": [
        "",
        [
-        "\"",
+        "{\"id\":{\"S\":\"",
         {
-         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
+         "Fn::GetAtt": [
+          "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0",
+          "apiCallResponse.body.id"
+         ]
         },
-        "\""
+        "\"}}"
        ]
       ]
-     },
-     "resourceId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsC4A631D01D8D305F"
-        },
-        "\""
-       ]
-      ]
-     },
-     "httpMethod": "\"POST\"",
-     "pathWithQueryString": "\"/allocations\""
+     }
     },
-    "flattenResponse": "false",
+    "flattenResponse": "true",
     "outputPaths": [
-     "body"
+     "Item.account.S",
+     "Item.region.S",
+     "Item.requester.S",
+     "Item.pool.S"
     ],
-    "salt": "1734947763774"
+    "salt": "1734964212130"
    },
+   "DependsOn": [
+    "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -345,20 +338,10 @@
     "outputPaths": [
      "body"
     ],
-    "salt": "1734947763775"
+    "salt": "1734964212130"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Outputs": {
-  "AssertionResultsAwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744",
-     "assertion"
-    ]
-   }
   }
  },
  "Mappings": {
@@ -482,6 +465,24 @@
    },
    "us-west-2": {
     "value": "nodejs20.x"
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8",
+     "assertion"
+    ]
    }
   }
  },

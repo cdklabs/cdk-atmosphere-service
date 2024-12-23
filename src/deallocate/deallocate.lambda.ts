@@ -21,10 +21,17 @@ const environments = new EnvironmentsClient(requireEnv(env.ENVIRONMENTS_TABLE_NA
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
   try {
+
+    const id = (event.pathParameters ?? {}).id;
+    if (!id) {
+      throw new ProxyError(400, 'Missing \'id\' path parameter');
+    }
+    console.log(`Extracted allocation id from path: ${id}`);
+
     console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
-    console.log(`Ending allocation '${request.id}' with outcome: ${request.outcome}`);
+    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(request.id, request.outcome);
 
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
@@ -64,9 +71,6 @@ function parseRequestBody(body: string | null): DeallocationRequest {
   }
 
   const parsed = JSON.parse(body);
-  if (!parsed.id) {
-    throw new ProxyError(400, '\'id\' must be provided in the request body');
-  }
   if (!parsed.outcome) {
     throw new ProxyError(400, '\'outcome\' must be provided in the request body');
   }

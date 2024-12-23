@@ -586,12 +586,22 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "bcaeb911ee319ed5c794448cf389acfb7fdcc420f616fff7b1eb55fedfd7d7df.zip"
+                              "s3Key": "be58673393273dd9f6ed60f2e8cf8ad180ae4bb44a35d29d9e8fc9bc725b241c.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
                               "variables": {
-                                "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                                "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+                                  "Ref": "AtmosphereServiceConfigurationBucket32004CFE"
+                                },
+                                "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+                                "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+                                  "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
+                                },
+                                "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+                                  "Ref": "AtmosphereServiceAllocationsTable151A0750"
+                                }
                               }
                             },
                             "handler": "index.handler",
@@ -790,12 +800,18 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "54ed47f8c122ea009b194fec146c91ba7173d297064641b8a259877f212cae2d.zip"
+                              "s3Key": "32870b6b27310d32a1ed341dcf810079c2d119b0b6632d231a3887a6e96fd7d8.zip"
                             },
                             "description": "src/deallocate/deallocate.lambda.ts",
                             "environment": {
                               "variables": {
-                                "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                                "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+                                  "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
+                                },
+                                "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+                                  "Ref": "AtmosphereServiceAllocationsTable151A0750"
+                                }
                               }
                             },
                             "handler": "index.handler",
@@ -1628,14 +1644,6 @@
             "id": "Exports",
             "path": "integ-service-stack/Exports",
             "children": {
-              "Output{\"Ref\":\"AtmosphereServiceConfigurationBucket32004CFE\"}": {
-                "id": "Output{\"Ref\":\"AtmosphereServiceConfigurationBucket32004CFE\"}",
-                "path": "integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceConfigurationBucket32004CFE\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.173.1"
-                }
-              },
               "Output{\"Ref\":\"AtmosphereServiceEndpointApiF7A311F1\"}": {
                 "id": "Output{\"Ref\":\"AtmosphereServiceEndpointApiF7A311F1\"}",
                 "path": "integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEndpointApiF7A311F1\"}",
@@ -1708,17 +1716,17 @@
         "id": "integ-service-stack-assertions",
         "path": "integ-service-stack-assertions",
         "children": {
-          "AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744": {
-            "id": "AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744",
-            "path": "integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744",
+          "AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0": {
+            "id": "AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0",
+            "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0",
             "children": {
               "SdkProvider": {
                 "id": "SdkProvider",
-                "path": "integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/SdkProvider",
+                "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0/SdkProvider",
                 "children": {
                   "AssertionsProvider": {
                     "id": "AssertionsProvider",
-                    "path": "integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/SdkProvider/AssertionsProvider",
+                    "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0/SdkProvider/AssertionsProvider",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.0.5"
@@ -1732,11 +1740,11 @@
               },
               "Default": {
                 "id": "Default",
-                "path": "integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/Default",
+                "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0/Default",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/Default/Default",
+                    "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0/Default/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.173.1"
@@ -1745,14 +1753,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "2.173.1"
-                }
-              },
-              "AssertionResults": {
-                "id": "AssertionResults",
-                "path": "integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/AssertionResults",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.173.1"
                 }
               }
@@ -1804,17 +1804,17 @@
               "version": "2.173.1"
             }
           },
-          "AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92": {
-            "id": "AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92",
-            "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92",
+          "AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08": {
+            "id": "AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08",
+            "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08",
             "children": {
               "SdkProvider": {
                 "id": "SdkProvider",
-                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92/SdkProvider",
+                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08/SdkProvider",
                 "children": {
                   "AssertionsProvider": {
                     "id": "AssertionsProvider",
-                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92/SdkProvider/AssertionsProvider",
+                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08/SdkProvider/AssertionsProvider",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.0.5"
@@ -1828,11 +1828,11 @@
               },
               "Default": {
                 "id": "Default",
-                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92/Default",
+                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08/Default",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92/Default/Default",
+                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08/Default/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.173.1"
@@ -1843,6 +1843,14 @@
                   "fqn": "aws-cdk-lib.CustomResource",
                   "version": "2.173.1"
                 }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItem77ef955b1bccf755142487db770ebd08/AssertionResults",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.173.1"
+                }
               }
             },
             "constructInfo": {
@@ -1850,17 +1858,17 @@
               "version": "2.173.2-alpha.0"
             }
           },
-          "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0": {
-            "id": "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0",
-            "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0",
+          "AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8": {
+            "id": "AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8",
+            "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8",
             "children": {
               "SdkProvider": {
                 "id": "SdkProvider",
-                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0/SdkProvider",
+                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8/SdkProvider",
                 "children": {
                   "AssertionsProvider": {
                     "id": "AssertionsProvider",
-                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0/SdkProvider/AssertionsProvider",
+                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8/SdkProvider/AssertionsProvider",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.0.5"
@@ -1874,11 +1882,11 @@
               },
               "Default": {
                 "id": "Default",
-                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0/Default",
+                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8/Default",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0/Default/Default",
+                    "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8/Default/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.173.1"
@@ -1889,50 +1897,12 @@
                   "fqn": "aws-cdk-lib.CustomResource",
                   "version": "2.173.1"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
-              "version": "2.173.2-alpha.0"
-            }
-          },
-          "AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61": {
-            "id": "AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61",
-            "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61",
-            "children": {
-              "SdkProvider": {
-                "id": "SdkProvider",
-                "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61/SdkProvider",
-                "children": {
-                  "AssertionsProvider": {
-                    "id": "AssertionsProvider",
-                    "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61/SdkProvider/AssertionsProvider",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.0.5"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.173.2-alpha.0"
-                }
               },
-              "Default": {
-                "id": "Default",
-                "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61/Default",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61/Default/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "2.173.1"
-                    }
-                  }
-                },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "integ-service-stack-assertions/AwsApiCallDynamoDBgetItemec0c9c06a234619945b9a73a3b33c1f8/AssertionResults",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.173.1"
                 }
               }

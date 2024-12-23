@@ -1,17 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
-import { ConfigurationClient } from '../config/configuration.client';
-import { env } from '../consts';
-import { AllocationsClient, InvalidInputError } from '../storage/allocations.client';
-import { EnvironmentAlreadyAcquiredError, EnvironmentsClient } from '../storage/environments.client';
-
-const allocations = new AllocationsClient(requireEnv(env.ALLOCATIONS_TABLE_NAME_ENV));
-const environments = new EnvironmentsClient(requireEnv(env.ENVIRONMENTS_TABLE_NAME_ENV));
-const configuration = new ConfigurationClient({
-  bucket: requireEnv(env.CONFIGURATION_BUCKET_ENV),
-  key: requireEnv(env.CONFIGURATION_KEY_ENV),
-});
+import { InvalidInputError } from '../storage/allocations.client';
+import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -33,6 +25,8 @@ interface AllocationResponse {
     sessionToken: string;
   };
 }
+
+const clients = RuntimeClients.getOrCreate();
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
@@ -75,14 +69,6 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 }
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
-}
-
 function parseRequestBody(body: string | null): AllocationRequest {
 
   if (!body) {
@@ -102,12 +88,12 @@ function parseRequestBody(body: string | null): AllocationRequest {
 
 async function acquireEnvironment(pool: string): Promise<Environment> {
 
-  const candidates = await configuration.listEnvironments({ pool });
+  const candidates = await clients.configuration.listEnvironments({ pool });
   console.log(`Found ${candidates.length} environments in pool '${pool}'`);
   for (const canditate of candidates) {
     try {
       console.log(`Acquiring environment 'aws://${canditate.account}/${canditate.region}'...`);
-      await environments.acquire(canditate.account, canditate.region);
+      await clients.environments.acquire(canditate.account, canditate.region);
       return canditate;
     } catch (e: any) {
       if (e instanceof EnvironmentAlreadyAcquiredError) {
@@ -123,7 +109,7 @@ async function acquireEnvironment(pool: string): Promise<Environment> {
 
 async function startAllocation(environment: Environment, requester: string): Promise<string> {
   try {
-    const id = await allocations.start({
+    const id = await clients.allocations.start({
       account: environment.account,
       region: environment.region,
       pool: environment.pool,
