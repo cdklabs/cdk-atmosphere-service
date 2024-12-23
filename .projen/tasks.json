@@ -24,6 +24,54 @@
         }
       ]
     },
+    "bundle": {
+      "name": "bundle",
+      "description": "Prepare assets",
+      "steps": [
+        {
+          "spawn": "bundle:allocate/allocate.lambda"
+        },
+        {
+          "spawn": "bundle:deallocate/deallocate.lambda"
+        }
+      ]
+    },
+    "bundle:allocate/allocate.lambda": {
+      "name": "bundle:allocate/allocate.lambda",
+      "description": "Create a JavaScript bundle from src/allocate/allocate.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/allocate/allocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocate/allocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:allocate/allocate.lambda:watch": {
+      "name": "bundle:allocate/allocate.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/allocate/allocate.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/allocate/allocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocate/allocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:deallocate/deallocate.lambda": {
+      "name": "bundle:deallocate/deallocate.lambda",
+      "description": "Create a JavaScript bundle from src/deallocate/deallocate.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:deallocate/deallocate.lambda:watch": {
+      "name": "bundle:deallocate/deallocate.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/deallocate/deallocate.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
     "clobber": {
       "name": "clobber",
       "description": "hard resets to HEAD of origin and cleans the local repo",
@@ -253,7 +301,12 @@
     },
     "pre-compile": {
       "name": "pre-compile",
-      "description": "Prepare the project for compilation"
+      "description": "Prepare the project for compilation",
+      "steps": [
+        {
+          "spawn": "bundle"
+        }
+      ]
     },
     "rosetta:extract": {
       "name": "rosetta:extract",
@@ -333,13 +386,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-dynamodb,@aws-sdk/client-s3,@smithy/util-stream,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-dynamodb,@aws-sdk/client-s3,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-dynamodb @aws-sdk/client-s3 @smithy/util-stream @stylistic/eslint-plugin @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-dynamodb @aws-sdk/client-s3 @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"

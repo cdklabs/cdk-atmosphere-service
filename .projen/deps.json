@@ -1,6 +1,10 @@
 {
   "dependencies": [
     {
+      "name": "@aws-sdk/client-api-gateway",
+      "type": "build"
+    },
+    {
       "name": "@aws-sdk/client-dynamodb",
       "type": "build"
     },
@@ -15,6 +19,10 @@
     {
       "name": "@stylistic/eslint-plugin",
       "version": "^2",
+      "type": "build"
+    },
+    {
+      "name": "@types/aws-lambda",
       "type": "build"
     },
     {
@@ -50,6 +58,10 @@
     },
     {
       "name": "cdklabs-projen-project-types",
+      "type": "build"
+    },
+    {
+      "name": "esbuild",
       "type": "build"
     },
     {

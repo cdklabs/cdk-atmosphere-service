@@ -60,3 +60,36 @@ integ.assertions.awsApiCall('DynamoDB', 'putItem', {
     id: { S: 'allocation-id' },
   },
 });
+
+const allocationsResource = service.endpoint.api.root.getResource('allocations')!;
+const allocationResource = allocationsResource.getResource('{id}')!;
+
+const allocate = integ.assertions.awsApiCall('@aws-sdk/client-api-gateway', 'TestInvokeMethodCommand', {
+  restApiId: service.endpoint.api.restApiId,
+  resourceId: allocationsResource.resourceId,
+  httpMethod: 'POST',
+  pathWithQueryString: '/allocations',
+}, ['body']);
+
+// see https://github.com/aws/aws-cdk/issues/32635
+allocate.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 'apigateway:POST',
+  Resource: [`arn:aws:apigateway:${cdk.Aws.REGION}::/restapis/${service.endpoint.api.restApiId}/resources/${allocationsResource.resourceId}/methods/POST`],
+});
+
+
+const deallocate = integ.assertions.awsApiCall('@aws-sdk/client-api-gateway', 'TestInvokeMethodCommand', {
+  restApiId: service.endpoint.api.restApiId,
+  resourceId: allocationResource.resourceId,
+  httpMethod: 'DELETE',
+  pathWithQueryString: '/allocations/dummy',
+}, ['body']);
+
+// see https://github.com/aws/aws-cdk/issues/32635
+deallocate.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: 'apigateway:POST',
+  Resource: [`arn:aws:apigateway:${cdk.Aws.REGION}::/restapis/${service.endpoint.api.restApiId}/resources/${allocationResource.resourceId}/methods/DELETE`],
+});
+

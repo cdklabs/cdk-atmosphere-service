@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f71e28e8882f1f2e50888931468c422a03a8a97d900c3de312a114bb0f7ca5d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1bdaa351ef174ab513bd7ab10bec6ad4c3eb4f04692477c18bdef2e248a6a18.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -74,6 +74,114 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereServiceAllocationsTable151A0750"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Allocate/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceAllocateFunctionServiceRoleE4CF48C5"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Allocate/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceAllocateFunctionServiceRoleDefaultPolicy2907704E"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Allocate/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceAllocateFunction560F88C0"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Deallocate/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceDeallocateFunctionServiceRoleC0999AB8"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Deallocate/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceDeallocateFunctionServiceRoleDefaultPolicyC2AA2558"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Deallocate/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceDeallocateFunction7C02C896"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiF7A311F1"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiDeploymentFC6DC3279510e8f28f083b639c04fecc7d68c5ff"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiDeploymentStageprod2242C215"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiEndpointDE5C0AD8"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsC4A631D0"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/POST/ApiPermission.integservicestackAtmosphereServiceEndpointApi0A32B777.POST..allocations": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsPOSTApiPermissionintegservicestackAtmosphereServiceEndpointApi0A32B777POSTallocationsE405B095"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/POST/ApiPermission.Test.integservicestackAtmosphereServiceEndpointApi0A32B777.POST..allocations": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsPOSTApiPermissionTestintegservicestackAtmosphereServiceEndpointApi0A32B777POSTallocations8D808FC0"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsPOST0A2CF649"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/{id}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsid5AA5216C"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.integservicestackAtmosphereServiceEndpointApi0A32B777.DELETE..allocations.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsidDELETEApiPermissionintegservicestackAtmosphereServiceEndpointApi0A32B777DELETEallocationsid439DD033"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.Test.integservicestackAtmosphereServiceEndpointApi0A32B777.DELETE..allocations.{id}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsidDELETEApiPermissionTestintegservicestackAtmosphereServiceEndpointApi0A32B777DELETEallocationsid1D4DE109"
+          }
+        ],
+        "/integ-service-stack/AtmosphereService/Endpoint/Api/Default/allocations/{id}/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereServiceEndpointApiallocationsidDELETEA4BCF6AA"
           }
         ],
         "/integ-service-stack/LatestNodeRuntimeMap": [
@@ -134,6 +242,24 @@
             "data": "ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
           }
         ],
+        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEndpointApiF7A311F1\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
+          }
+        ],
+        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEndpointApiallocationsC4A631D0\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereServiceEndpointApiallocationsC4A631D01D8D305F"
+          }
+        ],
+        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEndpointApiallocationsid5AA5216C\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereServiceEndpointApiallocationsid5AA5216CBC5C2ADD"
+          }
+        ],
         "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEnvironmentsTable2E9F23CB\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -178,7 +304,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66aa8713ce1c7fce20918f964ca336aa05263c5c47f6f5c56fc5f2297125db82.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d84b1e5168040cf947a2055ed23c85fa9768f674c18403c66216c7c5b8fc05ed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -235,6 +361,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0"
+          }
+        ],
+        "/integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61"
+          }
+        ],
+        "/integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommand3ca1c9a09c190ed8d5f741d04bb8836b/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommand3ca1c9a09c190ed8d5f741d04bb8836b"
           }
         ],
         "/integ-service-stack-assertions/BootstrapVersion": [
