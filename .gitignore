@@ -45,6 +45,9 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+/assets/
+!/src/allocate/allocate-function.ts
+!/src/deallocate/deallocate-function.ts
 .jsii.tabl.json
 !/rosetta/default.ts-fixture
 !/.github/workflows/auto-queue.yml

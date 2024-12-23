@@ -28,7 +28,7 @@
      "Key": "\"configuration.json\""
     },
     "flattenResponse": "false",
-    "salt": "1734431652083"
+    "salt": "1734947763773"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -84,6 +84,76 @@
          "Effect": "Allow",
          "Resource": [
           "*"
+         ]
+        },
+        {
+         "Action": [
+          "apigateway:TestInvokeMethod"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "apigateway:POST",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:apigateway:",
+             {
+              "Ref": "AWS::Region"
+             },
+             "::/restapis/",
+             {
+              "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
+             },
+             "/resources/",
+             {
+              "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsC4A631D01D8D305F"
+             },
+             "/methods/POST"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "apigateway:TestInvokeMethod"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": "apigateway:POST",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:apigateway:",
+             {
+              "Ref": "AWS::Region"
+             },
+             "::/restapis/",
+             {
+              "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
+             },
+             "/resources/",
+             {
+              "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsid5AA5216CBC5C2ADD"
+             },
+             "/methods/DELETE"
+            ]
+           ]
+          }
          ]
         }
        ]
@@ -147,7 +217,7 @@
      "Item": "{\"account\":{\"S\":\"1111\"},\"region\":{\"S\":\"us-east-1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1734431652083"
+    "salt": "1734947763774"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -179,7 +249,103 @@
      "Item": "{\"id\":{\"S\":\"allocation-id\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1734431652083"
+    "salt": "1734947763774"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-api-gatewayTestI",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-api-gateway",
+    "api": "TestInvokeMethodCommand",
+    "parameters": {
+     "restApiId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
+        },
+        "\""
+       ]
+      ]
+     },
+     "resourceId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsC4A631D01D8D305F"
+        },
+        "\""
+       ]
+      ]
+     },
+     "httpMethod": "\"POST\"",
+     "pathWithQueryString": "\"/allocations\""
+    },
+    "flattenResponse": "false",
+    "outputPaths": [
+     "body"
+    ],
+    "salt": "1734947763774"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommand3ca1c9a09c190ed8d5f741d04bb8836b": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-api-gatewayTestI",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-api-gateway",
+    "api": "TestInvokeMethodCommand",
+    "parameters": {
+     "restApiId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B"
+        },
+        "\""
+       ]
+      ]
+     },
+     "resourceId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsid5AA5216CBC5C2ADD"
+        },
+        "\""
+       ]
+      ]
+     },
+     "httpMethod": "\"DELETE\"",
+     "pathWithQueryString": "\"/allocations/dummy\""
+    },
+    "flattenResponse": "false",
+    "outputPaths": [
+     "body"
+    ],
+    "salt": "1734947763775"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
