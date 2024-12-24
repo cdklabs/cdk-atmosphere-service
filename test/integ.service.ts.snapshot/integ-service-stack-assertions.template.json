@@ -28,7 +28,7 @@
      "Key": "\"configuration.json\""
     },
     "flattenResponse": "false",
-    "salt": "1734947763773"
+    "salt": "1735034227974"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -217,7 +217,7 @@
      "Item": "{\"account\":{\"S\":\"1111\"},\"region\":{\"S\":\"us-east-1\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1734947763774"
+    "salt": "1735034227975"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -249,7 +249,7 @@
      "Item": "{\"id\":{\"S\":\"allocation-id\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1734947763774"
+    "salt": "1735034227975"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -297,7 +297,7 @@
     "outputPaths": [
      "body"
     ],
-    "salt": "1734947763774"
+    "salt": "1735034227975"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -345,7 +345,7 @@
     "outputPaths": [
      "body"
     ],
-    "salt": "1734947763775"
+    "salt": "1735034227976"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

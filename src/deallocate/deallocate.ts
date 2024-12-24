@@ -1,6 +1,7 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
+import { ENVIRONMENTS_TABLE_NAME_ENV, ALLOCATIONS_TABLE_NAME_ENV } from '../clients';
 import { Allocations, Environments } from '../storage';
 
 /**
@@ -33,5 +34,9 @@ export class Deallocate extends Construct {
 
     props.allocations.grantReadWrite(this.function);
     props.environments.grantReadWrite(this.function);
+
+    this.function.addEnvironment(ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
+    this.function.addEnvironment(ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
+
   }
 }
