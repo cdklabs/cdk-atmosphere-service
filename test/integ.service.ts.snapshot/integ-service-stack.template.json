@@ -313,12 +313,22 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bcaeb911ee319ed5c794448cf389acfb7fdcc420f616fff7b1eb55fedfd7d7df.zip"
+     "S3Key": "d974542322c25a43374dbd31fe21f8accca5a7e192637b93d4f6ab76269c55e7.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
      "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+       "Ref": "AtmosphereServiceConfigurationBucket32004CFE"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereServiceAllocationsTable151A0750"
+      }
      }
     },
     "Handler": "index.handler",
@@ -429,12 +439,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "54ed47f8c122ea009b194fec146c91ba7173d297064641b8a259877f212cae2d.zip"
+     "S3Key": "a57ea60803b9abd5393d9e6df08936f67ae32734a070253f63435fd0ebac6f04.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
      "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereServiceAllocationsTable151A0750"
+      }
      }
     },
     "Handler": "index.handler",
