@@ -516,6 +516,7 @@ Any object.
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration.property.bucket">bucket</a></code> | <code>aws-cdk-lib.aws_s3.Bucket</code> | S3 Bucket where the configuration file is stored. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration.property.data">data</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData">ConfigurationData</a></code> | Configuration data. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration.property.key">key</a></code> | <code>string</code> | S3 Object key of configuration file. |
 
 ---
@@ -541,6 +542,18 @@ public readonly bucket: Bucket;
 - *Type:* aws-cdk-lib.aws_s3.Bucket
 
 S3 Bucket where the configuration file is stored.
+
+---
+
+##### `data`<sup>Required</sup> <a name="data" id="@cdklabs/cdk-atmosphere-service.Configuration.property.data"></a>
+
+```typescript
+public readonly data: ConfigurationData;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData">ConfigurationData</a>
+
+Configuration data.
 
 ---
 

@@ -9,7 +9,7 @@ test('default resource policy', () => {
 
   new AtmosphereService(stack, 'AtmosphereService', {
     config: {
-      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'role' }],
+      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
     },
   });
 
@@ -55,7 +55,7 @@ test('can add accounts to resource policy', () => {
 
   new AtmosphereService(stack, 'AtmosphereService', {
     config: {
-      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'role' }],
+      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
     },
     endpoint: {
       allowedAccounts: ['2222'],

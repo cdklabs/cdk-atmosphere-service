@@ -52,7 +52,7 @@ describe('handler', () => {
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
-      adminRoleArn: 'role',
+      adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
     jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
     jest.spyOn(allocations, 'start').mockReturnValue(Promise.reject(new InvalidInputError('Invalid')));
@@ -79,7 +79,7 @@ describe('handler', () => {
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
-      adminRoleArn: 'role',
+      adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
     jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
     jest.spyOn(allocations, 'start').mockReturnValue(Promise.reject(new Error('Unexpected')));
@@ -115,7 +115,7 @@ describe('handler', () => {
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
-      adminRoleArn: 'role',
+      adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
     jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
     jest.spyOn(allocations, 'start').mockReturnValue(Promise.resolve('id'));
@@ -133,7 +133,7 @@ describe('handler', () => {
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
-      adminRoleArn: 'role',
+      adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     });
     expect(body.credentials).toEqual({
       accessKeyId: 'key',
@@ -151,7 +151,7 @@ describe('handler', () => {
 
     expect(stsMock).toHaveReceivedCommandTimes(AssumeRoleCommand, 1);
     expect(stsMock).toHaveReceivedCommandWith(AssumeRoleCommand, {
-      RoleArn: 'role',
+      RoleArn: 'arn:aws:iam::1111:role/Admin',
       RoleSessionName: 'atmosphere.allocation.id',
     });
 
@@ -177,13 +177,13 @@ describe('handler', () => {
         account: '1111',
         region: 'us-east-1',
         pool: 'canary',
-        adminRoleArn: 'role',
+        adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
       {
         account: '1111',
         region: 'us-east-2',
         pool: 'canary',
-        adminRoleArn: 'role',
+        adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
     ]));
     jest.spyOn(environments, 'acquire').mockImplementation(async (account: string, region: string) => {
@@ -217,7 +217,7 @@ describe('handler', () => {
         account: '1111',
         region: 'us-east-1',
         pool: 'canary',
-        adminRoleArn: 'role',
+        adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
     ]));
     jest.spyOn(environments, 'acquire').mockImplementation(async (account: string, region: string) => {
