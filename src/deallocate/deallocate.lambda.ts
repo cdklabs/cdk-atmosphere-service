@@ -1,8 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { env } from '../consts';
-import { Allocation, AllocationAlreadyEndedError, AllocationsClient, InvalidInputError } from '../storage/allocations.client';
-import { EnvironmentsClient } from '../storage/environments.client';
+import { RuntimeClients } from '../clients';
+import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -15,8 +14,7 @@ interface DeallocationRequest {
   readonly outcome: string;
 }
 
-const allocations = new AllocationsClient(requireEnv(env.ALLOCATIONS_TABLE_NAME_ENV));
-const environments = new EnvironmentsClient(requireEnv(env.ENVIRONMENTS_TABLE_NAME_ENV));
+const clients = RuntimeClients.getOrCreate();
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
@@ -35,33 +33,28 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const allocation = await endAllocation(request.id, request.outcome);
 
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await environments.cleaning(allocation.account, allocation.region);
+    await clients.environments.cleaning(allocation.account, allocation.region);
 
     // TODO - trigger cleanup task
     // TODO - create cleanup timeout event
 
     return success();
   } catch (e: any) {
-    console.error(e);
 
     if (e instanceof AllocationAlreadyEndedError) {
       // expected because deallocation can be requested either
       // by the timeout event or explicitly by the user.
+      console.log(`Returning success because: ${e.message}`);
       return success();
     }
+
+    console.error(e);
+
     return {
       statusCode: e instanceof ProxyError ? e.statusCode : 500,
       body: JSON.stringify({ message: e.message }),
     };
   }
-}
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
 }
 
 function parseRequestBody(body: string | null): DeallocationRequest {
@@ -80,7 +73,7 @@ function parseRequestBody(body: string | null): DeallocationRequest {
 
 async function endAllocation(id: string, outcome: string): Promise<Allocation> {
   try {
-    return await allocations.end({ id, outcome });
+    return await clients.allocations.end({ id, outcome });
   } catch (e: any) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError(400, e.message);

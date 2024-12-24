@@ -2,10 +2,10 @@ import { ConfigurationClient } from './config/configuration.client';
 import { AllocationsClient } from './storage/allocations.client';
 import { EnvironmentsClient } from './storage/environments.client';
 
-const ALLOCATIONS_TABLE_NAME_ENV = 'CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME';
-const ENVIRONMENTS_TABLE_NAME_ENV = 'CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME';
-const CONFIGURATION_BUCKET_ENV = 'CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET';
-const CONFIGURATION_KEY_ENV = 'CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY';
+export const ALLOCATIONS_TABLE_NAME_ENV = 'CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME';
+export const ENVIRONMENTS_TABLE_NAME_ENV = 'CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME';
+export const CONFIGURATION_BUCKET_ENV = 'CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET';
+export const CONFIGURATION_KEY_ENV = 'CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY';
 
 /**
  * Factory class to initialize clients using environment variables.

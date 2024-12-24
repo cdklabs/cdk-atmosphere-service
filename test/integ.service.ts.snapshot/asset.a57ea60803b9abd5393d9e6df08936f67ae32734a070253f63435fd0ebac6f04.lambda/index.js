@@ -34,12 +34,39 @@ __export(deallocate_lambda_exports, {
 });
 module.exports = __toCommonJS(deallocate_lambda_exports);
 
-// src/consts.ts
-var env = {
-  ALLOCATIONS_TABLE_NAME_ENV: "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME",
-  ENVIRONMENTS_TABLE_NAME_ENV: "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME",
-  CONFIGURATION_BUCKET_ENV: "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET",
-  CONFIGURATION_KEY_ENV: "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY"
+// src/config/configuration.client.ts
+var s3 = __toESM(require("@aws-sdk/client-s3"));
+var ConfigurationClient = class {
+  constructor(s3Location) {
+    this.s3Location = s3Location;
+    this.s3Client = new s3.S3();
+  }
+  /**
+   * Retrieve environments belonging to a specific pool.
+   */
+  async listEnvironments(opts = {}) {
+    return (await this.data).environments.filter((e) => opts.pool ? e.pool === opts.pool : true);
+  }
+  // lazy async getter
+  get data() {
+    return (async () => {
+      if (this._data) {
+        return this._data;
+      }
+      this._data = await this.download();
+      return this._data;
+    })();
+  }
+  async download() {
+    const response = await this.s3Client.getObject({
+      Bucket: this.s3Location.bucket,
+      Key: this.s3Location.key
+    });
+    if (!response.Body) {
+      throw new Error(`Configuration file (s3://${this.s3Location.bucket}/${this.s3Location.key}) is empty`);
+    }
+    return JSON.parse(await response.Body.transformToString("utf-8"));
+  }
 };
 
 // src/storage/allocations.client.ts
@@ -333,6 +360,49 @@ var EnvironmentsClient = class {
   }
 };
 
+// src/clients.ts
+var ALLOCATIONS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME";
+var ENVIRONMENTS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME";
+var CONFIGURATION_BUCKET_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET";
+var CONFIGURATION_KEY_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY";
+var RuntimeClients = class _RuntimeClients {
+  static getOrCreate() {
+    if (!this._instance) {
+      this._instance = new _RuntimeClients();
+    }
+    return this._instance;
+  }
+  get configuration() {
+    if (!this._configuration) {
+      const bucket = requireEnv(CONFIGURATION_BUCKET_ENV);
+      const key = requireEnv(CONFIGURATION_KEY_ENV);
+      this._configuration = new ConfigurationClient({ bucket, key });
+    }
+    return this._configuration;
+  }
+  get environments() {
+    if (!this._environments) {
+      const tableName = requireEnv(ENVIRONMENTS_TABLE_NAME_ENV);
+      this._environments = new EnvironmentsClient(tableName);
+    }
+    return this._environments;
+  }
+  get allocations() {
+    if (!this._allocations) {
+      const tableName = requireEnv(ALLOCATIONS_TABLE_NAME_ENV);
+      this._allocations = new AllocationsClient(tableName);
+    }
+    return this._allocations;
+  }
+};
+function requireEnv(name) {
+  const value2 = process.env[name];
+  if (!value2) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value2;
+}
+
 // src/deallocate/deallocate.lambda.ts
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
@@ -341,8 +411,7 @@ var ProxyError = class extends Error {
     this.message = message;
   }
 };
-var allocations = new AllocationsClient(requireEnv(env.ALLOCATIONS_TABLE_NAME_ENV));
-var environments = new EnvironmentsClient(requireEnv(env.ENVIRONMENTS_TABLE_NAME_ENV));
+var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   try {
@@ -356,25 +425,19 @@ async function handler(event) {
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(request.id, request.outcome);
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await environments.cleaning(allocation.account, allocation.region);
+    await clients.environments.cleaning(allocation.account, allocation.region);
     return success();
   } catch (e) {
-    console.error(e);
     if (e instanceof AllocationAlreadyEndedError) {
+      console.log(`Returning success because: ${e.message}`);
       return success();
     }
+    console.error(e);
     return {
       statusCode: e instanceof ProxyError ? e.statusCode : 500,
       body: JSON.stringify({ message: e.message })
     };
   }
-}
-function requireEnv(name) {
-  const value2 = process.env[name];
-  if (!value2) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value2;
 }
 function parseRequestBody(body) {
   if (!body) {
@@ -388,7 +451,7 @@ function parseRequestBody(body) {
 }
 async function endAllocation(id, outcome) {
   try {
-    return await allocations.end({ id, outcome });
+    return await clients.allocations.end({ id, outcome });
   } catch (e) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError(400, e.message);

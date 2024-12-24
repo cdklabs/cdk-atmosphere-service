@@ -69,14 +69,6 @@ var ConfigurationClient = class {
   }
 };
 
-// src/consts.ts
-var env = {
-  ALLOCATIONS_TABLE_NAME_ENV: "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME",
-  ENVIRONMENTS_TABLE_NAME_ENV: "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME",
-  CONFIGURATION_BUCKET_ENV: "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET",
-  CONFIGURATION_KEY_ENV: "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY"
-};
-
 // src/storage/allocations.client.ts
 var ddb = __toESM(require("@aws-sdk/client-dynamodb"));
 
@@ -368,13 +360,50 @@ var EnvironmentsClient = class {
   }
 };
 
+// src/clients.ts
+var ALLOCATIONS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME";
+var ENVIRONMENTS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME";
+var CONFIGURATION_BUCKET_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET";
+var CONFIGURATION_KEY_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY";
+var RuntimeClients = class _RuntimeClients {
+  static getOrCreate() {
+    if (!this._instance) {
+      this._instance = new _RuntimeClients();
+    }
+    return this._instance;
+  }
+  get configuration() {
+    if (!this._configuration) {
+      const bucket = requireEnv(CONFIGURATION_BUCKET_ENV);
+      const key = requireEnv(CONFIGURATION_KEY_ENV);
+      this._configuration = new ConfigurationClient({ bucket, key });
+    }
+    return this._configuration;
+  }
+  get environments() {
+    if (!this._environments) {
+      const tableName = requireEnv(ENVIRONMENTS_TABLE_NAME_ENV);
+      this._environments = new EnvironmentsClient(tableName);
+    }
+    return this._environments;
+  }
+  get allocations() {
+    if (!this._allocations) {
+      const tableName = requireEnv(ALLOCATIONS_TABLE_NAME_ENV);
+      this._allocations = new AllocationsClient(tableName);
+    }
+    return this._allocations;
+  }
+};
+function requireEnv(name) {
+  const value2 = process.env[name];
+  if (!value2) {
+    throw new Error(`Missing environment variable: ${name}`);
+  }
+  return value2;
+}
+
 // src/allocate/allocate.lambda.ts
-var allocations = new AllocationsClient(requireEnv(env.ALLOCATIONS_TABLE_NAME_ENV));
-var environments = new EnvironmentsClient(requireEnv(env.ENVIRONMENTS_TABLE_NAME_ENV));
-var configuration = new ConfigurationClient({
-  bucket: requireEnv(env.CONFIGURATION_BUCKET_ENV),
-  key: requireEnv(env.CONFIGURATION_KEY_ENV)
-});
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -382,6 +411,7 @@ var ProxyError = class extends Error {
     this.message = message;
   }
 };
+var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   try {
@@ -413,13 +443,6 @@ async function handler(event) {
     };
   }
 }
-function requireEnv(name) {
-  const value2 = process.env[name];
-  if (!value2) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value2;
-}
 function parseRequestBody(body) {
   if (!body) {
     throw new ProxyError(400, "Request body not found");
@@ -434,12 +457,12 @@ function parseRequestBody(body) {
   return parsed;
 }
 async function acquireEnvironment(pool) {
-  const candidates = await configuration.listEnvironments({ pool });
+  const candidates = await clients.configuration.listEnvironments({ pool });
   console.log(`Found ${candidates.length} environments in pool '${pool}'`);
   for (const canditate of candidates) {
     try {
       console.log(`Acquiring environment 'aws://${canditate.account}/${canditate.region}'...`);
-      await environments.acquire(canditate.account, canditate.region);
+      await clients.environments.acquire(canditate.account, canditate.region);
       return canditate;
     } catch (e) {
       if (e instanceof EnvironmentAlreadyAcquiredError) {
@@ -453,7 +476,7 @@ async function acquireEnvironment(pool) {
 }
 async function startAllocation(environment, requester) {
   try {
-    const id = await allocations.start({
+    const id = await clients.allocations.start({
       account: environment.account,
       region: environment.region,
       pool: environment.pool,

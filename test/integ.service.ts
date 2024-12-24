@@ -54,37 +54,12 @@ allocate.provider.addToRolePolicy({
   Resource: [`arn:aws:apigateway:${cdk.Aws.REGION}::/restapis/${service.endpoint.api.restApiId}/resources/${allocationsResource.resourceId}/methods/POST`],
 });
 
-const getEnvStatus = integ.assertions.awsApiCall('DynamoDB', 'getItem', {
-  TableName: service.environments.table.tableName,
-  Key: {
-    account: { S: '1111' },
-    region: { S: 'us-east-1' },
-  },
-});
-
-// first allocate, then check env status
-getEnvStatus.node.addDependency(allocate);
-getEnvStatus.assertAtPath('Item.status.S', ExpectedResult.stringLikeRegexp('in-use'));
-
-const getAllocation = integ.assertions.awsApiCall('DynamoDB', 'getItem', {
-  TableName: service.allocations.table.tableName,
-  Key: {
-    id: { S: allocate.getAttString('body.id') },
-  },
-});
-
-// first allocate, then check allocation
-getAllocation.node.addDependency(allocate);
-getAllocation.assertAtPath('Item.account.S', ExpectedResult.stringLikeRegexp('1111'));
-getAllocation.assertAtPath('Item.region.S', ExpectedResult.stringLikeRegexp('us-east-1'));
-getAllocation.assertAtPath('Item.requester.S', ExpectedResult.stringLikeRegexp('user1'));
-getAllocation.assertAtPath('Item.pool.S', ExpectedResult.stringLikeRegexp('release'));
-
 const deallocate = integ.assertions.awsApiCall('@aws-sdk/client-api-gateway', 'TestInvokeMethodCommand', {
   restApiId: service.endpoint.api.restApiId,
   resourceId: allocationResource.resourceId,
   httpMethod: 'DELETE',
   pathWithQueryString: '/allocations/dummy',
+  body: JSON.stringify({ outcome: 'success' }),
 }, ['body']);
 
 // see https://github.com/aws/aws-cdk/issues/32635
@@ -93,3 +68,60 @@ deallocate.provider.addToRolePolicy({
   Action: 'apigateway:POST',
   Resource: [`arn:aws:apigateway:${cdk.Aws.REGION}::/restapis/${service.endpoint.api.restApiId}/resources/${allocationResource.resourceId}/methods/DELETE`],
 });
+
+const postAllocationEnvStatus = integ.assertions.awsApiCall('DynamoDB', 'getItem', {
+  TableName: service.environments.table.tableName,
+  Key: {
+    account: { S: '1111' },
+    region: { S: 'us-east-1' },
+  },
+});
+
+const allocationStarted = integ.assertions.awsApiCall('DynamoDB', 'getItem', {
+  TableName: service.allocations.table.tableName,
+  Key: {
+    id: { S: allocate.getAttString('body.id') },
+  },
+});
+
+const postDeallocationEnvStatus = integ.assertions.awsApiCall('DynamoDB', 'getItem', {
+  TableName: service.environments.table.tableName,
+  Key: {
+    account: { S: '1111' },
+    region: { S: 'us-east-1' },
+  },
+});
+
+const allocationEnded = integ.assertions.awsApiCall('DynamoDB', 'getItem', {
+  TableName: service.allocations.table.tableName,
+  Key: {
+    id: { S: allocate.getAttString('body.id') },
+  },
+});
+
+// first allocate, then check implications
+postAllocationEnvStatus.node.addDependency(allocate);
+allocationStarted.node.addDependency(allocate);
+
+// first deallocate, then check implications
+postDeallocationEnvStatus.node.addDependency(deallocate);
+allocationEnded.node.addDependency(deallocate);
+
+postAllocationEnvStatus.assertAtPath('Item.status.S', ExpectedResult.stringLikeRegexp('in-use'));
+allocationStarted.assertAtPath('Item.account.S', ExpectedResult.stringLikeRegexp('1111'));
+allocationStarted.assertAtPath('Item.region.S', ExpectedResult.stringLikeRegexp('us-east-1'));
+allocationStarted.assertAtPath('Item.requester.S', ExpectedResult.stringLikeRegexp('user1'));
+allocationStarted.assertAtPath('Item.pool.S', ExpectedResult.stringLikeRegexp('release'));
+// allocationStarted.assertAtPath('Item.start.S', ExpectedResult.stringLikeRegexp('/^\d+$/'));
+// allocationStarted.assertAtPath('Item.end.S', ExpectedResult.exact(undefined));
+// allocationStarted.assertAtPath('Item.outcome.S', ExpectedResult.exact(undefined));
+
+
+// postAllocationEnvStatus.assertAtPath('Item', ExpectedResult.exact(undefined));
+// allocationEnded.assertAtPath('Item.account.S', ExpectedResult.stringLikeRegexp('1111'));
+// allocationEnded.assertAtPath('Item.region.S', ExpectedResult.stringLikeRegexp('us-east-1'));
+// allocationEnded.assertAtPath('Item.requester.S', ExpectedResult.stringLikeRegexp('user1'));
+// allocationEnded.assertAtPath('Item.pool.S', ExpectedResult.stringLikeRegexp('release'));
+// allocationEnded.assertAtPath('Item.start.S', ExpectedResult.stringLikeRegexp('/^\d+$/'));
+// allocationEnded.assertAtPath('Item.end.S', ExpectedResult.exact('/^\d+$/'));
+// allocationEnded.assertAtPath('Item.outcome.S', ExpectedResult.exact('success'));

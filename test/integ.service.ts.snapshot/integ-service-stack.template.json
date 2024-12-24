@@ -313,22 +313,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "be58673393273dd9f6ed60f2e8cf8ad180ae4bb44a35d29d9e8fc9bc725b241c.zip"
+     "S3Key": "bcaeb911ee319ed5c794448cf389acfb7fdcc420f616fff7b1eb55fedfd7d7df.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
      "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
-       "Ref": "AtmosphereServiceConfigurationBucket32004CFE"
-      },
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
-      },
-      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
-       "Ref": "AtmosphereServiceAllocationsTable151A0750"
-      }
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
     "Handler": "index.handler",
@@ -439,18 +429,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "32870b6b27310d32a1ed341dcf810079c2d119b0b6632d231a3887a6e96fd7d8.zip"
+     "S3Key": "54ed47f8c122ea009b194fec146c91ba7173d297064641b8a259877f212cae2d.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
      "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
-      },
-      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
-       "Ref": "AtmosphereServiceAllocationsTable151A0750"
-      }
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
     "Handler": "index.handler",
@@ -1070,6 +1054,14 @@
       "/"
      ]
     ]
+   }
+  },
+  "ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62": {
+   "Value": {
+    "Ref": "AtmosphereServiceConfigurationBucket32004CFE"
+   },
+   "Export": {
+    "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
    }
   },
   "ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B": {
