@@ -2,8 +2,8 @@ import { Readable } from 'stream';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { mockClient } from 'aws-sdk-client-mock';
-import { ConfigurationData } from '../../src/config/configuration';
-import { ConfigurationClient } from '../../src/config/configuration.client';
+import { ConfigurationData } from '../../../src/config/configuration';
+import { ConfigurationClient } from '../../../src/config/configuration.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('ConfigurationClient', () => {

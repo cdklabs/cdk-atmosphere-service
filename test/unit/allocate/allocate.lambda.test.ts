@@ -1,9 +1,9 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler } from '../../src/allocate/allocate.lambda';
-import { RuntimeClients } from '../../src/clients';
-import { ConfigurationClient } from '../../src/config/configuration.client';
-import { AllocationsClient, InvalidInputError } from '../../src/storage/allocations.client';
-import { EnvironmentAlreadyAcquiredError, EnvironmentsClient } from '../../src/storage/environments.client';
+import { handler } from '../../../src/allocate/allocate.lambda';
+import { RuntimeClients } from '../../../src/clients';
+import { ConfigurationClient } from '../../../src/config/configuration.client';
+import { AllocationsClient, InvalidInputError } from '../../../src/storage/allocations.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentsClient } from '../../../src/storage/environments.client';
 
 // this grabs the same instance the handler uses
 // so we can easily mock it.
