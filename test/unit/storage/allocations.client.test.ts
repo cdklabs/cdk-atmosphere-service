@@ -1,6 +1,6 @@
 import { ConditionalCheckFailedException, DynamoDBClient, PutItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { AllocationAlreadyEndedError, AllocationsClient, InvalidInputError } from '../../src/storage/allocations.client';
+import { AllocationAlreadyEndedError, AllocationsClient, InvalidInputError } from '../../../src/storage/allocations.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('AllocationsClient', () => {

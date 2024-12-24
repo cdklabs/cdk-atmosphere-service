@@ -1,6 +1,6 @@
 import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../src/storage/environments.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('EnvironmentsClient', () => {

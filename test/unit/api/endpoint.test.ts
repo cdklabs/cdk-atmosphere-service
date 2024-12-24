@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { AtmosphereService } from '../../src';
+import { AtmosphereService } from '../../../src';
 
 test('default resource policy', () => {
 
