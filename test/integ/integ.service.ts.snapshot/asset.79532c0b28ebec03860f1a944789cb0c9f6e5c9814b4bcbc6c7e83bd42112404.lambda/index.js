@@ -423,7 +423,7 @@ async function handler(event) {
     console.log("Parsing request body");
     const request = parseRequestBody(event.body);
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
-    const allocation = await endAllocation(request.id, request.outcome);
+    const allocation = await endAllocation(id, request.outcome);
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients.environments.cleaning(allocation.account, allocation.region);
     return success();

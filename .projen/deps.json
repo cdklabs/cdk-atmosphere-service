@@ -13,6 +13,10 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-sts",
+      "type": "build"
+    },
+    {
       "name": "@smithy/util-stream",
       "type": "build"
     },

@@ -33,6 +33,7 @@ __export(allocate_lambda_exports, {
   handler: () => handler
 });
 module.exports = __toCommonJS(allocate_lambda_exports);
+var import_client_sts = require("@aws-sdk/client-sts");
 
 // src/config/configuration.client.ts
 var s3 = __toESM(require("@aws-sdk/client-s3"));
@@ -421,16 +422,10 @@ async function handler(event) {
     const environment = await acquireEnvironment(request.pool);
     console.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
     const id = await startAllocation(environment, request.requester);
+    console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
+    const credentials = await grabCredentials(id, environment);
     console.log(`Allocation '${id}' started successfully`);
-    const response = {
-      id,
-      environment,
-      credentials: {
-        accessKeyId: "TODO",
-        secretAccessKey: "TODO",
-        sessionToken: "TODO"
-      }
-    };
+    const response = { id, environment, credentials };
     return {
       statusCode: 200,
       body: JSON.stringify(response)
@@ -489,6 +484,30 @@ async function startAllocation(environment, requester) {
     }
     throw e;
   }
+}
+async function grabCredentials(id, environment) {
+  const sts = new import_client_sts.STS();
+  const assumed = await sts.assumeRole({
+    RoleArn: environment.adminRoleArn,
+    RoleSessionName: `atmosphere.allocation.${id}`
+  });
+  if (!assumed.Credentials) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
+  }
+  if (!assumed.Credentials.AccessKeyId) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
+  }
+  if (!assumed.Credentials.SecretAccessKey) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
+  }
+  if (!assumed.Credentials.SessionToken) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
+  }
+  return {
+    accessKeyId: assumed.Credentials.AccessKeyId,
+    secretAccessKey: assumed.Credentials.SecretAccessKey,
+    sessionToken: assumed.Credentials.SessionToken
+  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

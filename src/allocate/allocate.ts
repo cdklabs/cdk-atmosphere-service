@@ -1,3 +1,4 @@
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { AllocateFunction } from './allocate-function';
@@ -51,6 +52,13 @@ export class Allocate extends Construct {
     this.function.addEnvironment(CONFIGURATION_KEY_ENV, props.configuration.key);
     this.function.addEnvironment(ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
     this.function.addEnvironment(ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
+
+    // allocation must be able to assume admin roles for all its environments
+    // because it passes credentials to clients.
+    for (const env of props.configuration.data.environments) {
+      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}`, env.adminRoleArn);
+      adminRole.grantAssumeRole(this.function.grantPrincipal);
+    }
 
   }
 }

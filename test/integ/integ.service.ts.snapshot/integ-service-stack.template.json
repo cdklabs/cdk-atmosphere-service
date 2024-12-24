@@ -1,5 +1,51 @@
 {
  "Resources": {
+  "AdminC75D2A91": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AdministratorAccess"
+       ]
+      ]
+     }
+    ]
+   }
+  },
   "AtmosphereServiceConfigurationBucket32004CFE": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -119,10 +165,20 @@
      }
     ],
     "SourceObjectKeys": [
-     "c6749176681b07982d8438290d33495049bbc086b00a486c48f748191fa21fc8.zip"
+     "9cef27b924a72ed27f79a082b22f44b1cd8111f16edf55289b73b562876d2dbe.zip"
     ],
     "SourceMarkers": [
-     {}
+     {
+      "<<marker:0xbaba:0>>": {
+       "Ref": "AWS::AccountId"
+      },
+      "<<marker:0xbaba:1>>": {
+       "Fn::GetAtt": [
+        "AdminC75D2A91",
+        "Arn"
+       ]
+      }
+     }
     ],
     "DestinationBucketName": {
      "Ref": "AtmosphereServiceConfigurationBucket32004CFE"
@@ -292,6 +348,16 @@
          "Ref": "AWS::NoValue"
         }
        ]
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AdminC75D2A91",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -313,7 +379,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d974542322c25a43374dbd31fe21f8accca5a7e192637b93d4f6ab76269c55e7.zip"
+     "S3Key": "ad6fe734ba84dcdc3f8e6ba8c0f6bdcdbc5cf9449e610896d6d261aefdd8385d.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -439,7 +505,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a57ea60803b9abd5393d9e6df08936f67ae32734a070253f63435fd0ebac6f04.zip"
+     "S3Key": "79532c0b28ebec03860f1a944789cb0c9f6e5c9814b4bcbc6c7e83bd42112404.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -1072,14 +1138,6 @@
     ]
    }
   },
-  "ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62": {
-   "Value": {
-    "Ref": "AtmosphereServiceConfigurationBucket32004CFE"
-   },
-   "Export": {
-    "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
-   }
-  },
   "ExportsOutputRefAtmosphereServiceEndpointApiF7A311F1AC62568B": {
    "Value": {
     "Ref": "AtmosphereServiceEndpointApiF7A311F1"
@@ -1102,22 +1160,6 @@
    },
    "Export": {
     "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceEndpointApiallocationsid5AA5216CBC5C2ADD"
-   }
-  },
-  "ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8": {
-   "Value": {
-    "Ref": "AtmosphereServiceEnvironmentsTable2E9F23CB"
-   },
-   "Export": {
-    "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8"
-   }
-  },
-  "ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542": {
-   "Value": {
-    "Ref": "AtmosphereServiceAllocationsTable151A0750"
-   },
-   "Export": {
-    "Name": "integ-service-stack:ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542"
    }
   }
  },

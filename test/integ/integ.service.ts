@@ -1,8 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { IConstruct } from 'constructs';
-import { ConfigurationData } from '../../src/config/configuration';
+import { ConfigurationData, Environment } from '../../src/config/configuration';
 import { AtmosphereService } from '../../src/service';
 
 export class DestroyAspect implements cdk.IAspect {
@@ -18,15 +19,20 @@ export class DestroyAspect implements cdk.IAspect {
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-service-stack');
 
+const adminRole = new iam.Role(stack, 'Admin', {
+  assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')],
+});
+
+const environment: Environment = {
+  account: cdk.Aws.ACCOUNT_ID,
+  region: 'us-west-2',
+  pool: 'release',
+  adminRoleArn: adminRole.roleArn,
+};
+
 const data: ConfigurationData = {
-  environments: [
-    {
-      account: '1111',
-      region: 'us-east-1',
-      pool: 'release',
-      adminRoleArn: 'arn:aws:iam::1111:role/Admin',
-    },
-  ],
+  environments: [environment],
 };
 
 const service = new AtmosphereService(stack, 'AtmosphereService', {
@@ -40,28 +46,6 @@ const integ = new IntegTest(app, 'integ-service-test', {
   assertionStack: new cdk.Stack(app, 'integ-service-stack-assertions'),
 });
 
-const object = integ.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: service.config.bucket.bucketName,
-  Key: service.config.key,
-});
-
-object.expect(ExpectedResult.objectLike({ Body: JSON.stringify(data) }));
-
-integ.assertions.awsApiCall('DynamoDB', 'putItem', {
-  TableName: service.environments.table.tableName,
-  Item: {
-    account: { S: '1111' },
-    region: { S: 'us-east-1' },
-  },
-});
-
-integ.assertions.awsApiCall('DynamoDB', 'putItem', {
-  TableName: service.allocations.table.tableName,
-  Item: {
-    id: { S: 'allocation-id' },
-  },
-});
-
 const allocationsResource = service.endpoint.api.root.getResource('allocations')!;
 const allocationResource = allocationsResource.getResource('{id}')!;
 
@@ -70,6 +54,7 @@ const allocate = integ.assertions.awsApiCall('@aws-sdk/client-api-gateway', 'Tes
   resourceId: allocationsResource.resourceId,
   httpMethod: 'POST',
   pathWithQueryString: '/allocations',
+  body: JSON.stringify({ pool: 'release', requester: 'user1' }),
 }, ['body']);
 
 // see https://github.com/aws/aws-cdk/issues/32635
@@ -84,7 +69,8 @@ const deallocate = integ.assertions.awsApiCall('@aws-sdk/client-api-gateway', 'T
   restApiId: service.endpoint.api.restApiId,
   resourceId: allocationResource.resourceId,
   httpMethod: 'DELETE',
-  pathWithQueryString: '/allocations/dummy',
+  pathWithQueryString: `/allocations/${allocate.getAttString('body.id')}`,
+  body: JSON.stringify({ outcome: 'success' }),
 }, ['body']);
 
 // see https://github.com/aws/aws-cdk/issues/32635
@@ -93,4 +79,3 @@ deallocate.provider.addToRolePolicy({
   Action: 'apigateway:POST',
   Resource: [`arn:aws:apigateway:${cdk.Aws.REGION}::/restapis/${service.endpoint.api.restApiId}/resources/${allocationResource.resourceId}/methods/DELETE`],
 });
-

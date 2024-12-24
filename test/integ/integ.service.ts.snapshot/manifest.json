@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/72d3cb7e2a71edcc3d4e012dc651749b17db95cd2444355113f1837a8c1b27c3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b45ab52ae471bfc2b832a4e4a0d53eba19b0a048fc51c24a895354f391e90667.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "integ-service-stack.assets"
       ],
       "metadata": {
+        "/integ-service-stack/Admin/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminC75D2A91"
+          }
+        ],
         "/integ-service-stack/AtmosphereService/Configuration/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -236,12 +242,6 @@
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceConfigurationBucket32004CFE\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefAtmosphereServiceConfigurationBucket32004CFE43159D62"
-          }
-        ],
         "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEndpointApiF7A311F1\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -258,18 +258,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefAtmosphereServiceEndpointApiallocationsid5AA5216CBC5C2ADD"
-          }
-        ],
-        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceEnvironmentsTable2E9F23CB\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefAtmosphereServiceEnvironmentsTable2E9F23CBFFEDF1F8"
-          }
-        ],
-        "/integ-service-stack/Exports/Output{\"Ref\":\"AtmosphereServiceAllocationsTable151A0750\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefAtmosphereServiceAllocationsTable151A0750C3367542"
           }
         ],
         "/integ-service-stack/BootstrapVersion": [
@@ -304,7 +292,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6819b8c8938041e2353c1f3773cf2bbf7565d50782014013c27ee7db583df863.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aedfa714316ec95d778623e1e30e6fcda0038fca3869e75be08c08d87d09f78f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -321,16 +309,10 @@
         "integ-service-stack-assertions.assets"
       ],
       "metadata": {
-        "/integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/Default/Default": [
+        "/integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744"
-          }
-        ],
-        "/integ-service-stack-assertions/AwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getObject3517f87bffb586c6c5117832fb4a0744"
+            "data": "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommandb687bbe8f6cfc2a785b6e67480a0f9b0"
           }
         ],
         "/integ-service-stack-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -351,28 +333,10 @@
             "data": "LatestNodeRuntimeMap"
           }
         ],
-        "/integ-service-stack-assertions/AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92/Default/Default": [
+        "/integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommand8e7de2bfcf5144a0eef160ba4154ea4c/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallDynamoDBputItem3f2d63ddea0b9edf47062532f315eb92"
-          }
-        ],
-        "/integ-service-stack-assertions/AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallDynamoDBputItemb399c5444c41d2514bd4b3a8653564d0"
-          }
-        ],
-        "/integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommande042f77aa8a10246482a5a0125c84b61"
-          }
-        ],
-        "/integ-service-stack-assertions/AwsApiCall@aws-sdk--client-api-gatewayTestInvokeMethodCommand3ca1c9a09c190ed8d5f741d04bb8836b/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommand3ca1c9a09c190ed8d5f741d04bb8836b"
+            "data": "AwsApiCallawssdkclientapigatewayTestInvokeMethodCommand8e7de2bfcf5144a0eef160ba4154ea4c"
           }
         ],
         "/integ-service-stack-assertions/BootstrapVersion": [

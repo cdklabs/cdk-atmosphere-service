@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { STS } from '@aws-sdk/client-sts';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
@@ -16,14 +17,16 @@ interface AllocationRequest {
   readonly requester: string;
 }
 
+interface Credentials {
+  readonly accessKeyId: string;
+  readonly secretAccessKey: string;
+  readonly sessionToken: string;
+}
+
 interface AllocationResponse {
   readonly id: string;
   readonly environment: Environment;
-  readonly credentials: {
-    accessKeyId: string;
-    secretAccessKey: string;
-    sessionToken: string;
-  };
+  readonly credentials: Credentials;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -41,17 +44,12 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
     const id = await startAllocation(environment, request.requester);
 
+    console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
+    const credentials = await grabCredentials(id, environment);
+
     console.log(`Allocation '${id}' started successfully`);
 
-    const response: AllocationResponse = {
-      id,
-      environment,
-      credentials: {
-        accessKeyId: 'TODO',
-        secretAccessKey: 'TODO',
-        sessionToken: 'TODO',
-      },
-    };
+    const response: AllocationResponse = { id, environment, credentials };
 
     // TODO - create the allocation timeout event
 
@@ -123,4 +121,34 @@ async function startAllocation(environment: Environment, requester: string): Pro
     }
     throw e;
   }
+}
+
+async function grabCredentials(id: string, environment: Environment): Promise<Credentials> {
+  const sts = new STS();
+  const assumed = await sts.assumeRole({
+    RoleArn: environment.adminRoleArn,
+    RoleSessionName: `atmosphere.allocation.${id}`,
+  });
+
+  if (!assumed.Credentials) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
+  }
+
+  if (!assumed.Credentials.AccessKeyId) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
+  }
+
+  if (!assumed.Credentials.SecretAccessKey) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
+  }
+
+  if (!assumed.Credentials.SessionToken) {
+    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
+  }
+
+  return {
+    accessKeyId: assumed.Credentials.AccessKeyId,
+    secretAccessKey: assumed.Credentials.SecretAccessKey,
+    sessionToken: assumed.Credentials.SessionToken,
+  };
 }
