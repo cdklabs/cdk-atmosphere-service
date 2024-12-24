@@ -14,6 +14,7 @@ const project = new CdklabsConstructLibrary({
     '@aws-sdk/client-s3',
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/client-api-gateway',
+    '@aws-sdk/client-sts',
     'uuid',
     '@smithy/util-stream',
     '@types/aws-lambda',

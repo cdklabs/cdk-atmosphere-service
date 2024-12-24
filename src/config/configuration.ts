@@ -74,9 +74,15 @@ export class Configuration extends Construct {
    */
   public readonly bucket: s3.Bucket;
 
+  /**
+   * Configuration data.
+   */
+  public readonly data: ConfigurationData;
+
   constructor(scope: Construct, id: string, props: ConfigurationProps) {
     super(scope, id);
 
+    this.data = props.data;
     this.bucket = new s3.Bucket(this, 'Bucket', {
       // makes it easier in integ test cycles.
       // the bucket doesn't store state so its

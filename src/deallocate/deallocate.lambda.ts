@@ -10,7 +10,6 @@ class ProxyError extends Error {
 }
 
 interface DeallocationRequest {
-  readonly id: string;
   readonly outcome: string;
 }
 
@@ -30,7 +29,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const request = parseRequestBody(event.body);
 
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
-    const allocation = await endAllocation(request.id, request.outcome);
+    const allocation = await endAllocation(id, request.outcome);
 
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients.environments.cleaning(allocation.account, allocation.region);

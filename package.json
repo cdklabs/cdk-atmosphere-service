@@ -50,6 +50,7 @@
     "@aws-sdk/client-api-gateway": "^3.716.0",
     "@aws-sdk/client-dynamodb": "^3.716.0",
     "@aws-sdk/client-s3": "^3.717.0",
+    "@aws-sdk/client-sts": "^3.716.0",
     "@smithy/util-stream": "^3.3.3",
     "@stylistic/eslint-plugin": "^2",
     "@types/aws-lambda": "^8.10.146",
