@@ -21,7 +21,7 @@ export class IntegHandlerBundle extends Component {
   constructor(project: Project, props: IntegHandlerProps) {
     super(project);
 
-    const handlerPath = path.join(__dirname, '..', 'test', 'integ', props.directory, ASSERT_HANDLER_FILE);
+    const handlerPath = path.join('test', 'integ', props.directory, ASSERT_HANDLER_FILE);
     if (!fs.existsSync(handlerPath)) {
       throw new Error(`Handler path not found: ${handlerPath}`);
     }

@@ -82,7 +82,7 @@
       "name": "bundle:test/integ/allocate/assert.lambda.ts",
       "steps": [
         {
-          "exec": "esbuild --bundle /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/allocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/allocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+          "exec": "esbuild --bundle test/integ/allocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/allocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -90,7 +90,7 @@
       "name": "bundle:test/integ/deallocate/assert.lambda.ts",
       "steps": [
         {
-          "exec": "esbuild --bundle /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/deallocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/deallocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+          "exec": "esbuild --bundle test/integ/deallocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/deallocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -227,7 +227,7 @@
       "name": "integ:test/allocate:assert",
       "steps": [
         {
-          "exec": "ts-node /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/allocate/assert.lambda.ts"
+          "exec": "ts-node test/integ/allocate/assert.lambda.ts"
         }
       ]
     },
@@ -259,7 +259,7 @@
       "name": "integ:test/deallocate:assert",
       "steps": [
         {
-          "exec": "ts-node /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/deallocate/assert.lambda.ts"
+          "exec": "ts-node test/integ/deallocate/assert.lambda.ts"
         }
       ]
     },
