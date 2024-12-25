@@ -17,13 +17,13 @@ export interface AllocationRequest {
   readonly requester: string;
 }
 
-export interface Credentials {
+interface Credentials {
   readonly accessKeyId: string;
   readonly secretAccessKey: string;
   readonly sessionToken: string;
 }
 
-export interface AllocationResponse {
+interface AllocationResponse {
   readonly id: string;
   readonly environment: Environment;
   readonly credentials: Credentials;
