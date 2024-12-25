@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest": {
+      "stacks": [
+        "atmosphere-integ-allocate-stack"
+      ],
+      "assertionStack": "atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB"
+    }
+  }
+}

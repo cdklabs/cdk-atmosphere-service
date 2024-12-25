@@ -639,9 +639,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.1]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.1]}",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}",
+                      "AdminRole${Token[AWS.AccountId.0]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.0]}",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -1516,7 +1516,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d1009c294b39dd4117998b1389ea1b438610b62f5f5057cea664fd251a37834e.zip"
+                          "s3Key": "651168a6e89133752738b1e17f14b7f02501d2ad8e0b1f68ef25fbd87bde18a5.zip"
                         },
                         "description": "test/integ/deallocate/assert.lambda.ts",
                         "environment": {
@@ -1560,6 +1560,136 @@
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.0.5"
+                        }
+                      },
+                      "DeployAssert": {
+                        "id": "DeployAssert",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert",
+                        "children": {
+                          "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154": {
+                            "id": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+                            "children": {
+                              "SdkProvider": {
+                                "id": "SdkProvider",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider",
+                                "children": {
+                                  "AssertionsProvider": {
+                                    "id": "AssertionsProvider",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider/AssertionsProvider",
+                                    "constructInfo": {
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.0.5"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                                  "version": "2.173.2-alpha.0"
+                                }
+                              },
+                              "Default": {
+                                "id": "Default",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default",
+                                "children": {
+                                  "Default": {
+                                    "id": "Default",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.CfnResource",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CustomResource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "AssertionResults": {
+                                "id": "AssertionResults",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnOutput",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+                              "version": "2.173.2-alpha.0"
+                            }
+                          },
+                          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                            "children": {
+                              "Staging": {
+                                "id": "Staging",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Role": {
+                                "id": "Role",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Handler": {
+                                "id": "Handler",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.0.5"
+                            }
+                          },
+                          "LatestNodeRuntimeMap": {
+                            "id": "LatestNodeRuntimeMap",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnMapping",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "BootstrapVersion": {
+                            "id": "BootstrapVersion",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnParameter",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "CheckBootstrapVersion": {
+                            "id": "CheckBootstrapVersion",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnRule",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Stack",
+                          "version": "2.173.1"
                         }
                       }
                     },
@@ -1937,93 +2067,15 @@
               "version": "2.173.1"
             }
           },
-          "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154": {
-            "id": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
-            "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+          "Exports": {
+            "id": "Exports",
+            "path": "atmosphere-integ-deallocate-stack/Exports",
             "children": {
-              "SdkProvider": {
-                "id": "SdkProvider",
-                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider",
-                "children": {
-                  "AssertionsProvider": {
-                    "id": "AssertionsProvider",
-                    "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider/AssertionsProvider",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.0.5"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.173.2-alpha.0"
-                }
-              },
-              "Default": {
-                "id": "Default",
-                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "2.173.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "2.173.1"
-                }
-              },
-              "Invoke": {
-                "id": "Invoke",
-                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.173.1"
-                }
-              },
-              "AssertionResults": {
-                "id": "AssertionResults",
-                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults",
+              "Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}": {
+                "id": "Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}",
+                "path": "atmosphere-integ-deallocate-stack/Exports/Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.173.1"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.173.2-alpha.0"
-            }
-          },
-          "SingletonFunction1488541a7b23466481b69b4408076b81": {
-            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-            "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81",
-            "children": {
-              "Staging": {
-                "id": "Staging",
-                "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "2.173.1"
-                }
-              },
-              "Role": {
-                "id": "Role",
-                "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.173.1"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "2.173.1"
                 }
               }

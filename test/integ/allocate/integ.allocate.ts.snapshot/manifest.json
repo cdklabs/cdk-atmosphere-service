@@ -1,6 +1,91 @@
 {
   "version": "38.0.1",
   "artifacts": {
+    "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf889b8bacaa4ca52edb9ef13b5dee21556d54c067f960b68184db1a2ccebedc.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "atmosphere-integ-allocate-stack",
+        "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB.assets"
+      ],
+      "metadata": {
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154InvokeAC62368A"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert"
+    },
     "atmosphere-integ-allocate-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -18,7 +103,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e894d5538d7eb343dfe163e4d1aee6b9ccff2565aef421f5a024aed3a77e75ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9ca0560bfeba2f362214e2999ac945dc81c57afded47da6ea596fb1fbd13e89.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -260,34 +345,10 @@
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/atmosphere-integ-allocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default": [
+        "/atmosphere-integ-allocate-stack/Exports/Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154"
-          }
-        ],
-        "/atmosphere-integ-allocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154InvokeAC62368A"
-          }
-        ],
-        "/atmosphere-integ-allocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154"
-          }
-        ],
-        "/atmosphere-integ-allocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/atmosphere-integ-allocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+            "data": "ExportsOutputRefAtmosphereAllocateAssert63CFAF40B554ACF9"
           }
         ],
         "/atmosphere-integ-allocate-stack/BootstrapVersion": [
@@ -300,6 +361,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154InvokeAC62368A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154InvokeAC62368A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

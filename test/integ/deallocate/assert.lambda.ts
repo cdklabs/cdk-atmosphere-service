@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Session } from '../session';
+import { Session } from '../service.session';
 
 export async function handler(_: any) {
 

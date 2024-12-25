@@ -5,8 +5,8 @@
       "stacks": [
         "atmosphere-integ-allocate-stack"
       ],
-      "assertionStack": "atmosphere-integ-allocate-stack",
-      "assertionStackName": "atmosphere-integ-allocate-stack"
+      "assertionStack": "atmosphere-integ-allocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "atmosphereintegallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertBA77CDDB"
     }
   }
 }

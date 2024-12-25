@@ -1,11 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as cdk from 'aws-cdk-lib';
-import { AtmosphereIntegTest } from '../test';
+import { AtmosphereIntegTest } from '../service.integ';
 
 const dir = 'allocate';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, `atmosphere-integ-${dir}-stack`);
+const stack = new cdk.Stack(app, `atmosphere-integ-${dir}`);
 
 new AtmosphereIntegTest(stack, 'AtmosphereAllocate', {
   pools: { release: ['us-west-2'] },
