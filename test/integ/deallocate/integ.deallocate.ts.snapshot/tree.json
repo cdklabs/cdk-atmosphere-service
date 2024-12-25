@@ -4,29 +4,29 @@
     "id": "App",
     "path": "",
     "children": {
-      "atmosphere-integ-deallocate-stack": {
-        "id": "atmosphere-integ-deallocate-stack",
-        "path": "atmosphere-integ-deallocate-stack",
+      "atmosphere-integ-deallocate": {
+        "id": "atmosphere-integ-deallocate",
+        "path": "atmosphere-integ-deallocate",
         "children": {
           "AtmosphereAllocate": {
             "id": "AtmosphereAllocate",
-            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate",
+            "path": "atmosphere-integ-deallocate/AtmosphereAllocate",
             "children": {
               "Atmosphere": {
                 "id": "Atmosphere",
-                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere",
+                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere",
                 "children": {
                   "Configuration": {
                     "id": "Configuration",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration",
                     "children": {
                       "Bucket": {
                         "id": "Bucket",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Bucket",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                               "aws:cdk:cloudformation:props": {
@@ -36,7 +36,7 @@
                                     "value": "true"
                                   },
                                   {
-                                    "key": "aws-cdk:cr-owned:97594f95",
+                                    "key": "aws-cdk:cr-owned:7e7ca652",
                                     "value": "true"
                                   }
                                 ]
@@ -49,11 +49,11 @@
                           },
                           "Policy": {
                             "id": "Policy",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Policy",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Policy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Policy/Resource",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Policy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                                   "aws:cdk:cloudformation:props": {
@@ -119,11 +119,11 @@
                           },
                           "AutoDeleteObjectsCustomResource": {
                             "id": "AutoDeleteObjectsCustomResource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/AutoDeleteObjectsCustomResource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Bucket/AutoDeleteObjectsCustomResource",
                             "children": {
                               "Default": {
                                 "id": "Default",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/AutoDeleteObjectsCustomResource/Default",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Bucket/AutoDeleteObjectsCustomResource/Default",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "2.173.1"
@@ -143,19 +143,19 @@
                       },
                       "Deployment": {
                         "id": "Deployment",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment",
                         "children": {
                           "AwsCliLayer": {
                             "id": "AwsCliLayer",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer",
                             "children": {
                               "Code": {
                                 "id": "Code",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code",
                                 "children": {
                                   "Stage": {
                                     "id": "Stage",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code/Stage",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code/Stage",
                                     "constructInfo": {
                                       "fqn": "aws-cdk-lib.AssetStaging",
                                       "version": "2.173.1"
@@ -163,7 +163,7 @@
                                   },
                                   "AssetBucket": {
                                     "id": "AssetBucket",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code/AssetBucket",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code/AssetBucket",
                                     "constructInfo": {
                                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                       "version": "2.173.1"
@@ -177,7 +177,7 @@
                               },
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Resource",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                                   "aws:cdk:cloudformation:props": {
@@ -203,7 +203,7 @@
                           },
                           "CustomResourceHandler": {
                             "id": "CustomResourceHandler",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResourceHandler",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResourceHandler",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                               "version": "2.173.1"
@@ -211,11 +211,11 @@
                           },
                           "Asset1": {
                             "id": "Asset1",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1",
                             "children": {
                               "Stage": {
                                 "id": "Stage",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1/Stage",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1/Stage",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "2.173.1"
@@ -223,7 +223,7 @@
                               },
                               "AssetBucket": {
                                 "id": "AssetBucket",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1/AssetBucket",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "2.173.1"
@@ -237,11 +237,11 @@
                           },
                           "CustomResource": {
                             "id": "CustomResource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResource",
                             "children": {
                               "Default": {
                                 "id": "Default",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResource/Default",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResource/Default",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "2.173.1"
@@ -267,15 +267,15 @@
                   },
                   "Environments": {
                     "id": "Environments",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Environments",
                     "children": {
                       "Table": {
                         "id": "Table",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments/Table",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Environments/Table",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments/Table/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Environments/Table/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                               "aws:cdk:cloudformation:props": {
@@ -312,7 +312,7 @@
                           },
                           "ScalingRole": {
                             "id": "ScalingRole",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments/Table/ScalingRole",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Environments/Table/ScalingRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "2.173.1"
@@ -332,15 +332,15 @@
                   },
                   "Allocations": {
                     "id": "Allocations",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocations",
                     "children": {
                       "Table": {
                         "id": "Table",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations/Table",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocations/Table",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations/Table/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocations/Table/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                               "aws:cdk:cloudformation:props": {
@@ -373,7 +373,7 @@
                           },
                           "ScalingRole": {
                             "id": "ScalingRole",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations/Table/ScalingRole",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocations/Table/ScalingRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "2.173.1"
@@ -393,19 +393,19 @@
                   },
                   "Allocate": {
                     "id": "Allocate",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate",
                     "children": {
                       "Function": {
                         "id": "Function",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function",
                         "children": {
                           "ServiceRole": {
                             "id": "ServiceRole",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole",
                             "children": {
                               "ImportServiceRole": {
                                 "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/ImportServiceRole",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "2.173.1"
@@ -413,7 +413,7 @@
                               },
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/Resource",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                                   "aws:cdk:cloudformation:props": {
@@ -452,11 +452,11 @@
                               },
                               "DefaultPolicy": {
                                 "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/DefaultPolicy",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/DefaultPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/DefaultPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                       "aws:cdk:cloudformation:props": {
@@ -566,11 +566,11 @@
                           },
                           "Code": {
                             "id": "Code",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Code",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/Code",
                             "children": {
                               "Stage": {
                                 "id": "Stage",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Code/Stage",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/Code/Stage",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "2.173.1"
@@ -578,7 +578,7 @@
                               },
                               "AssetBucket": {
                                 "id": "AssetBucket",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Code/AssetBucket",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/Code/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "2.173.1"
@@ -592,7 +592,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                               "aws:cdk:cloudformation:props": {
@@ -639,9 +639,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.0]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.0]}",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}",
+                      "AdminRole${Token[AWS.AccountId.4]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.4]}",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -655,19 +655,19 @@
                   },
                   "Deallocate": {
                     "id": "Deallocate",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate",
                     "children": {
                       "Function": {
                         "id": "Function",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function",
                         "children": {
                           "ServiceRole": {
                             "id": "ServiceRole",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole",
                             "children": {
                               "ImportServiceRole": {
                                 "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/ImportServiceRole",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "2.173.1"
@@ -675,7 +675,7 @@
                               },
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/Resource",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                                   "aws:cdk:cloudformation:props": {
@@ -714,11 +714,11 @@
                               },
                               "DefaultPolicy": {
                                 "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/DefaultPolicy",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/DefaultPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/DefaultPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                       "aws:cdk:cloudformation:props": {
@@ -788,11 +788,11 @@
                           },
                           "Code": {
                             "id": "Code",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code",
                             "children": {
                               "Stage": {
                                 "id": "Stage",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code/Stage",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code/Stage",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "2.173.1"
@@ -800,7 +800,7 @@
                               },
                               "AssetBucket": {
                                 "id": "AssetBucket",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code/AssetBucket",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "2.173.1"
@@ -814,7 +814,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Deallocate/Function/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                               "aws:cdk:cloudformation:props": {
@@ -865,15 +865,15 @@
                   },
                   "Endpoint": {
                     "id": "Endpoint",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint",
                     "children": {
                       "Api": {
                         "id": "Api",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                               "aws:cdk:cloudformation:props": {
@@ -919,11 +919,11 @@
                           },
                           "Deployment": {
                             "id": "Deployment",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Deployment",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Deployment",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Deployment/Resource",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Deployment/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                                   "aws:cdk:cloudformation:props": {
@@ -946,11 +946,11 @@
                           },
                           "DeploymentStage.prod": {
                             "id": "DeploymentStage.prod",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/DeploymentStage.prod",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/DeploymentStage.prod",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                                   "aws:cdk:cloudformation:props": {
@@ -976,7 +976,7 @@
                           },
                           "Endpoint": {
                             "id": "Endpoint",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Endpoint",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Endpoint",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnOutput",
                               "version": "2.173.1"
@@ -984,15 +984,15 @@
                           },
                           "Default": {
                             "id": "Default",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default",
                             "children": {
                               "allocations": {
                                 "id": "allocations",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations",
+                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/Resource",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
                                       "aws:cdk:cloudformation:props": {
@@ -1015,11 +1015,11 @@
                                   },
                                   "POST": {
                                     "id": "POST",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST",
                                     "children": {
-                                      "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations": {
-                                        "id": "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
-                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
+                                      "ApiPermission.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.POST..allocations": {
+                                        "id": "ApiPermission.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.POST..allocations",
+                                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/ApiPermission.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.POST..allocations",
                                         "attributes": {
                                           "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                                           "aws:cdk:cloudformation:props": {
@@ -1066,9 +1066,9 @@
                                           "version": "2.173.1"
                                         }
                                       },
-                                      "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations": {
-                                        "id": "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
-                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
+                                      "ApiPermission.Test.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.POST..allocations": {
+                                        "id": "ApiPermission.Test.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.POST..allocations",
+                                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/ApiPermission.Test.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.POST..allocations",
                                         "attributes": {
                                           "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                                           "aws:cdk:cloudformation:props": {
@@ -1113,7 +1113,7 @@
                                       },
                                       "Resource": {
                                         "id": "Resource",
-                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/Resource",
+                                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/Resource",
                                         "attributes": {
                                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                           "aws:cdk:cloudformation:props": {
@@ -1167,11 +1167,11 @@
                                   },
                                   "{id}": {
                                     "id": "{id}",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}",
+                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}",
                                     "children": {
                                       "Resource": {
                                         "id": "Resource",
-                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/Resource",
+                                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/Resource",
                                         "attributes": {
                                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
                                           "aws:cdk:cloudformation:props": {
@@ -1191,11 +1191,11 @@
                                       },
                                       "DELETE": {
                                         "id": "DELETE",
-                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE",
+                                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE",
                                         "children": {
-                                          "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}": {
-                                            "id": "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
-                                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
+                                          "ApiPermission.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.DELETE..allocations.{id}": {
+                                            "id": "ApiPermission.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.DELETE..allocations.{id}",
+                                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.DELETE..allocations.{id}",
                                             "attributes": {
                                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                                               "aws:cdk:cloudformation:props": {
@@ -1242,9 +1242,9 @@
                                               "version": "2.173.1"
                                             }
                                           },
-                                          "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}": {
-                                            "id": "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
-                                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
+                                          "ApiPermission.Test.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.DELETE..allocations.{id}": {
+                                            "id": "ApiPermission.Test.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.DELETE..allocations.{id}",
+                                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.Test.atmosphereintegdeallocateAtmosphereAllocateAtmosphereEndpointApi9B56EEC9.DELETE..allocations.{id}",
                                             "attributes": {
                                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                                               "aws:cdk:cloudformation:props": {
@@ -1289,7 +1289,7 @@
                                           },
                                           "Resource": {
                                             "id": "Resource",
-                                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/Resource",
+                                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/Resource",
                                             "attributes": {
                                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                               "aws:cdk:cloudformation:props": {
@@ -1379,15 +1379,15 @@
               },
               "Assert": {
                 "id": "Assert",
-                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert",
+                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/ImportServiceRole",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -1395,7 +1395,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/Resource",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1434,11 +1434,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/DefaultPolicy",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/ServiceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/DefaultPolicy/Resource",
+                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/ServiceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -1482,11 +1482,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Code",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Code/Stage",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "2.173.1"
@@ -1494,7 +1494,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Code/AssetBucket",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "2.173.1"
@@ -1508,7 +1508,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Resource",
+                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -1545,164 +1545,6 @@
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
                   "version": "2.173.1"
                 }
-              },
-              "IntegTest": {
-                "id": "IntegTest",
-                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest",
-                "children": {
-                  "DefaultTest": {
-                    "id": "DefaultTest",
-                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/Default",
-                        "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.0.5"
-                        }
-                      },
-                      "DeployAssert": {
-                        "id": "DeployAssert",
-                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert",
-                        "children": {
-                          "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154": {
-                            "id": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
-                            "children": {
-                              "SdkProvider": {
-                                "id": "SdkProvider",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider",
-                                "children": {
-                                  "AssertionsProvider": {
-                                    "id": "AssertionsProvider",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider/AssertionsProvider",
-                                    "constructInfo": {
-                                      "fqn": "constructs.Construct",
-                                      "version": "10.0.5"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                                  "version": "2.173.2-alpha.0"
-                                }
-                              },
-                              "Default": {
-                                "id": "Default",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default",
-                                "children": {
-                                  "Default": {
-                                    "id": "Default",
-                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default",
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.CfnResource",
-                                      "version": "2.173.1"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CustomResource",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "Invoke": {
-                                "id": "Invoke",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "AssertionResults": {
-                                "id": "AssertionResults",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnOutput",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-                              "version": "2.173.2-alpha.0"
-                            }
-                          },
-                          "SingletonFunction1488541a7b23466481b69b4408076b81": {
-                            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
-                            "children": {
-                              "Staging": {
-                                "id": "Staging",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.AssetStaging",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "Role": {
-                                "id": "Role",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "Handler": {
-                                "id": "Handler",
-                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.0.5"
-                            }
-                          },
-                          "LatestNodeRuntimeMap": {
-                            "id": "LatestNodeRuntimeMap",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnMapping",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "BootstrapVersion": {
-                            "id": "BootstrapVersion",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/BootstrapVersion",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnParameter",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "CheckBootstrapVersion": {
-                            "id": "CheckBootstrapVersion",
-                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnRule",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Stack",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-                      "version": "2.173.2-alpha.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-                  "version": "2.173.2-alpha.0"
-                }
               }
             },
             "constructInfo": {
@@ -1712,11 +1554,11 @@
           },
           "Admin": {
             "id": "Admin",
-            "path": "atmosphere-integ-deallocate-stack/Admin",
+            "path": "atmosphere-integ-deallocate/Admin",
             "children": {
               "ImportAdmin": {
                 "id": "ImportAdmin",
-                "path": "atmosphere-integ-deallocate-stack/Admin/ImportAdmin",
+                "path": "atmosphere-integ-deallocate/Admin/ImportAdmin",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "2.173.1"
@@ -1724,7 +1566,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "atmosphere-integ-deallocate-stack/Admin/Resource",
+                "path": "atmosphere-integ-deallocate/Admin/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -1784,7 +1626,7 @@
           },
           "LatestNodeRuntimeMap": {
             "id": "LatestNodeRuntimeMap",
-            "path": "atmosphere-integ-deallocate-stack/LatestNodeRuntimeMap",
+            "path": "atmosphere-integ-deallocate/LatestNodeRuntimeMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
               "version": "2.173.1"
@@ -1792,11 +1634,11 @@
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
-            "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "atmosphere-integ-deallocate/Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "path": "atmosphere-integ-deallocate/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "2.173.1"
@@ -1804,7 +1646,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "path": "atmosphere-integ-deallocate/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "2.173.1"
@@ -1812,7 +1654,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "path": "atmosphere-integ-deallocate/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "2.173.1"
@@ -1826,15 +1668,15 @@
           },
           "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
             "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
-            "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+            "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
+                "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
+                    "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -1842,7 +1684,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
+                    "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1881,11 +1723,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
+                    "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
+                        "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1999,11 +1841,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+                "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
+                    "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "2.173.1"
@@ -2011,7 +1853,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
+                    "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "2.173.1"
@@ -2025,7 +1867,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+                "path": "atmosphere-integ-deallocate/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -2069,11 +1911,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "atmosphere-integ-deallocate-stack/Exports",
+            "path": "atmosphere-integ-deallocate/Exports",
             "children": {
               "Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}": {
                 "id": "Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}",
-                "path": "atmosphere-integ-deallocate-stack/Exports/Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}",
+                "path": "atmosphere-integ-deallocate/Exports/Output{\"Ref\":\"AtmosphereAllocateAssert63CFAF40\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.173.1"
@@ -2087,7 +1929,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "atmosphere-integ-deallocate-stack/BootstrapVersion",
+            "path": "atmosphere-integ-deallocate/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "2.173.1"
@@ -2095,7 +1937,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "atmosphere-integ-deallocate-stack/CheckBootstrapVersion",
+            "path": "atmosphere-integ-deallocate/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "2.173.1"
@@ -2105,6 +1947,164 @@
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
           "version": "2.173.1"
+        }
+      },
+      "atmosphere-integ-deallocate-assertions": {
+        "id": "atmosphere-integ-deallocate-assertions",
+        "path": "atmosphere-integ-deallocate-assertions",
+        "children": {
+          "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154": {
+            "id": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+            "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                  "version": "2.173.2-alpha.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "2.173.1"
+                }
+              },
+              "Invoke": {
+                "id": "Invoke",
+                "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "atmosphere-integ-deallocate-assertions/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+              "version": "2.173.2-alpha.0"
+            }
+          },
+          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+            "path": "atmosphere-integ-deallocate-assertions/SingletonFunction1488541a7b23466481b69b4408076b81",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "atmosphere-integ-deallocate-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "2.173.1"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "atmosphere-integ-deallocate-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "atmosphere-integ-deallocate-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "atmosphere-integ-deallocate-assertions/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "2.173.1"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "atmosphere-integ-deallocate-assertions/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.173.1"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "atmosphere-integ-deallocate-assertions/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.173.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.173.1"
+        }
+      },
+      "IntegTest": {
+        "id": "IntegTest",
+        "path": "IntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "2.173.2-alpha.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "2.173.2-alpha.0"
         }
       },
       "Tree": {

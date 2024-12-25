@@ -1,12 +1,12 @@
 {
   "version": "38.0.1",
   "testCases": {
-    "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest": {
+    "IntegTest/DefaultTest": {
       "stacks": [
-        "atmosphere-integ-deallocate-stack"
+        "atmosphere-integ-deallocate"
       ],
-      "assertionStack": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "atmosphereintegdeallocatestackAtmosphereAllocateIntegTestDefaultTestDeployAssertA3420A92"
+      "assertionStack": "atmosphere-integ-deallocate-assertions",
+      "assertionStackName": "atmosphere-integ-deallocate-assertions"
     }
   }
 }
