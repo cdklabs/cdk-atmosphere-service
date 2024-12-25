@@ -223,6 +223,22 @@
         }
       ]
     },
+    "integ:test/allocate:assert": {
+      "name": "integ:test/allocate:assert",
+      "steps": [
+        {
+          "exec": "ts-node /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/allocate/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/allocate:deploy": {
+      "name": "integ:test/allocate:deploy",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --no-clean --force"
+        }
+      ]
+    },
     "integ:test/allocate:update": {
       "name": "integ:test/allocate:update",
       "steps": [
@@ -236,6 +252,22 @@
       "steps": [
         {
           "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate"
+        }
+      ]
+    },
+    "integ:test/deallocate:assert": {
+      "name": "integ:test/deallocate:assert",
+      "steps": [
+        {
+          "exec": "ts-node /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/deallocate/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/deallocate:deploy": {
+      "name": "integ:test/deallocate:deploy",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --no-clean --force"
         }
       ]
     },

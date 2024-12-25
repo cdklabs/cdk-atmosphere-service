@@ -42,12 +42,21 @@ export class IntegHandlerBundle extends Component {
 
     const integCommand = `yarn integ-runner --language typescript --directory test/integ/${props.directory}`;
 
-    // lets also create a tasks to run this specific integ test
+    // lets also create test specific tasks
     const integTask = this.project.tasks.addTask(`integ:test/${props.directory}`);
     integTask.exec(integCommand);
 
+    // task to deploy and update the snapshot if needed
     const integUpdateTask = this.project.tasks.addTask(`integ:test/${props.directory}:update`);
     integUpdateTask.exec(`${integCommand} --update-on-failed`);
+
+    // task to deploy the test and keep in running
+    const integDeployTask = this.project.tasks.addTask(`integ:test/${props.directory}:deploy`);
+    integDeployTask.exec(`${integCommand} --no-clean --force`);
+
+    // task to run the assertion handler
+    const integAssertTask = this.project.tasks.addTask(`integ:test/${props.directory}:assert`);
+    integAssertTask.exec(`ts-node ${handlerPath}`);
 
   }
 }
