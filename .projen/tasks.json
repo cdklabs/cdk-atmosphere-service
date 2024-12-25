@@ -33,6 +33,12 @@
         },
         {
           "spawn": "bundle:deallocate/deallocate.lambda"
+        },
+        {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
         }
       ]
     },
@@ -69,6 +75,22 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:test/integ/allocate/assert.lambda.ts": {
+      "name": "bundle:test/integ/allocate/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/allocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/allocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/deallocate/assert.lambda.ts": {
+      "name": "bundle:test/integ/deallocate/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/deallocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/deallocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -190,6 +212,38 @@
         {
           "exec": "yarn integ-runner --language typescript",
           "receiveArgs": true
+        }
+      ]
+    },
+    "integ:test/allocate": {
+      "name": "integ:test/allocate",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate"
+        }
+      ]
+    },
+    "integ:test/allocate:update": {
+      "name": "integ:test/allocate:update",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/deallocate": {
+      "name": "integ:test/deallocate",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate"
+        }
+      ]
+    },
+    "integ:test/deallocate:update": {
+      "name": "integ:test/deallocate:update",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --update-on-failed"
         }
       ]
     },
@@ -386,13 +440,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-dynamodb,@aws-sdk/client-s3,@aws-sdk/client-sts,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-dynamodb,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-sts,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-dynamodb @aws-sdk/client-s3 @aws-sdk/client-sts @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-dynamodb @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-sts @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"

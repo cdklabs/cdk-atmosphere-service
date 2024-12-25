@@ -12,18 +12,18 @@ class ProxyError extends Error {
   }
 }
 
-interface AllocationRequest {
+export interface AllocationRequest {
   readonly pool: string;
   readonly requester: string;
 }
 
-interface Credentials {
+export interface Credentials {
   readonly accessKeyId: string;
   readonly secretAccessKey: string;
   readonly sessionToken: string;
 }
 
-interface AllocationResponse {
+export interface AllocationResponse {
   readonly id: string;
   readonly environment: Environment;
   readonly credentials: Credentials;

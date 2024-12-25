@@ -9,7 +9,7 @@ class ProxyError extends Error {
   }
 }
 
-interface DeallocationRequest {
+export interface DeallocationRequest {
   readonly outcome: string;
 }
 

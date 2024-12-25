@@ -1,5 +1,6 @@
 import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
 import { JsonPatch } from 'projen';
+import { IntegHandlerBundle } from './projenrc/integ.handler.bundle';
 
 const coverageThreshold = 95;
 
@@ -15,6 +16,7 @@ const project = new CdklabsConstructLibrary({
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/client-api-gateway',
     '@aws-sdk/client-sts',
+    '@aws-sdk/client-lambda',
     'uuid',
     '@smithy/util-stream',
     '@types/aws-lambda',
@@ -41,5 +43,8 @@ const project = new CdklabsConstructLibrary({
 });
 
 project.package.file.patch(JsonPatch.add('/jest/randomize', true));
+
+new IntegHandlerBundle(project, { directory: 'allocate' });
+new IntegHandlerBundle(project, { directory: 'deallocate' });
 
 project.synth();

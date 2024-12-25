@@ -1,0 +1,2072 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "atmosphere-integ-deallocate-stack": {
+        "id": "atmosphere-integ-deallocate-stack",
+        "path": "atmosphere-integ-deallocate-stack",
+        "children": {
+          "AtmosphereAllocate": {
+            "id": "AtmosphereAllocate",
+            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate",
+            "children": {
+              "Atmosphere": {
+                "id": "Atmosphere",
+                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere",
+                "children": {
+                  "Configuration": {
+                    "id": "Configuration",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration",
+                    "children": {
+                      "Bucket": {
+                        "id": "Bucket",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                              "aws:cdk:cloudformation:props": {
+                                "tags": [
+                                  {
+                                    "key": "aws-cdk:auto-delete-objects",
+                                    "value": "true"
+                                  },
+                                  {
+                                    "key": "aws-cdk:cr-owned:97594f95",
+                                    "value": "true"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Policy": {
+                            "id": "Policy",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Policy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/Policy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "bucket": {
+                                      "Ref": "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6"
+                                    },
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": [
+                                            "s3:DeleteObject*",
+                                            "s3:GetBucket*",
+                                            "s3:List*",
+                                            "s3:PutBucketPolicy"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "AWS": {
+                                              "Fn::GetAtt": [
+                                                "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                                "Arn"
+                                              ]
+                                            }
+                                          },
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  "/*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "AutoDeleteObjectsCustomResource": {
+                            "id": "AutoDeleteObjectsCustomResource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/AutoDeleteObjectsCustomResource",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Bucket/AutoDeleteObjectsCustomResource/Default",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CustomResource",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "Deployment": {
+                        "id": "Deployment",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment",
+                        "children": {
+                          "AwsCliLayer": {
+                            "id": "AwsCliLayer",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer",
+                            "children": {
+                              "Code": {
+                                "id": "Code",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code",
+                                "children": {
+                                  "Stage": {
+                                    "id": "Stage",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code/Stage",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.AssetStaging",
+                                      "version": "2.173.1"
+                                    }
+                                  },
+                                  "AssetBucket": {
+                                    "id": "AssetBucket",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Code/AssetBucket",
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/AwsCliLayer/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                                  "aws:cdk:cloudformation:props": {
+                                    "content": {
+                                      "s3Bucket": {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      },
+                                      "s3Key": "09ee37fb9a746a9dea0618b3024913848346b4b63d08d3fae387b9a11ac83a01.zip"
+                                    },
+                                    "description": "/opt/awscli/aws"
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "CustomResourceHandler": {
+                            "id": "CustomResourceHandler",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResourceHandler",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Asset1": {
+                            "id": "Asset1",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1/Stage",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/Asset1/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "CustomResource": {
+                            "id": "CustomResource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResource",
+                            "children": {
+                              "Default": {
+                                "id": "Default",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Configuration/Deployment/CustomResource/Default",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CustomResource",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_deployment.BucketDeployment",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "Environments": {
+                    "id": "Environments",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments",
+                    "children": {
+                      "Table": {
+                        "id": "Table",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments/Table",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments/Table/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                              "aws:cdk:cloudformation:props": {
+                                "attributeDefinitions": [
+                                  {
+                                    "attributeName": "account",
+                                    "attributeType": "S"
+                                  },
+                                  {
+                                    "attributeName": "region",
+                                    "attributeType": "S"
+                                  }
+                                ],
+                                "billingMode": "PAY_PER_REQUEST",
+                                "keySchema": [
+                                  {
+                                    "attributeName": "account",
+                                    "keyType": "HASH"
+                                  },
+                                  {
+                                    "attributeName": "region",
+                                    "keyType": "RANGE"
+                                  }
+                                ],
+                                "pointInTimeRecoverySpecification": {
+                                  "pointInTimeRecoveryEnabled": true
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "ScalingRole": {
+                            "id": "ScalingRole",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Environments/Table/ScalingRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "Allocations": {
+                    "id": "Allocations",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations",
+                    "children": {
+                      "Table": {
+                        "id": "Table",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations/Table",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations/Table/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                              "aws:cdk:cloudformation:props": {
+                                "attributeDefinitions": [
+                                  {
+                                    "attributeName": "id",
+                                    "attributeType": "S"
+                                  }
+                                ],
+                                "billingMode": "PAY_PER_REQUEST",
+                                "keySchema": [
+                                  {
+                                    "attributeName": "id",
+                                    "keyType": "HASH"
+                                  }
+                                ],
+                                "pointInTimeRecoverySpecification": {
+                                  "pointInTimeRecoveryEnabled": true
+                                },
+                                "timeToLiveSpecification": {
+                                  "attributeName": "ttl",
+                                  "enabled": true
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "ScalingRole": {
+                            "id": "ScalingRole",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocations/Table/ScalingRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "Allocate": {
+                    "id": "Allocate",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate",
+                    "children": {
+                      "Function": {
+                        "id": "Function",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function",
+                        "children": {
+                          "ServiceRole": {
+                            "id": "ServiceRole",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole",
+                            "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "lambda.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "managedPolicyArns": [
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "s3:GetBucket*",
+                                                "s3:GetObject*",
+                                                "s3:List*"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6",
+                                                          "Arn"
+                                                        ]
+                                                      },
+                                                      "/configuration.json"
+                                                    ]
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Action": [
+                                                "dynamodb:BatchGetItem",
+                                                "dynamodb:BatchWriteItem",
+                                                "dynamodb:ConditionCheckItem",
+                                                "dynamodb:DeleteItem",
+                                                "dynamodb:DescribeTable",
+                                                "dynamodb:GetItem",
+                                                "dynamodb:GetRecords",
+                                                "dynamodb:GetShardIterator",
+                                                "dynamodb:PutItem",
+                                                "dynamodb:Query",
+                                                "dynamodb:Scan",
+                                                "dynamodb:UpdateItem"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Ref": "AWS::NoValue"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Action": "sts:AssumeRole",
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::GetAtt": [
+                                                  "AdminC75D2A91",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "AtmosphereAllocateAtmosphereAllocateFunctionServiceRoleDefaultPolicyA83A386B",
+                                        "roles": [
+                                          {
+                                            "Ref": "AtmosphereAllocateAtmosphereAllocateFunctionServiceRole8550E629"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Code": {
+                            "id": "Code",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Code",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Code/Stage",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Code/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/Function/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                              "aws:cdk:cloudformation:props": {
+                                "code": {
+                                  "s3Bucket": {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  },
+                                  "s3Key": "ad6fe734ba84dcdc3f8e6ba8c0f6bdcdbc5cf9449e610896d6d261aefdd8385d.zip"
+                                },
+                                "description": "src/allocate/allocate.lambda.ts",
+                                "environment": {
+                                  "variables": {
+                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                    "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+                                      "Ref": "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6"
+                                    },
+                                    "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+                                    "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+                                      "Ref": "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
+                                    },
+                                    "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+                                      "Ref": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
+                                    }
+                                  }
+                                },
+                                "handler": "index.handler",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "AtmosphereAllocateAtmosphereAllocateFunctionServiceRole8550E629",
+                                    "Arn"
+                                  ]
+                                },
+                                "runtime": "nodejs18.x"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "AdminRole${Token[AWS.AccountId.1]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.1]}",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "Deallocate": {
+                    "id": "Deallocate",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate",
+                    "children": {
+                      "Function": {
+                        "id": "Function",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function",
+                        "children": {
+                          "ServiceRole": {
+                            "id": "ServiceRole",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole",
+                            "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "lambda.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "managedPolicyArns": [
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "dynamodb:BatchGetItem",
+                                                "dynamodb:BatchWriteItem",
+                                                "dynamodb:ConditionCheckItem",
+                                                "dynamodb:DeleteItem",
+                                                "dynamodb:DescribeTable",
+                                                "dynamodb:GetItem",
+                                                "dynamodb:GetRecords",
+                                                "dynamodb:GetShardIterator",
+                                                "dynamodb:PutItem",
+                                                "dynamodb:Query",
+                                                "dynamodb:Scan",
+                                                "dynamodb:UpdateItem"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Ref": "AWS::NoValue"
+                                                }
+                                              ]
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "AtmosphereAllocateAtmosphereDeallocateFunctionServiceRoleDefaultPolicy0880BDFB",
+                                        "roles": [
+                                          {
+                                            "Ref": "AtmosphereAllocateAtmosphereDeallocateFunctionServiceRoleA59AA8D4"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Code": {
+                            "id": "Code",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code/Stage",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Code/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Deallocate/Function/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                              "aws:cdk:cloudformation:props": {
+                                "code": {
+                                  "s3Bucket": {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  },
+                                  "s3Key": "79532c0b28ebec03860f1a944789cb0c9f6e5c9814b4bcbc6c7e83bd42112404.zip"
+                                },
+                                "description": "src/deallocate/deallocate.lambda.ts",
+                                "environment": {
+                                  "variables": {
+                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                    "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+                                      "Ref": "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
+                                    },
+                                    "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+                                      "Ref": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
+                                    }
+                                  }
+                                },
+                                "handler": "index.handler",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "AtmosphereAllocateAtmosphereDeallocateFunctionServiceRoleA59AA8D4",
+                                    "Arn"
+                                  ]
+                                },
+                                "runtime": "nodejs18.x"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "Endpoint": {
+                    "id": "Endpoint",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint",
+                    "children": {
+                      "Api": {
+                        "id": "Api",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                              "aws:cdk:cloudformation:props": {
+                                "description": "RESTful endpoint for the Atmosphere service",
+                                "name": "Atmosphere",
+                                "policy": {
+                                  "Statement": [
+                                    {
+                                      "Action": "execute-api:Invoke",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "AWS": {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":root"
+                                            ]
+                                          ]
+                                        }
+                                      },
+                                      "Resource": [
+                                        "execute-api:/prod/DELETE/allocations/{id}",
+                                        "execute-api:/prod/POST/allocations"
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Deployment": {
+                            "id": "Deployment",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Deployment",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Deployment/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                                  "aws:cdk:cloudformation:props": {
+                                    "description": "RESTful endpoint for the Atmosphere service",
+                                    "restApiId": {
+                                      "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "DeploymentStage.prod": {
+                            "id": "DeploymentStage.prod",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/DeploymentStage.prod",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                                  "aws:cdk:cloudformation:props": {
+                                    "deploymentId": {
+                                      "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e"
+                                    },
+                                    "restApiId": {
+                                      "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                    },
+                                    "stageName": "prod"
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.Stage",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Endpoint": {
+                            "id": "Endpoint",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Endpoint",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnOutput",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Default": {
+                            "id": "Default",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default",
+                            "children": {
+                              "allocations": {
+                                "id": "allocations",
+                                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                                      "aws:cdk:cloudformation:props": {
+                                        "parentId": {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereAllocateAtmosphereEndpointApiE730A46D",
+                                            "RootResourceId"
+                                          ]
+                                        },
+                                        "pathPart": "allocations",
+                                        "restApiId": {
+                                          "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                                      "version": "2.173.1"
+                                    }
+                                  },
+                                  "POST": {
+                                    "id": "POST",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST",
+                                    "children": {
+                                      "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations": {
+                                        "id": "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
+                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
+                                        "attributes": {
+                                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                          "aws:cdk:cloudformation:props": {
+                                            "action": "lambda:InvokeFunction",
+                                            "functionName": {
+                                              "Fn::GetAtt": [
+                                                "AtmosphereAllocateAtmosphereAllocateFunction60E59FA1",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "principal": "apigateway.amazonaws.com",
+                                            "sourceArn": {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":execute-api:",
+                                                  {
+                                                    "Ref": "AWS::Region"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                                  },
+                                                  "/",
+                                                  {
+                                                    "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeploymentStageprodC3693A4E"
+                                                  },
+                                                  "/POST/allocations"
+                                                ]
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                                          "version": "2.173.1"
+                                        }
+                                      },
+                                      "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations": {
+                                        "id": "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
+                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.POST..allocations",
+                                        "attributes": {
+                                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                          "aws:cdk:cloudformation:props": {
+                                            "action": "lambda:InvokeFunction",
+                                            "functionName": {
+                                              "Fn::GetAtt": [
+                                                "AtmosphereAllocateAtmosphereAllocateFunction60E59FA1",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "principal": "apigateway.amazonaws.com",
+                                            "sourceArn": {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  "arn:",
+                                                  {
+                                                    "Ref": "AWS::Partition"
+                                                  },
+                                                  ":execute-api:",
+                                                  {
+                                                    "Ref": "AWS::Region"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AWS::AccountId"
+                                                  },
+                                                  ":",
+                                                  {
+                                                    "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                                  },
+                                                  "/test-invoke-stage/POST/allocations"
+                                                ]
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                                          "version": "2.173.1"
+                                        }
+                                      },
+                                      "Resource": {
+                                        "id": "Resource",
+                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/POST/Resource",
+                                        "attributes": {
+                                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                          "aws:cdk:cloudformation:props": {
+                                            "authorizationType": "NONE",
+                                            "httpMethod": "POST",
+                                            "integration": {
+                                              "type": "AWS_PROXY",
+                                              "uri": {
+                                                "Fn::Join": [
+                                                  "",
+                                                  [
+                                                    "arn:",
+                                                    {
+                                                      "Ref": "AWS::Partition"
+                                                    },
+                                                    ":apigateway:",
+                                                    {
+                                                      "Ref": "AWS::Region"
+                                                    },
+                                                    ":lambda:path/2015-03-31/functions/",
+                                                    {
+                                                      "Fn::GetAtt": [
+                                                        "AtmosphereAllocateAtmosphereAllocateFunction60E59FA1",
+                                                        "Arn"
+                                                      ]
+                                                    },
+                                                    "/invocations"
+                                                  ]
+                                                ]
+                                              },
+                                              "integrationHttpMethod": "POST"
+                                            },
+                                            "resourceId": {
+                                              "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD"
+                                            },
+                                            "restApiId": {
+                                              "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                            }
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                                          "version": "2.173.1"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                                      "version": "2.173.1"
+                                    }
+                                  },
+                                  "{id}": {
+                                    "id": "{id}",
+                                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}",
+                                    "children": {
+                                      "Resource": {
+                                        "id": "Resource",
+                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/Resource",
+                                        "attributes": {
+                                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                                          "aws:cdk:cloudformation:props": {
+                                            "parentId": {
+                                              "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD"
+                                            },
+                                            "pathPart": "{id}",
+                                            "restApiId": {
+                                              "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                            }
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                                          "version": "2.173.1"
+                                        }
+                                      },
+                                      "DELETE": {
+                                        "id": "DELETE",
+                                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE",
+                                        "children": {
+                                          "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}": {
+                                            "id": "ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
+                                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
+                                            "attributes": {
+                                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                              "aws:cdk:cloudformation:props": {
+                                                "action": "lambda:InvokeFunction",
+                                                "functionName": {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                "principal": "apigateway.amazonaws.com",
+                                                "sourceArn": {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":execute-api:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                                      },
+                                                      "/",
+                                                      {
+                                                        "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeploymentStageprodC3693A4E"
+                                                      },
+                                                      "/DELETE/allocations/*"
+                                                    ]
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            "constructInfo": {
+                                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                                              "version": "2.173.1"
+                                            }
+                                          },
+                                          "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}": {
+                                            "id": "ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
+                                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/ApiPermission.Test.atmosphereintegdeallocatestackAtmosphereAllocateAtmosphereEndpointApi27F924F5.DELETE..allocations.{id}",
+                                            "attributes": {
+                                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                                              "aws:cdk:cloudformation:props": {
+                                                "action": "lambda:InvokeFunction",
+                                                "functionName": {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                "principal": "apigateway.amazonaws.com",
+                                                "sourceArn": {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":execute-api:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                                      },
+                                                      "/test-invoke-stage/DELETE/allocations/*"
+                                                    ]
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            "constructInfo": {
+                                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                                              "version": "2.173.1"
+                                            }
+                                          },
+                                          "Resource": {
+                                            "id": "Resource",
+                                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Atmosphere/Endpoint/Api/Default/allocations/{id}/DELETE/Resource",
+                                            "attributes": {
+                                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                                              "aws:cdk:cloudformation:props": {
+                                                "authorizationType": "NONE",
+                                                "httpMethod": "DELETE",
+                                                "integration": {
+                                                  "type": "AWS_PROXY",
+                                                  "uri": {
+                                                    "Fn::Join": [
+                                                      "",
+                                                      [
+                                                        "arn:",
+                                                        {
+                                                          "Ref": "AWS::Partition"
+                                                        },
+                                                        ":apigateway:",
+                                                        {
+                                                          "Ref": "AWS::Region"
+                                                        },
+                                                        ":lambda:path/2015-03-31/functions/",
+                                                        {
+                                                          "Fn::GetAtt": [
+                                                            "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3",
+                                                            "Arn"
+                                                          ]
+                                                        },
+                                                        "/invocations"
+                                                      ]
+                                                    ]
+                                                  },
+                                                  "integrationHttpMethod": "POST"
+                                                },
+                                                "resourceId": {
+                                                  "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocationsidFA0595D7"
+                                                },
+                                                "restApiId": {
+                                                  "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+                                                }
+                                              }
+                                            },
+                                            "constructInfo": {
+                                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                                              "version": "2.173.1"
+                                            }
+                                          }
+                                        },
+                                        "constructInfo": {
+                                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                                          "version": "2.173.1"
+                                        }
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
+              },
+              "Assert": {
+                "id": "Assert",
+                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "apigateway:*",
+                                        "dynamodb:*"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "AtmosphereAllocateAssertServiceRoleDefaultPolicy72F34618",
+                                "roles": [
+                                  {
+                                    "Ref": "AtmosphereAllocateAssertServiceRoleCA0B4E84"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/Assert/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "d1009c294b39dd4117998b1389ea1b438610b62f5f5057cea664fd251a37834e.zip"
+                        },
+                        "description": "test/integ/deallocate/assert.lambda.ts",
+                        "environment": {
+                          "variables": {
+                            "CDK_ATMOSPHERE_INTEG": "true"
+                          }
+                        },
+                        "handler": "index.handler",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "AtmosphereAllocateAssertServiceRoleCA0B4E84",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 60
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
+                  "version": "2.173.1"
+                }
+              },
+              "IntegTest": {
+                "id": "IntegTest",
+                "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest",
+                "children": {
+                  "DefaultTest": {
+                    "id": "DefaultTest",
+                    "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "atmosphere-integ-deallocate-stack/AtmosphereAllocate/IntegTest/DefaultTest/Default",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.0.5"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+                      "version": "2.173.2-alpha.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+                  "version": "2.173.2-alpha.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          },
+          "Admin": {
+            "id": "Admin",
+            "path": "atmosphere-integ-deallocate-stack/Admin",
+            "children": {
+              "ImportAdmin": {
+                "id": "ImportAdmin",
+                "path": "atmosphere-integ-deallocate-stack/Admin/ImportAdmin",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.173.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "atmosphere-integ-deallocate-stack/Admin/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AdministratorAccess"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.173.1"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "atmosphere-integ-deallocate-stack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "2.173.1"
+            }
+          },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "2.173.1"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "atmosphere-integ-deallocate-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "2.173.1"
+            }
+          },
+          "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": {
+            "id": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+            "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+                            "roles": [
+                              {
+                                "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.173.1"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.173.1"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "atmosphere-integ-deallocate-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "c6358465bf49dfae556bb430bf9c81fa578c221b82c308e3707901b1dd654762.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+                      }
+                    },
+                    "handler": "index.handler",
+                    "layers": [
+                      {
+                        "Ref": "AtmosphereAllocateAtmosphereConfigurationDeploymentAwsCliLayerC28D7DCA"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.11",
+                    "timeout": 900
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.1"
+            }
+          },
+          "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154": {
+            "id": "LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+            "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154",
+            "children": {
+              "SdkProvider": {
+                "id": "SdkProvider",
+                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider",
+                "children": {
+                  "AssertionsProvider": {
+                    "id": "AssertionsProvider",
+                    "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/SdkProvider/AssertionsProvider",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                  "version": "2.173.2-alpha.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Default/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "2.173.1"
+                }
+              },
+              "Invoke": {
+                "id": "Invoke",
+                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/Invoke",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              },
+              "AssertionResults": {
+                "id": "AssertionResults",
+                "path": "atmosphere-integ-deallocate-stack/LambdaInvoke6c3bf06e4d9e4725c7fadee0227cc154/AssertionResults",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
+              "version": "2.173.2-alpha.0"
+            }
+          },
+          "SingletonFunction1488541a7b23466481b69b4408076b81": {
+            "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+            "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "2.173.1"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "atmosphere-integ-deallocate-stack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.0.5"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "atmosphere-integ-deallocate-stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.173.1"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "atmosphere-integ-deallocate-stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.173.1"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.173.1"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.0.5"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.173.1"
+    }
+  }
+}
