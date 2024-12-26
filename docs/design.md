@@ -161,12 +161,16 @@ authentication and authorization.
 #### Authentication & Authorization
 
 While the service is accessible over the public internet, it will reject anonymous user access.
-A [resource policy](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-resource-policy-only) on the API will ensure that access is allowed only
-to authenticated AWS users who have permissions to invoke its various routes. This requires HTTP clients to sign their
+A [resource policy](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-resource-policy-only) on the API,
+in conjunction with [AWS_IAM authentication](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-iam) on its methods,
+will ensure that access is allowed only to authenticated AWS users who have permissions to invoke its various routes. This requires HTTP clients to sign their
 request with [AWS Signature V4](https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-authenticating-requests.html).
 
 * During service deployment, authorized AWS accounts will be added to an [account allow list](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-cross-account-example),
 which will be used in the resource policy.
+* Authorized accounts must access the service using a role that allows the `execute-api:Invoke` action on the API. We recommend attaching
+the [`AmazonAPIGatewayInvokeFullAccess`](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonAPIGatewayInvokeFullAccess.html) managed policiy to
+any role that needs access to the service.
 
 ### Storage Layer
 
