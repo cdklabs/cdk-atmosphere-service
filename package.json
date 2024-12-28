@@ -58,7 +58,7 @@
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
-    "aws-cdk": "^2.173.3",
+    "aws-cdk": "^2.173.4",
     "aws-cdk-lib": "2.173.1",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-jest": "^4.1.0",
