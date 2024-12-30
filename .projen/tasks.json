@@ -267,6 +267,7 @@
     },
     "integ:test/allocate": {
       "name": "integ:test/allocate",
+      "description": "Run the test in snapshot mode",
       "steps": [
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -278,6 +279,7 @@
     },
     "integ:test/allocate:assert": {
       "name": "integ:test/allocate:assert",
+      "description": "Run the assertion locally against a deployed service",
       "steps": [
         {
           "exec": "ts-node test/integ/allocate/assert.lambda.ts"
@@ -286,6 +288,7 @@
     },
     "integ:test/allocate:deploy": {
       "name": "integ:test/allocate:deploy",
+      "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -297,6 +300,7 @@
     },
     "integ:test/allocate:force": {
       "name": "integ:test/allocate:force",
+      "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -308,6 +312,7 @@
     },
     "integ:test/allocate:snapshot": {
       "name": "integ:test/allocate:snapshot",
+      "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -319,6 +324,7 @@
     },
     "integ:test/allocate:update": {
       "name": "integ:test/allocate:update",
+      "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -330,6 +336,7 @@
     },
     "integ:test/deallocate": {
       "name": "integ:test/deallocate",
+      "description": "Run the test in snapshot mode",
       "steps": [
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
@@ -341,6 +348,7 @@
     },
     "integ:test/deallocate:assert": {
       "name": "integ:test/deallocate:assert",
+      "description": "Run the assertion locally against a deployed service",
       "steps": [
         {
           "exec": "ts-node test/integ/deallocate/assert.lambda.ts"
@@ -349,6 +357,7 @@
     },
     "integ:test/deallocate:deploy": {
       "name": "integ:test/deallocate:deploy",
+      "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
@@ -360,6 +369,7 @@
     },
     "integ:test/deallocate:force": {
       "name": "integ:test/deallocate:force",
+      "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
@@ -371,6 +381,7 @@
     },
     "integ:test/deallocate:snapshot": {
       "name": "integ:test/deallocate:snapshot",
+      "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
@@ -382,6 +393,7 @@
     },
     "integ:test/deallocate:update": {
       "name": "integ:test/deallocate:update",
+      "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
@@ -393,6 +405,7 @@
     },
     "integ:test/dev": {
       "name": "integ:test/dev",
+      "description": "Run the test in snapshot mode",
       "steps": [
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"
@@ -404,6 +417,7 @@
     },
     "integ:test/dev:assert": {
       "name": "integ:test/dev:assert",
+      "description": "Run the assertion locally against a deployed service",
       "steps": [
         {
           "exec": "ts-node test/integ/dev/assert.lambda.ts"
@@ -412,6 +426,7 @@
     },
     "integ:test/dev:deploy": {
       "name": "integ:test/dev:deploy",
+      "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"
@@ -423,6 +438,7 @@
     },
     "integ:test/dev:force": {
       "name": "integ:test/dev:force",
+      "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"
@@ -434,6 +450,7 @@
     },
     "integ:test/dev:snapshot": {
       "name": "integ:test/dev:snapshot",
+      "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"
@@ -445,6 +462,7 @@
     },
     "integ:test/dev:update": {
       "name": "integ:test/dev:update",
+      "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"

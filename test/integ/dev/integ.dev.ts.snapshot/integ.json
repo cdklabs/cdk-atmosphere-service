@@ -5,6 +5,7 @@
       "stacks": [
         "atmosphere-integ-dev"
       ],
+      "diffAssets": true,
       "assertionStack": "atmosphere-integ-dev-assertions",
       "assertionStackName": "atmosphere-integ-dev-assertions"
     }
