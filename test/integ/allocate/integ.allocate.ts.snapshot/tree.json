@@ -639,9 +639,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.8]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.8]}",
-                        "path": "atmosphere-integ-allocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.8]}",
+                      "AdminRole${Token[AWS.AccountId.6]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.6]}",
+                        "path": "atmosphere-integ-allocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.6]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"

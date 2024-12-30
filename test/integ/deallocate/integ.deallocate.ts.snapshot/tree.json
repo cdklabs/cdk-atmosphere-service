@@ -639,15 +639,9 @@
                           "version": "2.173.1"
                         }
                       },
-<<<<<<< HEAD
-                      "AdminRole${Token[AWS.AccountId.5]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.5]}",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}",
-=======
                       "AdminRole${Token[AWS.AccountId.7]}": {
                         "id": "AdminRole${Token[AWS.AccountId.7]}",
                         "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.7]}",
->>>>>>> main
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -1522,11 +1516,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-<<<<<<< HEAD
-                          "s3Key": "28127854674ef16c133264214bc129d2064f05969ff7fd205f517df1c46634c1.zip"
-=======
-                          "s3Key": "4e75467d16bcc2692ddb33fbea832b6b2865fb7c3553365add73b9814ff99a7d.zip"
->>>>>>> main
+                          "s3Key": "9f8417cfcabd56a822ad7d226563342be9e49e4a596f6c7c2c9863ee42747ccd.zip"
                         },
                         "description": "test/integ/deallocate/assert.lambda.ts",
                         "environment": {
