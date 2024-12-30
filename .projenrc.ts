@@ -1,5 +1,6 @@
 import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
 import { JsonPatch } from 'projen';
+import { IntegHandlerBundle } from './projenrc/integ.handler.bundle';
 
 const coverageThreshold = 95;
 
@@ -38,8 +39,16 @@ const project = new CdklabsConstructLibrary({
       ],
     },
   },
+  // this would have been nice but it doesn't
+  // actually work with integ-runner.
+  // we have our own mini discovery framework.
+  // TODO - possibly pull our framework upstream if it proves useful.
+  integrationTestAutoDiscover: false,
 });
 
 project.package.file.patch(JsonPatch.add('/jest/randomize', true));
+
+new IntegHandlerBundle(project, { directory: 'allocate' });
+new IntegHandlerBundle(project, { directory: 'deallocate' });
 
 project.synth();
