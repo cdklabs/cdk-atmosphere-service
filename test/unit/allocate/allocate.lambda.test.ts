@@ -118,7 +118,7 @@ describe('handler', () => {
       adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
     jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'start').mockReturnValue(Promise.resolve('id'));
+    jest.spyOn(allocations, 'start').mockImplementation(jest.fn());
 
     jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
     jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
@@ -128,7 +128,7 @@ describe('handler', () => {
     const body = JSON.parse(response.body);
 
     expect(response.statusCode).toEqual(200);
-    expect(body.id).toEqual('id');
+    expect(body.id.length).toEqual(36);
     expect(body.environment).toEqual({
       account: '1111',
       region: 'us-east-1',
@@ -141,8 +141,9 @@ describe('handler', () => {
       sessionToken: 'token',
     });
 
-    expect(environments.acquire).toHaveBeenCalledWith('1111', 'us-east-1');
+    expect(environments.acquire).toHaveBeenCalledWith(body.id, '1111', 'us-east-1');
     expect(allocations.start).toHaveBeenCalledWith({
+      id: body.id,
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
@@ -152,7 +153,7 @@ describe('handler', () => {
     expect(stsMock).toHaveReceivedCommandTimes(AssumeRoleCommand, 1);
     expect(stsMock).toHaveReceivedCommandWith(AssumeRoleCommand, {
       RoleArn: 'arn:aws:iam::1111:role/Admin',
-      RoleSessionName: 'atmosphere.allocation.id',
+      RoleSessionName: `atmosphere.allocation.${body.id}`,
     });
 
   });
@@ -186,13 +187,13 @@ describe('handler', () => {
         adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
     ]));
-    jest.spyOn(environments, 'acquire').mockImplementation(async (account: string, region: string) => {
+    jest.spyOn(environments, 'acquire').mockImplementation(async (_: string, account: string, region: string) => {
       if (region === 'us-east-1') {
         throw new EnvironmentAlreadyAcquiredError(account, region);
       }
       return Promise.resolve();
     });
-    jest.spyOn(allocations, 'start').mockReturnValue(Promise.resolve('id'));
+    jest.spyOn(allocations, 'start').mockImplementation(jest.fn());
 
     jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
     jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
@@ -202,7 +203,7 @@ describe('handler', () => {
     const body = JSON.parse(response.body);
 
     expect(response.statusCode).toEqual(200);
-    expect(body.id).toEqual('id');
+    expect(body.id.length).toEqual(36);
 
   });
 
@@ -220,13 +221,13 @@ describe('handler', () => {
         adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
     ]));
-    jest.spyOn(environments, 'acquire').mockImplementation(async (account: string, region: string) => {
+    jest.spyOn(environments, 'acquire').mockImplementation(async (_: string, account: string, region: string) => {
       if (region === 'us-east-1') {
         throw new Error(`Unexpected failure when acquiring aws://${account}/${region}`);
       }
       return Promise.resolve();
     });
-    jest.spyOn(allocations, 'start').mockReturnValue(Promise.resolve('id'));
+    jest.spyOn(allocations, 'start').mockImplementation(jest.fn());
 
     jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
     jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);

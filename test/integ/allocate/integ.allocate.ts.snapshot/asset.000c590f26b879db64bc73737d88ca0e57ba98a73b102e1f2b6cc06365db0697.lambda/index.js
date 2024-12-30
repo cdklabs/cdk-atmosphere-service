@@ -27,13 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/allocate/allocate.lambda.ts
-var allocate_lambda_exports = {};
-__export(allocate_lambda_exports, {
+// src/deallocate/deallocate.lambda.ts
+var deallocate_lambda_exports = {};
+__export(deallocate_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(allocate_lambda_exports);
-var import_client_sts = require("@aws-sdk/client-sts");
+module.exports = __toCommonJS(deallocate_lambda_exports);
 
 // src/config/configuration.client.ts
 var s3 = __toESM(require("@aws-sdk/client-s3"));
@@ -72,53 +71,6 @@ var ConfigurationClient = class {
 
 // src/storage/allocations.client.ts
 var ddb = __toESM(require("@aws-sdk/client-dynamodb"));
-
-// node_modules/uuid/dist/esm/stringify.js
-var byteToHex = [];
-for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 256).toString(16).slice(1));
-}
-function unsafeStringify(arr, offset = 0) {
-  return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
-}
-
-// node_modules/uuid/dist/esm/rng.js
-var import_crypto = require("crypto");
-var rnds8Pool = new Uint8Array(256);
-var poolPtr = rnds8Pool.length;
-function rng() {
-  if (poolPtr > rnds8Pool.length - 16) {
-    (0, import_crypto.randomFillSync)(rnds8Pool);
-    poolPtr = 0;
-  }
-  return rnds8Pool.slice(poolPtr, poolPtr += 16);
-}
-
-// node_modules/uuid/dist/esm/native.js
-var import_crypto2 = require("crypto");
-var native_default = { randomUUID: import_crypto2.randomUUID };
-
-// node_modules/uuid/dist/esm/v4.js
-function v4(options, buf, offset) {
-  if (native_default.randomUUID && !buf && !options) {
-    return native_default.randomUUID();
-  }
-  options = options || {};
-  const rnds = options.random || (options.rng || rng)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i = 0; i < 16; ++i) {
-      buf[offset + i] = rnds[i];
-    }
-    return buf;
-  }
-  return unsafeStringify(rnds);
-}
-var v4_default = v4;
-
-// src/storage/allocations.client.ts
 var AllocationAlreadyEndedError = class extends Error {
   constructor(id) {
     super(`Allocation ${id} is already ended`);
@@ -141,13 +93,12 @@ var AllocationsClient = class {
     if (Buffer.byteLength(opts.requester) > 1024) {
       throw new InvalidInputError("requester must be less than 1024 bytes");
     }
-    const uuid = v4_default();
     const nowSeconds = Math.floor(Date.now() / 1e3);
     const sixMonthsSeconds = 26 * 7 * 24 * 60 * 60;
     await this.ddbClient.putItem({
       TableName: this.tableName,
       Item: {
-        id: { S: uuid },
+        id: { S: opts.id },
         account: { S: opts.account },
         region: { S: opts.region },
         pool: { S: opts.pool },
@@ -156,7 +107,6 @@ var AllocationsClient = class {
         ttl: { N: `${nowSeconds + sixMonthsSeconds}` }
       }
     });
-    return uuid;
   }
   /**
    * End the allocation. Throws if the allocation has already ended.
@@ -236,14 +186,14 @@ var EnvironmentAlreadyReleasedError = class extends EnvironmentsError {
     super(account, region, "already released");
   }
 };
-var EnvironmentAlreadyCleaningError = class extends EnvironmentsError {
-  constructor(account, region) {
-    super(account, region, "already cleaning");
+var EnvironmentAlreadyInStatusError = class extends EnvironmentsError {
+  constructor(account, region, status) {
+    super(account, region, `already ${status}`);
   }
 };
-var EnvironmentAlreadyDirtyError = class extends EnvironmentsError {
+var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
   constructor(account, region) {
-    super(account, region, "already dirty");
+    super(account, region, "already reallocated");
   }
 };
 var EnvironmentsClient = class {
@@ -255,14 +205,15 @@ var EnvironmentsClient = class {
    * Acquire an environment by inserting a new item into the table.
    * If the environment is already acquired, this will fail.
    */
-  async acquire(account, region) {
+  async acquire(allocationId, account, region) {
     try {
       await this.ddbClient.putItem({
         TableName: this.tableName,
         Item: {
           account: { S: account },
           region: { S: region },
-          status: { S: "in-use" }
+          status: { S: "in-use" },
+          allocation: { S: allocationId }
         },
         // avoid attribute name collisions with reserved keywords.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
@@ -285,7 +236,7 @@ var EnvironmentsClient = class {
    * Release an environment by deleting an item from the table.
    * If the environment is already released, this will fail.
    */
-  async release(account, region) {
+  async release(allocationId, account, region) {
     try {
       await this.ddbClient.deleteItem({
         TableName: this.tableName,
@@ -297,15 +248,26 @@ var EnvironmentsClient = class {
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
         ExpressionAttributeNames: {
           "#region": "region",
-          "#account": "account"
+          "#account": "account",
+          "#allocation": "allocation"
+        },
+        ExpressionAttributeValues: {
+          ":allocation_value": { S: allocationId }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region)"
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value",
+        ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
       if (e instanceof ddb2.ConditionalCheckFailedException) {
-        throw new EnvironmentAlreadyReleasedError(account, region);
+        if (!e.Item) {
+          throw new EnvironmentAlreadyReleasedError(account, region);
+        }
+        const old_allocation = e.Item.allocation?.S;
+        if (old_allocation && old_allocation !== allocationId) {
+          throw new EnvironmentAlreadyReallocated(account, region);
+        }
       }
       throw e;
     }
@@ -314,50 +276,56 @@ var EnvironmentsClient = class {
    * Mark the environment status as 'cleaning'.
    * If the environment is already in a 'cleaning' status, this will fail.
    */
-  async cleaning(account, region) {
-    try {
-      await this.setStatus(account, region, "cleaning");
-    } catch (e) {
-      if (e instanceof ddb2.ConditionalCheckFailedException) {
-        throw new EnvironmentAlreadyCleaningError(account, region);
-      }
-      throw e;
-    }
+  async cleaning(allocationId, account, region) {
+    await this.setStatus(allocationId, account, region, "cleaning");
   }
   /**
    * Mark the environment status as 'dirty'.
    * If the environment is already in a 'dirty' status, this will fail.
    */
-  async dirty(account, region) {
+  async dirty(allocationId, account, region) {
+    await this.setStatus(allocationId, account, region, "dirty");
+  }
+  async setStatus(allocationId, account, region, status) {
     try {
-      await this.setStatus(account, region, "dirty");
+      await this.ddbClient.updateItem({
+        TableName: this.tableName,
+        Key: {
+          account: { S: account },
+          region: { S: region }
+        },
+        // avoid attribute name collisions with reserved keywords.
+        // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
+        ExpressionAttributeNames: {
+          "#status": "status",
+          "#allocation": "allocation"
+        },
+        ExpressionAttributeValues: {
+          ":status_value": { S: status },
+          ":allocation_value": { S: allocationId }
+        },
+        UpdateExpression: "SET #status = :status_value",
+        // ensures update.
+        // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html#WorkingWithItems.ConditionalUpdate
+        ConditionExpression: "#allocation = :allocation_value AND #status <> :status_value",
+        ReturnValuesOnConditionCheckFailure: "ALL_OLD"
+      });
     } catch (e) {
       if (e instanceof ddb2.ConditionalCheckFailedException) {
-        throw new EnvironmentAlreadyDirtyError(account, region);
+        if (!e.Item) {
+          throw new EnvironmentAlreadyReleasedError(account, region);
+        }
+        const old_allocation = e.Item.allocation?.S;
+        const old_status = e.Item.status?.S;
+        if (old_allocation && old_allocation !== allocationId) {
+          throw new EnvironmentAlreadyReallocated(account, region);
+        }
+        if (old_status && old_status === status) {
+          throw new EnvironmentAlreadyInStatusError(account, region, old_status);
+        }
       }
       throw e;
     }
-  }
-  async setStatus(account, region, status) {
-    await this.ddbClient.updateItem({
-      TableName: this.tableName,
-      Key: {
-        account: { S: account },
-        region: { S: region }
-      },
-      // avoid attribute name collisions with reserved keywords.
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ExpressionAttributeNames.html
-      ExpressionAttributeNames: {
-        "#status": "status"
-      },
-      ExpressionAttributeValues: {
-        ":status_value": { S: status }
-      },
-      UpdateExpression: "SET #status = :status_value",
-      // ensures update.
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/WorkingWithItems.html#WorkingWithItems.ConditionalUpdate
-      ConditionExpression: "#status <> :status_value"
-    });
   }
 };
 
@@ -404,7 +372,7 @@ function requireEnv(name) {
   return value2;
 }
 
-// src/allocate/allocate.lambda.ts
+// src/deallocate/deallocate.lambda.ts
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -416,21 +384,23 @@ var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   try {
+    const id = (event.pathParameters ?? {}).id;
+    if (!id) {
+      throw new ProxyError(400, "Missing 'id' path parameter");
+    }
+    console.log(`Extracted allocation id from path: ${id}`);
     console.log("Parsing request body");
     const request = parseRequestBody(event.body);
-    console.log(`Acquiring environment from pool '${request.pool}'`);
-    const environment = await acquireEnvironment(request.pool);
-    console.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
-    const id = await startAllocation(environment, request.requester);
-    console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(id, environment);
-    console.log(`Allocation '${id}' started successfully`);
-    const response = { id, environment, credentials };
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response)
-    };
+    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    return success();
   } catch (e) {
+    if (e instanceof AllocationAlreadyEndedError) {
+      console.log(`Returning success because: ${e.message}`);
+      return success();
+    }
     console.error(e);
     return {
       statusCode: e instanceof ProxyError ? e.statusCode : 500,
@@ -443,41 +413,14 @@ function parseRequestBody(body) {
     throw new ProxyError(400, "Request body not found");
   }
   const parsed = JSON.parse(body);
-  if (!parsed.pool) {
-    throw new ProxyError(400, "'pool' must be provided in the request body");
-  }
-  if (!parsed.requester) {
-    throw new ProxyError(400, "'requester' must be provided in the request body");
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
   }
   return parsed;
 }
-async function acquireEnvironment(pool) {
-  const candidates = await clients.configuration.listEnvironments({ pool });
-  console.log(`Found ${candidates.length} environments in pool '${pool}'`);
-  for (const canditate of candidates) {
-    try {
-      console.log(`Acquiring environment 'aws://${canditate.account}/${canditate.region}'...`);
-      await clients.environments.acquire(canditate.account, canditate.region);
-      return canditate;
-    } catch (e) {
-      if (e instanceof EnvironmentAlreadyAcquiredError) {
-        console.log(`Environment 'aws://${canditate.account}/${canditate.region}' already acquired. Trying the next one.`);
-        continue;
-      }
-      throw e;
-    }
-  }
-  throw new ProxyError(423, `No environments available in pool '${pool}'`);
-}
-async function startAllocation(environment, requester) {
+async function endAllocation(id, outcome) {
   try {
-    const id = await clients.allocations.start({
-      account: environment.account,
-      region: environment.region,
-      pool: environment.pool,
-      requester
-    });
-    return id;
+    return await clients.allocations.end({ id, outcome });
   } catch (e) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError(400, e.message);
@@ -485,28 +428,12 @@ async function startAllocation(environment, requester) {
     throw e;
   }
 }
-async function grabCredentials(id, environment) {
-  const sts = new import_client_sts.STS();
-  const assumed = await sts.assumeRole({
-    RoleArn: environment.adminRoleArn,
-    RoleSessionName: `atmosphere.allocation.${id}`
-  });
-  if (!assumed.Credentials) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
-  }
-  if (!assumed.Credentials.AccessKeyId) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
-  }
-  if (!assumed.Credentials.SecretAccessKey) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
-  }
-  if (!assumed.Credentials.SessionToken) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
-  }
+function success() {
   return {
-    accessKeyId: assumed.Credentials.AccessKeyId,
-    secretAccessKey: assumed.Credentials.SecretAccessKey,
-    sessionToken: assumed.Credentials.SessionToken
+    statusCode: 200,
+    // we currently don't need a response body for a
+    // succesfull dellocation
+    body: JSON.stringify({})
   };
 }
 // Annotate the CommonJS export names for ESM import in node:

@@ -5,6 +5,7 @@
       "stacks": [
         "atmosphere-integ-deallocate"
       ],
+      "diffAssets": true,
       "assertionStack": "atmosphere-integ-deallocate-assertions",
       "assertionStackName": "atmosphere-integ-deallocate-assertions"
     }

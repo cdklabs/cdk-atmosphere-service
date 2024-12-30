@@ -164,7 +164,8 @@ async function handler(_) {
   return Session.run(async (session) => {
     const output = await session.allocate({ pool: "release", requester: "test" });
     const body = JSON.parse(output.body);
-    await session.deallocate(body.id, { outcome: "success" });
+    const deallocateResponse = await session.deallocate(body.id, { outcome: "success" });
+    assert.strictEqual(deallocateResponse.status, 200);
     const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);
     assert.strictEqual(environment.Item.status.S, "cleaning");
   });

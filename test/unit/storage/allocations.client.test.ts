@@ -17,6 +17,7 @@ describe('AllocationsClient', () => {
 
       const client = new AllocationsClient('table');
       await expect(client.start({
+        id: 'id',
         account: '1111',
         region: 'us-east-1',
         requester: 'a'.repeat(1025),
@@ -33,7 +34,8 @@ describe('AllocationsClient', () => {
       const sixMonthsFromNow = new Date(now.getTime() + 26 * 7 * 24 * 60 * 60 * 1000);
 
       const client = new AllocationsClient('table');
-      const id = await client.start({ account: '1111', region: 'us-east-1', requester: 'user1', pool: 'canary' });
+      const id = 'id';
+      await client.start({ id, account: '1111', region: 'us-east-1', requester: 'user1', pool: 'canary' });
 
       const expected = {
         Item: {

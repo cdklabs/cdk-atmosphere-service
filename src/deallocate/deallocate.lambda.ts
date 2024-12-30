@@ -31,8 +31,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
 
-    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await clients.environments.cleaning(allocation.account, allocation.region);
+    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
 
     // TODO - trigger cleanup task
     // TODO - create cleanup timeout event
