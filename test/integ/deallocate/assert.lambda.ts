@@ -7,7 +7,8 @@ export async function handler(_: any) {
     const output = await session.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(output.body!);
 
-    await session.deallocate(body.id, { outcome: 'success' });
+    const deallocateResponse = await session.deallocate(body.id, { outcome: 'success' });
+    assert.strictEqual(deallocateResponse.status, 200);
 
     // assert database entries
     const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);

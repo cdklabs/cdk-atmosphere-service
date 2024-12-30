@@ -191,7 +191,12 @@ All service state will be stored in DynamoDB regional tables.
 
 A list of registered environments and their runtime state. It is used to determine whether an environment
 is available for allocation. The service starts with an empty table, and maintains it during its
-operation. Rows are uniquely identified by the account + region primary key.
+operation.
+
+* When an environment is acquired, it is added to the table along with the allocation that acquired it.
+* When an environment is released, it is removed from the table.
+
+Rows are uniquely identified by the account + region primary key.
 
 **Schema:**
 
@@ -202,11 +207,15 @@ account: string | required
 # the region of the environment
 region: string | required
 
-# free - the environment is available for allocation.
 # cleaning - the environment is current being cleaned.
 # in-use - the environment is not available for allocation.
 # dirty - cleanup failed. requires human attention.
 status: string | required
+
+# which allocation currently holds this environment, 
+# regardless of state. remember that if an environment is free, 
+# it doesn't exist as an item in the table.
+allocation: string | required
 ```
 
 **Access Patterns:**
