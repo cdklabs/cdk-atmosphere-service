@@ -42,6 +42,16 @@ export class Endpoint extends Construct {
    */
   public readonly api: apigateway.RestApi;
 
+  /**
+   * Allocations sub resource.
+   */
+  public readonly allocationsResource: apigateway.Resource;
+
+  /**
+   * Allocation sub resource.
+   */
+  public readonly allocationResource: apigateway.Resource;
+
   constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id);
 
@@ -70,16 +80,16 @@ export class Endpoint extends Construct {
     });
 
     // Create /allocations resource
-    const allocations = this.api.root.addResource('allocations');
+    this.allocationsResource = this.api.root.addResource('allocations');
 
     // POST /allocations -> Allocation Lambda
-    allocations.addMethod('POST', new apigateway.LambdaIntegration(props.allocate.function, {
+    this.allocationsResource.addMethod('POST', new apigateway.LambdaIntegration(props.allocate.function, {
       proxy: true,
     }), { authorizationType: apigateway.AuthorizationType.IAM });
 
     // DELETE /allocations/{id} -> Deallocation Lambda
-    const allocation = allocations.addResource('{id}');
-    allocation.addMethod('DELETE', new apigateway.LambdaIntegration(props.deallocate.function, {
+    this.allocationResource = this.allocationsResource.addResource('{id}');
+    this.allocationResource.addMethod('DELETE', new apigateway.LambdaIntegration(props.deallocate.function, {
       proxy: true,
     }), { authorizationType: apigateway.AuthorizationType.IAM });
 

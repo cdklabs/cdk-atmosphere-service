@@ -1,7 +1,7 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
-import { ENVIRONMENTS_TABLE_NAME_ENV, ALLOCATIONS_TABLE_NAME_ENV } from '../clients';
+import { ENVIRONMENTS_TABLE_NAME_ENV, ALLOCATIONS_TABLE_NAME_ENV } from '../envars';
 import { Allocations, Environments } from '../storage';
 
 /**

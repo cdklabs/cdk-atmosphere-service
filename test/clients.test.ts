@@ -1,4 +1,5 @@
-import { RuntimeClients, ALLOCATIONS_TABLE_NAME_ENV, ENVIRONMENTS_TABLE_NAME_ENV, CONFIGURATION_BUCKET_ENV, CONFIGURATION_KEY_ENV } from '../src/clients';
+import { RuntimeClients } from '../src/clients';
+import { ALLOCATIONS_TABLE_NAME_ENV, ENVIRONMENTS_TABLE_NAME_ENV, CONFIGURATION_BUCKET_ENV, CONFIGURATION_KEY_ENV } from '../src/envars';
 
 describe('RuntimeClients', () => {
 

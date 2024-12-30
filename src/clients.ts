@@ -1,11 +1,7 @@
 import { ConfigurationClient } from './config/configuration.client';
+import { ALLOCATIONS_TABLE_NAME_ENV, CONFIGURATION_BUCKET_ENV, CONFIGURATION_KEY_ENV, Envars, ENVIRONMENTS_TABLE_NAME_ENV } from './envars';
 import { AllocationsClient } from './storage/allocations.client';
 import { EnvironmentsClient } from './storage/environments.client';
-
-export const ALLOCATIONS_TABLE_NAME_ENV = 'CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME';
-export const ENVIRONMENTS_TABLE_NAME_ENV = 'CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME';
-export const CONFIGURATION_BUCKET_ENV = 'CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET';
-export const CONFIGURATION_KEY_ENV = 'CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY';
 
 /**
  * Factory class to initialize clients using environment variables.
@@ -29,8 +25,8 @@ export class RuntimeClients {
 
   public get configuration(): ConfigurationClient {
     if (!this._configuration) {
-      const bucket = requireEnv(CONFIGURATION_BUCKET_ENV);
-      const key = requireEnv(CONFIGURATION_KEY_ENV);
+      const bucket = Envars.required(CONFIGURATION_BUCKET_ENV);
+      const key = Envars.required(CONFIGURATION_KEY_ENV);
       this._configuration = new ConfigurationClient({ bucket, key });
     }
     return this._configuration;
@@ -38,7 +34,7 @@ export class RuntimeClients {
 
   public get environments(): EnvironmentsClient {
     if (!this._environments) {
-      const tableName = requireEnv(ENVIRONMENTS_TABLE_NAME_ENV);
+      const tableName = Envars.required(ENVIRONMENTS_TABLE_NAME_ENV);
       this._environments = new EnvironmentsClient(tableName);
     }
     return this._environments;
@@ -46,18 +42,10 @@ export class RuntimeClients {
 
   public get allocations(): AllocationsClient {
     if (!this._allocations) {
-      const tableName = requireEnv(ALLOCATIONS_TABLE_NAME_ENV);
+      const tableName = Envars.required(ALLOCATIONS_TABLE_NAME_ENV);
       this._allocations = new AllocationsClient(tableName);
     }
     return this._allocations;
   }
 
-}
-
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value;
 }

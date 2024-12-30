@@ -2,13 +2,13 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { AllocateFunction } from './allocate-function';
+import { Configuration } from '../config';
 import {
   CONFIGURATION_BUCKET_ENV,
   CONFIGURATION_KEY_ENV,
   ALLOCATIONS_TABLE_NAME_ENV,
   ENVIRONMENTS_TABLE_NAME_ENV,
-} from '../clients';
-import { Configuration } from '../config';
+} from '../envars';
 import { Allocations, Environments } from '../storage';
 
 /**
