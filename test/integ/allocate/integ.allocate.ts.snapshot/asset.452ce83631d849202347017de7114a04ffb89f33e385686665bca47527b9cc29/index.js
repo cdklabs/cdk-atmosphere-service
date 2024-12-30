@@ -52,10 +52,13 @@ var Session = class _Session {
    */
   static async run(assert2) {
     const session = await this.create();
-    await session.clearEnvironments();
-    await session.clearAllocations();
-    await assert2(session);
-    return SUCCESS_PAYLOAD;
+    await session.clear();
+    try {
+      await assert2(session);
+      return SUCCESS_PAYLOAD;
+    } finally {
+      await session.clear();
+    }
   }
   static async create() {
     return new _Session(
@@ -97,7 +100,7 @@ var Session = class _Session {
       Key: { id: { S: id } }
     });
   }
-  async clearEnvironments() {
+  async clear() {
     const environments = (await dynamo.scan({ TableName: this.environmentsTableName })).Items ?? [];
     for (const environment of environments) {
       console.log(`Deleting environment aws://${environment.account.S}/${environment.region.S}`);
@@ -109,8 +112,6 @@ var Session = class _Session {
         }
       });
     }
-  }
-  async clearAllocations() {
     const allocations = (await dynamo.scan({ TableName: this.allocationsTableName })).Items ?? [];
     for (const allocation of allocations) {
       console.log(`Deleting allocation ${allocation.id.S}`);
