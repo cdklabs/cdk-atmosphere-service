@@ -75,13 +75,13 @@ export class Endpoint extends Construct {
     // POST /allocations -> Allocation Lambda
     allocations.addMethod('POST', new apigateway.LambdaIntegration(props.allocate.function, {
       proxy: true,
-    }));
+    }), { authorizationType: apigateway.AuthorizationType.IAM });
 
     // DELETE /allocations/{id} -> Deallocation Lambda
     const allocation = allocations.addResource('{id}');
     allocation.addMethod('DELETE', new apigateway.LambdaIntegration(props.deallocate.function, {
       proxy: true,
-    }));
+    }), { authorizationType: apigateway.AuthorizationType.IAM });
 
   }
 }

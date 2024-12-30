@@ -639,9 +639,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.4]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.4]}",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}",
+                      "AdminRole${Token[AWS.AccountId.9]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.9]}",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -955,7 +955,7 @@
                                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                                   "aws:cdk:cloudformation:props": {
                                     "deploymentId": {
-                                      "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e"
+                                      "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeployment472545233d5afa34c952dc1e0a41fa58441c9ba4"
                                     },
                                     "restApiId": {
                                       "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
@@ -1117,7 +1117,7 @@
                                         "attributes": {
                                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                           "aws:cdk:cloudformation:props": {
-                                            "authorizationType": "NONE",
+                                            "authorizationType": "AWS_IAM",
                                             "httpMethod": "POST",
                                             "integration": {
                                               "type": "AWS_PROXY",
@@ -1293,7 +1293,7 @@
                                             "attributes": {
                                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                                               "aws:cdk:cloudformation:props": {
-                                                "authorizationType": "NONE",
+                                                "authorizationType": "AWS_IAM",
                                                 "httpMethod": "DELETE",
                                                 "integration": {
                                                   "type": "AWS_PROXY",
@@ -1516,7 +1516,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "651168a6e89133752738b1e17f14b7f02501d2ad8e0b1f68ef25fbd87bde18a5.zip"
+                          "s3Key": "6bbe3a77e22ea7538f54a6191d066346d8327187e0424bd6953617f474e82b69.zip"
                         },
                         "description": "test/integ/deallocate/assert.lambda.ts",
                         "environment": {
@@ -1972,7 +1972,7 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.173.2-alpha.0"
+                  "version": "2.173.4-alpha.0"
                 }
               },
               "Default": {
@@ -2012,7 +2012,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.173.2-alpha.0"
+              "version": "2.173.4-alpha.0"
             }
           },
           "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -2098,13 +2098,13 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "2.173.2-alpha.0"
+              "version": "2.173.4-alpha.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "2.173.2-alpha.0"
+          "version": "2.173.4-alpha.0"
         }
       },
       "Tree": {

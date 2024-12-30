@@ -529,7 +529,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e": {
+  "AtmosphereAllocateAtmosphereEndpointApiDeployment472545233d5afa34c952dc1e0a41fa58441c9ba4": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "RESTful endpoint for the Atmosphere service",
@@ -550,7 +550,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e"
+     "Ref": "AtmosphereAllocateAtmosphereEndpointApiDeployment472545233d5afa34c952dc1e0a41fa58441c9ba4"
     },
     "RestApiId": {
      "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
@@ -662,7 +662,7 @@
   "AtmosphereAllocateAtmosphereEndpointApiallocationsPOST9A5A7C99": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "NONE",
+    "AuthorizationType": "AWS_IAM",
     "HttpMethod": "POST",
     "Integration": {
      "IntegrationHttpMethod": "POST",
@@ -800,7 +800,7 @@
   "AtmosphereAllocateAtmosphereEndpointApiallocationsidDELETEED8C882B": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "NONE",
+    "AuthorizationType": "AWS_IAM",
     "HttpMethod": "DELETE",
     "Integration": {
      "IntegrationHttpMethod": "POST",
@@ -890,7 +890,7 @@
     "AtmosphereAllocateAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocateAtmosphereAllocateAtmosphereEndpointApi6C562F47POSTallocations551CBD3D",
     "AtmosphereAllocateAtmosphereEndpointApiallocationsPOST9A5A7C99",
     "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD",
-    "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e",
+    "AtmosphereAllocateAtmosphereEndpointApiDeployment472545233d5afa34c952dc1e0a41fa58441c9ba4",
     "AtmosphereAllocateAtmosphereEndpointApiDeploymentStageprodC3693A4E",
     "AtmosphereAllocateAtmosphereEndpointApiE730A46D",
     "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
@@ -942,7 +942,7 @@
     "AtmosphereAllocateAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocateAtmosphereAllocateAtmosphereEndpointApi6C562F47POSTallocations551CBD3D",
     "AtmosphereAllocateAtmosphereEndpointApiallocationsPOST9A5A7C99",
     "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD",
-    "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e",
+    "AtmosphereAllocateAtmosphereEndpointApiDeployment472545233d5afa34c952dc1e0a41fa58441c9ba4",
     "AtmosphereAllocateAtmosphereEndpointApiDeploymentStageprodC3693A4E",
     "AtmosphereAllocateAtmosphereEndpointApiE730A46D",
     "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
@@ -957,7 +957,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9459abf748a0f9015eea13047629a38b622a3f974447b34a8c6b5deb97cada82.zip"
+     "S3Key": "452ce83631d849202347017de7114a04ffb89f33e385686665bca47527b9cc29.zip"
     },
     "Description": "test/integ/allocate/assert.lambda.ts",
     "Environment": {
@@ -998,7 +998,7 @@
     "AtmosphereAllocateAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocateAtmosphereAllocateAtmosphereEndpointApi6C562F47POSTallocations551CBD3D",
     "AtmosphereAllocateAtmosphereEndpointApiallocationsPOST9A5A7C99",
     "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD",
-    "AtmosphereAllocateAtmosphereEndpointApiDeployment47254523e6d0703cbf08ddb03fd180f31c309c7e",
+    "AtmosphereAllocateAtmosphereEndpointApiDeployment472545233d5afa34c952dc1e0a41fa58441c9ba4",
     "AtmosphereAllocateAtmosphereEndpointApiDeploymentStageprodC3693A4E",
     "AtmosphereAllocateAtmosphereEndpointApiE730A46D",
     "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
