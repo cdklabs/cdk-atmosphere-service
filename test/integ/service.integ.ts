@@ -7,7 +7,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct, IConstruct } from 'constructs';
 import { SUCCESS_PAYLOAD } from './service.session';
-import { ASSERT_HANDLER_FILE } from '../../projenrc/integ.handler.bundle';
+import { ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
 import { AtmosphereService } from '../../src';
 
 /**
@@ -90,6 +90,7 @@ export class AtmosphereIntegTest extends Construct {
     this.integ = new IntegTest(cdk.App.of(this)!, 'IntegTest', {
       testCases: [cdk.Stack.of(this)],
       assertionStack: new cdk.Stack(cdk.App.of(this), `${cdk.Stack.of(this).stackName}-assertions`),
+      diffAssets: true,
     });
 
     // invoke the api and assert it didn't fail on an assertion error

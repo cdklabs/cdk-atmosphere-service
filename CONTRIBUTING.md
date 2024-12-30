@@ -7,11 +7,15 @@ and is comporised of:
 
 - `integ.*.ts.snapshot`: Snapshot directory of all test related resources.
 - `assert.lambda.ts`: Lambda handler function that performs assertions on the deployed resources.
-- `integ.*.ts`: CDK test definition file.
+- `integ.*.ts`: CDK integration test definition file.
 
-### Executing Tests
+### Running all tests
 
-To run the tests, obtain credentials to an AWS account and run `yarn integ`. This will synthesize all
+Before creating a PR
+
+1. Obtain credentials to an AWS account.
+2. `yarn integ`
+
 tests and compare the output against the comitted snapshot. If a difference is detected, you'll
 need to update snapshot of the test by running `yarn integ:update`.
 

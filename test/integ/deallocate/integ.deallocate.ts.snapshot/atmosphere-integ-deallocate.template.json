@@ -957,7 +957,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6bbe3a77e22ea7538f54a6191d066346d8327187e0424bd6953617f474e82b69.zip"
+     "S3Key": "28127854674ef16c133264214bc129d2064f05969ff7fd205f517df1c46634c1.zip"
     },
     "Description": "test/integ/deallocate/assert.lambda.ts",
     "Environment": {

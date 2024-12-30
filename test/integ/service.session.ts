@@ -15,16 +15,34 @@ export const SUCCESS_PAYLOAD = 'OK';
 export class Session {
 
   /**
+   * Running locally or in lambda as part of integ.
+   */
+  public static isLocal() {
+    return process.env.CDK_ATMOSPHERE_INTEG !== 'true';
+  }
+
+  /**
    * Run an assertion function in a fresh service state.
    */
-  public static async run(assert: (session: Session) => Promise<void>): Promise<string> {
+  public static async assert(assertion: (session: Session) => Promise<void>): Promise<string> {
     const session = await this.create();
     await session.clear();
+    let failed = false;
     try {
-      await assert(session);
+      session.sessionLog('🎬 Start 🎬');
+      await assertion(session);
+      session.sessionLog('✅ Success ✅');
       return SUCCESS_PAYLOAD;
+    } catch (error: any) {
+      session.sessionLog('❌ !! Fail !! ❌');
+      failed = true;
+      throw error;
     } finally {
-      await session.clear();
+      if (failed && Session.isLocal()) {
+        session.sessionLog('Not clearing state to help troubleshoot the error');
+      } else {
+        await session.clear();
+      }
     }
   }
 
@@ -42,22 +60,26 @@ export class Session {
   }
 
   public async allocate(body: AllocationRequest): Promise<TestInvokeMethodCommandOutput> {
+    const json = JSON.stringify(body);
+    this.log(`Sending allocation request with body: ${json}`);
     return apigw.testInvokeMethod({
       restApiId: this.api.id,
       resourceId: this.api.allocationsResourceId,
       httpMethod: 'POST',
       pathWithQueryString: '/allocations',
-      body: JSON.stringify(body),
+      body: json,
     });
   }
 
   public async deallocate(id: string, body: DeallocationRequest): Promise<TestInvokeMethodCommandOutput> {
+    const json = JSON.stringify(body);
+    this.log(`Sending deallocation request for allocation '${id}' with body: ${json}`);
     return apigw.testInvokeMethod({
       restApiId: this.api.id,
       resourceId: this.api.allocationResourceId,
       httpMethod: 'DELETE',
       pathWithQueryString: `/allocations/${id}`,
-      body: JSON.stringify(body),
+      body: json,
     });
   }
 
@@ -79,9 +101,10 @@ export class Session {
   }
 
   private async clear() {
+    this.sessionLog('Clearing state');
     const environments = (await dynamo.scan({ TableName: this.environmentsTableName })).Items ?? [];
     for (const environment of environments) {
-      console.log(`Deleting environment aws://${environment.account.S!}/${environment.region.S!}`);
+      this.sessionLog(`  » deleting environment aws://${environment.account.S!}/${environment.region.S!}`);
       await dynamo.deleteItem({
         TableName: this.environmentsTableName,
         Key: {
@@ -93,7 +116,7 @@ export class Session {
 
     const allocations = (await dynamo.scan({ TableName: this.allocationsTableName })).Items ?? [];
     for (const allocation of allocations) {
-      console.log(`Deleting allocation ${allocation.id.S!}`);
+      this.sessionLog(`  » deleting allocation ${allocation.id.S!}`);
       await dynamo.deleteItem({
         TableName: this.allocationsTableName,
         Key: {
@@ -102,6 +125,14 @@ export class Session {
       });
     }
 
+  }
+
+  public log(message: string) {
+    console.log(`[${new Date().toISOString()}] [assertion] ${message}`);
+  }
+
+  private sessionLog(message: string) {
+    console.log(`[${new Date().toISOString()}] [session] ${message}`);
   }
 
 }

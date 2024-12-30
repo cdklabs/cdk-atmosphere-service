@@ -1,6 +1,6 @@
 import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
 import { JsonPatch } from 'projen';
-import { IntegHandlerBundle } from './projenrc/integ.handler.bundle';
+import { IntegTests } from './projenrc/integ-tests';
 
 const coverageThreshold = 95;
 
@@ -48,7 +48,6 @@ const project = new CdklabsConstructLibrary({
 
 project.package.file.patch(JsonPatch.add('/jest/randomize', true));
 
-new IntegHandlerBundle(project, { directory: 'allocate' });
-new IntegHandlerBundle(project, { directory: 'deallocate' });
+IntegTests.discover(project);
 
 project.synth();

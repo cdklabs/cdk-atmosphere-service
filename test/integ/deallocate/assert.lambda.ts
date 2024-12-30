@@ -3,7 +3,7 @@ import { Session } from '../service.session';
 
 export async function handler(_: any) {
 
-  return Session.run(async (session: Session) => {
+  return Session.assert(async (session: Session) => {
     const output = await session.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(output.body!);
 

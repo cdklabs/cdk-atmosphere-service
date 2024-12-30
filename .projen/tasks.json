@@ -39,6 +39,9 @@
         },
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
         }
       ]
     },
@@ -91,6 +94,14 @@
       "steps": [
         {
           "exec": "esbuild --bundle test/integ/deallocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/deallocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/dev/assert.lambda.ts": {
+      "name": "bundle:test/integ/dev/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/dev/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/dev/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -210,14 +221,56 @@
       "description": "Run integration snapshot tests",
       "steps": [
         {
+          "spawn": "bundle"
+        },
+        {
           "exec": "yarn integ-runner --language typescript",
           "receiveArgs": true
+        }
+      ]
+    },
+    "integ:assert": {
+      "name": "integ:assert",
+      "steps": [
+        {
+          "spawn": "integ:test/allocate:assert"
+        },
+        {
+          "spawn": "integ:test/deallocate:assert"
+        },
+        {
+          "spawn": "integ:test/dev:assert"
+        }
+      ]
+    },
+    "integ:dev": {
+      "name": "integ:dev",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "spawn": "integ:test/dev:deploy"
+        }
+      ]
+    },
+    "integ:force": {
+      "name": "integ:force",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --force"
         }
       ]
     },
     "integ:test/allocate": {
       "name": "integ:test/allocate",
       "steps": [
+        {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
         {
           "exec": "yarn integ-runner --language typescript --directory test/integ/allocate"
         }
@@ -235,13 +288,41 @@
       "name": "integ:test/allocate:deploy",
       "steps": [
         {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
+        {
           "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/allocate:force": {
+      "name": "integ:test/allocate:force",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --force"
+        }
+      ]
+    },
+    "integ:test/allocate:snapshot": {
+      "name": "integ:test/allocate:snapshot",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --dry-run --force"
         }
       ]
     },
     "integ:test/allocate:update": {
       "name": "integ:test/allocate:update",
       "steps": [
+        {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
         {
           "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --update-on-failed"
         }
@@ -250,6 +331,9 @@
     "integ:test/deallocate": {
       "name": "integ:test/deallocate",
       "steps": [
+        {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+        },
         {
           "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate"
         }
@@ -267,7 +351,32 @@
       "name": "integ:test/deallocate:deploy",
       "steps": [
         {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+        },
+        {
           "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/deallocate:force": {
+      "name": "integ:test/deallocate:force",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --force"
+        }
+      ]
+    },
+    "integ:test/deallocate:snapshot": {
+      "name": "integ:test/deallocate:snapshot",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --dry-run --force"
         }
       ]
     },
@@ -275,7 +384,73 @@
       "name": "integ:test/deallocate:update",
       "steps": [
         {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+        },
+        {
           "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/dev": {
+      "name": "integ:test/dev",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/dev"
+        }
+      ]
+    },
+    "integ:test/dev:assert": {
+      "name": "integ:test/dev:assert",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/dev/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/dev:deploy": {
+      "name": "integ:test/dev:deploy",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/dev:force": {
+      "name": "integ:test/dev:force",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --force"
+        }
+      ]
+    },
+    "integ:test/dev:snapshot": {
+      "name": "integ:test/dev:snapshot",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --dry-run --force"
+        }
+      ]
+    },
+    "integ:test/dev:update": {
+      "name": "integ:test/dev:update",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --update-on-failed"
         }
       ]
     },
@@ -283,6 +458,9 @@
       "name": "integ:update",
       "description": "Run and update integration snapshot tests",
       "steps": [
+        {
+          "spawn": "bundle"
+        },
         {
           "exec": "yarn integ-runner --language typescript --update-on-failed",
           "receiveArgs": true
