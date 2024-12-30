@@ -33,6 +33,12 @@
         },
         {
           "spawn": "bundle:deallocate/deallocate.lambda"
+        },
+        {
+          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
         }
       ]
     },
@@ -69,6 +75,22 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:test/integ/allocate/assert.lambda.ts": {
+      "name": "bundle:test/integ/allocate/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/allocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/allocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/deallocate/assert.lambda.ts": {
+      "name": "bundle:test/integ/deallocate/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/deallocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/deallocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -190,6 +212,70 @@
         {
           "exec": "yarn integ-runner --language typescript",
           "receiveArgs": true
+        }
+      ]
+    },
+    "integ:test/allocate": {
+      "name": "integ:test/allocate",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate"
+        }
+      ]
+    },
+    "integ:test/allocate:assert": {
+      "name": "integ:test/allocate:assert",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/allocate/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/allocate:deploy": {
+      "name": "integ:test/allocate:deploy",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/allocate:update": {
+      "name": "integ:test/allocate:update",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/deallocate": {
+      "name": "integ:test/deallocate",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate"
+        }
+      ]
+    },
+    "integ:test/deallocate:assert": {
+      "name": "integ:test/deallocate:assert",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/deallocate/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/deallocate:deploy": {
+      "name": "integ:test/deallocate:deploy",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/deallocate:update": {
+      "name": "integ:test/deallocate:update",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --update-on-failed"
         }
       ]
     },

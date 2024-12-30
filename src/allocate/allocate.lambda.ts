@@ -12,7 +12,7 @@ class ProxyError extends Error {
   }
 }
 
-interface AllocationRequest {
+export interface AllocationRequest {
   readonly pool: string;
   readonly requester: string;
 }

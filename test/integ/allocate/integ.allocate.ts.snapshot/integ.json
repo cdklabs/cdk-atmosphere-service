@@ -1,0 +1,12 @@
+{
+  "version": "38.0.1",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "atmosphere-integ-allocate"
+      ],
+      "assertionStack": "atmosphere-integ-allocate-assertions",
+      "assertionStackName": "atmosphere-integ-allocate-assertions"
+    }
+  }
+}
