@@ -5,6 +5,7 @@
       "stacks": [
         "atmosphere-integ-allocate"
       ],
+      "diffAssets": true,
       "assertionStack": "atmosphere-integ-allocate-assertions",
       "assertionStackName": "atmosphere-integ-allocate-assertions"
     }

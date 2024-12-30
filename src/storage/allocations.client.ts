@@ -1,9 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as ddb from '@aws-sdk/client-dynamodb';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { v4 as uuidv4 } from 'uuid';
-
 /**
  * Error thrown if the allocation is already ended.
  */
@@ -26,6 +23,10 @@ export class InvalidInputError extends Error {
  * Options for `start`.
  */
 export interface AllocationsStartOptions {
+  /**
+   * Allocation id.
+   */
+  readonly id: string;
 
   /**
    * Account of the environment to be allocated.
@@ -125,20 +126,19 @@ export class AllocationsClient {
   /**
    * Start an allocation for a specific environment. Returns the allocation id.
    */
-  public async start(opts: AllocationsStartOptions): Promise<string> {
+  public async start(opts: AllocationsStartOptions) {
 
     if (Buffer.byteLength(opts.requester) > 1024) {
       // this is user controlled so we impose a max length
       throw new InvalidInputError('requester must be less than 1024 bytes');
     }
 
-    const uuid = uuidv4();
     const nowSeconds = Math.floor(Date.now() / 1000);
     const sixMonthsSeconds = 26 * 7 * 24 * 60 * 60;
     await this.ddbClient.putItem({
       TableName: this.tableName,
       Item: {
-        id: { S: uuid },
+        id: { S: opts.id },
         account: { S: opts.account },
         region: { S: opts.region },
         pool: { S: opts.pool },
@@ -147,7 +147,6 @@ export class AllocationsClient {
         ttl: { N: `${nowSeconds + sixMonthsSeconds}` },
       },
     });
-    return uuid;
   }
 
   /**

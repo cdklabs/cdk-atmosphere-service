@@ -1,6 +1,6 @@
 import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyInStatusError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('EnvironmentsClient', () => {
@@ -18,7 +18,7 @@ describe('EnvironmentsClient', () => {
       ddbMock.on(PutItemCommand).rejectsOnce(new Error('unexpected'));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.acquire('1111', 'us-east-1')).rejects.toThrow('unexpected');
+      await expect(() => client.acquire('id', '1111', 'us-east-1')).rejects.toThrow('unexpected');
 
     });
 
@@ -31,32 +31,41 @@ describe('EnvironmentsClient', () => {
         }));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.acquire('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyAcquiredError);
+      await expect(() => client.acquire('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyAcquiredError);
 
     });
 
     test('inserts a new item to the table', async () => {
 
       const client = new EnvironmentsClient('table');
-      await client.acquire('1111', 'us-east-1');
+      await client.acquire('id', '1111', 'us-east-1');
 
       // kind of a silly assertion but there's not much more we can in unit tests
-      const expected = {
-        ConditionExpression: 'attribute_not_exists(#account) AND attribute_not_exists(#region)',
-        ExpressionAttributeNames: {
-          '#region': 'region',
-          '#account': 'account',
-        },
-        Item: {
-          account: { S: '1111' },
-          region: { S: 'us-east-1' },
-          status: { S: 'in-use' },
-        },
-        TableName: 'table',
-      };
-
       expect(ddbMock).toHaveReceivedCommandTimes(PutItemCommand, 1);
-      expect(ddbMock).toHaveReceivedCommandWith(PutItemCommand, expected);
+      expect(ddbMock.commandCall(0, PutItemCommand).args[0].input).toMatchInlineSnapshot(`
+{
+  "ConditionExpression": "attribute_not_exists(#account) AND attribute_not_exists(#region)",
+  "ExpressionAttributeNames": {
+    "#account": "account",
+    "#region": "region",
+  },
+  "Item": {
+    "account": {
+      "S": "1111",
+    },
+    "allocation": {
+      "S": "id",
+    },
+    "region": {
+      "S": "us-east-1",
+    },
+    "status": {
+      "S": "in-use",
+    },
+  },
+  "TableName": "table",
+}
+`);
 
     });
 
@@ -70,7 +79,7 @@ describe('EnvironmentsClient', () => {
         .rejectsOnce(new Error('unexpected'));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.release('1111', 'us-east-1')).rejects.toThrow('unexpected');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow('unexpected');
 
     });
 
@@ -83,31 +92,57 @@ describe('EnvironmentsClient', () => {
         }));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.release('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReleasedError);
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReleasedError);
+
+    });
+
+    test('throws explicit error when an environment is already reallocated', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {
+            allocation: { S: 'old-id' },
+          },
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReallocated);
 
     });
 
     test('deletes an item from the table', async () => {
 
       const client = new EnvironmentsClient('table');
-      await client.release('1111', 'us-east-1');
-
-      // kind of a silly assertion but there's not much more we can in unit tests
-      const expected = {
-        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region)',
-        ExpressionAttributeNames: {
-          '#region': 'region',
-          '#account': 'account',
-        },
-        Key: {
-          account: { S: '1111' },
-          region: { S: 'us-east-1' },
-        },
-        TableName: 'table',
-      };
+      await client.release('id', '1111', 'us-east-1');
 
       expect(ddbMock).toHaveReceivedCommandTimes(DeleteItemCommand, 1);
-      expect(ddbMock).toHaveReceivedCommandWith(DeleteItemCommand, expected);
+      expect(ddbMock.commandCall(0, DeleteItemCommand).args[0].input).toMatchInlineSnapshot(`
+{
+  "ConditionExpression": "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value",
+  "ExpressionAttributeNames": {
+    "#account": "account",
+    "#allocation": "allocation",
+    "#region": "region",
+  },
+  "ExpressionAttributeValues": {
+    ":allocation_value": {
+      "S": "id",
+    },
+  },
+  "Key": {
+    "account": {
+      "S": "1111",
+    },
+    "region": {
+      "S": "us-east-1",
+    },
+  },
+  "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
+  "TableName": "table",
+}
+`);
 
     });
 
@@ -121,7 +156,7 @@ describe('EnvironmentsClient', () => {
         .rejectsOnce(new Error('unexpected'));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.cleaning('1111', 'us-east-1')).rejects.toThrow('unexpected');
+      await expect(() => client.cleaning('id', '1111', 'us-east-1')).rejects.toThrow('unexpected');
 
     });
 
@@ -131,33 +166,67 @@ describe('EnvironmentsClient', () => {
         .rejectsOnce(new ConditionalCheckFailedException({
           $metadata: {},
           message: 'The conditional request failed',
+          Item: {
+            status: { S: 'cleaning' },
+            allocation: { S: 'id' },
+          },
         }));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.cleaning('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyCleaningError);
+      await expect(() => client.cleaning('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyInStatusError);
+
+    });
+
+    test('throws explicit error when an environment is already released', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.cleaning('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReleasedError);
 
     });
 
     test('sets the status to cleaning', async () => {
 
       const client = new EnvironmentsClient('table');
-      await client.cleaning('1111', 'us-east-1');
-
-      // kind of a silly assertion but there's not much more we can in unit tests
-      const expected = {
-        ConditionExpression: '#status <> :status_value',
-        ExpressionAttributeNames: { '#status': 'status' },
-        ExpressionAttributeValues: { ':status_value': { S: 'cleaning' } },
-        Key: {
-          account: { S: '1111' },
-          region: { S: 'us-east-1' },
-        },
-        TableName: 'table',
-        UpdateExpression: 'SET #status = :status_value',
-      };
+      await client.cleaning('id', '1111', 'us-east-1');
 
       expect(ddbMock).toHaveReceivedCommandTimes(UpdateItemCommand, 1);
-      expect(ddbMock).toHaveReceivedCommandWith(UpdateItemCommand, expected);
+
+      // kind of a silly assertion but there's not much more we can in unit tests
+      // at least it being a snapshot, its easy to update.
+      expect(ddbMock.commandCall(0, UpdateItemCommand).args[0].input).toMatchInlineSnapshot(`
+{
+  "ConditionExpression": "#allocation = :allocation_value AND #status <> :status_value",
+  "ExpressionAttributeNames": {
+    "#allocation": "allocation",
+    "#status": "status",
+  },
+  "ExpressionAttributeValues": {
+    ":allocation_value": {
+      "S": "id",
+    },
+    ":status_value": {
+      "S": "cleaning",
+    },
+  },
+  "Key": {
+    "account": {
+      "S": "1111",
+    },
+    "region": {
+      "S": "us-east-1",
+    },
+  },
+  "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
+  "TableName": "table",
+  "UpdateExpression": "SET #status = :status_value",
+}
+`);
 
     });
 
@@ -171,7 +240,7 @@ describe('EnvironmentsClient', () => {
         .rejectsOnce(new Error('unexpected'));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.dirty('1111', 'us-east-1')).rejects.toThrow('unexpected');
+      await expect(() => client.dirty('id', '1111', 'us-east-1')).rejects.toThrow('unexpected');
 
     });
 
@@ -181,33 +250,84 @@ describe('EnvironmentsClient', () => {
         .rejectsOnce(new ConditionalCheckFailedException({
           $metadata: {},
           message: 'The conditional request failed',
+          Item: {
+            status: { S: 'dirty' },
+            allocation: { S: 'id' },
+          },
         }));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.dirty('1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyDirtyError);
+      await expect(() => client.dirty('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyInStatusError);
+
+    });
+
+    test('throws explicit error when an environment is already reallocated', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {
+            status: { S: 'dirty' },
+            allocation: { S: 'old-id' },
+          },
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.dirty('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReallocated);
+
+    });
+
+    test('throws explicit error when an environment is already released', async () => {
+
+      ddbMock.on(UpdateItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.dirty('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyReleasedError);
 
     });
 
     test('sets the status to dirty', async () => {
 
       const client = new EnvironmentsClient('table');
-      await client.dirty('1111', 'us-east-1');
-
-      // kind of a silly assertion but there's not much more we can in unit tests
-      const expected = {
-        ConditionExpression: '#status <> :status_value',
-        ExpressionAttributeNames: { '#status': 'status' },
-        ExpressionAttributeValues: { ':status_value': { S: 'dirty' } },
-        Key: {
-          account: { S: '1111' },
-          region: { S: 'us-east-1' },
-        },
-        TableName: 'table',
-        UpdateExpression: 'SET #status = :status_value',
-      };
+      await client.dirty('id', '1111', 'us-east-1');
 
       expect(ddbMock).toHaveReceivedCommandTimes(UpdateItemCommand, 1);
-      expect(ddbMock).toHaveReceivedCommandWith(UpdateItemCommand, expected);
+
+      // kind of a silly assertion but there's not much more we can in unit tests
+      // at least it being a snapshot, its easy to update.
+      expect(ddbMock.commandCall(0, UpdateItemCommand).args[0].input).toMatchInlineSnapshot(`
+{
+  "ConditionExpression": "#allocation = :allocation_value AND #status <> :status_value",
+  "ExpressionAttributeNames": {
+    "#allocation": "allocation",
+    "#status": "status",
+  },
+  "ExpressionAttributeValues": {
+    ":allocation_value": {
+      "S": "id",
+    },
+    ":status_value": {
+      "S": "dirty",
+    },
+  },
+  "Key": {
+    "account": {
+      "S": "1111",
+    },
+    "region": {
+      "S": "us-east-1",
+    },
+  },
+  "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
+  "TableName": "table",
+  "UpdateExpression": "SET #status = :status_value",
+}
+`);
 
     });
 

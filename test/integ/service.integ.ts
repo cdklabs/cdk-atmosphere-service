@@ -90,6 +90,7 @@ export class AtmosphereIntegTest extends Construct {
     this.integ = new IntegTest(cdk.App.of(this)!, 'IntegTest', {
       testCases: [cdk.Stack.of(this)],
       assertionStack: new cdk.Stack(cdk.App.of(this), `${cdk.Stack.of(this).stackName}-assertions`),
+      diffAssets: true,
     });
 
     // invoke the api and assert it didn't fail on an assertion error
