@@ -1,6 +1,18 @@
 # Contributing the CDK Atmosphere Service
 
-## Integration Tests
+## Building
+
+`yarn build`
+
+This command performs the following steps:
+
+1. Compile `TypeScript`.
+2. Run `ESLint`.
+3. Run unit tests with `jest`.
+4. Run integration tests in [snapshot mode](#updating-snapshots).
+5. Package artifacts.
+
+## Integration Testing
 
 Integration tests are located inside [test/integ](./test/integ/). Each directory represents a different test,
 and is comporised of:
@@ -9,13 +21,19 @@ and is comporised of:
 - `assert.lambda.ts`: Lambda handler function that performs assertions on the deployed resources.
 - `integ.*.ts`: CDK integration test definition file.
 
-### Running all tests
+### Running
 
-Before creating a PR
+`yarn integ`
 
-1. Obtain credentials to an AWS account.
-2. `yarn integ`
+Integration tests are executed in snapshot mode during project build.
 
+### Updating Snapshots
+
+`yarn integ:update`
+
+> Your terminal must have access to AWS credentials for this to work.
+
+During 
 tests and compare the output against the comitted snapshot. If a difference is detected, you'll
 need to update snapshot of the test by running `yarn integ:update`.
 
