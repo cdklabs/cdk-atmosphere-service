@@ -27,11 +27,7 @@
      }
     },
     "flattenResponse": "false",
-<<<<<<< HEAD
-    "salt": "1735597641589"
-=======
-    "salt": "1735591052917"
->>>>>>> main
+    "salt": "1735641390950"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

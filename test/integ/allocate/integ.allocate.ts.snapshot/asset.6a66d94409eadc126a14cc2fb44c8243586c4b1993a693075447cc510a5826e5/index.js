@@ -27,12 +27,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/dev/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler
 });
 module.exports = __toCommonJS(assert_lambda_exports);
+var assert2 = __toESM(require("assert"));
 
 // test/integ/service.session.ts
 var assert = __toESM(require("assert"));
@@ -70,7 +71,8 @@ var SUCCESS_PAYLOAD = "OK";
 var Session = class _Session {
   constructor(vars) {
     this.vars = vars;
-    this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
+    this.sessionLog("Created session with variables:");
+    console.log(JSON.stringify(this.vars, null, 2));
   }
   /**
    * Running locally or in lambda as part of integ.
@@ -105,7 +107,7 @@ var Session = class _Session {
   static async create() {
     let envValue;
     if (_Session.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmoshpere-integ-dev" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
@@ -194,13 +196,22 @@ var Session = class _Session {
   }
 };
 
-// test/integ/dev/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 async function handler(_) {
-  return Session.assert(async () => {
-    return;
+  return Session.assert(async (session) => {
+    let output = await session.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(output.status, 200, "Expected first allocation to succeed");
+    const body = JSON.parse(output.body);
+    const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);
+    const allocation = await session.fetchAllocation(body.id);
+    assert2.strictEqual(environment.Item.status.S, "in-use");
+    assert2.strictEqual(allocation.Item.account.S, body.environment.account);
+    assert2.strictEqual(allocation.Item.region.S, body.environment.region);
+    output = await session.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(output.status, 423, "Expected second allocation to fail");
   });
 }
-if (Session.isLocal()) {
+if (process.env.CDK_ATMOSPHERE_INTEG !== "true") {
   void handler({});
 }
 // Annotate the CommonJS export names for ESM import in node:

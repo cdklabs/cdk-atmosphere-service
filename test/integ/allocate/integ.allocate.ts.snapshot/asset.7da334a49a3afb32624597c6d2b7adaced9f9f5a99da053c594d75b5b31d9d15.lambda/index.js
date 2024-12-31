@@ -69,6 +69,28 @@ var ConfigurationClient = class {
   }
 };
 
+// src/envars.ts
+var ENV_PREFIX = "CDK_ATMOSPHERE_";
+var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
+var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
+var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
+var REST_API_ID_ENV = `${ENV_PREFIX}REST_API_ID`;
+var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
+var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
+var Envars = class _Envars {
+  static required(name) {
+    const value2 = _Envars.optional(name);
+    if (!value2) {
+      throw new Error(`Missing environment variable: ${name}`);
+    }
+    return value2;
+  }
+  static optional(name) {
+    return process.env[name];
+  }
+};
+
 // src/storage/allocations.client.ts
 var ddb = __toESM(require("@aws-sdk/client-dynamodb"));
 var AllocationAlreadyEndedError = class extends Error {
@@ -330,10 +352,6 @@ var EnvironmentsClient = class {
 };
 
 // src/clients.ts
-var ALLOCATIONS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME";
-var ENVIRONMENTS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME";
-var CONFIGURATION_BUCKET_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET";
-var CONFIGURATION_KEY_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY";
 var RuntimeClients = class _RuntimeClients {
   static getOrCreate() {
     if (!this._instance) {
@@ -343,34 +361,27 @@ var RuntimeClients = class _RuntimeClients {
   }
   get configuration() {
     if (!this._configuration) {
-      const bucket = requireEnv(CONFIGURATION_BUCKET_ENV);
-      const key = requireEnv(CONFIGURATION_KEY_ENV);
+      const bucket = Envars.required(CONFIGURATION_BUCKET_ENV);
+      const key = Envars.required(CONFIGURATION_KEY_ENV);
       this._configuration = new ConfigurationClient({ bucket, key });
     }
     return this._configuration;
   }
   get environments() {
     if (!this._environments) {
-      const tableName = requireEnv(ENVIRONMENTS_TABLE_NAME_ENV);
+      const tableName = Envars.required(ENVIRONMENTS_TABLE_NAME_ENV);
       this._environments = new EnvironmentsClient(tableName);
     }
     return this._environments;
   }
   get allocations() {
     if (!this._allocations) {
-      const tableName = requireEnv(ALLOCATIONS_TABLE_NAME_ENV);
+      const tableName = Envars.required(ALLOCATIONS_TABLE_NAME_ENV);
       this._allocations = new AllocationsClient(tableName);
     }
     return this._allocations;
   }
 };
-function requireEnv(name) {
-  const value2 = process.env[name];
-  if (!value2) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value2;
-}
 
 // src/deallocate/deallocate.lambda.ts
 var ProxyError = class extends Error {
