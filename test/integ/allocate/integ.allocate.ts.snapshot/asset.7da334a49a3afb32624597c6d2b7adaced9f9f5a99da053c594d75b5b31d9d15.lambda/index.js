@@ -27,58 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/allocate/allocate.lambda.ts
-var allocate_lambda_exports = {};
-__export(allocate_lambda_exports, {
+// src/deallocate/deallocate.lambda.ts
+var deallocate_lambda_exports = {};
+__export(deallocate_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(allocate_lambda_exports);
-var import_client_sts = require("@aws-sdk/client-sts");
-
-// node_modules/uuid/dist/esm/stringify.js
-var byteToHex = [];
-for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 256).toString(16).slice(1));
-}
-function unsafeStringify(arr, offset = 0) {
-  return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
-}
-
-// node_modules/uuid/dist/esm/rng.js
-var import_crypto = require("crypto");
-var rnds8Pool = new Uint8Array(256);
-var poolPtr = rnds8Pool.length;
-function rng() {
-  if (poolPtr > rnds8Pool.length - 16) {
-    (0, import_crypto.randomFillSync)(rnds8Pool);
-    poolPtr = 0;
-  }
-  return rnds8Pool.slice(poolPtr, poolPtr += 16);
-}
-
-// node_modules/uuid/dist/esm/native.js
-var import_crypto2 = require("crypto");
-var native_default = { randomUUID: import_crypto2.randomUUID };
-
-// node_modules/uuid/dist/esm/v4.js
-function v4(options, buf, offset) {
-  if (native_default.randomUUID && !buf && !options) {
-    return native_default.randomUUID();
-  }
-  options = options || {};
-  const rnds = options.random || (options.rng || rng)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i = 0; i < 16; ++i) {
-      buf[offset + i] = rnds[i];
-    }
-    return buf;
-  }
-  return unsafeStringify(rnds);
-}
-var v4_default = v4;
+module.exports = __toCommonJS(deallocate_lambda_exports);
 
 // src/config/configuration.client.ts
 var s3 = __toESM(require("@aws-sdk/client-s3"));
@@ -112,6 +66,28 @@ var ConfigurationClient = class {
       throw new Error(`Configuration file (s3://${this.s3Location.bucket}/${this.s3Location.key}) is empty`);
     }
     return JSON.parse(await response.Body.transformToString("utf-8"));
+  }
+};
+
+// src/envars.ts
+var ENV_PREFIX = "CDK_ATMOSPHERE_";
+var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
+var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
+var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
+var REST_API_ID_ENV = `${ENV_PREFIX}REST_API_ID`;
+var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
+var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
+var Envars = class _Envars {
+  static required(name) {
+    const value2 = _Envars.optional(name);
+    if (!value2) {
+      throw new Error(`Missing environment variable: ${name}`);
+    }
+    return value2;
+  }
+  static optional(name) {
+    return process.env[name];
   }
 };
 
@@ -376,10 +352,6 @@ var EnvironmentsClient = class {
 };
 
 // src/clients.ts
-var ALLOCATIONS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME";
-var ENVIRONMENTS_TABLE_NAME_ENV = "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME";
-var CONFIGURATION_BUCKET_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET";
-var CONFIGURATION_KEY_ENV = "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY";
 var RuntimeClients = class _RuntimeClients {
   static getOrCreate() {
     if (!this._instance) {
@@ -389,36 +361,29 @@ var RuntimeClients = class _RuntimeClients {
   }
   get configuration() {
     if (!this._configuration) {
-      const bucket = requireEnv(CONFIGURATION_BUCKET_ENV);
-      const key = requireEnv(CONFIGURATION_KEY_ENV);
+      const bucket = Envars.required(CONFIGURATION_BUCKET_ENV);
+      const key = Envars.required(CONFIGURATION_KEY_ENV);
       this._configuration = new ConfigurationClient({ bucket, key });
     }
     return this._configuration;
   }
   get environments() {
     if (!this._environments) {
-      const tableName = requireEnv(ENVIRONMENTS_TABLE_NAME_ENV);
+      const tableName = Envars.required(ENVIRONMENTS_TABLE_NAME_ENV);
       this._environments = new EnvironmentsClient(tableName);
     }
     return this._environments;
   }
   get allocations() {
     if (!this._allocations) {
-      const tableName = requireEnv(ALLOCATIONS_TABLE_NAME_ENV);
+      const tableName = Envars.required(ALLOCATIONS_TABLE_NAME_ENV);
       this._allocations = new AllocationsClient(tableName);
     }
     return this._allocations;
   }
 };
-function requireEnv(name) {
-  const value2 = process.env[name];
-  if (!value2) {
-    throw new Error(`Missing environment variable: ${name}`);
-  }
-  return value2;
-}
 
-// src/allocate/allocate.lambda.ts
+// src/deallocate/deallocate.lambda.ts
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -430,22 +395,23 @@ var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   try {
+    const id = (event.pathParameters ?? {}).id;
+    if (!id) {
+      throw new ProxyError(400, "Missing 'id' path parameter");
+    }
+    console.log(`Extracted allocation id from path: ${id}`);
     console.log("Parsing request body");
     const request = parseRequestBody(event.body);
-    const allocationId = v4_default();
-    console.log(`Acquiring environment from pool '${request.pool}'`);
-    const environment = await acquireEnvironment(allocationId, request.pool);
-    console.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
-    await startAllocation(allocationId, environment, request.requester);
-    console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(allocationId, environment);
-    console.log(`Allocation '${allocationId}' started successfully`);
-    const response = { id: allocationId, environment, credentials };
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response)
-    };
+    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    return success();
   } catch (e) {
+    if (e instanceof AllocationAlreadyEndedError) {
+      console.log(`Returning success because: ${e.message}`);
+      return success();
+    }
     console.error(e);
     return {
       statusCode: e instanceof ProxyError ? e.statusCode : 500,
@@ -458,41 +424,14 @@ function parseRequestBody(body) {
     throw new ProxyError(400, "Request body not found");
   }
   const parsed = JSON.parse(body);
-  if (!parsed.pool) {
-    throw new ProxyError(400, "'pool' must be provided in the request body");
-  }
-  if (!parsed.requester) {
-    throw new ProxyError(400, "'requester' must be provided in the request body");
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
   }
   return parsed;
 }
-async function acquireEnvironment(allocaionId, pool) {
-  const candidates = await clients.configuration.listEnvironments({ pool });
-  console.log(`Found ${candidates.length} environments in pool '${pool}'`);
-  for (const canditate of candidates) {
-    try {
-      console.log(`Acquiring environment 'aws://${canditate.account}/${canditate.region}'...`);
-      await clients.environments.acquire(allocaionId, canditate.account, canditate.region);
-      return canditate;
-    } catch (e) {
-      if (e instanceof EnvironmentAlreadyAcquiredError) {
-        console.log(`Environment 'aws://${canditate.account}/${canditate.region}' already acquired. Trying the next one.`);
-        continue;
-      }
-      throw e;
-    }
-  }
-  throw new ProxyError(423, `No environments available in pool '${pool}'`);
-}
-async function startAllocation(id, environment, requester) {
+async function endAllocation(id, outcome) {
   try {
-    await clients.allocations.start({
-      id,
-      account: environment.account,
-      region: environment.region,
-      pool: environment.pool,
-      requester
-    });
+    return await clients.allocations.end({ id, outcome });
   } catch (e) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError(400, e.message);
@@ -500,28 +439,12 @@ async function startAllocation(id, environment, requester) {
     throw e;
   }
 }
-async function grabCredentials(id, environment) {
-  const sts = new import_client_sts.STS();
-  const assumed = await sts.assumeRole({
-    RoleArn: environment.adminRoleArn,
-    RoleSessionName: `atmosphere.allocation.${id}`
-  });
-  if (!assumed.Credentials) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
-  }
-  if (!assumed.Credentials.AccessKeyId) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
-  }
-  if (!assumed.Credentials.SecretAccessKey) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
-  }
-  if (!assumed.Credentials.SessionToken) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
-  }
+function success() {
   return {
-    accessKeyId: assumed.Credentials.AccessKeyId,
-    secretAccessKey: assumed.Credentials.SecretAccessKey,
-    sessionToken: assumed.Credentials.SessionToken
+    statusCode: 200,
+    // we currently don't need a response body for a
+    // succesfull dellocation
+    body: JSON.stringify({})
   };
 }
 // Annotate the CommonJS export names for ESM import in node:

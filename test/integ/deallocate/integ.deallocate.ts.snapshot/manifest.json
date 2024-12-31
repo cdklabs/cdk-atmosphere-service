@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75bda5ea3d558fa5c54232903323c8fd69ce74e9e47d2672495e84363a38f075.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d23cf8dda99954dfe9b049d5773b06805131eb1709ccddd329bd05015ca94540.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -202,6 +202,48 @@
             "data": "AtmosphereAllocateAssert63CFAF40"
           }
         ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHEREENVIRONMENTSTABLENAMECA125DA0"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHEREALLOCATIONSTABLENAME658910D5"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHERECONFIGURATIONFILEBUCKET3019E5D6"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHERECONFIGURATIONFILEKEYC5BC549D"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_REST_API_ID": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHERERESTAPIIDAC2E5805"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHEREALLOCATIONSRESOURCEID0F30CC9E"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHEREALLOCATIONRESOURCEID5B00C56B"
+          }
+        ],
         "/atmosphere-integ-deallocate/Admin/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -298,7 +340,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0e5ab4788682490e63857ca4e23a7acdfe604f1d6caadb10d37258c98ca789ee.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f88e37c3789717538bbca4cea5befc5e83b7860c43d969d8344920c447cf3a2f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

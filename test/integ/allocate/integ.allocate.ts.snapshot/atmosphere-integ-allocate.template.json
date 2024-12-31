@@ -333,7 +333,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f8a6c46f3a2cb037cf14bee7591497b5ef9e597ecd5b455ba41514af48f0fea9.zip"
+     "S3Key": "4986e3e81d3d4dff78d248acf4e0f78367ef888399c7d0b5a536b7cd933f4284.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -459,7 +459,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "000c590f26b879db64bc73737d88ca0e57ba98a73b102e1f2b6cc06365db0697.zip"
+     "S3Key": "7da334a49a3afb32624597c6d2b7adaced9f9f5a99da053c594d75b5b31d9d15.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -957,12 +957,31 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ef398aee16ee3cf35faa870c6d146d00c4252909b1a0fb6f0a9b544417630fa3.zip"
+     "S3Key": "6a66d94409eadc126a14cc2fb44c8243586c4b1993a693075447cc510a5826e5.zip"
     },
     "Description": "test/integ/allocate/assert.lambda.ts",
     "Environment": {
      "Variables": {
-      "CDK_ATMOSPHERE_INTEG": "true"
+      "CDK_ATMOSPHERE_INTEG": "true",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+       "Ref": "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+      "CDK_ATMOSPHERE_REST_API_ID": {
+       "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": {
+       "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD"
+      },
+      "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": {
+       "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocationsidFA0595D7"
+      }
      }
     },
     "Handler": "index.handler",
@@ -1315,6 +1334,39 @@
       "/"
      ]
     ]
+   }
+  },
+  "CDK0ATMOSPHERE0ENVIRONMENTS0TABLE0NAME": {
+   "Value": {
+    "Ref": "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATIONS0TABLE0NAME": {
+   "Value": {
+    "Ref": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
+   }
+  },
+  "CDK0ATMOSPHERE0CONFIGURATION0FILE0BUCKET": {
+   "Value": {
+    "Ref": "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6"
+   }
+  },
+  "CDK0ATMOSPHERE0CONFIGURATION0FILE0KEY": {
+   "Value": "configuration.json"
+  },
+  "CDK0ATMOSPHERE0REST0API0ID": {
+   "Value": {
+    "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATIONS0RESOURCE0ID": {
+   "Value": {
+    "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocations9344F8CD"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATION0RESOURCE0ID": {
+   "Value": {
+    "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocationsidFA0595D7"
    }
   },
   "ExportsOutputRefAtmosphereAllocateAssert63CFAF40B554ACF9": {

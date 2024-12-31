@@ -9,6 +9,7 @@ import { Construct, IConstruct } from 'constructs';
 import { SUCCESS_PAYLOAD } from './service.session';
 import { ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
 import { AtmosphereService } from '../../src';
+import * as envars from '../../src/envars';
 
 /**
  * Properties for `IntegTestAtmosphereService`. Its a scoped down
@@ -72,6 +73,24 @@ export class AtmosphereIntegTest extends Construct {
     assert.addEnvironment('CDK_ATMOSPHERE_INTEG', 'true');
 
     assert.node.addDependency(service);
+
+    const envVariables: envars.EnvironmentVariables = {
+      [envars.ENVIRONMENTS_TABLE_NAME_ENV]: service.environments.table.tableName,
+      [envars.ALLOCATIONS_TABLE_NAME_ENV]: service.allocations.table.tableName,
+      [envars.CONFIGURATION_BUCKET_ENV]: service.config.bucket.bucketName,
+      [envars.CONFIGURATION_KEY_ENV]: service.config.key,
+      [envars.REST_API_ID_ENV]: service.endpoint.api.restApiId,
+      [envars.ALLOCATIONS_RESOURCE_ID_ENV]: service.endpoint.allocationsResource.resourceId,
+      [envars.ALLOCATION_RESOURCE_ID_ENV]: service.endpoint.allocationResource.resourceId,
+    };
+
+    for (const [key, value] of Object.entries(envVariables)) {
+      // for running deployed assertions
+      assert.addEnvironment(key, value);
+
+      // for running local assertions
+      new cdk.CfnOutput(assert, key, { value, key: key.replace(/_/g, '0') });
+    }
 
     // give the assert function the necessary permissions
     assert.addToRolePolicy(iam.PolicyStatement.fromJson({
