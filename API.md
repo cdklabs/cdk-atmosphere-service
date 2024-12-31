@@ -765,6 +765,8 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint.property.allocationResource">allocationResource</a></code> | <code>aws-cdk-lib.aws_apigateway.Resource</code> | Allocation sub resource. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint.property.allocationsResource">allocationsResource</a></code> | <code>aws-cdk-lib.aws_apigateway.Resource</code> | Allocations sub resource. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint.property.api">api</a></code> | <code>aws-cdk-lib.aws_apigateway.RestApi</code> | Api Gateway rest api. |
 
 ---
@@ -778,6 +780,30 @@ public readonly node: Node;
 - *Type:* constructs.Node
 
 The tree node.
+
+---
+
+##### `allocationResource`<sup>Required</sup> <a name="allocationResource" id="@cdklabs/cdk-atmosphere-service.Endpoint.property.allocationResource"></a>
+
+```typescript
+public readonly allocationResource: Resource;
+```
+
+- *Type:* aws-cdk-lib.aws_apigateway.Resource
+
+Allocation sub resource.
+
+---
+
+##### `allocationsResource`<sup>Required</sup> <a name="allocationsResource" id="@cdklabs/cdk-atmosphere-service.Endpoint.property.allocationsResource"></a>
+
+```typescript
+public readonly allocationsResource: Resource;
+```
+
+- *Type:* aws-cdk-lib.aws_apigateway.Resource
+
+Allocations sub resource.
 
 ---
 
