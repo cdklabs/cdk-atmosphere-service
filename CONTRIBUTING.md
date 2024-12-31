@@ -140,9 +140,9 @@ Event: {
 Parsing request body
 Acquiring environment from pool 'release'
 Found 1 environments in pool 'release'
-Acquiring environment 'aws://185706627232/us-west-2'...
-Starting allocation of 'aws://185706627232/us-west-2'
-Grabbing credentials to aws://185706627232/us-west-2 using role: arn:aws:iam::185706627232:role/atmosphere-integ-dev-AdminC75D2A91-5xlocylmXxan
+Acquiring environment 'aws://012345678901/us-west-2'...
+Starting allocation of 'aws://012345678901/us-west-2'
+Grabbing credentials to aws://012345678901/us-west-2 using role: arn:aws:iam::012345678901:role/atmosphere-integ-dev-AdminC75D2A91-5xlocylmXxan
 Allocation '7bf74bda-c5fb-4433-9011-2016fbdf63a2' started successfully
 
 [2024-12-31T14:36:51.361Z] [assertion] Invoking local allocate handler with body: {"pool":"release","requester":"test"}
@@ -153,8 +153,8 @@ Event: {
 Parsing request body
 Acquiring environment from pool 'release'
 Found 1 environments in pool 'release'
-Acquiring environment 'aws://185706627232/us-west-2'...
-Environment 'aws://185706627232/us-west-2' already acquired. Trying the next one.
+Acquiring environment 'aws://012345678901/us-west-2'...
+Environment 'aws://012345678901/us-west-2' already acquired. Trying the next one.
 ProxyError: No environments available in pool 'release'
     at acquireEnvironment (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/src/allocate/allocate.lambda.ts:109:9)
     at processTicksAndRejections (node:internal/process/task_queues:95:5)
@@ -168,7 +168,7 @@ ProxyError: No environments available in pool 'release'
 
 [2024-12-31T14:36:51.531Z] [session] ✅ Success ✅
 [2024-12-31T14:36:51.531Z] [session] Clearing state
-[2024-12-31T14:36:51.712Z] [session]   » deleting environment aws://185706627232/us-west-2
+[2024-12-31T14:36:51.712Z] [session]   » deleting environment aws://012345678901/us-west-2
 [2024-12-31T14:36:52.064Z] [session]   » deleting allocation 7bf74bda-c5fb-4433-9011-2016fbdf63a2
 ✨  Done in 11.76s.
 ```
