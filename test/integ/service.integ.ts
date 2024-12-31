@@ -7,7 +7,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct, IConstruct } from 'constructs';
 import { SUCCESS_PAYLOAD } from './service.session';
-import { ASSERT_HANDLER_FILE } from '../../projenrc/integ.handler.bundle';
+import { ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
 import { AtmosphereService } from '../../src';
 
 /**

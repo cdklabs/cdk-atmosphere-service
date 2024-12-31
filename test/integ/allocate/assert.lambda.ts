@@ -3,7 +3,7 @@ import { Session } from '../service.session';
 
 export async function handler(_: any) {
 
-  return Session.run(async (session: Session) => {
+  return Session.assert(async (session: Session) => {
     let output = await session.allocate({ pool: 'release', requester: 'test' } );
     assert.strictEqual(output.status, 200, 'Expected first allocation to succeed');
 
