@@ -89,8 +89,10 @@ Create a new directory inside [test/integ](./test/integ/) and create the followi
 
 > Have a look at existing tests to get a sense of these files should look like.
 
-When adding a new test, your going to iterate over its assertions quite a few times before getting it right.
-Having to deploy your assertion on each iteration can take a lot of time. Instead, you can run your
+#### Iteration Loop
+
+When adding a new test, your going to iterate over its assertions and the code it tests quite a few
+times before getting it right. Having to deploy it each iteration can take a lot of time. Instead, you can run your
 assertion locally against an instance of a deployed service. To do so, first deploy the service by running:
 
 ```console
@@ -103,21 +105,71 @@ Then, invoke your assertion locally by running:
 yarn integ:test/my-new-test:assert
 ```
 
-The assertion auto discovers the deployed service and issues requests against it. For example:
+Assertion code will be executed locally using `ts-node`, which will:
+
+- Discover deployed service attribute and make them available to tests via env variables.
+- Forward calls to `session.allocate` or `session.deallocate` to the local lambda handlers.
+
+> This means that if you change the `allocate`/`deallocate` lambda handlers, you can just run the local assertion immediately,
+without needing to either build or deploy the service.
+
+For example:
 
 ```console
  ❯ yarn integ:test/allocate:assert
 yarn run v1.22.19
 $ npx projen integ:test/allocate:assert
 👾 integ:test/allocate:assert | ts-node test/integ/allocate/assert.lambda.ts
-[2024-12-30T20:11:15.140Z] [session] Clearing state
-[2024-12-30T20:11:15.489Z] [session] 🎬 Start 🎬
-[2024-12-30T20:11:15.489Z] [assertion] Sending allocation request with body: {"pool":"release","requester":"test"}
-[2024-12-30T20:11:18.400Z] [assertion] Sending allocation request with body: {"pool":"release","requester":"test"}
-[2024-12-30T20:11:18.759Z] [session] ✅ Success ✅
-[2024-12-30T20:11:18.759Z] [session] Clearing state
-[2024-12-30T20:11:18.930Z] [session]   » deleting environment aws://185706627232/us-west-2
-[2024-12-30T20:11:19.273Z] [session]   » deleting allocation 05ac1047-869c-4387-9344-251ff371185b
+[2024-12-31T14:36:47.629Z] [session] Created session with variables:
+{
+  "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": "atmosphere-integ-dev-AtmosphereIntegTestAtmosphereAllocationsTable724969BB-1KCIN3TALIL7W",
+  "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": "atmosphere-integ-dev-AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751-1FLJPKLNW0NY3",
+  "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": "atmosphere-integ-dev-atmosphereintegtestatmosphere-dbs98ifmvur4",
+  "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+  "CDK_ATMOSPHERE_REST_API_ID": "taguvtqka5",
+  "CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": "5fn6ba",
+  "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": "6toc3p"
+}
+[2024-12-31T14:36:47.630Z] [session] Clearing state
+[2024-12-31T14:36:48.459Z] [session] 🎬 Start 🎬
+[2024-12-31T14:36:48.459Z] [assertion] Invoking local allocate handler with body: {"pool":"release","requester":"test"}
+
+Event: {
+  "body": "{\"pool\":\"release\",\"requester\":\"test\"}"
+}
+Parsing request body
+Acquiring environment from pool 'release'
+Found 1 environments in pool 'release'
+Acquiring environment 'aws://185706627232/us-west-2'...
+Starting allocation of 'aws://185706627232/us-west-2'
+Grabbing credentials to aws://185706627232/us-west-2 using role: arn:aws:iam::185706627232:role/atmosphere-integ-dev-AdminC75D2A91-5xlocylmXxan
+Allocation '7bf74bda-c5fb-4433-9011-2016fbdf63a2' started successfully
+
+[2024-12-31T14:36:51.361Z] [assertion] Invoking local allocate handler with body: {"pool":"release","requester":"test"}
+
+Event: {
+  "body": "{\"pool\":\"release\",\"requester\":\"test\"}"
+}
+Parsing request body
+Acquiring environment from pool 'release'
+Found 1 environments in pool 'release'
+Acquiring environment 'aws://185706627232/us-west-2'...
+Environment 'aws://185706627232/us-west-2' already acquired. Trying the next one.
+ProxyError: No environments available in pool 'release'
+    at acquireEnvironment (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/src/allocate/allocate.lambda.ts:109:9)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.handler (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/src/allocate/allocate.lambda.ts:46:25)
+    at async Object.env (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/with.ts:10:12)
+    at async Session.allocate (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/service.session.ts:101:24)
+    at async /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/allocate/assert.lambda.ts:21:14
+    at async Function.assert (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/service.session.ts:40:7) {
+  statusCode: 423
+}
+
+[2024-12-31T14:36:51.531Z] [session] ✅ Success ✅
+[2024-12-31T14:36:51.531Z] [session] Clearing state
+[2024-12-31T14:36:51.712Z] [session]   » deleting environment aws://185706627232/us-west-2
+[2024-12-31T14:36:52.064Z] [session]   » deleting allocation 7bf74bda-c5fb-4433-9011-2016fbdf63a2
 ✨  Done in 11.76s.
 ```
 
