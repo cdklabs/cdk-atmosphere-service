@@ -1263,9 +1263,15 @@
                           "version": "2.173.1"
                         }
                       },
+<<<<<<< HEAD
                       "AdminRole${Token[AWS.AccountId.9]}": {
                         "id": "AdminRole${Token[AWS.AccountId.9]}",
                         "path": "atmosphere-integ-dev/AtmosphereIntegTest/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}",
+=======
+                      "AdminRole${Token[AWS.AccountId.1]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.1]}",
+                        "path": "atmosphere-integ-dev/AtmosphereIntegTest/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}",
+>>>>>>> main
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -2174,7 +2180,11 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
+<<<<<<< HEAD
                           "s3Key": "7f80817b5100d1027060bec4349fabba0018a47dd6dc1993624330ad9d5f65b5.zip"
+=======
+                          "s3Key": "19ea73ff24a921e88c60df5d44eaa25d924438f0271287785d65acb6682319d5.zip"
+>>>>>>> main
                         },
                         "description": "test/integ/dev/assert.lambda.ts",
                         "environment": {

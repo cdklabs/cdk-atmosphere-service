@@ -4,9 +4,12 @@ import { CloudFormation } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { Scheduler } from '@aws-sdk/client-scheduler';
 import type { AllocationRequest } from '../../src/allocate/allocate.lambda';
+import * as allocate from '../../src/allocate/allocate.lambda';
+import * as deallocate from '../../src/deallocate/deallocate.lambda';
 import type { DeallocationRequest } from '../../src/deallocate/deallocate.lambda';
 import * as envars from '../../src/envars';
 import { EnvironmentsClient } from '../../src/storage/environments.client';
+import * as _with from '../with';
 
 const apigw = new APIGateway();
 const dynamo = new DynamoDB();
@@ -100,8 +103,19 @@ export class Session {
     this.environments = new EnvironmentsClient(this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV]);
   }
 
-  public async allocate(body: AllocationRequest): Promise<TestInvokeMethodCommandOutput> {
+  public async allocate(body: AllocationRequest): Promise<Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>> {
     const json = JSON.stringify(body);
+
+    if (Session.isLocal()) {
+      this.log(`Invoking local allocate handler with body: ${json}`);
+      console.log();
+      const response = await _with.env(this.vars, async () => {
+        return allocate.handler({ body: json } as any);
+      });
+      console.log();
+      return { status: response.statusCode, body: response.body };
+    }
+
     this.log(`Sending allocation request with body: ${json}`);
     return apigw.testInvokeMethod({
       restApiId: this.vars[envars.REST_API_ID_ENV],
@@ -112,8 +126,18 @@ export class Session {
     });
   }
 
-  public async deallocate(id: string, body: DeallocationRequest): Promise<TestInvokeMethodCommandOutput> {
+  public async deallocate(id: string, body: DeallocationRequest): Promise<Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>> {
     const json = JSON.stringify(body);
+
+    if (Session.isLocal()) {
+      this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${json}`);
+      const response = await _with.env(this.vars, async () => {
+        return deallocate.handler({ body: json, pathParameters: { id } } as any);
+      });
+      console.log();
+      return { status: response.statusCode, body: response.body };
+    }
+
     this.log(`Sending deallocation request for allocation '${id}' with body: ${json}`);
     return apigw.testInvokeMethod({
       restApiId: this.vars[envars.REST_API_ID_ENV],
