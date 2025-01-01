@@ -66,7 +66,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     await startAllocation(allocationId, environment, request.requester);
 
     console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(allocationId, environment, durationSeconds);
+    const credentials = await grabCredentials(allocationId, environment);
 
     console.log(`Allocation '${allocationId}' started successfully`);
 
@@ -148,12 +148,11 @@ async function startAllocation(id: string, environment: Environment, requester: 
   }
 }
 
-async function grabCredentials(id: string, environment: Environment, durationSeconds: number): Promise<Credentials> {
+async function grabCredentials(id: string, environment: Environment): Promise<Credentials> {
   const sts = new STS();
   const assumed = await sts.assumeRole({
     RoleArn: environment.adminRoleArn,
     RoleSessionName: `atmosphere.allocation.${id}`,
-    DurationSeconds: durationSeconds,
   });
 
   if (!assumed.Credentials) {

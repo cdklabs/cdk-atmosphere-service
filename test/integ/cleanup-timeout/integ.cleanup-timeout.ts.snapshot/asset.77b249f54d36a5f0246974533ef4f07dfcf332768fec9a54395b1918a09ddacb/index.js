@@ -419,7 +419,7 @@ async function handler(_) {
     const account = body.environment.account;
     const region = body.environment.region;
     const cleanupTimeoutSeconds = 10;
-    await session.deallocate(body.id, { outcome: "success", cleanupTimeoutSeconds });
+    await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: cleanupTimeoutSeconds });
     const waitTime = cleanupTimeoutSeconds + 60;
     session.log(`Waiting ${waitTime} seconds for environment 'aws://${account}/${region}' to be marked dirty...`);
     await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item?.status?.S === "dirty", waitTime);
@@ -430,7 +430,7 @@ async function handler(_) {
     const account = body.environment.account;
     const region = body.environment.region;
     const cleanupTimeoutSeconds = 30;
-    await session.deallocate(body.id, { outcome: "success", cleanupTimeoutSeconds });
+    await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: cleanupTimeoutSeconds });
     await session.environments.release(body.id, account, region);
     const waitTime = cleanupTimeoutSeconds + 60;
     session.log(`Asserting for ${waitTime} seconds that environment 'aws://${account}/${region}' is released...`);
@@ -443,7 +443,7 @@ async function handler(_) {
     const region = allocateResponsebody.environment.region;
     const allocationId = allocateResponsebody.id;
     const cleanupTimeoutSeconds = 60;
-    await session.deallocate(allocationId, { outcome: "success", cleanupTimeoutSeconds });
+    await session.deallocate(allocationId, { outcome: "success", cleanupDurationSeconds: cleanupTimeoutSeconds });
     await session.environments.release(allocationId, account, region);
     await session.allocate({ pool: "release", requester: "test" });
     const waitTime = cleanupTimeoutSeconds + 60;

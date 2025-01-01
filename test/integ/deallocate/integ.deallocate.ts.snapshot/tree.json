@@ -391,591 +391,6 @@
                       "version": "10.0.5"
                     }
                   },
-                  "Scheduler": {
-                    "id": "Scheduler",
-                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler",
-                    "children": {
-                      "Role": {
-                        "id": "Role",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role",
-                        "children": {
-                          "ImportRole": {
-                            "id": "ImportRole",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role/ImportRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "scheduler.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "lambda:InvokeFunction",
-                                          "Effect": "Allow",
-                                          "Resource": [
-                                            {
-                                              "Fn::GetAtt": [
-                                                "AtmosphereAllocateAtmosphereSchedulerAllocationTimeout6D7DFFBD",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::GetAtt": [
-                                                "AtmosphereAllocateAtmosphereSchedulerCleanupTimeout38625ADA",
-                                                "Arn"
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "AtmosphereAllocateAtmosphereSchedulerAllocationTimeout6D7DFFBD",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            },
-                                            {
-                                              "Fn::Join": [
-                                                "",
-                                                [
-                                                  {
-                                                    "Fn::GetAtt": [
-                                                      "AtmosphereAllocateAtmosphereSchedulerCleanupTimeout38625ADA",
-                                                      "Arn"
-                                                    ]
-                                                  },
-                                                  ":*"
-                                                ]
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Action": [
-                                            "sqs:GetQueueAttributes",
-                                            "sqs:GetQueueUrl",
-                                            "sqs:SendMessage"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
-                                              "Arn"
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "AtmosphereAllocateAtmosphereSchedulerRoleDefaultPolicyED5B47D3",
-                                    "roles": [
-                                      {
-                                        "Ref": "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "2.173.1"
-                        }
-                      },
-                      "DLQ": {
-                        "id": "DLQ",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/DLQ",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/DLQ/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
-                              "aws:cdk:cloudformation:props": {
-                                "kmsMasterKeyId": "alias/aws/sqs"
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_sqs.Queue",
-                          "version": "2.173.1"
-                        }
-                      },
-                      "CleanupTimeout": {
-                        "id": "CleanupTimeout",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout",
-                        "children": {
-                          "ServiceRole": {
-                            "id": "ServiceRole",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole",
-                            "children": {
-                              "ImportServiceRole": {
-                                "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/ImportServiceRole",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "Service": "lambda.amazonaws.com"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "managedPolicyArns": [
-                                      {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                          ]
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "DefaultPolicy": {
-                                "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/DefaultPolicy",
-                                "children": {
-                                  "Resource": {
-                                    "id": "Resource",
-                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/DefaultPolicy/Resource",
-                                    "attributes": {
-                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                      "aws:cdk:cloudformation:props": {
-                                        "policyDocument": {
-                                          "Statement": [
-                                            {
-                                              "Action": [
-                                                "dynamodb:BatchGetItem",
-                                                "dynamodb:BatchWriteItem",
-                                                "dynamodb:ConditionCheckItem",
-                                                "dynamodb:DeleteItem",
-                                                "dynamodb:DescribeTable",
-                                                "dynamodb:GetItem",
-                                                "dynamodb:GetRecords",
-                                                "dynamodb:GetShardIterator",
-                                                "dynamodb:PutItem",
-                                                "dynamodb:Query",
-                                                "dynamodb:Scan",
-                                                "dynamodb:UpdateItem"
-                                              ],
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Ref": "AWS::NoValue"
-                                                }
-                                              ]
-                                            }
-                                          ],
-                                          "Version": "2012-10-17"
-                                        },
-                                        "policyName": "AtmosphereAllocateAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy8ADC9624",
-                                        "roles": [
-                                          {
-                                            "Ref": "AtmosphereAllocateAtmosphereSchedulerCleanupTimeoutServiceRole353539CC"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "2.173.1"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Code": {
-                            "id": "Code",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/Code",
-                            "children": {
-                              "Stage": {
-                                "id": "Stage",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/Code/Stage",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.AssetStaging",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "AssetBucket": {
-                                "id": "AssetBucket",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/Code/AssetBucket",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                              "aws:cdk:cloudformation:props": {
-                                "code": {
-                                  "s3Bucket": {
-                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                  },
-                                  "s3Key": "16abbff071cf38ae997ac7eaac6e694c77c3eb43fa9ce3c7c4bd121d5e446d68.zip"
-                                },
-                                "description": "src/cleanup-timeout/cleanup-timeout.lambda.ts",
-                                "environment": {
-                                  "variables": {
-                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-                                    "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-                                      "Ref": "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8"
-                                    }
-                                  }
-                                },
-                                "handler": "index.handler",
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "AtmosphereAllocateAtmosphereSchedulerCleanupTimeoutServiceRole353539CC",
-                                    "Arn"
-                                  ]
-                                },
-                                "runtime": "nodejs18.x"
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "2.173.1"
-                        }
-                      },
-                      "AllocationTimeout": {
-                        "id": "AllocationTimeout",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout",
-                        "children": {
-                          "ServiceRole": {
-                            "id": "ServiceRole",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole",
-                            "children": {
-                              "ImportServiceRole": {
-                                "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/ImportServiceRole",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "Service": "lambda.amazonaws.com"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "managedPolicyArns": [
-                                      {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                          ]
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "DefaultPolicy": {
-                                "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/DefaultPolicy",
-                                "children": {
-                                  "Resource": {
-                                    "id": "Resource",
-                                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/DefaultPolicy/Resource",
-                                    "attributes": {
-                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                      "aws:cdk:cloudformation:props": {
-                                        "policyDocument": {
-                                          "Statement": [
-                                            {
-                                              "Action": [
-                                                "dynamodb:BatchGetItem",
-                                                "dynamodb:BatchWriteItem",
-                                                "dynamodb:ConditionCheckItem",
-                                                "dynamodb:DeleteItem",
-                                                "dynamodb:DescribeTable",
-                                                "dynamodb:GetItem",
-                                                "dynamodb:GetRecords",
-                                                "dynamodb:GetShardIterator",
-                                                "dynamodb:PutItem",
-                                                "dynamodb:Query",
-                                                "dynamodb:Scan",
-                                                "dynamodb:UpdateItem"
-                                              ],
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "AtmosphereAllocateAtmosphereEnvironmentsTable39F550B8",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Ref": "AWS::NoValue"
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "Action": "lambda:InvokeFunction",
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Fn::Join": [
-                                                    "",
-                                                    [
-                                                      {
-                                                        "Fn::GetAtt": [
-                                                          "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3",
-                                                          "Arn"
-                                                        ]
-                                                      },
-                                                      ":*"
-                                                    ]
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ],
-                                          "Version": "2012-10-17"
-                                        },
-                                        "policyName": "AtmosphereAllocateAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicyF1FC2690",
-                                        "roles": [
-                                          {
-                                            "Ref": "AtmosphereAllocateAtmosphereSchedulerAllocationTimeoutServiceRoleC909FFD8"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "2.173.1"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Code": {
-                            "id": "Code",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/Code",
-                            "children": {
-                              "Stage": {
-                                "id": "Stage",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/Code/Stage",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.AssetStaging",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "AssetBucket": {
-                                "id": "AssetBucket",
-                                "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/Code/AssetBucket",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                              "aws:cdk:cloudformation:props": {
-                                "code": {
-                                  "s3Bucket": {
-                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                  },
-                                  "s3Key": "ffa7fe00a4726692eb6aed89d938d9463535a885225fd40c05c87dc3832fa0d3.zip"
-                                },
-                                "description": "src/allocation-timeout/allocation-timeout.lambda.ts",
-                                "environment": {
-                                  "variables": {
-                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-                                    "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
-                                      "Ref": "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3"
-                                    }
-                                  }
-                                },
-                                "handler": "index.handler",
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "AtmosphereAllocateAtmosphereSchedulerAllocationTimeoutServiceRoleC909FFD8",
-                                    "Arn"
-                                  ]
-                                },
-                                "runtime": "nodejs18.x"
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.0.5"
-                    }
-                  },
                   "Allocate": {
                     "id": "Allocate",
                     "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate",
@@ -1112,21 +527,6 @@
                                               ]
                                             },
                                             {
-                                              "Action": "scheduler:CreateSchedule",
-                                              "Effect": "Allow",
-                                              "Resource": "*"
-                                            },
-                                            {
-                                              "Action": "iam:PassRole",
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::GetAtt": [
-                                                  "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            },
-                                            {
                                               "Action": "sts:AssumeRole",
                                               "Effect": "Allow",
                                               "Resource": {
@@ -1200,7 +600,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "a04a576e55e5e9a09db34c58831f1e4301ef4cb83ad336ed761c3b632adc6cc1.zip"
+                                  "s3Key": "4986e3e81d3d4dff78d248acf4e0f78367ef888399c7d0b5a536b7cd933f4284.zip"
                                 },
                                 "description": "src/allocate/allocate.lambda.ts",
                                 "environment": {
@@ -1215,30 +615,6 @@
                                     },
                                     "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
                                       "Ref": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
-                                    },
-                                    "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerAllocationTimeout6D7DFFBD",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerCleanupTimeout38625ADA",
-                                        "Arn"
-                                      ]
                                     }
                                   }
                                 },
@@ -1263,9 +639,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.4]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.4]}",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}",
+                      "AdminRole${Token[AWS.AccountId.5]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.5]}",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -1381,21 +757,6 @@
                                                   "Ref": "AWS::NoValue"
                                                 }
                                               ]
-                                            },
-                                            {
-                                              "Action": "scheduler:CreateSchedule",
-                                              "Effect": "Allow",
-                                              "Resource": "*"
-                                            },
-                                            {
-                                              "Action": "iam:PassRole",
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::GetAtt": [
-                                                  "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82",
-                                                  "Arn"
-                                                ]
-                                              }
                                             }
                                           ],
                                           "Version": "2012-10-17"
@@ -1461,7 +822,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "c08623fa953f691525f8b75263972d1ff2f683379ca538797b8b9c50a03b1df4.zip"
+                                  "s3Key": "7da334a49a3afb32624597c6d2b7adaced9f9f5a99da053c594d75b5b31d9d15.zip"
                                 },
                                 "description": "src/deallocate/deallocate.lambda.ts",
                                 "environment": {
@@ -1472,24 +833,6 @@
                                     },
                                     "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
                                       "Ref": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
-                                    },
-                                    "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereAllocateAtmosphereSchedulerCleanupTimeout38625ADA",
-                                        "Arn"
-                                      ]
                                     }
                                   }
                                 },
@@ -2104,8 +1447,7 @@
                                     {
                                       "Action": [
                                         "apigateway:*",
-                                        "dynamodb:*",
-                                        "scheduler:*"
+                                        "dynamodb:*"
                                       ],
                                       "Effect": "Allow",
                                       "Resource": "*"
@@ -2174,7 +1516,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "56f1723ac993b5a059fff62d93beb19e4e225d416f068fe9ddd141ddeac05c1e.zip"
+                          "s3Key": "7856a0ee7ddb5ca61f3b06139dda5870c542df3f462e3e1c1c1ca1805be26560.zip"
                         },
                         "description": "test/integ/deallocate/assert.lambda.ts",
                         "environment": {
@@ -2190,30 +1532,6 @@
                               "Ref": "AtmosphereAllocateAtmosphereConfigurationBucketCE72F4E6"
                             },
                             "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-                            "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-                              "Fn::GetAtt": [
-                                "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
-                                "Arn"
-                              ]
-                            },
-                            "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-                              "Fn::GetAtt": [
-                                "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82",
-                                "Arn"
-                              ]
-                            },
-                            "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
-                              "Fn::GetAtt": [
-                                "AtmosphereAllocateAtmosphereSchedulerAllocationTimeout6D7DFFBD",
-                                "Arn"
-                              ]
-                            },
-                            "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-                              "Fn::GetAtt": [
-                                "AtmosphereAllocateAtmosphereSchedulerCleanupTimeout38625ADA",
-                                "Arn"
-                              ]
-                            },
                             "CDK_ATMOSPHERE_REST_API_ID": {
                               "Ref": "AtmosphereAllocateAtmosphereEndpointApiE730A46D"
                             },
@@ -2222,9 +1540,6 @@
                             },
                             "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": {
                               "Ref": "AtmosphereAllocateAtmosphereEndpointApiallocationsidFA0595D7"
-                            },
-                            "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
-                              "Ref": "AtmosphereAllocateAtmosphereDeallocateFunctionF42E98F3"
                             }
                           }
                         },
@@ -2236,7 +1551,7 @@
                           ]
                         },
                         "runtime": "nodejs18.x",
-                        "timeout": 900
+                        "timeout": 60
                       }
                     },
                     "constructInfo": {
@@ -2276,38 +1591,6 @@
                       "version": "2.173.1"
                     }
                   },
-                  "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-                    "id": "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN",
-                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnOutput",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-                    "id": "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN",
-                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnOutput",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
-                    "id": "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN",
-                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnOutput",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-                    "id": "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN",
-                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnOutput",
-                      "version": "2.173.1"
-                    }
-                  },
                   "CDK_ATMOSPHERE_REST_API_ID": {
                     "id": "CDK_ATMOSPHERE_REST_API_ID",
                     "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_REST_API_ID",
@@ -2327,14 +1610,6 @@
                   "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": {
                     "id": "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID",
                     "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnOutput",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
-                    "id": "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME",
-                    "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnOutput",
                       "version": "2.173.1"

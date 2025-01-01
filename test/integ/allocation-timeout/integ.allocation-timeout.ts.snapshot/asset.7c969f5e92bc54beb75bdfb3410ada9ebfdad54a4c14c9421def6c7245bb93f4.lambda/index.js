@@ -453,7 +453,7 @@ var RuntimeClients = class _RuntimeClients {
 };
 
 // src/deallocate/deallocate.lambda.ts
-var CLEANUP_TIMEOUT_MINUTES = 60;
+var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -472,8 +472,11 @@ async function handler(event) {
     console.log(`Extracted allocation id from path: ${id}`);
     console.log("Parsing request body");
     const request = parseRequestBody(event.body);
-    const cleanupTimeoutSeconds = request.cleanupTimeoutSeconds ?? CLEANUP_TIMEOUT_MINUTES * 60;
-    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupTimeoutSeconds);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
