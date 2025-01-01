@@ -9,7 +9,10 @@ import * as envars from '../envars';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
-const ALLOCATION_TIMEOUT_MINUTES = 60;
+// this will be the duration of the credentials being passed
+// the the caller. currently, it cannot be more than 1 hour because of role chaining.
+// TODO - how can we avoid role chaining?
+const MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -47,7 +50,11 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
-    const durationSeconds = request.durationSeconds ?? ALLOCATION_TIMEOUT_MINUTES * 60;
+    const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
+    if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
+      throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
+    }
+
     const timeoutDate = new Date(Date.now() + 1000 * durationSeconds);
 
     const allocationId = uuidv4();
@@ -59,7 +66,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     await startAllocation(allocationId, environment, request.requester);
 
     console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(allocationId, environment);
+    const credentials = await grabCredentials(allocationId, environment, durationSeconds);
 
     console.log(`Allocation '${allocationId}' started successfully`);
 
@@ -141,11 +148,12 @@ async function startAllocation(id: string, environment: Environment, requester: 
   }
 }
 
-async function grabCredentials(id: string, environment: Environment): Promise<Credentials> {
+async function grabCredentials(id: string, environment: Environment, durationSeconds: number): Promise<Credentials> {
   const sts = new STS();
   const assumed = await sts.assumeRole({
     RoleArn: environment.adminRoleArn,
     RoleSessionName: `atmosphere.allocation.${id}`,
+    DurationSeconds: durationSeconds,
   });
 
   if (!assumed.Credentials) {

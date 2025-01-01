@@ -12,7 +12,7 @@ export async function handler(_: any) {
 
     // deallocate
     const cleanupTimeoutSeconds = 10;
-    await session.deallocate(body.id, { outcome: 'success', cleanupTimeoutSeconds });
+    await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
 
     const waitTime = cleanupTimeoutSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
     session.log(`Waiting ${waitTime} seconds for environment 'aws://${account}/${region}' to be marked dirty...`);
@@ -30,7 +30,7 @@ export async function handler(_: any) {
 
     // deallocate
     const cleanupTimeoutSeconds = 30;
-    await session.deallocate(body.id, { outcome: 'success', cleanupTimeoutSeconds });
+    await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
 
     // simulate a quick and successfull cleanup
     await session.environments.release(body.id, account, region);
@@ -53,7 +53,7 @@ export async function handler(_: any) {
 
     // deallocate and schedule the cleanup timeout to 60 seconds from now
     const cleanupTimeoutSeconds = 60;
-    await session.deallocate(allocationId, { outcome: 'success', cleanupTimeoutSeconds });
+    await session.deallocate(allocationId, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
 
     // in the meantime simulate a quick and successfull cleanup
     await session.environments.release(allocationId, account, region);

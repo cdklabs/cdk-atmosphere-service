@@ -4,7 +4,8 @@ import { RuntimeClients } from '../clients';
 import * as envars from '../envars';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
 
-const CLEANUP_TIMEOUT_MINUTES = 60;
+// an hour should plenty to clean one environment
+const MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -17,7 +18,7 @@ export interface DeallocationRequest {
 
   // honestly this is just so that we can easily write timeout
   // integration tests.
-  readonly cleanupTimeoutSeconds?: number;
+  readonly cleanupDurationSeconds?: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -35,8 +36,12 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
-    const cleanupTimeoutSeconds = request.cleanupTimeoutSeconds ?? CLEANUP_TIMEOUT_MINUTES * 60;
-    const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupTimeoutSeconds);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+
+    const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupDurationSeconds);
 
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);

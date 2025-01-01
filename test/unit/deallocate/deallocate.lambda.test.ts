@@ -61,6 +61,18 @@ describe('handler', () => {
 
   });
 
+  test('returns 400 when cleanup duration exceeds maximum', async () => {
+    const response = await handler({
+      pathParameters: { id: 'id' },
+      body: JSON.stringify({ outcome: 'failed', cleanupDurationSeconds: 2 * 60 * 60 }),
+    } as any as APIGatewayProxyEvent);
+    const body = JSON.parse(response.body);
+
+    expect(response.statusCode).toEqual(400);
+    expect(body.message).toEqual('Maximum cleanup timeout is 3600 seconds');
+
+  });
+
   test('returns 500 on unexpected error', async () => {
 
     jest.spyOn(clients.environments, 'cleaning').mockImplementation(jest.fn());
@@ -131,7 +143,7 @@ describe('handler', () => {
 
     const response = await _with.env({ [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({
       pathParameters: { id: 'id' },
-      body: JSON.stringify({ outcome: 'failed', cleanupTimeoutSeconds: 10 }),
+      body: JSON.stringify({ outcome: 'failed', cleanupDurationSeconds: 10 }),
     } as any as APIGatewayProxyEvent));
 
     expect(response.statusCode).toEqual(200);

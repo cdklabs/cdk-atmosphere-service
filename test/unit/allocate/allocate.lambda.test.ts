@@ -64,6 +64,15 @@ describe('handler', () => {
 
   });
 
+  test('returns 400 when duration excceeds maximum', async () => {
+    const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1', durationSeconds: 2 * 60 * 60 }) } as APIGatewayProxyEvent);
+    const body = JSON.parse(response.body);
+
+    expect(response.statusCode).toEqual(400);
+    expect(body.message).toEqual('Maximum allocation duration is 3600 seconds');
+
+  });
+
   test('rethrows on unexpected error when allocating', async () => {
 
     jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
