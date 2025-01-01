@@ -1411,7 +1411,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b8dedfe51182858fe3dc96ba2a8e2a2935e7c77c76d25a178fbe269e57bd1fb5.zip"
+     "S3Key": "ba3f0e471aa52fea266c526d710bc243eb9ced7a83a73b9bf29a04712192b980.zip"
     },
     "Description": "test/integ/allocate/assert.lambda.ts",
     "Environment": {

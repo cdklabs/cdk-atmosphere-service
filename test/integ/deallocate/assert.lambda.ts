@@ -10,8 +10,8 @@ export async function handler(_: any) {
     const account = allocationResponseBody.environment.account;
     const region = allocationResponseBody.environment.region;
 
-    const cleanupTimeoutSeconds = 30;
-    const firstDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: 'success', cleanupTimeoutSeconds });
+    const cleanupDurationSeconds = 30;
+    const firstDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: 'success', cleanupDurationSeconds });
     assert.strictEqual(firstDeallocateResponse.status, 200);
 
     // second deallocation should succeed (and do nothing)
@@ -27,7 +27,7 @@ export async function handler(_: any) {
     const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
     assert.ok(cleanupTimeoutSchedule);
 
-    const waitTime = cleanupTimeoutSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
+    const waitTime = cleanupDurationSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
 
     session.log(`Waiting ${waitTime} seconds for cleanup timeout schedule to be deleted...`);
     await session.waitFor(async () => {

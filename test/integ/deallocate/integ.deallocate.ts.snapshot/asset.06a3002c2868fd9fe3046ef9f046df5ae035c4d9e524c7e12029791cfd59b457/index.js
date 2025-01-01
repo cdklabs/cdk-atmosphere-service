@@ -27,12 +27,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/deallocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler
 });
 module.exports = __toCommonJS(assert_lambda_exports);
+var assert2 = __toESM(require("assert"));
 
 // test/integ/service.session.ts
 var assert = __toESM(require("assert"));
@@ -274,7 +275,7 @@ var Session = class _Session {
   static async create() {
     let envValue;
     if (_Session.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-cleanup-timeout" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-deallocate" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
@@ -411,46 +412,30 @@ var Session = class _Session {
   }
 };
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/deallocate/assert.lambda.ts
 async function handler(_) {
-  await Session.assert(async (session) => {
+  return Session.assert(async (session) => {
     const allocateResponse = await session.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(allocateResponse.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const cleanupTimeoutSeconds = 10;
-    await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: cleanupTimeoutSeconds });
-    const waitTime = cleanupTimeoutSeconds + 60;
-    session.log(`Waiting ${waitTime} seconds for environment 'aws://${account}/${region}' to be marked dirty...`);
-    await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item?.status?.S === "dirty", waitTime);
-  }, "cleanup-timeout-triggered-before-cleanup-finished");
-  await Session.assert(async (session) => {
-    const allocateResponse = await session.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(allocateResponse.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const cleanupTimeoutSeconds = 30;
-    await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: cleanupTimeoutSeconds });
-    await session.environments.release(body.id, account, region);
-    const waitTime = cleanupTimeoutSeconds + 60;
-    session.log(`Asserting for ${waitTime} seconds that environment 'aws://${account}/${region}' is released...`);
-    await session.okFor(async () => (await session.fetchEnvironment(account, region)).Item === void 0, waitTime);
-  }, "cleanup-timeout-triggered-after-cleanup-finished");
-  await Session.assert(async (session) => {
-    const allocateResponse = await session.allocate({ pool: "release", requester: "test" });
-    const allocateResponsebody = JSON.parse(allocateResponse.body);
-    const account = allocateResponsebody.environment.account;
-    const region = allocateResponsebody.environment.region;
-    const allocationId = allocateResponsebody.id;
-    const cleanupTimeoutSeconds = 60;
-    await session.deallocate(allocationId, { outcome: "success", cleanupDurationSeconds: cleanupTimeoutSeconds });
-    await session.environments.release(allocationId, account, region);
-    await session.allocate({ pool: "release", requester: "test" });
-    const waitTime = cleanupTimeoutSeconds + 60;
-    session.log(`Asserting for ${waitTime} seconds that environment 'aws://${account}/${region}' is not marked dirty...`);
-    await session.okFor(async () => (await session.fetchEnvironment(account, region)).Item?.status?.S !== "dirty", waitTime);
-  }, "cleanup-timeout-triggered-on-reallocated-environment");
-  return SUCCESS_PAYLOAD;
+    const allocationResponseBody = JSON.parse(allocateResponse.body);
+    const account = allocationResponseBody.environment.account;
+    const region = allocationResponseBody.environment.region;
+    const cleanupDurationSeconds = 30;
+    const firstDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: "success", cleanupDurationSeconds });
+    assert2.strictEqual(firstDeallocateResponse.status, 200);
+    const secondDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
+    assert2.strictEqual(secondDeallocateResponse.status, 200);
+    const environment = await session.fetchEnvironment(account, region);
+    assert2.strictEqual(environment.Item.status.S, "cleaning");
+    const allocation = await session.fetchAllocation(allocationResponseBody.id);
+    assert2.ok(allocation.Item.end?.S);
+    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
+    assert2.ok(cleanupTimeoutSchedule);
+    const waitTime = cleanupDurationSeconds + 60;
+    session.log(`Waiting ${waitTime} seconds for cleanup timeout schedule to be deleted...`);
+    await session.waitFor(async () => {
+      return await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id) === void 0;
+    }, waitTime);
+  });
 }
 if (Session.isLocal()) {
   void handler({});

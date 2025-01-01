@@ -27,13 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/dev/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler
 });
 module.exports = __toCommonJS(assert_lambda_exports);
-var assert2 = __toESM(require("assert"));
 
 // test/integ/service.session.ts
 var assert = __toESM(require("assert"));
@@ -196,18 +195,13 @@ var Session = class _Session {
   }
 };
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/dev/assert.lambda.ts
 async function handler(_) {
-  return Session.assert(async (session) => {
-    const output = await session.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(output.body);
-    const deallocateResponse = await session.deallocate(body.id, { outcome: "success" });
-    assert2.strictEqual(deallocateResponse.status, 200);
-    const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);
-    assert2.strictEqual(environment.Item.status.S, "cleaning");
+  return Session.assert(async () => {
+    return;
   });
 }
-if (process.env.CDK_ATMOSPHERE_INTEG !== "true") {
+if (Session.isLocal()) {
   void handler({});
 }
 // Annotate the CommonJS export names for ESM import in node:

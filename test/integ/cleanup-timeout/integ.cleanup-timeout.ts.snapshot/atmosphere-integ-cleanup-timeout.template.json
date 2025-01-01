@@ -1411,7 +1411,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "77b249f54d36a5f0246974533ef4f07dfcf332768fec9a54395b1918a09ddacb.zip"
+     "S3Key": "17ae994d6e737337a14e5876c7b65524cffbe2b0035d7a62b7e552ffd0aa54df.zip"
     },
     "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
     "Environment": {

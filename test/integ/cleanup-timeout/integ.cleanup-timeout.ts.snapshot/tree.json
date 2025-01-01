@@ -1263,9 +1263,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.0]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.0]}",
-                        "path": "atmosphere-integ-cleanup-timeout/AtmosphereIntegTest/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}",
+                      "AdminRole${Token[AWS.AccountId.7]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.7]}",
+                        "path": "atmosphere-integ-cleanup-timeout/AtmosphereIntegTest/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.7]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -2174,7 +2174,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "77b249f54d36a5f0246974533ef4f07dfcf332768fec9a54395b1918a09ddacb.zip"
+                          "s3Key": "17ae994d6e737337a14e5876c7b65524cffbe2b0035d7a62b7e552ffd0aa54df.zip"
                         },
                         "description": "test/integ/cleanup-timeout/assert.lambda.ts",
                         "environment": {

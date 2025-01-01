@@ -275,7 +275,7 @@ var Session = class _Session {
   static async create() {
     let envValue;
     if (_Session.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-cleanup-timeout" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-deallocate" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;

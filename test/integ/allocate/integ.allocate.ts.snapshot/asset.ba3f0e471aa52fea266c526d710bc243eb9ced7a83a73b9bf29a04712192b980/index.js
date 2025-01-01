@@ -27,12 +27,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/dev/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler
 });
 module.exports = __toCommonJS(assert_lambda_exports);
+var assert2 = __toESM(require("assert"));
 
 // test/integ/service.session.ts
 var assert = __toESM(require("assert"));
@@ -274,7 +275,7 @@ var Session = class _Session {
   static async create() {
     let envValue;
     if (_Session.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-cleanup-timeout" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-deallocate" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
@@ -411,10 +412,25 @@ var Session = class _Session {
   }
 };
 
-// test/integ/dev/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 async function handler(_) {
-  return Session.assert(async () => {
-    return;
+  return Session.assert(async (session) => {
+    const durationSeconds = 30;
+    const firstAllocateResponse = await session.allocate({ pool: "release", requester: "test", durationSeconds });
+    assert2.strictEqual(firstAllocateResponse.status, 200, "Expected first allocation to succeed");
+    const secondAllocateResponse = await session.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(secondAllocateResponse.status, 423, "Expected second allocation to fail");
+    const body = JSON.parse(firstAllocateResponse.body);
+    const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);
+    assert2.strictEqual(environment.Item.status.S, "in-use");
+    const allocation = await session.fetchAllocation(body.id);
+    assert2.strictEqual(allocation.Item.account.S, body.environment.account);
+    assert2.strictEqual(allocation.Item.region.S, body.environment.region);
+    const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
+    assert2.ok(timeoutSchedule);
+    const waitTime = durationSeconds + 60;
+    session.log(`Waiting ${waitTime} seconds for allocation timeout schedule to be deleted...`);
+    await session.waitFor(async () => await session.fetchAllocationTimeoutSchedule(body.id) === void 0, waitTime);
   });
 }
 if (Session.isLocal()) {

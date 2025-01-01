@@ -499,7 +499,7 @@ var RuntimeClients = class _RuntimeClients {
 };
 
 // src/allocate/allocate.lambda.ts
-var ALLOCATION_TIMEOUT_MINUTES = 60;
+var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -513,7 +513,10 @@ async function handler(event) {
   try {
     console.log("Parsing request body");
     const request = parseRequestBody(event.body);
-    const durationSeconds = request.durationSeconds ?? ALLOCATION_TIMEOUT_MINUTES * 60;
+    const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
+    if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
+      throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
+    }
     const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
     const allocationId = v4_default();
     console.log(`Acquiring environment from pool '${request.pool}'`);
