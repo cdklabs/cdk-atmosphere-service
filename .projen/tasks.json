@@ -32,10 +32,22 @@
           "spawn": "bundle:allocate/allocate.lambda"
         },
         {
+          "spawn": "bundle:allocation-timeout/allocation-timeout.lambda"
+        },
+        {
+          "spawn": "bundle:cleanup-timeout/cleanup-timeout.lambda"
+        },
+        {
           "spawn": "bundle:deallocate/deallocate.lambda"
         },
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
         },
         {
           "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
@@ -63,6 +75,42 @@
         }
       ]
     },
+    "bundle:allocation-timeout/allocation-timeout.lambda": {
+      "name": "bundle:allocation-timeout/allocation-timeout.lambda",
+      "description": "Create a JavaScript bundle from src/allocation-timeout/allocation-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:allocation-timeout/allocation-timeout.lambda:watch": {
+      "name": "bundle:allocation-timeout/allocation-timeout.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/allocation-timeout/allocation-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:cleanup-timeout/cleanup-timeout.lambda": {
+      "name": "bundle:cleanup-timeout/cleanup-timeout.lambda",
+      "description": "Create a JavaScript bundle from src/cleanup-timeout/cleanup-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/cleanup-timeout/cleanup-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/cleanup-timeout/cleanup-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:cleanup-timeout/cleanup-timeout.lambda:watch": {
+      "name": "bundle:cleanup-timeout/cleanup-timeout.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/cleanup-timeout/cleanup-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/cleanup-timeout/cleanup-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/cleanup-timeout/cleanup-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
     "bundle:deallocate/deallocate.lambda": {
       "name": "bundle:deallocate/deallocate.lambda",
       "description": "Create a JavaScript bundle from src/deallocate/deallocate.lambda.ts",
@@ -86,6 +134,22 @@
       "steps": [
         {
           "exec": "esbuild --bundle test/integ/allocate/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/allocate/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/allocation-timeout/assert.lambda.ts": {
+      "name": "bundle:test/integ/allocation-timeout/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/allocation-timeout/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/allocation-timeout/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/cleanup-timeout/assert.lambda.ts": {
+      "name": "bundle:test/integ/cleanup-timeout/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/cleanup-timeout/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/cleanup-timeout/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -236,6 +300,12 @@
           "spawn": "integ:test/allocate:assert"
         },
         {
+          "spawn": "integ:test/allocation-timeout:assert"
+        },
+        {
+          "spawn": "integ:test/cleanup-timeout:assert"
+        },
+        {
           "spawn": "integ:test/deallocate:assert"
         },
         {
@@ -262,6 +332,14 @@
         },
         {
           "exec": "yarn integ-runner --language typescript --force"
+        }
+      ]
+    },
+    "integ:list": {
+      "name": "integ:list",
+      "steps": [
+        {
+          "exec": "yarn integ-runner --language typescript --list"
         }
       ]
     },
@@ -331,6 +409,144 @@
         },
         {
           "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/allocation-timeout": {
+      "name": "integ:test/allocation-timeout",
+      "description": "Run the test in snapshot mode",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout"
+        }
+      ]
+    },
+    "integ:test/allocation-timeout:assert": {
+      "name": "integ:test/allocation-timeout:assert",
+      "description": "Run the assertion locally against a deployed service",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/allocation-timeout/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/allocation-timeout:deploy": {
+      "name": "integ:test/allocation-timeout:deploy",
+      "description": "Deploy and update the snapshot while keeping the service running",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/allocation-timeout:force": {
+      "name": "integ:test/allocation-timeout:force",
+      "description": "Force update the snapshot by deploying the test",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --force"
+        }
+      ]
+    },
+    "integ:test/allocation-timeout:snapshot": {
+      "name": "integ:test/allocation-timeout:snapshot",
+      "description": "Update snapshot without deploying (discoureged)",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --dry-run --force"
+        }
+      ]
+    },
+    "integ:test/allocation-timeout:update": {
+      "name": "integ:test/allocation-timeout:update",
+      "description": "Deploy and update the snapshot if necessary",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/cleanup-timeout": {
+      "name": "integ:test/cleanup-timeout",
+      "description": "Run the test in snapshot mode",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout"
+        }
+      ]
+    },
+    "integ:test/cleanup-timeout:assert": {
+      "name": "integ:test/cleanup-timeout:assert",
+      "description": "Run the assertion locally against a deployed service",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/cleanup-timeout/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/cleanup-timeout:deploy": {
+      "name": "integ:test/cleanup-timeout:deploy",
+      "description": "Deploy and update the snapshot while keeping the service running",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/cleanup-timeout:force": {
+      "name": "integ:test/cleanup-timeout:force",
+      "description": "Force update the snapshot by deploying the test",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --force"
+        }
+      ]
+    },
+    "integ:test/cleanup-timeout:snapshot": {
+      "name": "integ:test/cleanup-timeout:snapshot",
+      "description": "Update snapshot without deploying (discoureged)",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --dry-run --force"
+        }
+      ]
+    },
+    "integ:test/cleanup-timeout:update": {
+      "name": "integ:test/cleanup-timeout:update",
+      "description": "Deploy and update the snapshot if necessary",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --update-on-failed"
         }
       ]
     },
@@ -668,13 +884,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-s3,@aws-sdk/client-sts,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-s3 @aws-sdk/client-sts @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"

@@ -3,9 +3,11 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../../../src/allocate/allocate.lambda';
 import { RuntimeClients } from '../../../src/clients';
-import { ConfigurationClient } from '../../../src/config/configuration.client';
-import { AllocationsClient, InvalidInputError } from '../../../src/storage/allocations.client';
-import { EnvironmentAlreadyAcquiredError, EnvironmentsClient } from '../../../src/storage/environments.client';
+import * as envars from '../../../src/envars';
+import { InvalidInputError } from '../../../src/storage/allocations.client';
+import { EnvironmentAlreadyAcquiredError } from '../../../src/storage/environments.client';
+import * as _with from '../../with';
+import { RuntimeClientsMock } from '../clients.mock';
 import 'aws-sdk-client-mock-jest';
 
 // this grabs the same instance the handler uses
@@ -18,6 +20,7 @@ describe('handler', () => {
 
   beforeEach(() => {
     stsMock.reset();
+    RuntimeClientsMock.mock();
     jest.clearAllMocks();
   });
 
@@ -44,22 +47,14 @@ describe('handler', () => {
 
   test('returns 400 on invalid input when starting allocation', async () => {
 
-    const configuration = new ConfigurationClient({ bucket: 'dummy', key: 'dummy' });
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
+    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
       adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
-    jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'start').mockReturnValue(Promise.reject(new InvalidInputError('Invalid')));
-
-    jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
+    jest.spyOn(clients.environments, 'acquire').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'start').mockReturnValue(Promise.reject(new InvalidInputError('Invalid')));
 
     const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent);
     const body = JSON.parse(response.body);
@@ -71,22 +66,14 @@ describe('handler', () => {
 
   test('rethrows on unexpected error when allocating', async () => {
 
-    const configuration = new ConfigurationClient({ bucket: 'dummy', key: 'dummy' });
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
+    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
       adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
-    jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'start').mockReturnValue(Promise.reject(new Error('Unexpected')));
-
-    jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
+    jest.spyOn(clients.environments, 'acquire').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'start').mockReturnValue(Promise.reject(new Error('Unexpected')));
 
     const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent);
     const body = JSON.parse(response.body);
@@ -107,24 +94,17 @@ describe('handler', () => {
       },
     });
 
-    const configuration = new ConfigurationClient({ bucket: 'dummy', key: 'dummy' });
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
+    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
       adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     }]));
-    jest.spyOn(environments, 'acquire').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'start').mockImplementation(jest.fn());
+    jest.spyOn(clients.environments, 'acquire').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'start').mockImplementation(jest.fn());
+    jest.spyOn(clients.scheduler, 'scheduleAllocationTimeout').mockImplementation(jest.fn());
 
-    jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
-
-    const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent);
+    const response = await _with.env({ [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, async () => handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent));
     const body = JSON.parse(response.body);
 
     expect(response.statusCode).toEqual(200);
@@ -141,13 +121,18 @@ describe('handler', () => {
       sessionToken: 'token',
     });
 
-    expect(environments.acquire).toHaveBeenCalledWith(body.id, '1111', 'us-east-1');
-    expect(allocations.start).toHaveBeenCalledWith({
+    expect(clients.environments.acquire).toHaveBeenCalledWith(expect.any(String), '1111', 'us-east-1');
+    expect(clients.allocations.start).toHaveBeenCalledWith({
       id: body.id,
       account: '1111',
       region: 'us-east-1',
       pool: 'canary',
       requester: 'user1',
+    });
+    expect(clients.scheduler.scheduleAllocationTimeout).toHaveBeenCalledWith({
+      allocationId: body.id,
+      functionArn: 'arn',
+      timeoutDate: expect.any(Date),
     });
 
     expect(stsMock).toHaveReceivedCommandTimes(AssumeRoleCommand, 1);
@@ -169,11 +154,7 @@ describe('handler', () => {
       },
     });
 
-    const configuration = new ConfigurationClient({ bucket: 'dummy', key: 'dummy' });
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(configuration, 'listEnvironments').mockReturnValue(Promise.resolve([
+    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([
       {
         account: '1111',
         region: 'us-east-1',
@@ -187,21 +168,19 @@ describe('handler', () => {
         adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
     ]));
-    jest.spyOn(environments, 'acquire').mockImplementation(async (_: string, account: string, region: string) => {
+    jest.spyOn(clients.environments, 'acquire').mockImplementation(async (_: string, account: string, region: string) => {
       if (region === 'us-east-1') {
         throw new EnvironmentAlreadyAcquiredError(account, region);
       }
       return Promise.resolve();
     });
-    jest.spyOn(allocations, 'start').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'start').mockImplementation(jest.fn());
+    jest.spyOn(clients.scheduler, 'scheduleAllocationTimeout').mockImplementation(jest.fn());
 
-    jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
-
-    const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent);
+    const response = await _with.env({ [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent));
     const body = JSON.parse(response.body);
 
+    expect(clients.environments.acquire).toHaveBeenCalledTimes(2);
     expect(response.statusCode).toEqual(200);
     expect(body.id.length).toEqual(36);
 
@@ -209,11 +188,7 @@ describe('handler', () => {
 
   test('will rethrow on unexpected failures when acquiring environment', async () => {
 
-    const configuration = new ConfigurationClient({ bucket: 'dummy', key: 'dummy' });
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(configuration, 'listEnvironments').mockReturnValue(Promise.resolve([
+    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([
       {
         account: '1111',
         region: 'us-east-1',
@@ -221,17 +196,13 @@ describe('handler', () => {
         adminRoleArn: 'arn:aws:iam::1111:role/Admin',
       },
     ]));
-    jest.spyOn(environments, 'acquire').mockImplementation(async (_: string, account: string, region: string) => {
+    jest.spyOn(clients.environments, 'acquire').mockImplementation(async (_: string, account: string, region: string) => {
       if (region === 'us-east-1') {
         throw new Error(`Unexpected failure when acquiring aws://${account}/${region}`);
       }
       return Promise.resolve();
     });
-    jest.spyOn(allocations, 'start').mockImplementation(jest.fn());
-
-    jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
+    jest.spyOn(clients.allocations, 'start').mockImplementation(jest.fn());
 
     const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent);
     const body = JSON.parse(response.body);
@@ -243,10 +214,7 @@ describe('handler', () => {
 
   test('returns 423 if no environments are available', async () => {
 
-    const configuration = new ConfigurationClient({ bucket: 'dummy', key: 'dummy' });
-
-    jest.spyOn(configuration, 'listEnvironments').mockReturnValue(Promise.resolve([]));
-    jest.spyOn(clients, 'configuration', 'get').mockReturnValue(configuration);
+    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([]));
 
     const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent);
     const body = JSON.parse(response.body);

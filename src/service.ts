@@ -3,6 +3,7 @@ import { Allocate } from './allocate';
 import { Endpoint, EndpointOptions } from './api';
 import { Configuration, ConfigurationData } from './config/configuration';
 import { Deallocate } from './deallocate';
+import { Scheduler } from './scheduler';
 import { Allocations, Environments } from './storage';
 
 /**
@@ -57,6 +58,11 @@ export class AtmosphereService extends Construct {
    */
   public readonly endpoint: Endpoint;
 
+  /**
+   * Provides access to the scheduler.
+   */
+  public readonly scheduler: Scheduler;
+
   constructor(scope: Construct, id: string, props: AtmosphereServiceProps) {
     super(scope, id);
 
@@ -67,14 +73,21 @@ export class AtmosphereService extends Construct {
     this.environments = new Environments(this, 'Environments');
     this.allocations = new Allocations(this, 'Allocations');
 
+    this.scheduler = new Scheduler(this, 'Scheduler', {
+      environments: this.environments,
+      allocations: this.allocations,
+    });
+
     this.allocate = new Allocate(this, 'Allocate', {
       configuration: this.config,
       allocations: this.allocations,
       environments: this.environments,
+      scheduler: this.scheduler,
     });
     this.deallocate = new Deallocate(this, 'Deallocate', {
       environments: this.environments,
       allocations: this.allocations,
+      scheduler: this.scheduler,
     });
 
     this.endpoint = new Endpoint(this, 'Endpoint', {
@@ -82,5 +95,6 @@ export class AtmosphereService extends Construct {
       deallocate: this.deallocate,
       ...props.endpoint,
     });
+
   }
 }

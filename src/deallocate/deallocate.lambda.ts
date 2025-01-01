@@ -1,7 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
+import * as envars from '../envars';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
+
+const CLEANUP_TIMEOUT_MINUTES = 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -11,6 +14,10 @@ class ProxyError extends Error {
 
 export interface DeallocationRequest {
   readonly outcome: string;
+
+  // honestly this is just so that we can easily write timeout
+  // integration tests.
+  readonly cleanupTimeoutSeconds?: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -28,14 +35,25 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
+    const cleanupTimeoutSeconds = request.cleanupTimeoutSeconds ?? CLEANUP_TIMEOUT_MINUTES * 60;
+    const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupTimeoutSeconds);
+
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
 
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
     await clients.environments.cleaning(id, allocation.account, allocation.region);
 
+    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: envars.Envars.required(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
+    });
+
     // TODO - trigger cleanup task
-    // TODO - create cleanup timeout event
 
     return success();
   } catch (e: any) {

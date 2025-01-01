@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d23cf8dda99954dfe9b049d5773b06805131eb1709ccddd329bd05015ca94540.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/149ef890816769eaf70a170bc756281d3f33aafe1ccc0491bec1362fbfdc6124.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -74,6 +74,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereAllocateAtmosphereAllocationsTable47CC9A1D"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerRoleFE82AF82"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerRoleDefaultPolicyED5B47D3"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/DLQ/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerCleanupTimeoutServiceRole353539CC"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy8ADC9624"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/CleanupTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerCleanupTimeout38625ADA"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerAllocationTimeoutServiceRoleC909FFD8"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicyF1FC2690"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Scheduler/AllocationTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAtmosphereSchedulerAllocationTimeout6D7DFFBD"
           }
         ],
         "/atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/Function/ServiceRole/Resource": [
@@ -226,6 +280,30 @@
             "data": "AtmosphereAllocateAssertCDKATMOSPHERECONFIGURATIONFILEKEYC5BC549D"
           }
         ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHERESCHEDULERDLQARN69ED5304"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHERESCHEDULERROLEARN6E178EB3"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHEREALLOCATIONTIMEOUTFUNCTIONARN806A514D"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHERECLEANUPTIMEOUTFUNCTIONARN33DF0F7C"
+          }
+        ],
         "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_REST_API_ID": [
           {
             "type": "aws:cdk:logicalId",
@@ -242,6 +320,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereAllocateAssertCDKATMOSPHEREALLOCATIONRESOURCEID5B00C56B"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AtmosphereAllocate/Assert/CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateAssertCDKATMOSPHEREDEALLOCATEFUNCTIONNAMEFFC55C61"
           }
         ],
         "/atmosphere-integ-deallocate/Admin/Resource": [
@@ -340,7 +424,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f88e37c3789717538bbca4cea5befc5e83b7860c43d969d8344920c447cf3a2f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ac80b1c989b3bc28b2f8acfa344d7698409c1170a4b83fafc761f335212fa722.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
