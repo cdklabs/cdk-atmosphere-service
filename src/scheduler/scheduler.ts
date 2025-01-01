@@ -41,8 +41,13 @@ export class Scheduler extends Construct {
 
     this.dlq = new sqs.Queue(this, 'DLQ', { encryption: sqs.QueueEncryption.KMS_MANAGED });
 
-    this.cleanupTimeoutFunction = new CleanupTimeoutFunction(this, 'CleanupTimeout');
-    this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout');
+    this.cleanupTimeoutFunction = new CleanupTimeoutFunction(this, 'CleanupTimeout', {
+      deadLetterQueue: this.dlq,
+    });
+    this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout', {
+      deadLetterQueue: this.dlq,
+    },
+    );
 
     props.environments.grantReadWrite(this.cleanupTimeoutFunction);
     props.allocations.grantReadWrite(this.allocationTimeoutFunction);

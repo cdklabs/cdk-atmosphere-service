@@ -624,6 +624,16 @@
                                         "policyDocument": {
                                           "Statement": [
                                             {
+                                              "Action": "sqs:SendMessage",
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::GetAtt": [
+                                                  "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            },
+                                            {
                                               "Action": [
                                                 "dynamodb:BatchGetItem",
                                                 "dynamodb:BatchWriteItem",
@@ -716,6 +726,14 @@
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
                                   "s3Key": "16abbff071cf38ae997ac7eaac6e694c77c3eb43fa9ce3c7c4bd121d5e446d68.zip"
+                                },
+                                "deadLetterConfig": {
+                                  "targetArn": {
+                                    "Fn::GetAtt": [
+                                      "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
+                                      "Arn"
+                                    ]
+                                  }
                                 },
                                 "description": "src/cleanup-timeout/cleanup-timeout.lambda.ts",
                                 "environment": {
@@ -814,6 +832,16 @@
                                       "aws:cdk:cloudformation:props": {
                                         "policyDocument": {
                                           "Statement": [
+                                            {
+                                              "Action": "sqs:SendMessage",
+                                              "Effect": "Allow",
+                                              "Resource": {
+                                                "Fn::GetAtt": [
+                                                  "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
+                                                  "Arn"
+                                                ]
+                                              }
+                                            },
                                             {
                                               "Action": [
                                                 "dynamodb:BatchGetItem",
@@ -938,7 +966,15 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "ffa7fe00a4726692eb6aed89d938d9463535a885225fd40c05c87dc3832fa0d3.zip"
+                                  "s3Key": "e233f51359c3aad7ef5875ec09d8ba1f1baefdf5b221c27c17f80a4c66b96490.zip"
+                                },
+                                "deadLetterConfig": {
+                                  "targetArn": {
+                                    "Fn::GetAtt": [
+                                      "AtmosphereAllocateAtmosphereSchedulerDLQ0373B004",
+                                      "Arn"
+                                    ]
+                                  }
                                 },
                                 "description": "src/allocation-timeout/allocation-timeout.lambda.ts",
                                 "environment": {
@@ -1263,9 +1299,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.3]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.3]}",
-                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.3]}",
+                      "AdminRole${Token[AWS.AccountId.7]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.7]}",
+                        "path": "atmosphere-integ-deallocate/AtmosphereAllocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.7]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"

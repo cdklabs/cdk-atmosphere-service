@@ -9,6 +9,26 @@ interface CleanupTimeoutEvent {
 
 const clients = RuntimeClients.getOrCreate();
 
+/**
+ * Responsible for marking an environment as `dirty` in case the cleanup task (executed separately)
+ * has timed out and didn't perform a successfull cleanup. When this happens, a human is notified in
+ * order to attend to the environment and perform a manual cleanup. This ensures that the environment
+ * doesn't remain in `cleaning` state forever.
+ *
+ * It is triggered on a fixed schedule via an EventBridge (one-time) schedule that is created upon deallocation.
+ * Being a schedule, it may very well be triggered even if a cleanup was already performed successfully, or even
+ * if the environment has already been reallocated to another requester; in that case, this function will simply
+ * return and do nothing.
+ *
+ * Implementation
+ * --------------
+ *
+ * 1. Update the `status` attribute in the `environments` table to `dirty`.
+ *
+ * > Note that we could have also configured the schedule itself to perform DB updates directly.
+ * > However, custom exception handling is required in order to implement idempotancy, and
+ * > that can only be done with a dedicated function.
+ */
 export async function handler(event: CleanupTimeoutEvent) {
   console.log('Event:', JSON.stringify(event, null, 2));
 

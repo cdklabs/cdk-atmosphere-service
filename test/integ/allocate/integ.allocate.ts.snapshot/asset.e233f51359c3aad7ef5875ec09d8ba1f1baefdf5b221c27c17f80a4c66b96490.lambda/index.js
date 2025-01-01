@@ -60,7 +60,11 @@ async function handler(event) {
   const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
   const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
   console.log(`Invoking ${target} with payload: ${payload}`);
-  await lambda.invoke({ FunctionName: target, InvocationType: "Event", Payload: payload });
+  const response = await lambda.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
+  const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
+  if (responsePayload.statusCode !== 200) {
+    throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
+  }
   console.log("Done");
 }
 // Annotate the CommonJS export names for ESM import in node:

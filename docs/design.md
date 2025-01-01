@@ -370,20 +370,40 @@ created at runtime by the appropriate logical component.
 
 #### `Allocation Timeout Event (EventBridge Schedule)`
 
-The allocation timeout event is created by the [Allocation (Lambda Function)](#allocation-lambda-function) and is responsible for deallocating an environment in case the integration test neglected to send the deallocation request. It uses the Lambda universal target to invoke the [Deallocation (Lambda Function)](#deallocation-lambda-function).
+The allocation timeout event is created by the [Allocation (Lambda Function)](#allocation-lambda-function) and uses
+the Lambda universal target to invoke the [Allocation Timeout Target (Lambda Function)](#allocation-timeout-target-lambda-function).
 
 <img src="./images/allocation-timeout-event-diagram.png" width="250"/>
 
-In order to distinguish between this event and a client requested allocation, the event will
-send an additional property in the lambda payload, which will be read by the [Deallocation (Lambda Function)](#deallocation-lambda-function).
+#### `Allocation Timeout Target (Lambda Function)`
+
+Allocation timeout is a Lambda Function that gets trigerred whenever an allocation has
+reached its expiry time. It ensures that allocations come to an end even if their requester neglects to send
+an explicit deallocation request, ensuring an environment is not hold by a requester for an undetermined
+period of time. Execution failures are recorded into a DLQ because they will require redrive.
+
+<img src="./images/allocation-timeout-diagram.png" width="250">
+
+1. Invoke the [Deallocation Lambda Function](#deallocation-lambda-function).
 
 #### `Cleanup Timeout Event (EventBridge Schedule)`
 
-The cleanup timeout event is created by the [Deallocation (Lambda Function)](#deallocation-lambda-function) and is
-responsible for marking an environment as dirty in case the cleanup process has timed out. It uses the
-DynamoDB universal target to update the [Environments (DynamoDB Table)](#environments-dynamodb-table)
+The cleanup timeout event is created by the [Deallocation (Lambda Function)](#deallocation-lambda-function) and uses
+the Lambda universal target to invoke the [Cleanup Timeout Target (Lambda Function)](#cleanup-timeout-target-lambda-function)
 
 <img src="./images/cleanup-timeout-event-diagram.png" width="250"/>
+
+#### `Cleanup Timeout Target (Lambda Function)`
+
+Cleanup timeout is a Lambda function that gets triggered when the cleanup process reaches its timeout date.
+It ensures an environment is not hold in `cleaning` status for an undetermined period of time. Execution failures
+are recorded into a DLQ because they will require redrive.
+
+<img src="./images/cleanup-timeout-diagram.png" width="250">
+
+1. Update the `status` attribute in the `environments` table.
+    * If an environment is already released - do nothing.
+    * If an environment has been reallocated - do nothing.
 
 ## Operational Excellence
 
