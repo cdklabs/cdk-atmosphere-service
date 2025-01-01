@@ -368,10 +368,6 @@ created at runtime by the appropriate logical component.
 * Events are [guaranteed at-least-once delivery](https://aws.amazon.com/blogs/compute/introducing-amazon-eventbridge-scheduler/).
 * Events that could not be successfully delivered are sent to a DLQ.
 
-#### `Allocation Timeout Target (Lambda Function)`
-
-The allocation timeout target is a Lambda function that gets invoked by 
-
 #### `Allocation Timeout Event (EventBridge Schedule)`
 
 The allocation timeout event is created by the [Allocation (Lambda Function)](#allocation-lambda-function) and is responsible for deallocating an environment in case the integration test neglected to send the deallocation request. It uses the Lambda universal target to invoke the [Deallocation (Lambda Function)](#deallocation-lambda-function).
@@ -380,8 +376,6 @@ The allocation timeout event is created by the [Allocation (Lambda Function)](#a
 
 In order to distinguish between this event and a client requested allocation, the event will
 send an additional property in the lambda payload, which will be read by the [Deallocation (Lambda Function)](#deallocation-lambda-function).
-
-#### `Cleanup Timeout Target (Lambda Function)`
 
 #### `Cleanup Timeout Event (EventBridge Schedule)`
 

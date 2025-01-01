@@ -44,8 +44,10 @@ const project = new CdklabsConstructLibrary({
       coverageReporters: ['text-summary'],
       reporters: [new JestReporter('default', { summaryThreshold: 1 })],
     },
+
+    // we just want our own custom reporter that prints
+    // a summary at the end.
     preserveDefaultReporters: false,
-    junitReporting: false,
   },
   // this would have been nice but it doesn't
   // actually work with integ-runner.
