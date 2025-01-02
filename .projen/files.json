@@ -16,6 +16,8 @@
     ".projen/tasks.json",
     "LICENSE",
     "src/allocate/allocate-function.ts",
+    "src/allocation-timeout/allocation-timeout-function.ts",
+    "src/cleanup-timeout/cleanup-timeout-function.ts",
     "src/deallocate/deallocate-function.ts",
     "tsconfig.dev.json"
   ],

@@ -1,5 +1,6 @@
 import { ConfigurationClient } from './config/configuration.client';
-import { ALLOCATIONS_TABLE_NAME_ENV, CONFIGURATION_BUCKET_ENV, CONFIGURATION_KEY_ENV, Envars, ENVIRONMENTS_TABLE_NAME_ENV } from './envars';
+import * as envars from './envars';
+import { SchedulerClient } from './scheduler/scheduler.client';
 import { AllocationsClient } from './storage/allocations.client';
 import { EnvironmentsClient } from './storage/environments.client';
 
@@ -22,11 +23,12 @@ export class RuntimeClients {
   private _configuration: ConfigurationClient | undefined;
   private _environments: EnvironmentsClient | undefined;
   private _allocations: AllocationsClient | undefined;
+  private _scheduler: SchedulerClient | undefined;
 
   public get configuration(): ConfigurationClient {
     if (!this._configuration) {
-      const bucket = Envars.required(CONFIGURATION_BUCKET_ENV);
-      const key = Envars.required(CONFIGURATION_KEY_ENV);
+      const bucket = envars.Envars.required(envars.CONFIGURATION_BUCKET_ENV);
+      const key = envars.Envars.required(envars.CONFIGURATION_KEY_ENV);
       this._configuration = new ConfigurationClient({ bucket, key });
     }
     return this._configuration;
@@ -34,7 +36,7 @@ export class RuntimeClients {
 
   public get environments(): EnvironmentsClient {
     if (!this._environments) {
-      const tableName = Envars.required(ENVIRONMENTS_TABLE_NAME_ENV);
+      const tableName = envars.Envars.required(envars.ENVIRONMENTS_TABLE_NAME_ENV);
       this._environments = new EnvironmentsClient(tableName);
     }
     return this._environments;
@@ -42,10 +44,19 @@ export class RuntimeClients {
 
   public get allocations(): AllocationsClient {
     if (!this._allocations) {
-      const tableName = Envars.required(ALLOCATIONS_TABLE_NAME_ENV);
+      const tableName = envars.Envars.required(envars.ALLOCATIONS_TABLE_NAME_ENV);
       this._allocations = new AllocationsClient(tableName);
     }
     return this._allocations;
+  }
+
+  public get scheduler(): SchedulerClient {
+    if (!this._scheduler) {
+      const roleArn = envars.Envars.required(envars.SCHEDULER_ROLE_ARN_ENV);
+      const dlqArn = envars.Envars.required(envars.SCHEDULER_DLQ_ARN_ENV);
+      this._scheduler = new SchedulerClient({ roleArn, dlqArn });
+    }
+    return this._scheduler;
   }
 
 }

@@ -2,16 +2,19 @@ import * as assert from 'assert';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
 import { CloudFormation } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import { Scheduler } from '@aws-sdk/client-scheduler';
 import type { AllocationRequest } from '../../src/allocate/allocate.lambda';
 import * as allocate from '../../src/allocate/allocate.lambda';
 import * as deallocate from '../../src/deallocate/deallocate.lambda';
 import type { DeallocationRequest } from '../../src/deallocate/deallocate.lambda';
 import * as envars from '../../src/envars';
+import { EnvironmentsClient } from '../../src/storage/environments.client';
 import * as _with from '../with';
 
 const apigw = new APIGateway();
 const dynamo = new DynamoDB();
 const cfn = new CloudFormation();
+const scheduler = new Scheduler();
 
 export const SUCCESS_PAYLOAD = 'OK';
 
@@ -31,17 +34,17 @@ export class Session {
   /**
    * Run an assertion function in a fresh service state.
    */
-  public static async assert(assertion: (session: Session) => Promise<void>): Promise<string> {
+  public static async assert(assertion: (session: Session) => Promise<void>, name: string = 'default'): Promise<string> {
     const session = await this.create();
     await session.clear();
     let failed = false;
     try {
-      session.sessionLog('🎬 Start 🎬');
+      session.sessionLog(`🎬 Start | ${name} | 🎬`);
       await assertion(session);
-      session.sessionLog('✅ Success ✅');
+      session.sessionLog(`✅ Success | ${name} | ✅`);
       return SUCCESS_PAYLOAD;
     } catch (error: any) {
-      session.sessionLog('❌ !! Fail !! ❌');
+      session.sessionLog(`❌ !! Fail | ${name} | !! ❌`);
       failed = true;
       throw error;
     } finally {
@@ -81,15 +84,23 @@ export class Session {
       [envars.ENVIRONMENTS_TABLE_NAME_ENV]: envValue(envars.ENVIRONMENTS_TABLE_NAME_ENV),
       [envars.CONFIGURATION_BUCKET_ENV]: envValue(envars.CONFIGURATION_BUCKET_ENV),
       [envars.CONFIGURATION_KEY_ENV]: envValue(envars.CONFIGURATION_KEY_ENV),
+      [envars.SCHEDULER_DLQ_ARN_ENV]: envValue(envars.SCHEDULER_DLQ_ARN_ENV),
+      [envars.SCHEDULER_ROLE_ARN_ENV]: envValue(envars.SCHEDULER_ROLE_ARN_ENV),
+      [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: envValue(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
+      [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: envValue(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
       [envars.REST_API_ID_ENV]: envValue(envars.REST_API_ID_ENV),
       [envars.ALLOCATIONS_RESOURCE_ID_ENV]: envValue(envars.ALLOCATIONS_RESOURCE_ID_ENV),
       [envars.ALLOCATION_RESOURCE_ID_ENV]: envValue(envars.ALLOCATION_RESOURCE_ID_ENV),
+      [envars.DEALLOCATE_FUNCTION_NAME_ENV]: envValue(envars.DEALLOCATE_FUNCTION_NAME_ENV),
     });
   }
+
+  public readonly environments: EnvironmentsClient;
 
   private constructor(private readonly vars: envars.EnvironmentVariables) {
     this.sessionLog('Created session with variables:');
     console.log(JSON.stringify(this.vars, null, 2));
+    this.environments = new EnvironmentsClient(this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV]);
   }
 
   public async allocate(body: AllocationRequest): Promise<Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>> {
@@ -154,6 +165,51 @@ export class Session {
     });
   }
 
+  public async fetchAllocationTimeoutSchedule(allocationId: string) {
+    const response = await scheduler.listSchedules({
+      NamePrefix: `atmosphere.timeout.aloc_${allocationId}`,
+    });
+    return response.Schedules?.[0];
+  }
+
+  public async fetchCleanupTimeoutSchedule(allocationId: string) {
+    const response = await scheduler.listSchedules({
+      NamePrefix: `atmosphere.timeout.clean_${allocationId}`,
+    });
+    return response.Schedules?.[0];
+  }
+
+  public async waitFor(condition: () => Promise<Boolean>, timeoutSeconds: number) {
+    const startTime = Date.now();
+    const timeoutMs = timeoutSeconds * 1000;
+    while (true) {
+      const finish = await condition();
+      if (finish) {
+        return;
+      }
+      const elapsed = Date.now() - startTime;
+      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds`);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  public async okFor(condition: () => Promise<Boolean>, timeoutSeconds: number) {
+    const startTime = Date.now();
+    const timeoutMs = timeoutSeconds * 1000;
+    while (true) {
+      const result = await condition();
+      assert.ok(result);
+
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= timeoutMs) {
+        return;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
   private async clear() {
     this.sessionLog('Clearing state');
     const environments = (await dynamo.scan({ TableName: this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV] })).Items ?? [];
@@ -177,6 +233,12 @@ export class Session {
           id: { S: allocation.id.S! },
         },
       });
+    }
+
+    const schedules = (await scheduler.listSchedules({})).Schedules ?? [];
+    for (const schedule of schedules) {
+      this.sessionLog(`  » deleting schedule ${schedule.Name!}`);
+      await scheduler.deleteSchedule({ Name: schedule.Name! });
     }
 
   }

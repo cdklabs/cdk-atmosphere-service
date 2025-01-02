@@ -1,7 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
+import * as envars from '../envars';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
+
+// an hour should plenty to clean one environment
+const MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -11,6 +15,10 @@ class ProxyError extends Error {
 
 export interface DeallocationRequest {
   readonly outcome: string;
+
+  // honestly this is just so that we can easily write timeout
+  // integration tests.
+  readonly cleanupDurationSeconds?: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -28,14 +36,29 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+
+    const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupDurationSeconds);
+
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
 
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
     await clients.environments.cleaning(id, allocation.account, allocation.region);
 
+    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: envars.Envars.required(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
+    });
+
     // TODO - trigger cleanup task
-    // TODO - create cleanup timeout event
 
     return success();
   } catch (e: any) {

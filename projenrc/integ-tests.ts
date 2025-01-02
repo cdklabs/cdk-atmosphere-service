@@ -27,6 +27,10 @@ export class IntegTests {
     forceUpdate.spawn(bundle);
     forceUpdate.exec('yarn integ-runner --language typescript --force');
 
+    // sometimes we just want to list integ tests
+    const list = project.tasks.addTask('integ:list');
+    list.exec('yarn integ-runner --language typescript --list');
+
   }
 
   private constructor() {};

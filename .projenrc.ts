@@ -1,5 +1,6 @@
 import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
 import { JsonPatch } from 'projen';
+import { JestReporter } from 'projen/lib/javascript';
 import { IntegTests } from './projenrc/integ-tests';
 
 const coverageThreshold = 95;
@@ -16,7 +17,9 @@ const project = new CdklabsConstructLibrary({
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/client-api-gateway',
     '@aws-sdk/client-sts',
+    '@aws-sdk/client-scheduler',
     '@aws-sdk/client-cloudformation',
+    '@aws-sdk/client-lambda',
     'uuid',
     '@smithy/util-stream',
     '@types/aws-lambda',
@@ -38,7 +41,13 @@ const project = new CdklabsConstructLibrary({
         '<rootDir>/node_modules/',
         '<rootDir>/test/',
       ],
+      coverageReporters: ['text-summary'],
+      reporters: [new JestReporter('default', { summaryThreshold: 1 })],
     },
+
+    // we just want our own custom reporter that prints
+    // a summary at the end.
+    preserveDefaultReporters: false,
   },
   // this would have been nice but it doesn't
   // actually work with integ-runner.
