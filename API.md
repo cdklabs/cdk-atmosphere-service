@@ -323,6 +323,7 @@ Any object.
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Provides access to the deaclloce function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.endpoint">endpoint</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint">Endpoint</a></code> | Provides access to the API gateway endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Provides access to the environments table. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.scheduler">scheduler</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a></code> | Provides access to the scheduler. |
 
 ---
 
@@ -407,6 +408,18 @@ public readonly environments: Environments;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 Provides access to the environments table.
+
+---
+
+##### `scheduler`<sup>Required</sup> <a name="scheduler" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.scheduler"></a>
+
+```typescript
+public readonly scheduler: Scheduler;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a>
+
+Provides access to the scheduler.
 
 ---
 
@@ -938,6 +951,164 @@ public readonly table: Table;
 ---
 
 
+### Scheduler <a name="Scheduler" id="@cdklabs/cdk-atmosphere-service.Scheduler"></a>
+
+Scheduler layer.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.Scheduler.Initializer"></a>
+
+```typescript
+import { Scheduler } from '@cdklabs/cdk-atmosphere-service'
+
+new Scheduler(scope: Construct, id: string, props: SchedulerProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.SchedulerProps">SchedulerProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.Scheduler.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.Scheduler.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.Scheduler.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.SchedulerProps">SchedulerProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.grantSchedule">grantSchedule</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.Scheduler.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `grantSchedule` <a name="grantSchedule" id="@cdklabs/cdk-atmosphere-service.Scheduler.grantSchedule"></a>
+
+```typescript
+public grantSchedule(grantee: IGrantable): void
+```
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-atmosphere-service.Scheduler.grantSchedule.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.Scheduler.isConstruct"></a>
+
+```typescript
+import { Scheduler } from '@cdklabs/cdk-atmosphere-service'
+
+Scheduler.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.Scheduler.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.allocationTimeoutFunction">allocationTimeoutFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.cleanupTimeoutFunction">cleanupTimeoutFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.dlq">dlq</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `allocationTimeoutFunction`<sup>Required</sup> <a name="allocationTimeoutFunction" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.allocationTimeoutFunction"></a>
+
+```typescript
+public readonly allocationTimeoutFunction: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+---
+
+##### `cleanupTimeoutFunction`<sup>Required</sup> <a name="cleanupTimeoutFunction" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.cleanupTimeoutFunction"></a>
+
+```typescript
+public readonly cleanupTimeoutFunction: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+---
+
+##### `dlq`<sup>Required</sup> <a name="dlq" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.dlq"></a>
+
+```typescript
+public readonly dlq: Queue;
+```
+
+- *Type:* aws-cdk-lib.aws_sqs.Queue
+
+---
+
+##### `role`<sup>Required</sup> <a name="role" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.role"></a>
+
+```typescript
+public readonly role: Role;
+```
+
+- *Type:* aws-cdk-lib.aws_iam.Role
+
+---
+
+
 ## Structs <a name="Structs" id="Structs"></a>
 
 ### AllocateProps <a name="AllocateProps" id="@cdklabs/cdk-atmosphere-service.AllocateProps"></a>
@@ -959,6 +1130,7 @@ const allocateProps: AllocateProps = { ... }
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocateProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Allocations storage. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocateProps.property.configuration">configuration</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | Service configuration. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocateProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Environments storage. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocateProps.property.scheduler">scheduler</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a></code> | Scheduler. |
 
 ---
 
@@ -995,6 +1167,18 @@ public readonly environments: Environments;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 Environments storage.
+
+---
+
+##### `scheduler`<sup>Required</sup> <a name="scheduler" id="@cdklabs/cdk-atmosphere-service.AllocateProps.property.scheduler"></a>
+
+```typescript
+public readonly scheduler: Scheduler;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a>
+
+Scheduler.
 
 ---
 
@@ -1125,6 +1309,7 @@ const deallocateProps: DeallocateProps = { ... }
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Allocations storage. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Environments storage. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.scheduler">scheduler</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a></code> | Scheduler. |
 
 ---
 
@@ -1149,6 +1334,18 @@ public readonly environments: Environments;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 Environments storage.
+
+---
+
+##### `scheduler`<sup>Required</sup> <a name="scheduler" id="@cdklabs/cdk-atmosphere-service.DeallocateProps.property.scheduler"></a>
+
+```typescript
+public readonly scheduler: Scheduler;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a>
+
+Scheduler.
 
 ---
 
@@ -1315,6 +1512,51 @@ public readonly region: string;
 - *Type:* string
 
 Region.
+
+---
+
+### SchedulerProps <a name="SchedulerProps" id="@cdklabs/cdk-atmosphere-service.SchedulerProps"></a>
+
+Properties for `Scheduler`.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.SchedulerProps.Initializer"></a>
+
+```typescript
+import { SchedulerProps } from '@cdklabs/cdk-atmosphere-service'
+
+const schedulerProps: SchedulerProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.SchedulerProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Allocations storage. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.SchedulerProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Environments storage. |
+
+---
+
+##### `allocations`<sup>Required</sup> <a name="allocations" id="@cdklabs/cdk-atmosphere-service.SchedulerProps.property.allocations"></a>
+
+```typescript
+public readonly allocations: Allocations;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
+
+Allocations storage.
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.SchedulerProps.property.environments"></a>
+
+```typescript
+public readonly environments: Environments;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
+
+Environments storage.
 
 ---
 

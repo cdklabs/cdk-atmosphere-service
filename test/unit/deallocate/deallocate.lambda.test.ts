@@ -1,14 +1,23 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { RuntimeClients } from '../../../src/clients';
 import { handler } from '../../../src/deallocate/deallocate.lambda';
-import { AllocationAlreadyEndedError, AllocationsClient, InvalidInputError } from '../../../src/storage/allocations.client';
-import { EnvironmentsClient } from '../../../src/storage/environments.client';
+import * as envars from '../../../src/envars';
+import { AllocationAlreadyEndedError, InvalidInputError } from '../../../src/storage/allocations.client';
+import * as _with from '../../with';
+import { RuntimeClientsMock } from '../clients.mock';
 
 // this grabs the same instance the handler uses
 // so we can easily mock it.
 const clients = RuntimeClients.getOrCreate();
 
 describe('handler', () => {
+
+  jest.useFakeTimers();
+
+  beforeEach(() => {
+    RuntimeClientsMock.mock();
+  });
+
 
   test('returns 400 if no id path parameter', async () => {
 
@@ -36,14 +45,8 @@ describe('handler', () => {
 
   test('returns 400 on invalid input when ending allocation', async () => {
 
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(environments, 'cleaning').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'end').mockReturnValue(Promise.reject(new InvalidInputError('invalid')));
-
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
+    jest.spyOn(clients.environments, 'cleaning').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'end').mockReturnValue(Promise.reject(new InvalidInputError('invalid')));
 
     const response = await handler({
       pathParameters: { id: 'id' },
@@ -58,16 +61,22 @@ describe('handler', () => {
 
   });
 
+  test('returns 400 when cleanup duration exceeds maximum', async () => {
+    const response = await handler({
+      pathParameters: { id: 'id' },
+      body: JSON.stringify({ outcome: 'failed', cleanupDurationSeconds: 2 * 60 * 60 }),
+    } as any as APIGatewayProxyEvent);
+    const body = JSON.parse(response.body);
+
+    expect(response.statusCode).toEqual(400);
+    expect(body.message).toEqual('Maximum cleanup timeout is 3600 seconds');
+
+  });
+
   test('returns 500 on unexpected error', async () => {
 
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(environments, 'cleaning').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'end').mockReturnValue(Promise.reject(new Error('unexpected')));
-
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
+    jest.spyOn(clients.environments, 'cleaning').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'end').mockReturnValue(Promise.reject(new Error('unexpected')));
 
     const response = await handler({
       pathParameters: { id: 'id' },
@@ -84,11 +93,10 @@ describe('handler', () => {
 
   test('returns 200 on success', async () => {
 
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
+    const now = new Date();
 
-    jest.spyOn(environments, 'cleaning').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'end').mockReturnValue(Promise.resolve({
+    jest.spyOn(clients.environments, 'cleaning').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'end').mockReturnValue(Promise.resolve({
       account: '1111',
       region: 'us-east-1',
       pool: 'release',
@@ -98,29 +106,61 @@ describe('handler', () => {
       id: 'id',
       outcome: 'failed',
     }));
+    jest.spyOn(clients.scheduler, 'scheduleCleanupTimeout').mockImplementation(jest.fn());
 
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
-
-    const response = await handler({
+    const response = await _with.env({ [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({
       pathParameters: { id: 'id' },
       body: JSON.stringify({ outcome: 'failed' }),
-    } as any as APIGatewayProxyEvent);
+    } as any as APIGatewayProxyEvent));
 
     expect(response.statusCode).toEqual(200);
+    expect(clients.scheduler.scheduleCleanupTimeout).toHaveBeenCalledWith({
+      allocationId: 'id',
+      account: '1111',
+      region: 'us-east-1',
+      functionArn: 'arn',
+      timeoutDate: new Date(now.getTime() + 60 * 60 * 1000),
+    });
+
+  });
+
+  test('respects cleanup timeout', async () => {
+
+    const now = new Date();
+
+    jest.spyOn(clients.environments, 'cleaning').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'end').mockReturnValue(Promise.resolve({
+      account: '1111',
+      region: 'us-east-1',
+      pool: 'release',
+      start: '0',
+      end: '1',
+      requester: 'user',
+      id: 'id',
+      outcome: 'failed',
+    }));
+    jest.spyOn(clients.scheduler, 'scheduleCleanupTimeout').mockImplementation(jest.fn());
+
+    const response = await _with.env({ [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({
+      pathParameters: { id: 'id' },
+      body: JSON.stringify({ outcome: 'failed', cleanupDurationSeconds: 10 }),
+    } as any as APIGatewayProxyEvent));
+
+    expect(response.statusCode).toEqual(200);
+    expect(clients.scheduler.scheduleCleanupTimeout).toHaveBeenCalledWith({
+      allocationId: 'id',
+      account: '1111',
+      region: 'us-east-1',
+      functionArn: 'arn',
+      timeoutDate: new Date(now.getTime() + 10 * 1000),
+    });
 
   });
 
   test('returns 200 if allocation has already ended', async () => {
 
-    const environments = new EnvironmentsClient('dummy');
-    const allocations = new AllocationsClient('dummy');
-
-    jest.spyOn(environments, 'cleaning').mockImplementation(jest.fn());
-    jest.spyOn(allocations, 'end').mockReturnValue(Promise.reject(new AllocationAlreadyEndedError('id')));
-
-    jest.spyOn(clients, 'environments', 'get').mockReturnValue(environments);
-    jest.spyOn(clients, 'allocations', 'get').mockReturnValue(allocations);
+    jest.spyOn(clients.environments, 'cleaning').mockImplementation(jest.fn());
+    jest.spyOn(clients.allocations, 'end').mockReturnValue(Promise.reject(new AllocationAlreadyEndedError('id')));
 
     const response = await handler({
       pathParameters: { id: 'id' },

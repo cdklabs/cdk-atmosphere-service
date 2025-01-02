@@ -150,6 +150,8 @@
           "**/test/**",
           "**/build-tools/**",
           "src/allocate/allocate.lambda.ts",
+          "src/allocation-timeout/allocation-timeout.lambda.ts",
+          "src/cleanup-timeout/cleanup-timeout.lambda.ts",
           "src/deallocate/deallocate.lambda.ts",
           ".projenrc.ts",
           "projenrc/**/*.ts"

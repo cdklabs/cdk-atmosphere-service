@@ -1,5 +1,5 @@
 import { RuntimeClients } from '../src/clients';
-import { ALLOCATIONS_TABLE_NAME_ENV, ENVIRONMENTS_TABLE_NAME_ENV, CONFIGURATION_BUCKET_ENV, CONFIGURATION_KEY_ENV } from '../src/envars';
+import * as envars from '../src/envars';
 
 describe('RuntimeClients', () => {
 
@@ -13,9 +13,9 @@ describe('RuntimeClients', () => {
 
     const clients = RuntimeClients.getOrCreate();
 
-    expect(() => clients.allocations).toThrow(`Missing environment variable: ${ALLOCATIONS_TABLE_NAME_ENV}`);
+    expect(() => clients.allocations).toThrow(`Missing environment variable: ${envars.ALLOCATIONS_TABLE_NAME_ENV}`);
 
-    withEnv( { [ALLOCATIONS_TABLE_NAME_ENV]: 'foo' }, () => {
+    withEnv( { [envars.ALLOCATIONS_TABLE_NAME_ENV]: 'foo' }, () => {
       expect(clients.allocations).toBeDefined();
     });
 
@@ -25,9 +25,9 @@ describe('RuntimeClients', () => {
 
     const clients = RuntimeClients.getOrCreate();
 
-    expect(() => clients.environments).toThrow(`Missing environment variable: ${ENVIRONMENTS_TABLE_NAME_ENV}`);
+    expect(() => clients.environments).toThrow(`Missing environment variable: ${envars.ENVIRONMENTS_TABLE_NAME_ENV}`);
 
-    withEnv( { [ENVIRONMENTS_TABLE_NAME_ENV]: 'foo' }, () => {
+    withEnv( { [envars.ENVIRONMENTS_TABLE_NAME_ENV]: 'foo' }, () => {
       expect(clients.environments).toBeDefined();
     });
 
@@ -37,14 +37,30 @@ describe('RuntimeClients', () => {
 
     const clients = RuntimeClients.getOrCreate();
 
-    expect(() => clients.configuration).toThrow(`Missing environment variable: ${CONFIGURATION_BUCKET_ENV}`);
+    expect(() => clients.configuration).toThrow(`Missing environment variable: ${envars.CONFIGURATION_BUCKET_ENV}`);
 
-    withEnv( { [CONFIGURATION_BUCKET_ENV]: 'foo' }, () => {
-      expect(() => clients.configuration).toThrow(`Missing environment variable: ${CONFIGURATION_KEY_ENV}`);
+    withEnv( { [envars.CONFIGURATION_BUCKET_ENV]: 'foo' }, () => {
+      expect(() => clients.configuration).toThrow(`Missing environment variable: ${envars.CONFIGURATION_KEY_ENV}`);
     });
 
-    withEnv( { [CONFIGURATION_BUCKET_ENV]: 'foo', [CONFIGURATION_KEY_ENV]: 'bar' }, () => {
+    withEnv( { [envars.CONFIGURATION_BUCKET_ENV]: 'foo', [envars.CONFIGURATION_KEY_ENV]: 'bar' }, () => {
       expect(clients.configuration).toBeDefined();
+    });
+
+  });
+
+  test('scheduler requires the correct env', async () => {
+
+    const clients = RuntimeClients.getOrCreate();
+
+    expect(() => clients.scheduler).toThrow(`Missing environment variable: ${envars.SCHEDULER_ROLE_ARN_ENV}`);
+
+    await withEnv( { [envars.SCHEDULER_ROLE_ARN_ENV]: 'dlq' }, async () => {
+      expect(() => clients.scheduler).toThrow(`Missing environment variable: ${envars.SCHEDULER_DLQ_ARN_ENV}`);
+    });
+
+    await withEnv( { [envars.SCHEDULER_DLQ_ARN_ENV]: 'dql', [envars.SCHEDULER_ROLE_ARN_ENV]: 'arn' }, async () => {
+      expect(clients.scheduler).toBeDefined();
     });
 
   });

@@ -5,8 +5,14 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
+import * as envars from '../envars';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
+
+// this will be the duration of the credentials being passed
+// the the caller. currently, it cannot be more than 1 hour because of role chaining.
+// TODO - how can we avoid role chaining?
+const MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -17,6 +23,10 @@ class ProxyError extends Error {
 export interface AllocationRequest {
   readonly pool: string;
   readonly requester: string;
+
+  // honestly this is just so that we can easily write timeout
+  // integration tests.
+  readonly durationSeconds?: number;
 }
 
 interface Credentials {
@@ -40,6 +50,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
+    const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
+    if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
+      throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
+    }
+
+    const timeoutDate = new Date(Date.now() + 1000 * durationSeconds);
+
     const allocationId = uuidv4();
 
     console.log(`Acquiring environment from pool '${request.pool}'`);
@@ -55,7 +72,12 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     const response: AllocationResponse = { id: allocationId, environment, credentials };
 
-    // TODO - create the allocation timeout event
+    console.log(`Scheduling timeout for allocation '${allocationId}' to ${timeoutDate}`);
+    await clients.scheduler.scheduleAllocationTimeout({
+      allocationId,
+      timeoutDate,
+      functionArn: envars.Envars.required(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
+    });
 
     return {
       statusCode: 200,

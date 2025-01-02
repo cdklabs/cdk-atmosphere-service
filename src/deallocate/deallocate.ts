@@ -1,7 +1,8 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
-import { ENVIRONMENTS_TABLE_NAME_ENV, ALLOCATIONS_TABLE_NAME_ENV } from '../envars';
+import * as envars from '../envars';
+import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
 
 /**
@@ -18,6 +19,11 @@ export interface DeallocateProps {
    * Environments storage.
    */
   readonly environments: Environments;
+
+  /**
+   * Scheduler.
+   */
+  readonly scheduler: Scheduler;
 }
 
 /**
@@ -34,9 +40,19 @@ export class Deallocate extends Construct {
 
     props.allocations.grantReadWrite(this.function);
     props.environments.grantReadWrite(this.function);
+    props.scheduler.grantSchedule(this.function);
 
-    this.function.addEnvironment(ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
-    this.function.addEnvironment(ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
+    // creating the cleanup timeout event requires passing the events role
+    props.scheduler.role.grantPassRole(this.function.grantPrincipal);
+
+    props.scheduler.allocationTimeoutFunction.addEnvironment(envars.DEALLOCATE_FUNCTION_NAME_ENV, this.function.functionName);
+    this.function.grantInvoke(props.scheduler.allocationTimeoutFunction);
+
+    this.function.addEnvironment(envars.ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
+    this.function.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
+    this.function.addEnvironment(envars.SCHEDULER_DLQ_ARN_ENV, props.scheduler.dlq.queueArn);
+    this.function.addEnvironment(envars.SCHEDULER_ROLE_ARN_ENV, props.scheduler.role.roleArn);
+    this.function.addEnvironment(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.cleanupTimeoutFunction.functionArn);
 
   }
 }

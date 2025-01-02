@@ -9,9 +9,15 @@
     "bundle": "npx projen bundle",
     "bundle:allocate/allocate.lambda": "npx projen bundle:allocate/allocate.lambda",
     "bundle:allocate/allocate.lambda:watch": "npx projen bundle:allocate/allocate.lambda:watch",
+    "bundle:allocation-timeout/allocation-timeout.lambda": "npx projen bundle:allocation-timeout/allocation-timeout.lambda",
+    "bundle:allocation-timeout/allocation-timeout.lambda:watch": "npx projen bundle:allocation-timeout/allocation-timeout.lambda:watch",
+    "bundle:cleanup-timeout/cleanup-timeout.lambda": "npx projen bundle:cleanup-timeout/cleanup-timeout.lambda",
+    "bundle:cleanup-timeout/cleanup-timeout.lambda:watch": "npx projen bundle:cleanup-timeout/cleanup-timeout.lambda:watch",
     "bundle:deallocate/deallocate.lambda": "npx projen bundle:deallocate/deallocate.lambda",
     "bundle:deallocate/deallocate.lambda:watch": "npx projen bundle:deallocate/deallocate.lambda:watch",
     "bundle:test/integ/allocate/assert.lambda.ts": "npx projen bundle:test/integ/allocate/assert.lambda.ts",
+    "bundle:test/integ/allocation-timeout/assert.lambda.ts": "npx projen bundle:test/integ/allocation-timeout/assert.lambda.ts",
+    "bundle:test/integ/cleanup-timeout/assert.lambda.ts": "npx projen bundle:test/integ/cleanup-timeout/assert.lambda.ts",
     "bundle:test/integ/deallocate/assert.lambda.ts": "npx projen bundle:test/integ/deallocate/assert.lambda.ts",
     "bundle:test/integ/dev/assert.lambda.ts": "npx projen bundle:test/integ/dev/assert.lambda.ts",
     "clobber": "npx projen clobber",
@@ -25,12 +31,25 @@
     "integ:assert": "npx projen integ:assert",
     "integ:dev": "npx projen integ:dev",
     "integ:force": "npx projen integ:force",
+    "integ:list": "npx projen integ:list",
     "integ:test/allocate": "npx projen integ:test/allocate",
     "integ:test/allocate:assert": "npx projen integ:test/allocate:assert",
     "integ:test/allocate:deploy": "npx projen integ:test/allocate:deploy",
     "integ:test/allocate:force": "npx projen integ:test/allocate:force",
     "integ:test/allocate:snapshot": "npx projen integ:test/allocate:snapshot",
     "integ:test/allocate:update": "npx projen integ:test/allocate:update",
+    "integ:test/allocation-timeout": "npx projen integ:test/allocation-timeout",
+    "integ:test/allocation-timeout:assert": "npx projen integ:test/allocation-timeout:assert",
+    "integ:test/allocation-timeout:deploy": "npx projen integ:test/allocation-timeout:deploy",
+    "integ:test/allocation-timeout:force": "npx projen integ:test/allocation-timeout:force",
+    "integ:test/allocation-timeout:snapshot": "npx projen integ:test/allocation-timeout:snapshot",
+    "integ:test/allocation-timeout:update": "npx projen integ:test/allocation-timeout:update",
+    "integ:test/cleanup-timeout": "npx projen integ:test/cleanup-timeout",
+    "integ:test/cleanup-timeout:assert": "npx projen integ:test/cleanup-timeout:assert",
+    "integ:test/cleanup-timeout:deploy": "npx projen integ:test/cleanup-timeout:deploy",
+    "integ:test/cleanup-timeout:force": "npx projen integ:test/cleanup-timeout:force",
+    "integ:test/cleanup-timeout:snapshot": "npx projen integ:test/cleanup-timeout:snapshot",
+    "integ:test/cleanup-timeout:update": "npx projen integ:test/cleanup-timeout:update",
     "integ:test/deallocate": "npx projen integ:test/deallocate",
     "integ:test/deallocate:assert": "npx projen integ:test/deallocate:assert",
     "integ:test/deallocate:deploy": "npx projen integ:test/deallocate:deploy",
@@ -74,7 +93,9 @@
     "@aws-sdk/client-api-gateway": "^3.716.0",
     "@aws-sdk/client-cloudformation": "^3.716.0",
     "@aws-sdk/client-dynamodb": "^3.716.0",
+    "@aws-sdk/client-lambda": "^3.716.0",
     "@aws-sdk/client-s3": "^3.717.0",
+    "@aws-sdk/client-scheduler": "^3.716.0",
     "@aws-sdk/client-sts": "^3.716.0",
     "@smithy/util-stream": "^3.3.3",
     "@stylistic/eslint-plugin": "^2",
@@ -133,6 +154,24 @@
       "<rootDir>/node_modules/",
       "<rootDir>/test/"
     ],
+    "coverageReporters": [
+      "text-summary",
+      "text"
+    ],
+    "reporters": [
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-reports"
+        }
+      ],
+      [
+        "default",
+        {
+          "summaryThreshold": 1
+        }
+      ]
+    ],
     "testMatch": [
       "<rootDir>/@(src|test)/**/*(*.)@(spec|test).ts?(x)",
       "<rootDir>/@(src|test)/**/__tests__/**/*.ts?(x)",
@@ -141,28 +180,12 @@
     ],
     "clearMocks": true,
     "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "clover",
-      "cobertura",
-      "text"
-    ],
     "coverageDirectory": "coverage",
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],
     "watchPathIgnorePatterns": [
       "/node_modules/"
-    ],
-    "reporters": [
-      "default",
-      [
-        "jest-junit",
-        {
-          "outputDirectory": "test-reports"
-        }
-      ]
     ],
     "transform": {
       "^.+\\.[t]sx?$": [

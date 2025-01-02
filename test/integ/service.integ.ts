@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -67,7 +67,7 @@ export class AtmosphereIntegTest extends Construct {
       description: `test/integ/${props.dir}/assert.lambda.ts`,
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      timeout: Duration.minutes(1),
+      timeout: Duration.minutes(15),
       code: lambda.Code.fromAsset(path.dirname(bundlePath)),
     });
     assert.addEnvironment('CDK_ATMOSPHERE_INTEG', 'true');
@@ -79,9 +79,14 @@ export class AtmosphereIntegTest extends Construct {
       [envars.ALLOCATIONS_TABLE_NAME_ENV]: service.allocations.table.tableName,
       [envars.CONFIGURATION_BUCKET_ENV]: service.config.bucket.bucketName,
       [envars.CONFIGURATION_KEY_ENV]: service.config.key,
+      [envars.SCHEDULER_DLQ_ARN_ENV]: service.scheduler.dlq.queueArn,
+      [envars.SCHEDULER_ROLE_ARN_ENV]: service.scheduler.role.roleArn,
+      [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: service.scheduler.allocationTimeoutFunction.functionArn,
+      [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: service.scheduler.cleanupTimeoutFunction.functionArn,
       [envars.REST_API_ID_ENV]: service.endpoint.api.restApiId,
       [envars.ALLOCATIONS_RESOURCE_ID_ENV]: service.endpoint.allocationsResource.resourceId,
       [envars.ALLOCATION_RESOURCE_ID_ENV]: service.endpoint.allocationResource.resourceId,
+      [envars.DEALLOCATE_FUNCTION_NAME_ENV]: service.deallocate.function.functionName,
     };
 
     for (const [key, value] of Object.entries(envVariables)) {
@@ -103,7 +108,11 @@ export class AtmosphereIntegTest extends Construct {
       Action: 'dynamodb:*',
       Resource: ['*'],
     }));
-
+    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
+      Effect: 'Allow',
+      Action: 'scheduler:*',
+      Resource: ['*'],
+    }));
     cdk.Aspects.of(cdk.Stack.of(this)).add(new DestroyAspect());
 
     this.integ = new IntegTest(cdk.App.of(this)!, 'IntegTest', {
@@ -114,8 +123,26 @@ export class AtmosphereIntegTest extends Construct {
 
     // invoke the api and assert it didn't fail on an assertion error
     const assertCall = this.integ.assertions.invokeFunction({ functionName: assert.functionName });
+
+    // the timeout of the function invoking our assertion should match the assertion timeout
+    // because its a synchronous call.
+    const lambdaProvider = this.findLambdaProvider(assertCall);
+    lambdaProvider.addPropertyOverride('Timeout', assert.timeout?.toSeconds() ?? 120);
+
     assertCall.expect(ExpectedResult.objectLike({ Payload: `"${SUCCESS_PAYLOAD}"` }));
 
+  }
+
+  private findLambdaProvider(assertCall: IApiCall): cdk.CfnResource {
+    const providers = cdk.Stack.of(assertCall.provider).node.findAll().filter((n) => {
+      return cdk.CfnResource.isCfnResource(n)
+        && n.cfnResourceType === 'AWS::Lambda::Function'
+        && n.node.path.includes('SingletonFunction');
+    });
+    if (providers.length !== 1) {
+      throw new Error(`Expected to find exactly one lambda provider, found ${providers.length}`);
+    }
+    return providers[0] as cdk.CfnResource;
   }
 }
 
