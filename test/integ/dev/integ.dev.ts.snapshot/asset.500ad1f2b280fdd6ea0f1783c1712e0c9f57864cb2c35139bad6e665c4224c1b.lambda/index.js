@@ -34,6 +34,43 @@ __export(deallocate_lambda_exports, {
 });
 module.exports = __toCommonJS(deallocate_lambda_exports);
 
+// src/cleanup/cleanup.client.ts
+var import_client_ecs = require("@aws-sdk/client-ecs");
+var CleanupClient = class {
+  constructor(props) {
+    this.props = props;
+    this.ecs = new import_client_ecs.ECS();
+  }
+  async start(opts) {
+    const response = await this.ecs.runTask({
+      cluster: this.props.clusterArn,
+      taskDefinition: this.props.taskDefinitionArn,
+      launchType: "FARGATE",
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          subnets: [this.props.subnetId],
+          securityGroups: [this.props.securityGroupId],
+          assignPublicIp: "ENABLED"
+        }
+      },
+      overrides: {
+        containerOverrides: [
+          {
+            name: this.props.containerName,
+            environment: [
+              { name: "ALLOCATION_ID", value: opts.allocation.id },
+              { name: "ACCOUNT", value: opts.allocation.account },
+              { name: "REGION", value: opts.allocation.region },
+              { name: "TIMEOUT_SECONDS", value: `${opts.timeoutSeconds}` }
+            ]
+          }
+        ]
+      }
+    });
+    return response.tasks[0].taskArn;
+  }
+};
+
 // src/config/configuration.client.ts
 var s3 = __toESM(require("@aws-sdk/client-s3"));
 var ConfigurationClient = class {
@@ -83,6 +120,11 @@ var REST_API_ID_ENV = `${ENV_PREFIX}REST_API_ID`;
 var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
 var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
 var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
+var CLEANUP_CLUSTER_ARN_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_ARN`;
+var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`;
+var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
+var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
+var CLEANUP_TASK_CONTAINER_NAME_ENV = `${ENV_PREFIX}CLEANUP_TASK_CONTAINER_NAME`;
 var Envars = class _Envars {
   static required(name) {
     const value2 = _Envars.optional(name);
@@ -450,6 +492,17 @@ var RuntimeClients = class _RuntimeClients {
     }
     return this._scheduler;
   }
+  get cleanup() {
+    if (!this._cleanup) {
+      const clusterArn = Envars.required(CLEANUP_CLUSTER_ARN_ENV);
+      const taskDefinitionArn = Envars.required(CLEANUP_TASK_DEFINITION_ARN_ENV);
+      const subnetId = Envars.required(CLEANUP_TASK_SUBNET_ID_ENV);
+      const securityGroupId = Envars.required(CLEANUP_TASK_SECURITY_GROUP_ID_ENV);
+      const containerName = Envars.required(CLEANUP_TASK_CONTAINER_NAME_ENV);
+      this._cleanup = new CleanupClient({ clusterArn, taskDefinitionArn, subnetId, securityGroupId, containerName });
+    }
+    return this._cleanup;
+  }
 };
 
 // src/deallocate/deallocate.lambda.ts
@@ -489,6 +542,9 @@ async function handler(event) {
       timeoutDate: cleanupTimeoutDate,
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
+    console.log(`Starting cleanup process for environment 'aws://${allocation.account}/${allocation.region}`);
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    console.log(`Cleanup process started successfully. Task instance arn: ${taskInstanceArn}`);
     return success();
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {

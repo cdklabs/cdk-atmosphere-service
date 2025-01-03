@@ -47,6 +47,9 @@
           "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
         },
         {
+          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+        },
+        {
           "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
         },
         {
@@ -150,6 +153,14 @@
       "steps": [
         {
           "exec": "esbuild --bundle test/integ/cleanup-timeout/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/cleanup-timeout/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/cleanup/assert.lambda.ts": {
+      "name": "bundle:test/integ/cleanup/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/cleanup/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/cleanup/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -301,6 +312,9 @@
         },
         {
           "spawn": "integ:test/allocation-timeout:assert"
+        },
+        {
+          "spawn": "integ:test/cleanup:assert"
         },
         {
           "spawn": "integ:test/cleanup-timeout:assert"
@@ -481,6 +495,18 @@
         }
       ]
     },
+    "integ:test/cleanup": {
+      "name": "integ:test/cleanup",
+      "description": "Run the test in snapshot mode",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup"
+        }
+      ]
+    },
     "integ:test/cleanup-timeout": {
       "name": "integ:test/cleanup-timeout",
       "description": "Run the test in snapshot mode",
@@ -547,6 +573,63 @@
         },
         {
           "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/cleanup:assert": {
+      "name": "integ:test/cleanup:assert",
+      "description": "Run the assertion locally against a deployed service",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/cleanup/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/cleanup:deploy": {
+      "name": "integ:test/cleanup:deploy",
+      "description": "Deploy and update the snapshot while keeping the service running",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --no-clean --force"
+        }
+      ]
+    },
+    "integ:test/cleanup:force": {
+      "name": "integ:test/cleanup:force",
+      "description": "Force update the snapshot by deploying the test",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --force"
+        }
+      ]
+    },
+    "integ:test/cleanup:snapshot": {
+      "name": "integ:test/cleanup:snapshot",
+      "description": "Update snapshot without deploying (discoureged)",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --dry-run --force"
+        }
+      ]
+    },
+    "integ:test/cleanup:update": {
+      "name": "integ:test/cleanup:update",
+      "description": "Deploy and update the snapshot if necessary",
+      "steps": [
+        {
+          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+        },
+        {
+          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --update-on-failed"
         }
       ]
     },
@@ -884,13 +967,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-ecs,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@aws-sdk/credential-providers,@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"

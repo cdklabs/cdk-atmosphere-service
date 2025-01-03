@@ -13,6 +13,10 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-ecs",
+      "type": "build"
+    },
+    {
       "name": "@aws-sdk/client-lambda",
       "type": "build"
     },
@@ -26,6 +30,14 @@
     },
     {
       "name": "@aws-sdk/client-sts",
+      "type": "build"
+    },
+    {
+      "name": "@aws-sdk/credential-providers",
+      "type": "build"
+    },
+    {
+      "name": "@smithy/types",
       "type": "build"
     },
     {

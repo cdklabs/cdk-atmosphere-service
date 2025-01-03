@@ -87,6 +87,11 @@ export class AtmosphereIntegTest extends Construct {
       [envars.ALLOCATIONS_RESOURCE_ID_ENV]: service.endpoint.allocationsResource.resourceId,
       [envars.ALLOCATION_RESOURCE_ID_ENV]: service.endpoint.allocationResource.resourceId,
       [envars.DEALLOCATE_FUNCTION_NAME_ENV]: service.deallocate.function.functionName,
+      [envars.CLEANUP_CLUSTER_ARN_ENV]: service.cleanup.cluster.clusterArn,
+      [envars.CLEANUP_TASK_DEFINITION_ARN_ENV]: service.cleanup.task.taskDefinitionArn,
+      [envars.CLEANUP_TASK_SUBNET_ID_ENV]: service.cleanup.subnetId,
+      [envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV]: service.cleanup.securityGroupId,
+      [envars.CLEANUP_TASK_CONTAINER_NAME_ENV]: service.cleanup.containerName,
     };
 
     for (const [key, value] of Object.entries(envVariables)) {
