@@ -72184,7 +72184,7 @@ async function handler() {
     console.log(`Successfully released environment '${env}'`);
     console.log("Done!");
   } catch (e) {
-    console.error(`Failed cleaning 'aws:' ${e.message}`);
+    console.error(`Failed cleaning '${env}}'`, e);
     if (e instanceof CleanerError) {
       for (const f of e.failedStacks) {
         console.log("");
@@ -72192,9 +72192,9 @@ async function handler() {
         console.log(f.error);
       }
     }
-    console.log(`Marking environment '${env} as 'dirty'`);
+    console.log(`Marking environment '${env}' as 'dirty'`);
     await clients.environments.dirty(allocationId, environment.account, environment.region);
-    console.log(`Successfully marked environment '${env} as 'dirty'`);
+    console.log(`Successfully marked environment '${env}' as 'dirty'`);
     throw e;
   }
 }

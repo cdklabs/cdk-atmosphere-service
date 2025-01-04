@@ -988,7 +988,7 @@
                                   {
                                     "essential": true,
                                     "image": {
-                                      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:708789325f4e2ee53b7a1dd1d5d525193ca5a2e4e48f2710ee6aa9ef7d39a632"
+                                      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:27a536a98b156ad8c17e1c1e17ae19d6e18d278236d68d98cd14167e0a25560f"
                                     },
                                     "name": "main",
                                     "logConfiguration": {
@@ -1227,9 +1227,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.9]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.9]}",
-                        "path": "atmosphere-integ-dev/AtmosphereIntegTest/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.9]}",
+                      "AdminRole${Token[AWS.AccountId.5]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.5]}",
+                        "path": "atmosphere-integ-dev/AtmosphereIntegTest/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.5]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -2149,9 +2149,9 @@
                           "version": "2.173.1"
                         }
                       },
-                      "AdminRole${Token[AWS.AccountId.9]}": {
-                        "id": "AdminRole${Token[AWS.AccountId.9]}",
-                        "path": "atmosphere-integ-dev/AtmosphereIntegTest/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}",
+                      "AdminRole${Token[AWS.AccountId.5]}": {
+                        "id": "AdminRole${Token[AWS.AccountId.5]}",
+                        "path": "atmosphere-integ-dev/AtmosphereIntegTest/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "2.173.1"
@@ -3015,55 +3015,24 @@
                                     ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
                                   ]
                                 ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/AdministratorAccess"
+                                  ]
+                                ]
                               }
                             ]
                           }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "2.173.1"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "atmosphere-integ-dev/AtmosphereIntegTest/Assert/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-dev/AtmosphereIntegTest/Assert/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": [
-                                        "apigateway:*",
-                                        "dynamodb:*",
-                                        "scheduler:*"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": "*"
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797",
-                                "roles": [
-                                  {
-                                    "Ref": "AtmosphereIntegTestAssertServiceRole84189FB3"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "2.173.1"
                         }
                       }
@@ -3109,7 +3078,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "6c165b55577579c72a5c04a87f8b80fd917239dcfd2434755a6acf033c25b195.zip"
+                          "s3Key": "2820314bcd62ac9f2b40e3b6c73a155bda4753d6959e7d19e773fb710b60c0fa.zip"
                         },
                         "description": "test/integ/dev/assert.lambda.ts",
                         "environment": {

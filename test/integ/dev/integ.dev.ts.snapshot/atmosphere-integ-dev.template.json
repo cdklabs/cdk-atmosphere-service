@@ -614,7 +614,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:708789325f4e2ee53b7a1dd1d5d525193ca5a2e4e48f2710ee6aa9ef7d39a632"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:27a536a98b156ad8c17e1c1e17ae19d6e18d278236d68d98cd14167e0a25560f"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1929,89 +1929,18 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407",
-    "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-    "AtmosphereIntegTestAtmosphereCleanupClusterD2EA653D",
-    "AtmosphereIntegTestAtmosphereCleanupCluster17F5CE4C",
-    "AtmosphereIntegTestAtmosphereCleanupLogGroup941AF693",
-    "AtmosphereIntegTestAtmosphereCleanupSecurityGroup3DFAB96E",
-    "AtmosphereIntegTestAtmosphereCleanupTaskDefinitionExecutionRoleDefaultPolicyFF2BCD41",
-    "AtmosphereIntegTestAtmosphereCleanupTaskDefinitionExecutionRole66FC1A0C",
-    "AtmosphereIntegTestAtmosphereCleanupTaskDefinition83DC0DCA",
-    "AtmosphereIntegTestAtmosphereCleanupTaskDefinitionTaskRoleDefaultPolicy17FC2D50",
-    "AtmosphereIntegTestAtmosphereCleanupTaskDefinitionTaskRole32AE76F3",
-    "AtmosphereIntegTestAtmosphereCleanupVpcIGWA06C46A9",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet1DefaultRouteE4D32DF0",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet1RouteTableA5781572",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet1RouteTableAssociation302C4A39",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet1Subnet9F8D8CAF",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet2DefaultRouteFC327BEB",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet2RouteTable2443C9F4",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet2RouteTableAssociationCBB991FB",
-    "AtmosphereIntegTestAtmosphereCleanupVpcPublicSubnet2SubnetAC007112",
-    "AtmosphereIntegTestAtmosphereCleanupVpc455A356A",
-    "AtmosphereIntegTestAtmosphereCleanupVpcRestrictDefaultSecurityGroupCustomResourceF2F8D320",
-    "AtmosphereIntegTestAtmosphereCleanupVpcVPCGW66B72FD3",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketAutoDeleteObjectsCustomResourceEA093561",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketPolicyAB4E318D",
-    "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentAwsCliLayerF1F55BB3",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentCustomResource8630236A",
-    "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionatmosphereintegdevAtmosphereIntegTestAtmosphereEndpointApiE564D7F4DELETEallocationsid6F5C2E21",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionTestatmosphereintegdevAtmosphereIntegTestAtmosphereEndpointApiE564D7F4DELETEallocationsid785D4B4C",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEC6E25D33",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionatmosphereintegdevAtmosphereIntegTestAtmosphereEndpointApiE564D7F4POSTallocationsA0F98ADA",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegdevAtmosphereIntegTestAtmosphereEndpointApiE564D7F4POSTallocations30BB20D4",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOST58C55F36",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeployment07D554B33e9d6eddab0c5c9302e367173f86c145",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E",
-    "AtmosphereIntegTestAtmosphereEndpointApi786BAA32",
-    "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33",
-    "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleDefaultPolicyFE799048",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "apigateway:*",
-        "dynamodb:*",
-        "scheduler:*"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797",
-    "Roles": [
+     },
      {
-      "Ref": "AtmosphereIntegTestAssertServiceRole84189FB3"
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AdministratorAccess"
+       ]
+      ]
      }
     ]
    },
@@ -2081,7 +2010,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c165b55577579c72a5c04a87f8b80fd917239dcfd2434755a6acf033c25b195.zip"
+     "S3Key": "2820314bcd62ac9f2b40e3b6c73a155bda4753d6959e7d19e773fb710b60c0fa.zip"
     },
     "Description": "test/integ/dev/assert.lambda.ts",
     "Environment": {
@@ -2165,7 +2094,6 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797",
     "AtmosphereIntegTestAssertServiceRole84189FB3",
     "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
     "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",

@@ -39,6 +39,7 @@ var assert = __toESM(require("assert"));
 var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
 var import_client_cloudformation = require("@aws-sdk/client-cloudformation");
 var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
+var import_client_ecs2 = require("@aws-sdk/client-ecs");
 var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
 
 // src/allocate/allocate.lambda.ts
@@ -834,6 +835,7 @@ var apigw = new import_client_api_gateway.APIGateway();
 var dynamo = new import_client_dynamodb.DynamoDB();
 var cfn = new import_client_cloudformation.CloudFormation();
 var scheduler = new import_client_scheduler2.Scheduler();
+var ecs = new import_client_ecs2.ECS();
 var SUCCESS_PAYLOAD = "OK";
 var Session = class _Session {
   constructor(vars) {
@@ -907,23 +909,13 @@ var Session = class _Session {
   }
   async allocate(body) {
     const json = JSON.stringify(body);
-    if (_Session.isLocal()) {
-      this.log(`Invoking local allocate handler with body: ${json}`);
-      console.log();
-      const response = await env(this.vars, async () => {
-        return handler({ body: json });
-      });
-      console.log();
-      return { status: response.statusCode, body: response.body };
+    const response = _Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
+    const responseBody = response.body ? JSON.parse(response.body) : {};
+    const region = responseBody.region;
+    if (region) {
+      await this.assertCleanRegion(region);
     }
-    this.log(`Sending allocation request with body: ${json}`);
-    return apigw.testInvokeMethod({
-      restApiId: this.vars[REST_API_ID_ENV],
-      resourceId: this.vars[ALLOCATIONS_RESOURCE_ID_ENV],
-      httpMethod: "POST",
-      pathWithQueryString: "/allocations",
-      body: json
-    });
+    return response;
   }
   async deallocate(id, body) {
     const json = JSON.stringify(body);
@@ -971,6 +963,22 @@ var Session = class _Session {
     });
     return response.Schedules?.[0];
   }
+  async fetchStoppedCleanupTask(allocationId) {
+    const response = await ecs.listTasks({
+      cluster: this.vars[CLEANUP_CLUSTER_ARN_ENV],
+      startedBy: allocationId,
+      desiredStatus: "STOPPED"
+    });
+    const taskArns = response.taskArns ?? [];
+    if (taskArns.length === 0) {
+      return void 0;
+    }
+    const tasks = await ecs.describeTasks({
+      cluster: this.vars[CLEANUP_CLUSTER_ARN_ENV],
+      tasks: taskArns
+    });
+    return tasks.tasks[0];
+  }
   async waitFor(condition, timeoutSeconds) {
     const startTime = Date.now();
     const timeoutMs = timeoutSeconds * 1e3;
@@ -996,6 +1004,33 @@ var Session = class _Session {
       }
       await new Promise((resolve) => setTimeout(resolve, 1e3));
     }
+  }
+  async allocateLocal(jsonBody) {
+    this.log(`Invoking local allocate handler with body: ${jsonBody}`);
+    console.log();
+    const response = await env(this.vars, async () => {
+      return handler({ body: jsonBody });
+    });
+    console.log();
+    return { status: response.statusCode, body: response.body };
+  }
+  async allocateRemote(jsonBody) {
+    this.log(`Sending allocation request with body: ${jsonBody}`);
+    return apigw.testInvokeMethod({
+      restApiId: this.vars[REST_API_ID_ENV],
+      resourceId: this.vars[ALLOCATIONS_RESOURCE_ID_ENV],
+      httpMethod: "POST",
+      pathWithQueryString: "/allocations",
+      body: jsonBody
+    });
+  }
+  async assertCleanRegion(region) {
+    const stacksPaginator = (0, import_client_cloudformation.paginateDescribeStacks)({ client: new import_client_cloudformation.CloudFormation({ region }), pageSize: 10 }, {});
+    const stacks = [];
+    for await (const page of stacksPaginator) {
+      stacks.push(...page.Stacks ?? []);
+    }
+    assert.strictEqual(stacks.length, 0, `Region '${region}' it not clean. Please either delete all stacks or remove '${region}' from environment pools.`);
   }
   async clear() {
     this.sessionLog("Clearing state");

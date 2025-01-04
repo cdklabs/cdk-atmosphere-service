@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
-import { CloudFormation } from '@aws-sdk/client-cloudformation';
+import { CloudFormation, paginateDescribeStacks, Stack } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
 import { Scheduler } from '@aws-sdk/client-scheduler';
@@ -113,24 +113,17 @@ export class Session {
   public async allocate(body: AllocationRequest): Promise<Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>> {
     const json = JSON.stringify(body);
 
-    if (Session.isLocal()) {
-      this.log(`Invoking local allocate handler with body: ${json}`);
-      console.log();
-      const response = await _with.env(this.vars, async () => {
-        return allocate.handler({ body: json } as any);
-      });
-      console.log();
-      return { status: response.statusCode, body: response.body };
+    const response = Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
+    const responseBody = response.body ? JSON.parse(response.body) : {};
+
+    const region = responseBody.environment.region;
+    if (region) {
+      // lets not run tests on dirty environments.
+      await this.assertCleanRegion(region);
     }
 
-    this.log(`Sending allocation request with body: ${json}`);
-    return apigw.testInvokeMethod({
-      restApiId: this.vars[envars.REST_API_ID_ENV],
-      resourceId: this.vars[envars.ALLOCATIONS_RESOURCE_ID_ENV],
-      httpMethod: 'POST',
-      pathWithQueryString: '/allocations',
-      body: json,
-    });
+    return response;
+
   }
 
   public async deallocate(id: string, body: DeallocationRequest): Promise<Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>> {
@@ -235,6 +228,51 @@ export class Session {
 
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
+  }
+
+  private async allocateLocal(jsonBody: string) {
+    this.log(`Invoking local allocate handler with body: ${jsonBody}`);
+    console.log();
+    const response = await _with.env(this.vars, async () => {
+      return allocate.handler({ body: jsonBody } as any);
+    });
+    console.log();
+    return { status: response.statusCode, body: response.body };
+  }
+
+  private async allocateRemote(jsonBody: string) {
+    this.log(`Sending allocation request with body: ${jsonBody}`);
+    return apigw.testInvokeMethod({
+      restApiId: this.vars[envars.REST_API_ID_ENV],
+      resourceId: this.vars[envars.ALLOCATIONS_RESOURCE_ID_ENV],
+      httpMethod: 'POST',
+      pathWithQueryString: '/allocations',
+      body: jsonBody,
+    });
+
+  }
+
+  private async assertCleanRegion(region: string) {
+    this.sessionLog(`Scanning stacks in region ${region}`);
+    const stacksPaginator = paginateDescribeStacks({ client: new CloudFormation({ region }), pageSize: 10 }, {});
+    const stacks: Stack[] = [];
+
+    for await (const page of stacksPaginator) {
+      for (const stack of page.Stacks ?? []) {
+        this.sessionLog(`  » found stack ${stack.StackName}`);
+        stacks.push(stack);
+      }
+    }
+
+    if (stacks.length === 0) {
+      this.sessionLog(`Region '${region}' is clean. Proceeding.`);
+      return;
+    }
+
+    // we don't delete because it may contain resources the developer cares about.
+    // so we just fail and ask for a manual cleanup
+    assert.fail(`Region '${region}' it not clean. Please either delete all stacks or remove '${region}' from environment pools.`);
+
   }
 
   private async clear() {
