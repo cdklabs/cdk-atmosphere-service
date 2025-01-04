@@ -55379,7 +55379,7 @@ var require_dist_cjs99 = __commonJS({
       ChangeType: () => ChangeType,
       CloudFormation: () => CloudFormation,
       CloudFormationClient: () => CloudFormationClient2,
-      CloudFormationServiceException: () => CloudFormationServiceException2,
+      CloudFormationServiceException: () => CloudFormationServiceException,
       ConcurrencyMode: () => ConcurrencyMode,
       ConcurrentResourcesLimitExceededException: () => ConcurrentResourcesLimitExceededException,
       ContinueUpdateRollbackCommand: () => ContinueUpdateRollbackCommand,
@@ -55414,7 +55414,7 @@ var require_dist_cjs99 = __commonJS({
       DescribeStackResourcesCommand: () => DescribeStackResourcesCommand,
       DescribeStackSetCommand: () => DescribeStackSetCommand,
       DescribeStackSetOperationCommand: () => DescribeStackSetOperationCommand,
-      DescribeStacksCommand: () => DescribeStacksCommand2,
+      DescribeStacksCommand: () => DescribeStacksCommand,
       DescribeTypeCommand: () => DescribeTypeCommand,
       DescribeTypeRegistrationCommand: () => DescribeTypeRegistrationCommand,
       DetailedStatus: () => DetailedStatus,
@@ -55535,7 +55535,7 @@ var require_dist_cjs99 = __commonJS({
       UpdateStackCommand: () => UpdateStackCommand,
       UpdateStackInstancesCommand: () => UpdateStackInstancesCommand,
       UpdateStackSetCommand: () => UpdateStackSetCommand,
-      UpdateTerminationProtectionCommand: () => UpdateTerminationProtectionCommand,
+      UpdateTerminationProtectionCommand: () => UpdateTerminationProtectionCommand2,
       ValidateTemplateCommand: () => ValidateTemplateCommand,
       VersionBump: () => VersionBump,
       Visibility: () => Visibility,
@@ -55571,7 +55571,7 @@ var require_dist_cjs99 = __commonJS({
       waitForTypeRegistrationComplete: () => waitForTypeRegistrationComplete,
       waitUntilChangeSetCreateComplete: () => waitUntilChangeSetCreateComplete,
       waitUntilStackCreateComplete: () => waitUntilStackCreateComplete,
-      waitUntilStackDeleteComplete: () => waitUntilStackDeleteComplete,
+      waitUntilStackDeleteComplete: () => waitUntilStackDeleteComplete2,
       waitUntilStackExists: () => waitUntilStackExists,
       waitUntilStackImportComplete: () => waitUntilStackImportComplete,
       waitUntilStackRollbackComplete: () => waitUntilStackRollbackComplete,
@@ -55714,7 +55714,7 @@ var require_dist_cjs99 = __commonJS({
       }
     };
     __name(_CloudFormationServiceException, "CloudFormationServiceException");
-    var CloudFormationServiceException2 = _CloudFormationServiceException;
+    var CloudFormationServiceException = _CloudFormationServiceException;
     var AccountFilterType = {
       DIFFERENCE: "DIFFERENCE",
       INTERSECTION: "INTERSECTION",
@@ -55726,7 +55726,7 @@ var require_dist_cjs99 = __commonJS({
       SKIPPED: "SKIPPED",
       SUCCEEDED: "SUCCEEDED"
     };
-    var _InvalidOperationException = class _InvalidOperationException2 extends CloudFormationServiceException2 {
+    var _InvalidOperationException = class _InvalidOperationException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55744,7 +55744,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_InvalidOperationException, "InvalidOperationException");
     var InvalidOperationException = _InvalidOperationException;
-    var _OperationNotFoundException = class _OperationNotFoundException2 extends CloudFormationServiceException2 {
+    var _OperationNotFoundException = class _OperationNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55771,7 +55771,7 @@ var require_dist_cjs99 = __commonJS({
       MAJOR: "MAJOR",
       MINOR: "MINOR"
     };
-    var _CFNRegistryException = class _CFNRegistryException2 extends CloudFormationServiceException2 {
+    var _CFNRegistryException = class _CFNRegistryException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55789,7 +55789,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_CFNRegistryException, "CFNRegistryException");
     var CFNRegistryException = _CFNRegistryException;
-    var _TypeNotFoundException = class _TypeNotFoundException2 extends CloudFormationServiceException2 {
+    var _TypeNotFoundException = class _TypeNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55807,7 +55807,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_TypeNotFoundException, "TypeNotFoundException");
     var TypeNotFoundException = _TypeNotFoundException;
-    var _AlreadyExistsException = class _AlreadyExistsException2 extends CloudFormationServiceException2 {
+    var _AlreadyExistsException = class _AlreadyExistsException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55830,7 +55830,7 @@ var require_dist_cjs99 = __commonJS({
       Modify: "Modify",
       Remove: "Remove"
     };
-    var _TypeConfigurationNotFoundException = class _TypeConfigurationNotFoundException2 extends CloudFormationServiceException2 {
+    var _TypeConfigurationNotFoundException = class _TypeConfigurationNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55852,7 +55852,7 @@ var require_dist_cjs99 = __commonJS({
       DELEGATED_ADMIN: "DELEGATED_ADMIN",
       SELF: "SELF"
     };
-    var _TokenAlreadyExistsException = class _TokenAlreadyExistsException2 extends CloudFormationServiceException2 {
+    var _TokenAlreadyExistsException = class _TokenAlreadyExistsException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55944,7 +55944,7 @@ var require_dist_cjs99 = __commonJS({
       PLANNING: "PLANNING",
       UNAVAILABLE: "UNAVAILABLE"
     };
-    var _ChangeSetNotFoundException = class _ChangeSetNotFoundException2 extends CloudFormationServiceException2 {
+    var _ChangeSetNotFoundException = class _ChangeSetNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -55990,7 +55990,7 @@ var require_dist_cjs99 = __commonJS({
       DO_NOTHING: "DO_NOTHING",
       ROLLBACK: "ROLLBACK"
     };
-    var _InsufficientCapabilitiesException = class _InsufficientCapabilitiesException2 extends CloudFormationServiceException2 {
+    var _InsufficientCapabilitiesException = class _InsufficientCapabilitiesException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56008,7 +56008,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_InsufficientCapabilitiesException, "InsufficientCapabilitiesException");
     var InsufficientCapabilitiesException = _InsufficientCapabilitiesException;
-    var _LimitExceededException = class _LimitExceededException2 extends CloudFormationServiceException2 {
+    var _LimitExceededException = class _LimitExceededException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56026,7 +56026,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_LimitExceededException, "LimitExceededException");
     var LimitExceededException = _LimitExceededException;
-    var _ConcurrentResourcesLimitExceededException = class _ConcurrentResourcesLimitExceededException2 extends CloudFormationServiceException2 {
+    var _ConcurrentResourcesLimitExceededException = class _ConcurrentResourcesLimitExceededException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56065,7 +56065,7 @@ var require_dist_cjs99 = __commonJS({
       PARALLEL: "PARALLEL",
       SEQUENTIAL: "SEQUENTIAL"
     };
-    var _OperationIdAlreadyExistsException = class _OperationIdAlreadyExistsException2 extends CloudFormationServiceException2 {
+    var _OperationIdAlreadyExistsException = class _OperationIdAlreadyExistsException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56083,7 +56083,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_OperationIdAlreadyExistsException, "OperationIdAlreadyExistsException");
     var OperationIdAlreadyExistsException = _OperationIdAlreadyExistsException;
-    var _OperationInProgressException = class _OperationInProgressException2 extends CloudFormationServiceException2 {
+    var _OperationInProgressException = class _OperationInProgressException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56101,7 +56101,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_OperationInProgressException, "OperationInProgressException");
     var OperationInProgressException = _OperationInProgressException;
-    var _StackSetNotFoundException = class _StackSetNotFoundException2 extends CloudFormationServiceException2 {
+    var _StackSetNotFoundException = class _StackSetNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56119,7 +56119,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_StackSetNotFoundException, "StackSetNotFoundException");
     var StackSetNotFoundException = _StackSetNotFoundException;
-    var _StaleRequestException = class _StaleRequestException2 extends CloudFormationServiceException2 {
+    var _StaleRequestException = class _StaleRequestException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56137,7 +56137,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_StaleRequestException, "StaleRequestException");
     var StaleRequestException = _StaleRequestException;
-    var _CreatedButModifiedException = class _CreatedButModifiedException2 extends CloudFormationServiceException2 {
+    var _CreatedButModifiedException = class _CreatedButModifiedException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56159,7 +56159,7 @@ var require_dist_cjs99 = __commonJS({
       SELF_MANAGED: "SELF_MANAGED",
       SERVICE_MANAGED: "SERVICE_MANAGED"
     };
-    var _NameAlreadyExistsException = class _NameAlreadyExistsException2 extends CloudFormationServiceException2 {
+    var _NameAlreadyExistsException = class _NameAlreadyExistsException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56177,7 +56177,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_NameAlreadyExistsException, "NameAlreadyExistsException");
     var NameAlreadyExistsException = _NameAlreadyExistsException;
-    var _InvalidChangeSetStatusException = class _InvalidChangeSetStatusException2 extends CloudFormationServiceException2 {
+    var _InvalidChangeSetStatusException = class _InvalidChangeSetStatusException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56195,7 +56195,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_InvalidChangeSetStatusException, "InvalidChangeSetStatusException");
     var InvalidChangeSetStatusException = _InvalidChangeSetStatusException;
-    var _GeneratedTemplateNotFoundException = class _GeneratedTemplateNotFoundException2 extends CloudFormationServiceException2 {
+    var _GeneratedTemplateNotFoundException = class _GeneratedTemplateNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56217,7 +56217,7 @@ var require_dist_cjs99 = __commonJS({
       FORCE_DELETE_STACK: "FORCE_DELETE_STACK",
       STANDARD: "STANDARD"
     };
-    var _StackSetNotEmptyException = class _StackSetNotEmptyException2 extends CloudFormationServiceException2 {
+    var _StackSetNotEmptyException = class _StackSetNotEmptyException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56281,7 +56281,7 @@ var require_dist_cjs99 = __commonJS({
       FAILED: "FAILED",
       IN_PROGRESS: "IN_PROGRESS"
     };
-    var _ResourceScanNotFoundException = class _ResourceScanNotFoundException2 extends CloudFormationServiceException2 {
+    var _ResourceScanNotFoundException = class _ResourceScanNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56359,7 +56359,7 @@ var require_dist_cjs99 = __commonJS({
       INOPERABLE: "INOPERABLE",
       OUTDATED: "OUTDATED"
     };
-    var _StackInstanceNotFoundException = class _StackInstanceNotFoundException2 extends CloudFormationServiceException2 {
+    var _StackInstanceNotFoundException = class _StackInstanceNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56475,7 +56475,7 @@ var require_dist_cjs99 = __commonJS({
       Original: "Original",
       Processed: "Processed"
     };
-    var _StackNotFoundException = class _StackNotFoundException2 extends CloudFormationServiceException2 {
+    var _StackNotFoundException = class _StackNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56493,7 +56493,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_StackNotFoundException, "StackNotFoundException");
     var StackNotFoundException = _StackNotFoundException;
-    var _HookResultNotFoundException = class _HookResultNotFoundException2 extends CloudFormationServiceException2 {
+    var _HookResultNotFoundException = class _HookResultNotFoundException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56517,7 +56517,7 @@ var require_dist_cjs99 = __commonJS({
       RESOURCE: "RESOURCE",
       STACK: "STACK"
     };
-    var _ResourceScanInProgressException = class _ResourceScanInProgressException2 extends CloudFormationServiceException2 {
+    var _ResourceScanInProgressException = class _ResourceScanInProgressException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56550,7 +56550,7 @@ var require_dist_cjs99 = __commonJS({
       RUNNING: "RUNNING",
       SUCCEEDED: "SUCCEEDED"
     };
-    var _InvalidStateTransitionException = class _InvalidStateTransitionException2 extends CloudFormationServiceException2 {
+    var _InvalidStateTransitionException = class _InvalidStateTransitionException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56568,7 +56568,7 @@ var require_dist_cjs99 = __commonJS({
     };
     __name(_InvalidStateTransitionException, "InvalidStateTransitionException");
     var InvalidStateTransitionException = _InvalidStateTransitionException;
-    var _OperationStatusCheckFailedException = class _OperationStatusCheckFailedException2 extends CloudFormationServiceException2 {
+    var _OperationStatusCheckFailedException = class _OperationStatusCheckFailedException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -56617,7 +56617,7 @@ var require_dist_cjs99 = __commonJS({
       FAILURE: "FAILURE",
       SUCCESS: "SUCCESS"
     };
-    var _ResourceScanLimitExceededException = class _ResourceScanLimitExceededException2 extends CloudFormationServiceException2 {
+    var _ResourceScanLimitExceededException = class _ResourceScanLimitExceededException2 extends CloudFormationServiceException {
       /**
        * @internal
        */
@@ -64336,7 +64336,7 @@ var require_dist_cjs99 = __commonJS({
       extendedRequestId: output.headers["x-amz-id-2"],
       cfId: output.headers["x-amz-cf-id"]
     }), "deserializeMetadata");
-    var throwDefaultError = (0, import_smithy_client4.withBaseException)(CloudFormationServiceException2);
+    var throwDefaultError = (0, import_smithy_client4.withBaseException)(CloudFormationServiceException);
     var buildHttpRpcRequest = /* @__PURE__ */ __name(async (context, headers, path, resolvedHostname, body) => {
       const { hostname, protocol = "https", port, path: basePath } = await context.endpoint();
       const contents = {
@@ -65068,7 +65068,7 @@ var require_dist_cjs99 = __commonJS({
     }).s("CloudFormation", "DescribeStacks", {}).n("CloudFormationClient", "DescribeStacksCommand").f(void 0, void 0).ser(se_DescribeStacksCommand).de(de_DescribeStacksCommand).build() {
     };
     __name(_DescribeStacksCommand, "DescribeStacksCommand");
-    var DescribeStacksCommand2 = _DescribeStacksCommand;
+    var DescribeStacksCommand = _DescribeStacksCommand;
     var _DescribeStackSetCommand = class _DescribeStackSetCommand extends import_smithy_client4.Command.classBuilder().ep(commonParams).m(function(Command, cs, config, o) {
       return [
         (0, import_middleware_serde2.getSerdePlugin)(config, this.serialize, this.deserialize),
@@ -65518,7 +65518,7 @@ var require_dist_cjs99 = __commonJS({
     }).s("CloudFormation", "UpdateTerminationProtection", {}).n("CloudFormationClient", "UpdateTerminationProtectionCommand").f(void 0, void 0).ser(se_UpdateTerminationProtectionCommand).de(de_UpdateTerminationProtectionCommand).build() {
     };
     __name(_UpdateTerminationProtectionCommand, "UpdateTerminationProtectionCommand");
-    var UpdateTerminationProtectionCommand = _UpdateTerminationProtectionCommand;
+    var UpdateTerminationProtectionCommand2 = _UpdateTerminationProtectionCommand;
     var _ValidateTemplateCommand = class _ValidateTemplateCommand extends import_smithy_client4.Command.classBuilder().ep(commonParams).m(function(Command, cs, config, o) {
       return [
         (0, import_middleware_serde2.getSerdePlugin)(config, this.serialize, this.deserialize),
@@ -65560,7 +65560,7 @@ var require_dist_cjs99 = __commonJS({
       DescribeStackResourceCommand,
       DescribeStackResourceDriftsCommand,
       DescribeStackResourcesCommand,
-      DescribeStacksCommand: DescribeStacksCommand2,
+      DescribeStacksCommand,
       DescribeStackSetCommand,
       DescribeStackSetOperationCommand,
       DescribeTypeCommand,
@@ -65610,7 +65610,7 @@ var require_dist_cjs99 = __commonJS({
       UpdateStackCommand,
       UpdateStackInstancesCommand,
       UpdateStackSetCommand,
-      UpdateTerminationProtectionCommand,
+      UpdateTerminationProtectionCommand: UpdateTerminationProtectionCommand2,
       ValidateTemplateCommand
     };
     var _CloudFormation = class _CloudFormation extends CloudFormationClient2 {
@@ -65621,7 +65621,7 @@ var require_dist_cjs99 = __commonJS({
     var paginateDescribeAccountLimits = (0, import_core3.createPaginator)(CloudFormationClient2, DescribeAccountLimitsCommand, "NextToken", "NextToken", "");
     var paginateDescribeStackEvents = (0, import_core3.createPaginator)(CloudFormationClient2, DescribeStackEventsCommand, "NextToken", "NextToken", "");
     var paginateDescribeStackResourceDrifts = (0, import_core3.createPaginator)(CloudFormationClient2, DescribeStackResourceDriftsCommand, "NextToken", "NextToken", "MaxResults");
-    var paginateDescribeStacks2 = (0, import_core3.createPaginator)(CloudFormationClient2, DescribeStacksCommand2, "NextToken", "NextToken", "");
+    var paginateDescribeStacks2 = (0, import_core3.createPaginator)(CloudFormationClient2, DescribeStacksCommand, "NextToken", "NextToken", "");
     var paginateListChangeSets = (0, import_core3.createPaginator)(CloudFormationClient2, ListChangeSetsCommand, "NextToken", "NextToken", "");
     var paginateListExports = (0, import_core3.createPaginator)(CloudFormationClient2, ListExportsCommand, "NextToken", "NextToken", "");
     var paginateListGeneratedTemplates = (0, import_core3.createPaginator)(CloudFormationClient2, ListGeneratedTemplatesCommand, "NextToken", "NextToken", "MaxResults");
@@ -65682,7 +65682,7 @@ var require_dist_cjs99 = __commonJS({
     var checkState2 = /* @__PURE__ */ __name(async (client, input) => {
       let reason;
       try {
-        const result = await client.send(new DescribeStacksCommand2(input));
+        const result = await client.send(new DescribeStacksCommand(input));
         reason = result;
         try {
           const returnComparator = /* @__PURE__ */ __name(() => {
@@ -65932,7 +65932,7 @@ var require_dist_cjs99 = __commonJS({
     var checkState3 = /* @__PURE__ */ __name(async (client, input) => {
       let reason;
       try {
-        const result = await client.send(new DescribeStacksCommand2(input));
+        const result = await client.send(new DescribeStacksCommand(input));
         reason = result;
         try {
           const returnComparator = /* @__PURE__ */ __name(() => {
@@ -66068,7 +66068,7 @@ var require_dist_cjs99 = __commonJS({
       const serviceDefaults = { minDelay: 30, maxDelay: 120 };
       return (0, import_util_waiter.createWaiter)({ ...serviceDefaults, ...params }, input, checkState3);
     }, "waitForStackDeleteComplete");
-    var waitUntilStackDeleteComplete = /* @__PURE__ */ __name(async (params, input) => {
+    var waitUntilStackDeleteComplete2 = /* @__PURE__ */ __name(async (params, input) => {
       const serviceDefaults = { minDelay: 30, maxDelay: 120 };
       const result = await (0, import_util_waiter.createWaiter)({ ...serviceDefaults, ...params }, input, checkState3);
       return (0, import_util_waiter.checkExceptions)(result);
@@ -66076,7 +66076,7 @@ var require_dist_cjs99 = __commonJS({
     var checkState4 = /* @__PURE__ */ __name(async (client, input) => {
       let reason;
       try {
-        const result = await client.send(new DescribeStacksCommand2(input));
+        const result = await client.send(new DescribeStacksCommand(input));
         reason = result;
         return { state: import_util_waiter.WaiterState.SUCCESS, reason };
       } catch (exception) {
@@ -66099,7 +66099,7 @@ var require_dist_cjs99 = __commonJS({
     var checkState5 = /* @__PURE__ */ __name(async (client, input) => {
       let reason;
       try {
-        const result = await client.send(new DescribeStacksCommand2(input));
+        const result = await client.send(new DescribeStacksCommand(input));
         reason = result;
         try {
           const returnComparator = /* @__PURE__ */ __name(() => {
@@ -66213,7 +66213,7 @@ var require_dist_cjs99 = __commonJS({
     var checkState6 = /* @__PURE__ */ __name(async (client, input) => {
       let reason;
       try {
-        const result = await client.send(new DescribeStacksCommand2(input));
+        const result = await client.send(new DescribeStacksCommand(input));
         reason = result;
         try {
           const returnComparator = /* @__PURE__ */ __name(() => {
@@ -66297,7 +66297,7 @@ var require_dist_cjs99 = __commonJS({
     var checkState7 = /* @__PURE__ */ __name(async (client, input) => {
       let reason;
       try {
-        const result = await client.send(new DescribeStacksCommand2(input));
+        const result = await client.send(new DescribeStacksCommand(input));
         reason = result;
         try {
           const returnComparator = /* @__PURE__ */ __name(() => {
@@ -71888,6 +71888,16 @@ var EnvironmentAlreadyInStatusError = class extends EnvironmentsError {
     super(account, region, `already ${status}`);
   }
 };
+var EnvironmentAlreadyDirtyError = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "already dirty");
+  }
+};
+var EnvironmentAlreadyCleaningError = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "already cleaning");
+  }
+};
 var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
   constructor(account, region) {
     super(account, region, "already reallocated");
@@ -71946,14 +71956,16 @@ var EnvironmentsClient = class {
         ExpressionAttributeNames: {
           "#region": "region",
           "#account": "account",
-          "#allocation": "allocation"
+          "#allocation": "allocation",
+          "#status": "status"
         },
         ExpressionAttributeValues: {
-          ":allocation_value": { S: allocationId }
+          ":allocation_value": { S: allocationId },
+          ":expected_status_value": { S: "dirty" }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value",
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :expected_status_value",
         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
@@ -71965,6 +71977,10 @@ var EnvironmentsClient = class {
         if (old_allocation && old_allocation !== allocationId) {
           throw new EnvironmentAlreadyReallocated(account, region);
         }
+        const old_status = e.Item.status?.S;
+        if (old_status && old_status === "dirty") {
+          throw new EnvironmentAlreadyDirtyError(account, region);
+        }
       }
       throw e;
     }
@@ -71974,14 +71990,28 @@ var EnvironmentsClient = class {
    * If the environment is already in a 'cleaning' status, this will fail.
    */
   async cleaning(allocationId, account, region) {
-    await this.setStatus(allocationId, account, region, "cleaning");
+    try {
+      await this.setStatus(allocationId, account, region, "cleaning");
+    } catch (e) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyCleaningError(account, region);
+      }
+      throw e;
+    }
   }
   /**
    * Mark the environment status as 'dirty'.
    * If the environment is already in a 'dirty' status, this will fail.
    */
   async dirty(allocationId, account, region) {
-    await this.setStatus(allocationId, account, region, "dirty");
+    try {
+      await this.setStatus(allocationId, account, region, "dirty");
+    } catch (e) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyDirtyError(account, region);
+      }
+      throw e;
+    }
   }
   async setStatus(allocationId, account, region, status) {
     try {
@@ -72098,9 +72128,8 @@ var Cleaner = class {
     this.cfn = new import_client_cloudformation.CloudFormationClient({ credentials: this.credentials, region: this.environment.region });
   }
   async clean(timeoutSeconds) {
-    const timeoutDate = new Date(Date.now() + 1e3 * timeoutSeconds);
     const stacks = await this.listStacks();
-    const promises = stacks.map(async (s) => this.deleteStack(s, timeoutDate));
+    const promises = stacks.map(async (s) => this.deleteStack(s, timeoutSeconds));
     const results = await Promise.all(promises);
     const failed = results.filter((r) => r.error);
     if (failed.length > 0) {
@@ -72115,48 +72144,28 @@ var Cleaner = class {
     }
     return stacks;
   }
-  async deleteStack(stack, timeoutDate) {
+  async deleteStack(stack, timeoutSeconds) {
     if (!stack.StackName) {
       throw new Error("Stack name is undefined");
     }
     try {
       if (stack.StackStatus !== "DELETE_IN_PROGRESS") {
+        this.log(`Disabling termination protection of stack ${stack.StackName}`);
+        await this.cfn.send(new import_client_cloudformation.UpdateTerminationProtectionCommand({
+          StackName: stack.StackName,
+          EnableTerminationProtection: false
+        }));
         this.log(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
         await this.cfn.send(new import_client_cloudformation.DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
       }
       this.log(`Stack ${stack.StackName} deleting. Waiting for completion.`);
-      await this.waitForStackDeleteComplete(stack.StackName, timeoutDate);
+      await (0, import_client_cloudformation.waitUntilStackDeleteComplete)(
+        { client: this.cfn, maxWaitTime: timeoutSeconds },
+        { StackName: stack.StackName }
+      );
       return { name: stack.StackName };
     } catch (e) {
       return { name: stack.StackName, error: e };
-    }
-  }
-  async waitForStackDeleteComplete(stackName, timeoutDate) {
-    while (true) {
-      try {
-        const response = await this.cfn.send(new import_client_cloudformation.DescribeStacksCommand({ StackName: stackName }));
-        const stack = response.Stacks?.[0];
-        if (!stack) {
-          return;
-        }
-        if (stack.StackStatus?.endsWith("FAILED")) {
-          throw new Error(`Stack ${stackName} deletion failed with status ${stack.StackStatus}`);
-        }
-        if (stack.StackStatus === "DELETE_COMPLETE") {
-          return;
-        }
-        if (Date.now() > timeoutDate.getTime()) {
-          throw new Error(`Timed out waiting for stack ${stackName} to delete [Current Status: ${stack?.StackStatus}]`);
-        }
-        this.log(`Stack ${stackName} is not yet deleted [Current Status: ${stack.StackStatus}] (will check again in 5 seconds)`);
-        await new Promise((resolve) => setTimeout(resolve, 5e3));
-      } catch (error) {
-        if (error instanceof import_client_cloudformation.CloudFormationServiceException && error.name === "ValidationError") {
-          return;
-        }
-        throw error;
-      }
-      ;
     }
   }
   log(message) {
@@ -72184,7 +72193,7 @@ async function handler() {
     console.log(`Successfully released environment '${env}'`);
     console.log("Done!");
   } catch (e) {
-    console.error(`Failed cleaning '${env}}'`, e);
+    console.error(`Failed cleaning '${env}}'`, e.message);
     if (e instanceof CleanerError) {
       for (const f of e.failedStacks) {
         console.log("");

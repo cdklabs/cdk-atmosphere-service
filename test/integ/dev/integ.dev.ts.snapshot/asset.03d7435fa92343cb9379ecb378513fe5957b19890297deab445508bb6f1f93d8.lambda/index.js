@@ -417,6 +417,16 @@ var EnvironmentAlreadyInStatusError = class extends EnvironmentsError {
     super(account, region, `already ${status}`);
   }
 };
+var EnvironmentAlreadyDirtyError = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "already dirty");
+  }
+};
+var EnvironmentAlreadyCleaningError = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "already cleaning");
+  }
+};
 var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
   constructor(account, region) {
     super(account, region, "already reallocated");
@@ -475,14 +485,16 @@ var EnvironmentsClient = class {
         ExpressionAttributeNames: {
           "#region": "region",
           "#account": "account",
-          "#allocation": "allocation"
+          "#allocation": "allocation",
+          "#status": "status"
         },
         ExpressionAttributeValues: {
-          ":allocation_value": { S: allocationId }
+          ":allocation_value": { S: allocationId },
+          ":expected_status_value": { S: "dirty" }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value",
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :expected_status_value",
         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
@@ -494,6 +506,10 @@ var EnvironmentsClient = class {
         if (old_allocation && old_allocation !== allocationId) {
           throw new EnvironmentAlreadyReallocated(account, region);
         }
+        const old_status = e.Item.status?.S;
+        if (old_status && old_status === "dirty") {
+          throw new EnvironmentAlreadyDirtyError(account, region);
+        }
       }
       throw e;
     }
@@ -503,14 +519,28 @@ var EnvironmentsClient = class {
    * If the environment is already in a 'cleaning' status, this will fail.
    */
   async cleaning(allocationId, account, region) {
-    await this.setStatus(allocationId, account, region, "cleaning");
+    try {
+      await this.setStatus(allocationId, account, region, "cleaning");
+    } catch (e) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyCleaningError(account, region);
+      }
+      throw e;
+    }
   }
   /**
    * Mark the environment status as 'dirty'.
    * If the environment is already in a 'dirty' status, this will fail.
    */
   async dirty(allocationId, account, region) {
-    await this.setStatus(allocationId, account, region, "dirty");
+    try {
+      await this.setStatus(allocationId, account, region, "dirty");
+    } catch (e) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyDirtyError(account, region);
+      }
+      throw e;
+    }
   }
   async setStatus(allocationId, account, region, status) {
     try {

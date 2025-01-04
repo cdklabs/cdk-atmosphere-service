@@ -27,12 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/cleanup-timeout/cleanup-timeout.lambda.ts
-var cleanup_timeout_lambda_exports = {};
-__export(cleanup_timeout_lambda_exports, {
+// src/deallocate/deallocate.lambda.ts
+var deallocate_lambda_exports = {};
+__export(deallocate_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(cleanup_timeout_lambda_exports);
+module.exports = __toCommonJS(deallocate_lambda_exports);
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -371,6 +371,16 @@ var EnvironmentAlreadyInStatusError = class extends EnvironmentsError {
     super(account, region, `already ${status}`);
   }
 };
+var EnvironmentAlreadyDirtyError = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "already dirty");
+  }
+};
+var EnvironmentAlreadyCleaningError = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "already cleaning");
+  }
+};
 var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
   constructor(account, region) {
     super(account, region, "already reallocated");
@@ -429,14 +439,16 @@ var EnvironmentsClient = class {
         ExpressionAttributeNames: {
           "#region": "region",
           "#account": "account",
-          "#allocation": "allocation"
+          "#allocation": "allocation",
+          "#status": "status"
         },
         ExpressionAttributeValues: {
-          ":allocation_value": { S: allocationId }
+          ":allocation_value": { S: allocationId },
+          ":expected_status_value": { S: "dirty" }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value",
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :expected_status_value",
         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
@@ -448,6 +460,10 @@ var EnvironmentsClient = class {
         if (old_allocation && old_allocation !== allocationId) {
           throw new EnvironmentAlreadyReallocated(account, region);
         }
+        const old_status = e.Item.status?.S;
+        if (old_status && old_status === "dirty") {
+          throw new EnvironmentAlreadyDirtyError(account, region);
+        }
       }
       throw e;
     }
@@ -457,14 +473,28 @@ var EnvironmentsClient = class {
    * If the environment is already in a 'cleaning' status, this will fail.
    */
   async cleaning(allocationId, account, region) {
-    await this.setStatus(allocationId, account, region, "cleaning");
+    try {
+      await this.setStatus(allocationId, account, region, "cleaning");
+    } catch (e) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyCleaningError(account, region);
+      }
+      throw e;
+    }
   }
   /**
    * Mark the environment status as 'dirty'.
    * If the environment is already in a 'dirty' status, this will fail.
    */
   async dirty(allocationId, account, region) {
-    await this.setStatus(allocationId, account, region, "dirty");
+    try {
+      await this.setStatus(allocationId, account, region, "dirty");
+    } catch (e) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyDirtyError(account, region);
+      }
+      throw e;
+    }
   }
   async setStatus(allocationId, account, region, status) {
     try {
@@ -560,28 +590,86 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
-// src/cleanup-timeout/cleanup-timeout.lambda.ts
+// src/deallocate/deallocate.lambda.ts
+var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var ProxyError = class extends Error {
+  constructor(statusCode, message) {
+    super(`${statusCode}: ${message}`);
+    this.statusCode = statusCode;
+    this.message = message;
+  }
+};
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const account = event.account;
-  const region = event.region;
-  const allocationId = event.allocationId;
   try {
-    console.log(`Marking environment 'aws://${account}/${region}' as dirty`);
-    await clients.environments.dirty(allocationId, account, region);
-    console.log("Done");
-  } catch (e) {
-    if (e instanceof EnvironmentAlreadyReleasedError) {
-      console.log(e.message);
-      return;
+    const id = (event.pathParameters ?? {}).id;
+    if (!id) {
+      throw new ProxyError(400, "Missing 'id' path parameter");
     }
-    if (e instanceof EnvironmentAlreadyReallocated) {
-      console.log(e.message);
-      return;
+    console.log(`Extracted allocation id from path: ${id}`);
+    console.log("Parsing request body");
+    const request = parseRequestBody(event.body);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
+    });
+    console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
+    return success();
+  } catch (e) {
+    if (e instanceof AllocationAlreadyEndedError) {
+      console.log(`Returning success because: ${e.message}`);
+      return success();
+    }
+    console.error(e);
+    return {
+      statusCode: e instanceof ProxyError ? e.statusCode : 500,
+      body: JSON.stringify({ message: e.message })
+    };
+  }
+}
+function parseRequestBody(body) {
+  if (!body) {
+    throw new ProxyError(400, "Request body not found");
+  }
+  const parsed = JSON.parse(body);
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
+  }
+  return parsed;
+}
+async function endAllocation(id, outcome) {
+  try {
+    return await clients.allocations.end({ id, outcome });
+  } catch (e) {
+    if (e instanceof InvalidInputError) {
+      throw new ProxyError(400, e.message);
     }
     throw e;
   }
+}
+function success() {
+  return {
+    statusCode: 200,
+    // we currently don't need a response body for a
+    // succesfull dellocation
+    body: JSON.stringify({})
+  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

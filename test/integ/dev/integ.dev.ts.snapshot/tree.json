@@ -988,7 +988,7 @@
                                   {
                                     "essential": true,
                                     "image": {
-                                      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:27a536a98b156ad8c17e1c1e17ae19d6e18d278236d68d98cd14167e0a25560f"
+                                      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c925389bc0b700ff57ea2e4fc68102140bbe4a9c39dfdf5094671d11ef885f7e"
                                     },
                                     "name": "main",
                                     "logConfiguration": {
@@ -1575,7 +1575,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "ca7c47bd5921eba6212d0d85905b07857030350af728f66af33db5dd6137fae7.zip"
+                                  "s3Key": "68bfd5ee0b496c7f67c2a25d1418e4455da2eef44a3d89e49f776b935eff4870.zip"
                                 },
                                 "deadLetterConfig": {
                                   "targetArn": {
@@ -2086,7 +2086,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "85c653279eef2d284b2b464828e7ea100053a87534ae61b6aa324e475b154012.zip"
+                                  "s3Key": "03d7435fa92343cb9379ecb378513fe5957b19890297deab445508bb6f1f93d8.zip"
                                 },
                                 "description": "src/allocate/allocate.lambda.ts",
                                 "environment": {
@@ -2377,7 +2377,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "454513a62061fa738404c58db182c676a8f527d0e085d00f14f3c42943ec13d8.zip"
+                                  "s3Key": "73e699ca4eed03baa46622a197d1e4a1551ac379cecc6431c33cf249b018cc76.zip"
                                 },
                                 "description": "src/deallocate/deallocate.lambda.ts",
                                 "environment": {
@@ -3078,7 +3078,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "2820314bcd62ac9f2b40e3b6c73a155bda4753d6959e7d19e773fb710b60c0fa.zip"
+                          "s3Key": "bcfaa66112dfb8172e90a80729d789c6777ce26f6b4f5f734fcab9de6a295aa8.zip"
                         },
                         "description": "test/integ/dev/assert.lambda.ts",
                         "environment": {

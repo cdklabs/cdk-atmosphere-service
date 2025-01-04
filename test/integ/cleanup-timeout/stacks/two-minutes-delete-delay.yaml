@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A CloudFormation stack that takes at least 1 minute to delete.
+
+Resources:
+  DelayFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.handler"
+      Runtime: "nodejs18.x"
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            console.log("Request received:", JSON.stringify(event));
+            
+            if (event.RequestType === "Delete") {
+              console.log("Delete event: delaying for 60 seconds.");
+              await new Promise(resolve => setTimeout(resolve, 120000)); // Wait for 120 seconds
+            }
+
+            console.log("Signaling success.");
+            return {
+              Status: 'SUCCESS',
+              PhysicalResourceId: 'delay-on-delete-custom-resource',
+              StackId: event.StackId,
+              RequestId: event.RequestId,
+              LogicalResourceId: event.LogicalResourceId
+            };
+          };
+
+  CustomResource:
+    Type: "Custom::DelayOnDelete"
+    Properties:
+      ServiceToken: !GetAtt DelayFunction.Arn
+
+  LambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "LambdaPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "arn:aws:logs:*:*:*"
+
+Outputs:
+  CustomResourceOutput:
+    Description: "Custom resource to delay stack deletion."
+    Value: !Ref CustomResource

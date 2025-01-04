@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CloudFormationClient, CloudFormationServiceException, DeleteStackCommand, DescribeStacksCommand, paginateDescribeStacks, Stack } from '@aws-sdk/client-cloudformation';
+import { CloudFormationClient, DeleteStackCommand, paginateDescribeStacks, Stack, UpdateTerminationProtectionCommand, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -38,9 +38,8 @@ export class Cleaner {
 
   public async clean(timeoutSeconds: number) {
 
-    const timeoutDate = new Date(Date.now() + 1000 * timeoutSeconds);
     const stacks = await this.listStacks();
-    const promises = stacks.map(async (s) => this.deleteStack(s, timeoutDate));
+    const promises = stacks.map(async (s) => this.deleteStack(s, timeoutSeconds));
     const results = await Promise.all(promises);
 
     const failed = results.filter(r => r.error);
@@ -63,7 +62,7 @@ export class Cleaner {
 
   }
 
-  private async deleteStack(stack: Stack, timeoutDate: Date): Promise<DeleteStackResult> {
+  private async deleteStack(stack: Stack, timeoutSeconds: number): Promise<DeleteStackResult> {
 
     if (!stack.StackName) {
       // how can this be...
@@ -72,53 +71,27 @@ export class Cleaner {
 
     try {
       if (stack.StackStatus !== 'DELETE_IN_PROGRESS') {
+
+        this.log(`Disabling termination protection of stack ${stack.StackName}`);
+        await this.cfn.send(new UpdateTerminationProtectionCommand({
+          StackName: stack.StackName,
+          EnableTerminationProtection: false,
+        }));
+
         this.log(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
         await this.cfn.send(new DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
       }
 
       this.log(`Stack ${stack.StackName} deleting. Waiting for completion.`);
-      await this.waitForStackDeleteComplete(stack.StackName, timeoutDate);
+      await waitUntilStackDeleteComplete(
+        { client: this.cfn, maxWaitTime: timeoutSeconds },
+        { StackName: stack.StackName },
+      );
+
       return { name: stack.StackName };
     } catch (e: any) {
       return { name: stack.StackName!, error: e };
     }
-  }
-
-  private async waitForStackDeleteComplete(stackName: string, timeoutDate: Date) {
-
-    while (true) {
-      try {
-        const response = await this.cfn.send(new DescribeStacksCommand({ StackName: stackName }));
-        const stack = response.Stacks?.[0];
-
-        if (!stack) {
-          return;
-        }
-
-        if (stack.StackStatus?.endsWith('FAILED')) {
-          throw new Error(`Stack ${stackName} deletion failed with status ${stack.StackStatus}`);
-        }
-
-        if (stack.StackStatus === 'DELETE_COMPLETE') {
-          return;
-        }
-
-        if (Date.now() > timeoutDate.getTime()) {
-          throw new Error(`Timed out waiting for stack ${stackName} to delete [Current Status: ${stack?.StackStatus}]`);
-        }
-
-        this.log(`Stack ${stackName} is not yet deleted [Current Status: ${stack.StackStatus}] (will check again in 5 seconds)`);
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
-      } catch (error: any) {
-        if (error instanceof CloudFormationServiceException && error.name === 'ValidationError') {
-          // Stack no longer exists
-          return;
-        }
-        throw error;
-      };
-    }
-
   }
 
   private log(message: string | Error) {

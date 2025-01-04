@@ -57,9 +57,9 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       functionArn: envars.Envars.required(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
     });
 
-    console.log(`Starting cleanup process for environment 'aws://${allocation.account}/${allocation.region}`);
+    console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
     const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
-    console.log(`Cleanup process started successfully. Task instance arn: ${taskInstanceArn}`);
+    console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
 
     return success();
   } catch (e: any) {

@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { Session, SUCCESS_PAYLOAD } from '../service.session';
 
 export async function handler(_: any) {
@@ -10,13 +11,23 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    // deallocate
+    // deploy a stack that takes 2 minute to delete
+    await session.deploy({ templatePath: 'cleanup-timeout/two-minutes-delete-delay.yaml', region });
+
+    // now deallocate and schedule the clenaup timeout for 10 seconds.
+    // this ensures the timeout is triggered before the cleanup is done.
     const cleanupTimeoutSeconds = 10;
     await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
 
     const waitTime = cleanupTimeoutSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
     session.log(`Waiting ${waitTime} seconds for environment 'aws://${account}/${region}' to be marked dirty...`);
     await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item?.status?.S === 'dirty', waitTime);
+
+    session.log(`Waiting ${waitTime} seconds for cleanup task to stop`);
+    await session.waitFor(async () => (await session.fetchStoppedCleanupTask(body.id)) !== undefined, waitTime);
+
+    const environment = await session.fetchEnvironment(account, region);
+    assert.strictEqual(environment.Item?.status?.S, 'dirty');
 
   }, 'cleanup-timeout-triggered-before-cleanup-finished');
 
@@ -28,16 +39,14 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    // deallocate
-    const cleanupTimeoutSeconds = 30;
+    // deallocate and schedule cleanup timeout for 2 minutes
+    // this ensures the timeout is triggered after cleanup because
+    const cleanupTimeoutSeconds = 2 * 60;
     await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
 
-    // simulate a quick and successfull cleanup
-    await session.environments.release(body.id, account, region);
-
     const waitTime = cleanupTimeoutSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
-    session.log(`Asserting for ${waitTime} seconds that environment 'aws://${account}/${region}' is released...`);
-    await session.okFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTime);
+    session.log(`Waiting for ${waitTime} seconds that environment 'aws://${account}/${region}' is released...`);
+    await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTime);
 
   }, 'cleanup-timeout-triggered-after-cleanup-finished');
 
@@ -51,19 +60,23 @@ export async function handler(_: any) {
     const region = allocateResponsebody.environment.region;
     const allocationId = allocateResponsebody.id;
 
-    // deallocate and schedule the cleanup timeout to 60 seconds from now
-    const cleanupTimeoutSeconds = 60;
+    // deallocate
+    const cleanupTimeoutSeconds = 3 * 60;
     await session.deallocate(allocationId, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
 
-    // in the meantime simulate a quick and successfull cleanup
-    await session.environments.release(allocationId, account, region);
+    let waitTime = 60; // 1 minute should be enough time for cleanup to succeed
+    session.log(`Waiting for ${waitTime} seconds for environment 'aws://${account}/${region}' to be released...`);
+    await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTime);
 
     // and now allocate again - acquiring the same environment
     await session.allocate({ pool: 'release', requester: 'test' } );
 
-    // make sure the first allocation cleanup timeout doesnt affect the second allocation
-    const waitTime = cleanupTimeoutSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
+    // wait for the first allocation cleanup timeout event to be triggered
+    waitTime = cleanupTimeoutSeconds + 60;
+    await session.waitFor(async () => (await session.fetchCleanupTimeoutSchedule(allocationId)) === undefined, waitTime);
 
+    // make sure the first allocation cleanup timeout doesnt affect the second allocation
+    waitTime = 20;
     session.log(`Asserting for ${waitTime} seconds that environment 'aws://${account}/${region}' is not marked dirty...`);
     await session.okFor(async () => (await session.fetchEnvironment(account, region)).Item?.status?.S !== 'dirty', waitTime);
 

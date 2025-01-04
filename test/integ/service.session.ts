@@ -1,6 +1,8 @@
 import * as assert from 'assert';
+import * as fs from 'fs';
+import * as path from 'path';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
-import { CloudFormation, paginateDescribeStacks, Stack } from '@aws-sdk/client-cloudformation';
+import { CloudFormation, paginateDescribeStacks, Stack, waitUntilStackCreateComplete } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
 import { Scheduler } from '@aws-sdk/client-scheduler';
@@ -19,6 +21,23 @@ const scheduler = new Scheduler();
 const ecs = new ECS();
 
 export const SUCCESS_PAYLOAD = 'OK';
+
+export interface DeployOptions {
+  /**
+   * Path to the tempalte file.
+   */
+  readonly templatePath: string;
+  /**
+   * Region to deploy the stack in.
+   */
+  readonly region: string;
+  /**
+   * Enable termination protection.
+   *
+   * @default false
+   */
+  readonly terminationProtection?: boolean;
+}
 
 /**
  * Helper class for integration tests that creates a fresh state
@@ -228,6 +247,26 @@ export class Session {
 
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
+  }
+
+  public async deploy(opts: DeployOptions) {
+    const cfnRegion = new CloudFormation({ region: opts.region });
+    const templateBody = fs.readFileSync(path.join(__dirname, opts.templatePath), { encoding: 'utf-8' });
+    const stackName = path.basename(opts.templatePath).split('.')[0];
+
+    this.log(`Deploying stack '${stackName}' from path '${opts.templatePath}' to region '${opts.region}'`);
+    await cfnRegion.createStack({
+      StackName: stackName,
+      TemplateBody: templateBody,
+      EnableTerminationProtection: opts.terminationProtection ?? false,
+      Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+    });
+
+    this.log(`Waiting for stack '${stackName}' to be created in region '${opts.region}'`);
+    await waitUntilStackCreateComplete(
+      { client: cfnRegion, maxWaitTime: 300 },
+      { StackName: stackName },
+    );
   }
 
   private async allocateLocal(jsonBody: string) {

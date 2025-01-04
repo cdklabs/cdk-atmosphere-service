@@ -29,7 +29,7 @@ export async function handler() {
 
     console.log('Done!');
   } catch (e: any) {
-    console.error(`Failed cleaning '${env}}'`, e);
+    console.error(`Failed cleaning '${env}}'`, e.message);
     if (e instanceof CleanerError) {
       for (const f of e.failedStacks) {
         console.log('');
