@@ -12,10 +12,9 @@ import { AtmosphereService, Environment } from '../../src';
 import * as envars from '../../src/envars';
 
 /**
- * Properties for `IntegTestAtmosphereService`. Its a scoped down
- * version of the actual properties.
+ * Properties for `AtmosphereIntegTest`.
  */
-export interface IntegTestAtmosphereServiceProps {
+export interface AtmosphereIntegTestProps {
   /**
    * A map of regions for each pool. These will translate to the available environment pools.
    * Note that the account will always be the current account (because otherwise the test isn't portable)
@@ -36,7 +35,7 @@ export class AtmosphereIntegTest extends Construct {
 
   public readonly integ: IntegTest;
 
-  constructor(scope: Construct, id: string, props: IntegTestAtmosphereServiceProps) {
+  constructor(scope: Construct, id: string, props: AtmosphereIntegTestProps) {
     super(scope, id);
 
     const adminRole = new iam.Role(scope, 'Admin', {
@@ -89,6 +88,7 @@ export class AtmosphereIntegTest extends Construct {
       timeout: Duration.minutes(15),
       code: lambda.Code.fromAsset(path.dirname(bundlePath)),
     });
+    assert.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
     assert.addEnvironment('CDK_ATMOSPHERE_INTEG', 'true');
 
     assert.node.addDependency(service);
@@ -121,22 +121,6 @@ export class AtmosphereIntegTest extends Construct {
       new cdk.CfnOutput(assert, key, { value, key: key.replace(/_/g, '0') });
     }
 
-    // give the assert function the necessary permissions
-    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
-      Effect: 'Allow',
-      Action: 'apigateway:*',
-      Resource: ['*'],
-    }));
-    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
-      Effect: 'Allow',
-      Action: 'dynamodb:*',
-      Resource: ['*'],
-    }));
-    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
-      Effect: 'Allow',
-      Action: 'scheduler:*',
-      Resource: ['*'],
-    }));
     cdk.Aspects.of(cdk.Stack.of(this)).add(new DestroyAspect());
 
     this.integ = new IntegTest(cdk.App.of(this)!, 'IntegTest', {

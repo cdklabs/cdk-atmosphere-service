@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { Session } from '../service.session';
 
 export async function handler(_: any) {
@@ -12,8 +13,14 @@ export async function handler(_: any) {
     await session.deallocate(body.id, { outcome: 'success' });
 
     const waitTimeSeconds = 120;
-    console.log(`Waiting ${waitTimeSeconds} seconds for environment aws://${account}/${region} to be released...`);
+    session.log(`Waiting ${waitTimeSeconds} seconds for environment aws://${account}/${region} to be released...`);
     await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTimeSeconds);
+
+    session.log(`Waiting ${waitTimeSeconds} seconds for cleanup task to stop`);
+    await session.waitFor(async () => (await session.fetchStoppedCleanupTask(body.id)) !== undefined, waitTimeSeconds);
+
+    const task = await session.fetchStoppedCleanupTask(body.id);
+    assert.strictEqual(task!.containers![0].exitCode, 0);
 
   });
 

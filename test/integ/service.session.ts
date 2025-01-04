@@ -2,6 +2,7 @@ import * as assert from 'assert';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
 import { CloudFormation } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import { ECS } from '@aws-sdk/client-ecs';
 import { Scheduler } from '@aws-sdk/client-scheduler';
 import type { AllocationRequest } from '../../src/allocate/allocate.lambda';
 import * as allocate from '../../src/allocate/allocate.lambda';
@@ -15,6 +16,7 @@ const apigw = new APIGateway();
 const dynamo = new DynamoDB();
 const cfn = new CloudFormation();
 const scheduler = new Scheduler();
+const ecs = new ECS();
 
 export const SUCCESS_PAYLOAD = 'OK';
 
@@ -182,6 +184,26 @@ export class Session {
       NamePrefix: `atmosphere.timeout.clean_${allocationId}`,
     });
     return response.Schedules?.[0];
+  }
+
+  public async fetchStoppedCleanupTask(allocationId: string) {
+    const response = await ecs.listTasks({
+      cluster: this.vars[envars.CLEANUP_CLUSTER_ARN_ENV],
+      startedBy: allocationId,
+      desiredStatus: 'STOPPED',
+    });
+
+    const taskArns = response.taskArns ?? [];
+
+    if (taskArns.length === 0) {
+      return undefined;
+    }
+
+    const tasks = await ecs.describeTasks({
+      cluster: this.vars[envars.CLEANUP_CLUSTER_ARN_ENV],
+      tasks: taskArns,
+    });
+    return tasks.tasks![0];
   }
 
   public async waitFor(condition: () => Promise<Boolean>, timeoutSeconds: number) {
