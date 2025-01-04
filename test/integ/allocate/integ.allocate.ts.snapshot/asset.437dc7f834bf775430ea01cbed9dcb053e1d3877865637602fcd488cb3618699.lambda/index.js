@@ -526,7 +526,7 @@ async function handler(event) {
     console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
     const credentials = await grabCredentials(allocationId, environment);
     console.log(`Allocation '${allocationId}' started successfully`);
-    const response = { id: allocationId, environment, credentials };
+    const response = { id: allocationId, environment, credentials, durationSeconds };
     console.log(`Scheduling timeout for allocation '${allocationId}' to ${timeoutDate}`);
     await clients.scheduler.scheduleAllocationTimeout({
       allocationId,

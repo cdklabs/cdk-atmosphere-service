@@ -489,11 +489,11 @@ async function handler(event) {
       timeoutDate: cleanupTimeoutDate,
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
-    return success();
+    return success({ cleanupDurationSeconds });
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       console.log(`Returning success because: ${e.message}`);
-      return success();
+      return success({ cleanupDurationSeconds: -1 });
     }
     console.error(e);
     return {
@@ -522,12 +522,10 @@ async function endAllocation(id, outcome) {
     throw e;
   }
 }
-function success() {
+function success(response) {
   return {
     statusCode: 200,
-    // we currently don't need a response body for a
-    // succesfull dellocation
-    body: JSON.stringify({})
+    body: JSON.stringify(response)
   };
 }
 // Annotate the CommonJS export names for ESM import in node:

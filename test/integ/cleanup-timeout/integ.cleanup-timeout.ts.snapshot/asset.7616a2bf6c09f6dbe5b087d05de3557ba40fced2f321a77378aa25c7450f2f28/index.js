@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/cleanup-timeout/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler3
@@ -536,7 +536,7 @@ async function handler(event) {
     console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
     const credentials = await grabCredentials(allocationId, environment);
     console.log(`Allocation '${allocationId}' started successfully`);
-    const response = { id: allocationId, environment, credentials };
+    const response = { id: allocationId, environment, credentials, durationSeconds };
     console.log(`Scheduling timeout for allocation '${allocationId}' to ${timeoutDate}`);
     await clients.scheduler.scheduleAllocationTimeout({
       allocationId,
@@ -664,11 +664,11 @@ async function handler2(event) {
       timeoutDate: cleanupTimeoutDate,
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
-    return success();
+    return success({ cleanupDurationSeconds });
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       console.log(`Returning success because: ${e.message}`);
-      return success();
+      return success({ cleanupDurationSeconds: -1 });
     }
     console.error(e);
     return {
@@ -697,12 +697,10 @@ async function endAllocation(id, outcome) {
     throw e;
   }
 }
-function success() {
+function success(response) {
   return {
     statusCode: 200,
-    // we currently don't need a response body for a
-    // succesfull dellocation
-    body: JSON.stringify({})
+    body: JSON.stringify(response)
   };
 }
 
@@ -728,8 +726,7 @@ var SUCCESS_PAYLOAD = "OK";
 var Session = class _Session {
   constructor(vars) {
     this.vars = vars;
-    this.sessionLog("Created session with variables:");
-    console.log(JSON.stringify(this.vars, null, 2));
+    this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
     this.environments = new EnvironmentsClient(this.vars[ENVIRONMENTS_TABLE_NAME_ENV]);
   }
   /**
@@ -792,42 +789,21 @@ var Session = class _Session {
   }
   async allocate(body) {
     const json = JSON.stringify(body);
-    if (_Session.isLocal()) {
-      this.log(`Invoking local allocate handler with body: ${json}`);
-      console.log();
-      const response = await env(this.vars, async () => {
-        return handler({ body: json });
-      });
-      console.log();
-      return { status: response.statusCode, body: response.body };
+    const response = _Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
+    if (!response.body) {
+      return [response, Promise.resolve()];
     }
-    this.log(`Sending allocation request with body: ${json}`);
-    return apigw.testInvokeMethod({
-      restApiId: this.vars[REST_API_ID_ENV],
-      resourceId: this.vars[ALLOCATIONS_RESOURCE_ID_ENV],
-      httpMethod: "POST",
-      pathWithQueryString: "/allocations",
-      body: json
-    });
+    const responseBody = JSON.parse(response.body);
+    return [response, this.waitForAllocationTimeout(responseBody)];
   }
   async deallocate(id, body) {
     const json = JSON.stringify(body);
-    if (_Session.isLocal()) {
-      this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${json}`);
-      const response = await env(this.vars, async () => {
-        return handler2({ body: json, pathParameters: { id } });
-      });
-      console.log();
-      return { status: response.statusCode, body: response.body };
+    const response = _Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
+    if (!response.body) {
+      return [response, Promise.resolve()];
     }
-    this.log(`Sending deallocation request for allocation '${id}' with body: ${json}`);
-    return apigw.testInvokeMethod({
-      restApiId: this.vars[REST_API_ID_ENV],
-      resourceId: this.vars[ALLOCATION_RESOURCE_ID_ENV],
-      httpMethod: "DELETE",
-      pathWithQueryString: `/allocations/${id}`,
-      body: json
-    });
+    const responseBody = JSON.parse(response.body);
+    return [response, this.waitForCleanupTimeout(id, responseBody)];
   }
   async fetchEnvironment(account, region) {
     return dynamo.getItem({
@@ -882,6 +858,43 @@ var Session = class _Session {
       await new Promise((resolve) => setTimeout(resolve, 1e3));
     }
   }
+  async deallocateLocal(id, jsonBody) {
+    this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
+    const response = await env(this.vars, async () => {
+      return handler2({ body: jsonBody, pathParameters: { id } });
+    });
+    console.log();
+    return { status: response.statusCode, body: response.body };
+  }
+  async deallocateRemote(id, jsonBody) {
+    this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
+    return apigw.testInvokeMethod({
+      restApiId: this.vars[REST_API_ID_ENV],
+      resourceId: this.vars[ALLOCATION_RESOURCE_ID_ENV],
+      httpMethod: "DELETE",
+      pathWithQueryString: `/allocations/${id}`,
+      body: jsonBody
+    });
+  }
+  async allocateLocal(jsonBody) {
+    this.log(`Invoking local allocate handler with body: ${jsonBody}`);
+    console.log();
+    const response = await env(this.vars, async () => {
+      return handler({ body: jsonBody });
+    });
+    console.log();
+    return { status: response.statusCode, body: response.body };
+  }
+  async allocateRemote(jsonBody) {
+    this.log(`Sending allocation request with body: ${jsonBody}`);
+    return apigw.testInvokeMethod({
+      restApiId: this.vars[REST_API_ID_ENV],
+      resourceId: this.vars[ALLOCATIONS_RESOURCE_ID_ENV],
+      httpMethod: "POST",
+      pathWithQueryString: "/allocations",
+      body: jsonBody
+    });
+  }
   async clear() {
     this.sessionLog("Clearing state");
     const environments = (await dynamo.scan({ TableName: this.vars[ENVIRONMENTS_TABLE_NAME_ENV] })).Items ?? [];
@@ -911,6 +924,18 @@ var Session = class _Session {
       await scheduler.deleteSchedule({ Name: schedule.Name });
     }
   }
+  async waitForAllocationTimeout(response) {
+    const waitTimeSeconds = response.durationSeconds + 60;
+    this.log(`Waiting ${waitTimeSeconds} seconds for allocation ${response.id} to timeout`);
+    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds);
+    return new Promise((resolve) => setTimeout(resolve, 5e3));
+  }
+  async waitForCleanupTimeout(id, response) {
+    const waitTimeSeconds = response.cleanupDurationSeconds + 60;
+    this.log(`Waiting ${waitTimeSeconds} seconds for cleanup of allocation ${id} to timeout`);
+    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds);
+    return new Promise((resolve) => setTimeout(resolve, 5e3));
+  }
   log(message) {
     console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [assertion] ${message}`);
   }
@@ -919,30 +944,43 @@ var Session = class _Session {
   }
 };
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/cleanup-timeout/assert.lambda.ts
 async function handler3(_) {
-  return Session.assert(async (session) => {
-    const allocateResponse = await session.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    const account = allocationResponseBody.environment.account;
-    const region = allocationResponseBody.environment.region;
-    const cleanupDurationSeconds = 30;
-    const firstDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: "success", cleanupDurationSeconds });
-    assert2.strictEqual(firstDeallocateResponse.status, 200);
-    const secondDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(secondDeallocateResponse.status, 200);
+  await Session.assert(async (session) => {
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [, timeout] = await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: 10 });
+    await timeout;
     const environment = await session.fetchEnvironment(account, region);
-    assert2.strictEqual(environment.Item.status.S, "cleaning");
-    const allocation = await session.fetchAllocation(allocationResponseBody.id);
-    assert2.ok(allocation.Item.end?.S);
-    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
-    assert2.ok(cleanupTimeoutSchedule);
-    const waitTime = cleanupDurationSeconds + 60;
-    session.log(`Waiting ${waitTime} seconds for cleanup timeout schedule to be deleted...`);
-    await session.waitFor(async () => {
-      return await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id) === void 0;
-    }, waitTime);
-  });
+    assert2.strictEqual(environment.Item?.status?.S, "dirty");
+  }, "cleanup-timeout-triggered-before-cleanup-finished");
+  await Session.assert(async (session) => {
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [, timeout] = await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: 30 });
+    await session.environments.release(body.id, account, region);
+    await timeout;
+    const environment = await session.fetchEnvironment(account, region);
+    assert2.ok(!environment.Item);
+  }, "cleanup-timeout-triggered-after-cleanup-finished");
+  await Session.assert(async (session) => {
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const allocationId = body.id;
+    const [, timeout] = await session.deallocate(allocationId, { outcome: "success", cleanupDurationSeconds: 60 });
+    await session.environments.release(allocationId, account, region);
+    [] = await session.allocate({ pool: "release", requester: "test" });
+    await timeout;
+    const environment = await session.fetchEnvironment(account, region);
+    assert2.notStrictEqual(environment.Item?.status?.S, "dirty");
+  }, "cleanup-timeout-triggered-on-reallocated-environment");
+  return SUCCESS_PAYLOAD;
 }
 if (Session.isLocal()) {
   void handler3({});

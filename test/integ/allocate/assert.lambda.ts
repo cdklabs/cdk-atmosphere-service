@@ -1,18 +1,13 @@
 import * as assert from 'assert';
-import { Session } from '../service.session';
+import { Session, SUCCESS_PAYLOAD } from '../service.session';
 
 export async function handler(_: any) {
 
-  return Session.assert(async (session: Session) => {
-    const durationSeconds = 30;
-    const firstAllocateResponse = await session.allocate({ pool: 'release', requester: 'test', durationSeconds } );
-    assert.strictEqual(firstAllocateResponse.status, 200, 'Expected first allocation to succeed');
+  await Session.assert(async (session: Session) => {
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    assert.strictEqual(response.status, 200);
 
-    // assert that we cannot allocate again (we only have 1 environment in this integ test)
-    const secondAllocateResponse = await session.allocate({ pool: 'release', requester: 'test' });
-    assert.strictEqual(secondAllocateResponse.status, 423, 'Expected second allocation to fail');
-
-    const body = JSON.parse(firstAllocateResponse.body!);
+    const body = JSON.parse(response.body!);
 
     const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);
     assert.strictEqual(environment.Item!.status.S, 'in-use');
@@ -24,11 +19,17 @@ export async function handler(_: any) {
     const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
     assert.ok(timeoutSchedule);
 
-    const waitTime = durationSeconds + 60; // give a 60 second buffer because the schedule granularity is 1 minute.
+  }, 'allocate-creates-the-right-resources');
 
-    session.log(`Waiting ${waitTime} seconds for allocation timeout schedule to be deleted...`);
-    await session.waitFor(async () => (await session.fetchAllocationTimeoutSchedule(body.id)) === undefined, waitTime);
-  });
+  await Session.assert(async (session: Session) => {
+    [] = await session.allocate({ pool: 'release', requester: 'test' } );
+
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' });
+    assert.strictEqual(response.status, 423);
+
+  }, 'allocate-responds-with-locked');
+
+  return SUCCESS_PAYLOAD;
 
 }
 
