@@ -8,6 +8,6 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, `atmosphere-integ-${dir}`);
 
 new AtmosphereIntegTest(stack, 'AtmosphereIntegTest', {
-  pools: { release: ['us-west-2'] },
+  pools: { release: ['eu-central-1'] },
   dir,
 });

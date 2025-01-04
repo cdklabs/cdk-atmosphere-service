@@ -36,75 +36,6 @@ module.exports = __toCommonJS(cleanup_timeout_lambda_exports);
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
-var CleanupClient = class {
-  constructor(props) {
-    this.props = props;
-    this.ecs = new import_client_ecs.ECS();
-  }
-  async start(opts) {
-    const response = await this.ecs.runTask({
-      cluster: this.props.clusterArn,
-      taskDefinition: this.props.taskDefinitionArn,
-      launchType: "FARGATE",
-      networkConfiguration: {
-        awsvpcConfiguration: {
-          subnets: [this.props.subnetId],
-          securityGroups: [this.props.securityGroupId],
-          assignPublicIp: "ENABLED"
-        }
-      },
-      overrides: {
-        containerOverrides: [
-          {
-            name: this.props.containerName,
-            environment: [
-              { name: "ALLOCATION_ID", value: opts.allocation.id },
-              { name: "ACCOUNT", value: opts.allocation.account },
-              { name: "REGION", value: opts.allocation.region },
-              { name: "TIMEOUT_SECONDS", value: `${opts.timeoutSeconds}` }
-            ]
-          }
-        ]
-      }
-    });
-    return response.tasks[0].taskArn;
-  }
-};
-
-// src/config/configuration.client.ts
-var s3 = __toESM(require("@aws-sdk/client-s3"));
-var ConfigurationClient = class {
-  constructor(s3Location) {
-    this.s3Location = s3Location;
-    this.s3Client = new s3.S3();
-  }
-  /**
-   * Retrieve environments belonging to a specific pool.
-   */
-  async listEnvironments(opts = {}) {
-    return (await this.data).environments.filter((e) => opts.pool ? e.pool === opts.pool : true);
-  }
-  // lazy async getter
-  get data() {
-    return (async () => {
-      if (this._data) {
-        return this._data;
-      }
-      this._data = await this.download();
-      return this._data;
-    })();
-  }
-  async download() {
-    const response = await this.s3Client.getObject({
-      Bucket: this.s3Location.bucket,
-      Key: this.s3Location.key
-    });
-    if (!response.Body) {
-      throw new Error(`Configuration file (s3://${this.s3Location.bucket}/${this.s3Location.key}) is empty`);
-    }
-    return JSON.parse(await response.Body.transformToString("utf-8"));
-  }
-};
 
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
@@ -125,6 +56,8 @@ var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`
 var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
 var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
 var CLEANUP_TASK_CONTAINER_NAME_ENV = `${ENV_PREFIX}CLEANUP_TASK_CONTAINER_NAME`;
+var CLEANUP_TASK_ALLOCATION_ID = `${ENV_PREFIX}RUNTIME_CLEANUP_TASK_ALLOCATION_ID`;
+var CLEANUP_TASK_TIMEOUT_SECONDS = `${ENV_PREFIX}RUNTIME_CLEANUP_TASK_TIMEOUT_SECONDS`;
 var Envars = class _Envars {
   static required(name) {
     const value2 = _Envars.optional(name);
@@ -135,6 +68,99 @@ var Envars = class _Envars {
   }
   static optional(name) {
     return process.env[name];
+  }
+};
+
+// src/cleanup/cleanup.client.ts
+var CleanupClient = class {
+  constructor(props) {
+    this.props = props;
+    this.ecs = new import_client_ecs.ECS();
+  }
+  async start(opts) {
+    const response = await this.ecs.runTask({
+      cluster: this.props.clusterArn,
+      taskDefinition: this.props.taskDefinitionArn,
+      launchType: "FARGATE",
+      // for troubleshooting. this allows task filtering
+      // on the aws console.
+      startedBy: opts.allocation.id,
+      group: `aws://${opts.allocation.account}/${opts.allocation.region}`,
+      networkConfiguration: {
+        awsvpcConfiguration: {
+          subnets: [this.props.subnetId],
+          securityGroups: [this.props.securityGroupId],
+          assignPublicIp: "ENABLED"
+        }
+      },
+      overrides: {
+        containerOverrides: [
+          {
+            name: this.props.containerName,
+            environment: [
+              { name: CLEANUP_TASK_ALLOCATION_ID, value: opts.allocation.id },
+              { name: CLEANUP_TASK_TIMEOUT_SECONDS, value: `${opts.timeoutSeconds}` }
+            ]
+          }
+        ]
+      }
+    });
+    return response.tasks[0].taskArn;
+  }
+};
+
+// src/config/configuration.client.ts
+var s3 = __toESM(require("@aws-sdk/client-s3"));
+var EnvironmentNotFoundError = class extends Error {
+  constructor(account, region) {
+    super(`Environment aws://${account}/${region} not found`);
+    this.account = account;
+    this.region = region;
+  }
+};
+var ConfigurationClient = class {
+  constructor(s3Location) {
+    this.s3Location = s3Location;
+    this.s3Client = new s3.S3();
+  }
+  /**
+   * Retrieve environments belonging to a specific pool.
+   */
+  async listEnvironments(opts = {}) {
+    return (await this.data).environments.filter((e) => opts.pool ? e.pool === opts.pool : true);
+  }
+  /**
+   * Retrieve a single environment based on account + region.
+   */
+  async getEnvironment(account, region) {
+    const envs = (await this.data).environments.filter((e) => e.account === account && e.region === region);
+    if (envs.length === 0) {
+      throw new EnvironmentNotFoundError(account, region);
+    }
+    if (envs.length > 1) {
+      throw new Error(`Multiple environments found for aws://${account}/${region}`);
+    }
+    return envs[0];
+  }
+  // lazy async getter
+  get data() {
+    return (async () => {
+      if (this._data) {
+        return this._data;
+      }
+      this._data = await this.download();
+      return this._data;
+    })();
+  }
+  async download() {
+    const response = await this.s3Client.getObject({
+      Bucket: this.s3Location.bucket,
+      Key: this.s3Location.key
+    });
+    if (!response.Body) {
+      throw new Error(`Configuration file (s3://${this.s3Location.bucket}/${this.s3Location.key}) is empty`);
+    }
+    return JSON.parse(await response.Body.transformToString("utf-8"));
   }
 };
 
@@ -206,10 +232,39 @@ var InvalidInputError = class extends Error {
     super(`Invalid input: ${message}`);
   }
 };
+var AllocationNotFoundError = class extends Error {
+  constructor(id) {
+    super(`Allocation ${id} not found`);
+  }
+};
 var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
+  }
+  /**
+   * Retrieve an allocation by id.
+   */
+  async get(id) {
+    const response = await this.ddbClient.getItem({
+      TableName: this.tableName,
+      Key: {
+        id: { S: id }
+      }
+    });
+    if (!response.Item) {
+      throw new AllocationNotFoundError(id);
+    }
+    return {
+      account: value("account", response.Item),
+      region: value("region", response.Item),
+      pool: value("pool", response.Item),
+      start: value("start", response.Item),
+      end: value("end", response.Item),
+      requester: value("requester", response.Item),
+      id: value("id", response.Item),
+      outcome: value("outcome", response.Item)
+    };
   }
   /**
    * Start an allocation for a specific environment. Returns the allocation id.

@@ -7,8 +7,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct, IConstruct } from 'constructs';
 import { SUCCESS_PAYLOAD } from './service.session';
-import { ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
-import { AtmosphereService } from '../../src';
+import { REGIONS, ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
+import { AtmosphereService, Environment } from '../../src';
 import * as envars from '../../src/envars';
 
 /**
@@ -44,9 +44,28 @@ export class AtmosphereIntegTest extends Construct {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')],
     });
 
-    const environments = Object.entries(props.pools).flatMap(([pool, regions]) =>
-      regions.map(region => ({ account: cdk.Aws.ACCOUNT_ID, region, adminRoleArn: adminRole.roleArn, pool })),
-    );
+    // because the cleaner passes this role to CloudFormation when deleting stacks
+    adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      principals: [new iam.ServicePrincipal('cloudformation.amazonaws.com')],
+    }));
+
+    const environments: Environment[] = [];
+    for (const [pool, regions] of Object.entries(props.pools)) {
+      for (const region of regions) {
+        if (REGIONS.includes(region)) {
+          // environments cannot be the same as the one running
+          // the test because the test will delete all stacks being tested
+          throw new Error(`Invalid region '${region}': Cannot be one of ${REGIONS}`);
+        }
+        environments.push({
+          account: cdk.Aws.ACCOUNT_ID,
+          region,
+          adminRoleArn: adminRole.roleArn,
+          pool,
+        });
+      }
+    }
 
     const service = new AtmosphereService(this, 'Atmosphere', {
       config: { environments },

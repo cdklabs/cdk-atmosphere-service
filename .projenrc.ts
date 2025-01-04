@@ -63,4 +63,22 @@ project.package.file.patch(JsonPatch.add('/jest/randomize', true));
 
 IntegTests.discover(project);
 
+const bundleAll = project.tasks.tryFind('bundle')!;
+const cleanupBundle = project.tasks.addTask('bundle:cleanup');
+const taskPath = 'src/cleanup/cleanup.task.ts';
+const outfile = 'src/cleanup/image/index.js';
+const command = [
+  'esbuild',
+  '--bundle',
+  taskPath,
+  '--target=\"node18\"',
+  '--platform=\"node\"',
+  `--outfile=\"${outfile}\"`,
+  '--tsconfig=\"tsconfig.dev.json\"',
+];
+cleanupBundle.exec(command.join(' '));
+bundleAll.spawn(cleanupBundle);
+
+project.gitignore.exclude(outfile);
+
 project.synth();

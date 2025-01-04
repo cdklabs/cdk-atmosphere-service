@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ECS } from '@aws-sdk/client-ecs';
+import * as envars from '../envars';
 import type { Allocation } from '../storage/allocations.client';
 
 
@@ -58,6 +59,12 @@ export class CleanupClient {
       cluster: this.props.clusterArn,
       taskDefinition: this.props.taskDefinitionArn,
       launchType: 'FARGATE',
+
+      // for troubleshooting. this allows task filtering
+      // on the aws console.
+      startedBy: opts.allocation.id,
+      group: `aws://${opts.allocation.account}/${opts.allocation.region}`,
+
       networkConfiguration: {
         awsvpcConfiguration: {
           subnets: [this.props.subnetId],
@@ -70,10 +77,8 @@ export class CleanupClient {
           {
             name: this.props.containerName,
             environment: [
-              { name: 'ALLOCATION_ID', value: opts.allocation.id },
-              { name: 'ACCOUNT', value: opts.allocation.account },
-              { name: 'REGION', value: opts.allocation.region },
-              { name: 'TIMEOUT_SECONDS', value: `${opts.timeoutSeconds}` },
+              { name: envars.CLEANUP_TASK_ALLOCATION_ID, value: opts.allocation.id },
+              { name: envars.CLEANUP_TASK_TIMEOUT_SECONDS, value: `${opts.timeoutSeconds}` },
             ],
           },
         ],

@@ -79,7 +79,11 @@ export class AtmosphereService extends Construct {
     this.environments = new Environments(this, 'Environments');
     this.allocations = new Allocations(this, 'Allocations');
 
-    this.cleanup = new Cleanup(this, 'Cleanup', { configuration: this.config });
+    this.cleanup = new Cleanup(this, 'Cleanup', {
+      configuration: this.config,
+      environments: this.environments,
+      allocations: this.allocations,
+    });
 
     this.scheduler = new Scheduler(this, 'Scheduler', {
       environments: this.environments,

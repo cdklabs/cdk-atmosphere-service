@@ -57,6 +57,9 @@
         },
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:cleanup"
         }
       ]
     },
@@ -93,6 +96,14 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:cleanup": {
+      "name": "bundle:cleanup",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/cleanup/cleanup.task.ts --target=\"node18\" --platform=\"node\" --outfile=\"src/cleanup/image/index.js\" --tsconfig=\"tsconfig.dev.json\""
         }
       ]
     },
@@ -299,8 +310,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript",
-          "receiveArgs": true
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript"
         }
       ]
     },
@@ -327,17 +337,6 @@
         }
       ]
     },
-    "integ:dev": {
-      "name": "integ:dev",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "spawn": "integ:test/dev:deploy"
-        }
-      ]
-    },
     "integ:force": {
       "name": "integ:force",
       "steps": [
@@ -345,7 +344,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --force"
         }
       ]
     },
@@ -353,7 +352,7 @@
       "name": "integ:list",
       "steps": [
         {
-          "exec": "yarn integ-runner --language typescript --list"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --list"
         }
       ]
     },
@@ -362,10 +361,10 @@
       "description": "Run the test in snapshot mode",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate"
         }
       ]
     },
@@ -383,10 +382,10 @@
       "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --no-clean --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -395,10 +394,10 @@
       "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --force"
         }
       ]
     },
@@ -407,10 +406,10 @@
       "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --dry-run --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --dry-run --force"
         }
       ]
     },
@@ -419,10 +418,10 @@
       "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocate --update-on-failed"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --update-on-failed"
         }
       ]
     },
@@ -431,10 +430,10 @@
       "description": "Run the test in snapshot mode",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout"
         }
       ]
     },
@@ -452,10 +451,10 @@
       "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --no-clean --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -464,10 +463,10 @@
       "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --force"
         }
       ]
     },
@@ -476,10 +475,10 @@
       "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --dry-run --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --dry-run --force"
         }
       ]
     },
@@ -488,10 +487,10 @@
       "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
-          "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/allocation-timeout --update-on-failed"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --update-on-failed"
         }
       ]
     },
@@ -500,10 +499,10 @@
       "description": "Run the test in snapshot mode",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup"
         }
       ]
     },
@@ -512,10 +511,10 @@
       "description": "Run the test in snapshot mode",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout"
         }
       ]
     },
@@ -533,10 +532,10 @@
       "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --no-clean --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -545,10 +544,10 @@
       "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --force"
         }
       ]
     },
@@ -557,10 +556,10 @@
       "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --dry-run --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --dry-run --force"
         }
       ]
     },
@@ -569,10 +568,10 @@
       "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup-timeout/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup-timeout --update-on-failed"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --update-on-failed"
         }
       ]
     },
@@ -590,10 +589,10 @@
       "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --no-clean --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -602,10 +601,10 @@
       "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --force"
         }
       ]
     },
@@ -614,10 +613,10 @@
       "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --dry-run --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --dry-run --force"
         }
       ]
     },
@@ -626,10 +625,10 @@
       "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
-          "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/cleanup --update-on-failed"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --update-on-failed"
         }
       ]
     },
@@ -638,10 +637,10 @@
       "description": "Run the test in snapshot mode",
       "steps": [
         {
-          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate"
         }
       ]
     },
@@ -659,10 +658,10 @@
       "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
-          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --no-clean --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -671,10 +670,10 @@
       "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
-          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --force"
         }
       ]
     },
@@ -683,10 +682,10 @@
       "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
-          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --dry-run --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --dry-run --force"
         }
       ]
     },
@@ -695,10 +694,10 @@
       "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
-          "spawn": "bundle:test/integ/deallocate/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/deallocate --update-on-failed"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --update-on-failed"
         }
       ]
     },
@@ -707,10 +706,10 @@
       "description": "Run the test in snapshot mode",
       "steps": [
         {
-          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/dev"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev"
         }
       ]
     },
@@ -728,10 +727,10 @@
       "description": "Deploy and update the snapshot while keeping the service running",
       "steps": [
         {
-          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --no-clean --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -740,10 +739,10 @@
       "description": "Force update the snapshot by deploying the test",
       "steps": [
         {
-          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --force"
         }
       ]
     },
@@ -752,10 +751,10 @@
       "description": "Update snapshot without deploying (discoureged)",
       "steps": [
         {
-          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --dry-run --force"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --dry-run --force"
         }
       ]
     },
@@ -764,10 +763,10 @@
       "description": "Deploy and update the snapshot if necessary",
       "steps": [
         {
-          "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+          "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --directory test/integ/dev --update-on-failed"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --update-on-failed"
         }
       ]
     },
@@ -779,8 +778,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --language typescript --update-on-failed",
-          "receiveArgs": true
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --update-on-failed"
         }
       ]
     },

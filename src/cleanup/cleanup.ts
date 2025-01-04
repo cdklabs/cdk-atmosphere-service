@@ -6,6 +6,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { Configuration } from '../config';
+import * as envars from '../envars';
+import { Allocations, Environments } from '../storage';
 
 /**
  * Properties for `Cleanup`.
@@ -15,6 +17,14 @@ export interface CleanupProps {
    * Service configuration.
    */
   readonly configuration: Configuration;
+  /**
+   * Environments storage.
+   */
+  readonly environments: Environments;
+  /**
+   * Allocations storage.
+   */
+  readonly allocations: Allocations;
 }
 
 /**
@@ -63,6 +73,12 @@ export class Cleanup extends Construct {
         logGroup,
         streamPrefix: 'cleanup',
       }),
+      environment: {
+        [envars.ENVIRONMENTS_TABLE_NAME_ENV]: props.environments.table.tableName,
+        [envars.ALLOCATIONS_TABLE_NAME_ENV]: props.allocations.table.tableName,
+        [envars.CONFIGURATION_BUCKET_ENV]: props.configuration.bucket.bucketName,
+        [envars.CONFIGURATION_KEY_ENV]: props.configuration.key,
+      },
     });
 
     // cleanup must be able to assume admin roles for all its environments
@@ -72,6 +88,9 @@ export class Cleanup extends Construct {
       adminRole.grantAssumeRole(this.task.taskRole);
     }
 
+    props.configuration.grantRead(this.task.taskRole);
+    props.allocations.grantReadWrite(this.task.taskRole);
+    props.environments.grantReadWrite(this.task.taskRole);
 
   }
 

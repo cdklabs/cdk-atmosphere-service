@@ -7,7 +7,7 @@ const dir = 'allocate';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, `atmosphere-integ-${dir}`);
 
-new AtmosphereIntegTest(stack, 'AtmosphereAllocate', {
-  pools: { release: ['us-west-2'] },
+new AtmosphereIntegTest(stack, 'AtmosphereIntegTest', {
+  pools: { release: ['eu-central-1'] },
   dir,
 });
