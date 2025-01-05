@@ -3,6 +3,7 @@ import * as ddb from '@aws-sdk/client-dynamodb';
 
 /**
  * Error thrown if the allocation is already ended.
+ *
  */
 export class AllocationAlreadyEndedError extends Error {
   constructor(id: string) {
