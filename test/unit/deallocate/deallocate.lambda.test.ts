@@ -113,7 +113,10 @@ describe('handler', () => {
       body: JSON.stringify({ outcome: 'failed' }),
     } as any as APIGatewayProxyEvent));
 
+    const body = JSON.parse(response.body);
+
     expect(response.statusCode).toEqual(200);
+    expect(body.cleanupDurationSeconds).toEqual(3600);
     expect(clients.scheduler.scheduleCleanupTimeout).toHaveBeenCalledWith({
       allocationId: 'id',
       account: '1111',
@@ -146,7 +149,10 @@ describe('handler', () => {
       body: JSON.stringify({ outcome: 'failed', cleanupDurationSeconds: 10 }),
     } as any as APIGatewayProxyEvent));
 
+    const body = JSON.parse(response.body);
+
     expect(response.statusCode).toEqual(200);
+    expect(body.cleanupDurationSeconds).toEqual(10);
     expect(clients.scheduler.scheduleCleanupTimeout).toHaveBeenCalledWith({
       allocationId: 'id',
       account: '1111',
@@ -167,7 +173,10 @@ describe('handler', () => {
       body: JSON.stringify({ outcome: 'failed' }),
     } as any as APIGatewayProxyEvent);
 
+    const body = JSON.parse(response.body);
+
     expect(response.statusCode).toEqual(200);
+    expect(body.cleanupDurationSeconds).toEqual(-1);
 
   });
 

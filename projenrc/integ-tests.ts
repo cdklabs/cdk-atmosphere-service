@@ -5,9 +5,9 @@ import { Component, Project } from 'projen';
 export const ASSERT_HANDLER_FILE = 'assert.lambda.ts';
 
 // run the tests in these regions
-export const REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'];
+export const INTEG_RUNNER_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2'];
 
-const INTEG_COMMAND = `yarn integ-runner ${REGIONS.map(r => `--parallel-regions ${r}`).join(' ')} --language typescript`;
+const INTEG_COMMAND = `yarn integ-runner ${INTEG_RUNNER_REGIONS.map(r => `--parallel-regions ${r}`).join(' ')} --language typescript`;
 
 export class IntegTests {
 

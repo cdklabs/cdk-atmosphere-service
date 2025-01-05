@@ -1,1556 +1,5 @@
 {
  "Resources": {
-  "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     },
-     {
-      "Key": "aws-cdk:cr-owned:38cc90b7",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereConfigurationBucketPolicyAB4E318D": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereConfigurationBucketAutoDeleteObjectsCustomResourceEA093561": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
-    }
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereConfigurationBucketPolicyAB4E318D"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereConfigurationDeploymentAwsCliLayerF1F55BB3": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "09ee37fb9a746a9dea0618b3024913848346b4b63d08d3fae387b9a11ac83a01.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereConfigurationDeploymentCustomResource8630236A": {
-   "Type": "Custom::CDKBucketDeployment",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
-      "Arn"
-     ]
-    },
-    "SourceBucketNames": [
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     }
-    ],
-    "SourceObjectKeys": [
-     "cebdfac90561f1acb71b7674a202dd6259b96b0f85cd93f43442476295ee66f4.zip"
-    ],
-    "SourceMarkers": [
-     {
-      "<<marker:0xbaba:0>>": {
-       "Ref": "AWS::AccountId"
-      },
-      "<<marker:0xbaba:1>>": {
-       "Fn::GetAtt": [
-        "AdminC75D2A91",
-        "Arn"
-       ]
-      }
-     }
-    ],
-    "DestinationBucketName": {
-     "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
-    },
-    "Prune": true,
-    "OutputObjectKeys": true
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751": {
-   "Type": "AWS::DynamoDB::Table",
-   "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "account",
-      "AttributeType": "S"
-     },
-     {
-      "AttributeName": "region",
-      "AttributeType": "S"
-     }
-    ],
-    "BillingMode": "PAY_PER_REQUEST",
-    "KeySchema": [
-     {
-      "AttributeName": "account",
-      "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "region",
-      "KeyType": "RANGE"
-     }
-    ],
-    "PointInTimeRecoverySpecification": {
-     "PointInTimeRecoveryEnabled": true
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereAllocationsTable724969BB": {
-   "Type": "AWS::DynamoDB::Table",
-   "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "id",
-      "AttributeType": "S"
-     }
-    ],
-    "BillingMode": "PAY_PER_REQUEST",
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
-    "PointInTimeRecoverySpecification": {
-     "PointInTimeRecoveryEnabled": true
-    },
-    "TimeToLiveSpecification": {
-     "AttributeName": "ttl",
-     "Enabled": true
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "scheduler.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerRoleDefaultPolicyFE799048": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "sqs:GetQueueAttributes",
-        "sqs:GetQueueUrl",
-        "sqs:SendMessage"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAtmosphereSchedulerRoleDefaultPolicyFE799048",
-    "Roles": [
-     {
-      "Ref": "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7": {
-   "Type": "AWS::SQS::Queue",
-   "Properties": {
-    "KmsMasterKeyId": "alias/aws/sqs"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sqs:SendMessage",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2",
-    "Roles": [
-     {
-      "Ref": "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "16abbff071cf38ae997ac7eaac6e694c77c3eb43fa9ce3c7c4bd121d5e446d68.zip"
-    },
-    "DeadLetterConfig": {
-     "TargetArn": {
-      "Fn::GetAtt": [
-       "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-       "Arn"
-      ]
-     }
-    },
-    "Description": "src/cleanup-timeout/cleanup-timeout.lambda.ts",
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751"
-      }
-     }
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x"
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sqs:SendMessage",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
-      },
-      {
-       "Action": "lambda:InvokeFunction",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92",
-    "Roles": [
-     {
-      "Ref": "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "e233f51359c3aad7ef5875ec09d8ba1f1baefdf5b221c27c17f80a4c66b96490.zip"
-    },
-    "DeadLetterConfig": {
-     "TargetArn": {
-      "Fn::GetAtt": [
-       "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-       "Arn"
-      ]
-     }
-    },
-    "Description": "src/allocation-timeout/allocation-timeout.lambda.ts",
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB"
-      }
-     }
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x"
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-             "Arn"
-            ]
-           },
-           "/configuration.json"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
-      },
-      {
-       "Action": "scheduler:CreateSchedule",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AdminC75D2A91",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",
-    "Roles": [
-     {
-      "Ref": "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "6dbde3d9f7c0cd23a5a07e63519c372076a336ab7bcb4f86d5288f269af78e22.zip"
-    },
-    "Description": "src/allocate/allocate.lambda.ts",
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
-       "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
-      },
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751"
-      },
-      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereAllocationsTable724969BB"
-      },
-      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-        "Arn"
-       ]
-      }
-     }
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x"
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
-      },
-      {
-       "Action": "scheduler:CreateSchedule",
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639",
-    "Roles": [
-     {
-      "Ref": "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "7c969f5e92bc54beb75bdfb3410ada9ebfdad54a4c14c9421def6c7245bb93f4.zip"
-    },
-    "Description": "src/deallocate/deallocate.lambda.ts",
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751"
-      },
-      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereAllocationsTable724969BB"
-      },
-      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-        "Arn"
-       ]
-      }
-     }
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x"
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApi786BAA32": {
-   "Type": "AWS::ApiGateway::RestApi",
-   "Properties": {
-    "Description": "RESTful endpoint for the Atmosphere service",
-    "Name": "Atmosphere",
-    "Policy": {
-     "Statement": [
-      {
-       "Action": "execute-api:Invoke",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": [
-        "execute-api:/prod/DELETE/allocations/{id}",
-        "execute-api:/prod/POST/allocations"
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiDeployment07D554B33e9d6eddab0c5c9302e367173f86c145": {
-   "Type": "AWS::ApiGateway::Deployment",
-   "Properties": {
-    "Description": "RESTful endpoint for the Atmosphere service",
-    "RestApiId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-    }
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEC6E25D33",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOST58C55F36",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E": {
-   "Type": "AWS::ApiGateway::Stage",
-   "Properties": {
-    "DeploymentId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApiDeployment07D554B33e9d6eddab0c5c9302e367173f86c145"
-    },
-    "RestApiId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-    },
-    "StageName": "prod"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7": {
-   "Type": "AWS::ApiGateway::Resource",
-   "Properties": {
-    "ParentId": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereEndpointApi786BAA32",
-      "RootResourceId"
-     ]
-    },
-    "PathPart": "allocations",
-    "RestApiId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocationsA446A895": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-       },
-       "/",
-       {
-        "Ref": "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E"
-       },
-       "/POST/allocations"
-      ]
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocations102FDF0A": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-       },
-       "/test-invoke-stage/POST/allocations"
-      ]
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOST58C55F36": {
-   "Type": "AWS::ApiGateway::Method",
-   "Properties": {
-    "AuthorizationType": "AWS_IAM",
-    "HttpMethod": "POST",
-    "Integration": {
-     "IntegrationHttpMethod": "POST",
-     "Type": "AWS_PROXY",
-     "Uri": {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":apigateway:",
-        {
-         "Ref": "AWS::Region"
-        },
-        ":lambda:path/2015-03-31/functions/",
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-          "Arn"
-         ]
-        },
-        "/invocations"
-       ]
-      ]
-     }
-    },
-    "ResourceId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7"
-    },
-    "RestApiId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0": {
-   "Type": "AWS::ApiGateway::Resource",
-   "Properties": {
-    "ParentId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7"
-    },
-    "PathPart": "{id}",
-    "RestApiId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsid0D714121": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-       },
-       "/",
-       {
-        "Ref": "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E"
-       },
-       "/DELETE/allocations/*"
-      ]
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsidF77AF5EB": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-       },
-       "/test-invoke-stage/DELETE/allocations/*"
-      ]
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEC6E25D33": {
-   "Type": "AWS::ApiGateway::Method",
-   "Properties": {
-    "AuthorizationType": "AWS_IAM",
-    "HttpMethod": "DELETE",
-    "Integration": {
-     "IntegrationHttpMethod": "POST",
-     "Type": "AWS_PROXY",
-     "Uri": {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":apigateway:",
-        {
-         "Ref": "AWS::Region"
-        },
-        ":lambda:path/2015-03-31/functions/",
-        {
-         "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-          "Arn"
-         ]
-        },
-        "/invocations"
-       ]
-      ]
-     }
-    },
-    "ResourceId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0"
-    },
-    "RestApiId": {
-     "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAssertServiceRole84189FB3": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407",
-    "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketAutoDeleteObjectsCustomResourceEA093561",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketPolicyAB4E318D",
-    "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentAwsCliLayerF1F55BB3",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentCustomResource8630236A",
-    "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsid0D714121",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsidF77AF5EB",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEC6E25D33",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocationsA446A895",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocations102FDF0A",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOST58C55F36",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeployment07D554B33e9d6eddab0c5c9302e367173f86c145",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E",
-    "AtmosphereIntegTestAtmosphereEndpointApi786BAA32",
-    "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33",
-    "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleDefaultPolicyFE799048",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "apigateway:*",
-        "dynamodb:*",
-        "scheduler:*"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797",
-    "Roles": [
-     {
-      "Ref": "AtmosphereIntegTestAssertServiceRole84189FB3"
-     }
-    ]
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407",
-    "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketAutoDeleteObjectsCustomResourceEA093561",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketPolicyAB4E318D",
-    "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentAwsCliLayerF1F55BB3",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentCustomResource8630236A",
-    "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsid0D714121",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsidF77AF5EB",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEC6E25D33",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocationsA446A895",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocations102FDF0A",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOST58C55F36",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeployment07D554B33e9d6eddab0c5c9302e367173f86c145",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E",
-    "AtmosphereIntegTestAtmosphereEndpointApi786BAA32",
-    "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33",
-    "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleDefaultPolicyFE799048",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereIntegTestAssertBF67A3D0": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "fc154e5b82fe97a575582c50d03d4d0b1bb009ba90cc54a3aead18e86ca0ca34.zip"
-    },
-    "Description": "test/integ/allocation-timeout/assert.lambda.ts",
-    "Environment": {
-     "Variables": {
-      "CDK_ATMOSPHERE_INTEG": "true",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751"
-      },
-      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereAllocationsTable724969BB"
-      },
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
-       "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
-      },
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
-       "Fn::GetAtt": [
-        "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-        "Arn"
-       ]
-      },
-      "CDK_ATMOSPHERE_REST_API_ID": {
-       "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-      },
-      "CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": {
-       "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7"
-      },
-      "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": {
-       "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0"
-      },
-      "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
-       "Ref": "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB"
-      }
-     }
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AtmosphereIntegTestAssertServiceRole84189FB3",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x",
-    "Timeout": 900
-   },
-   "DependsOn": [
-    "AtmosphereIntegTestAssertServiceRoleDefaultPolicy833CF797",
-    "AtmosphereIntegTestAssertServiceRole84189FB3",
-    "AtmosphereIntegTestAtmosphereAllocateFunction4ABA0267",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRoleDefaultPolicy1364A9C0",
-    "AtmosphereIntegTestAtmosphereAllocateFunctionServiceRole9DEC8407",
-    "AtmosphereIntegTestAtmosphereAllocationsTable724969BB",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketAutoDeleteObjectsCustomResourceEA093561",
-    "AtmosphereIntegTestAtmosphereConfigurationBucketPolicyAB4E318D",
-    "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentAwsCliLayerF1F55BB3",
-    "AtmosphereIntegTestAtmosphereConfigurationDeploymentCustomResource8630236A",
-    "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRoleDefaultPolicy22E73639",
-    "AtmosphereIntegTestAtmosphereDeallocateFunctionServiceRole842CBDEC",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsid0D714121",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3DELETEallocationsidF77AF5EB",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsidDELETEC6E25D33",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocationsA446A895",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocationtimeoutAtmosphereIntegTestAtmosphereEndpointApi7DF414C3POSTallocations102FDF0A",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocationsPOST58C55F36",
-    "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeployment07D554B33e9d6eddab0c5c9302e367173f86c145",
-    "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E",
-    "AtmosphereIntegTestAtmosphereEndpointApi786BAA32",
-    "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy9500CE92",
-    "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeoutServiceRoleC26D9CCC",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy147FB5E2",
-    "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeoutServiceRole37A13B33",
-    "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleDefaultPolicyFE799048",
-    "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "AdminC75D2A91": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1595,6 +44,1316 @@
       ]
      }
     ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereConfigurationBucket70B4698A": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:9c017f98",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereConfigurationBucketPolicy4F68ECF2": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "AtmosphereConfigurationBucket70B4698A"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereConfigurationBucket70B4698A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereConfigurationBucket70B4698A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereConfigurationBucketAutoDeleteObjectsCustomResource57AB2201": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "AtmosphereConfigurationBucket70B4698A"
+    }
+   },
+   "DependsOn": [
+    "AtmosphereConfigurationBucketPolicy4F68ECF2"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereConfigurationDeploymentAwsCliLayerA5154841": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "09ee37fb9a746a9dea0618b3024913848346b4b63d08d3fae387b9a11ac83a01.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereConfigurationDeploymentCustomResource736D1520": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "f54ff5e30d8684c1490fe25762635bf0ba9e3eb203efd35ebdb2ce43a81bf92f.zip"
+    ],
+    "SourceMarkers": [
+     {
+      "<<marker:0xbaba:0>>": {
+       "Ref": "AWS::AccountId"
+      },
+      "<<marker:0xbaba:1>>": {
+       "Fn::GetAtt": [
+        "AdminC75D2A91",
+        "Arn"
+       ]
+      }
+     }
+    ],
+    "DestinationBucketName": {
+     "Ref": "AtmosphereConfigurationBucket70B4698A"
+    },
+    "Prune": true,
+    "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsTable430B8CE1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "account",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "region",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "account",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "region",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAllocationsTable4ECEFD7B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerRole0116FB56": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerRoleDefaultPolicy458B209C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereSchedulerAllocationTimeout5187E9EA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "AtmosphereSchedulerCleanupTimeout19EF968B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereSchedulerAllocationTimeout5187E9EA",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereSchedulerCleanupTimeout19EF968B",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerDLQCF6976A3",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereSchedulerRoleDefaultPolicy458B209C",
+    "Roles": [
+     {
+      "Ref": "AtmosphereSchedulerRole0116FB56"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerDLQCF6976A3": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "KmsMasterKeyId": "alias/aws/sqs"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerDLQCF6976A3",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereEnvironmentsTable430B8CE1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205",
+    "Roles": [
+     {
+      "Ref": "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerCleanupTimeout19EF968B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "16abbff071cf38ae997ac7eaac6e694c77c3eb43fa9ce3c7c4bd121d5e446d68.zip"
+    },
+    "DeadLetterConfig": {
+     "TargetArn": {
+      "Fn::GetAtt": [
+       "AtmosphereSchedulerDLQCF6976A3",
+       "Arn"
+      ]
+     }
+    },
+    "Description": "src/cleanup-timeout/cleanup-timeout.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205",
+    "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerDLQCF6976A3",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereAllocationsTable4ECEFD7B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "AtmosphereEnvironmentsTable430B8CE1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereDeallocateFunctionBAD17B7D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereDeallocateFunctionBAD17B7D",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814",
+    "Roles": [
+     {
+      "Ref": "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerAllocationTimeout5187E9EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e233f51359c3aad7ef5875ec09d8ba1f1baefdf5b221c27c17f80a4c66b96490.zip"
+    },
+    "DeadLetterConfig": {
+     "TargetArn": {
+      "Fn::GetAtt": [
+       "AtmosphereSchedulerDLQCF6976A3",
+       "Arn"
+      ]
+     }
+    },
+    "Description": "src/allocation-timeout/allocation-timeout.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
+       "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814",
+    "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAllocateFunctionServiceRole64EB08B6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAllocateFunctionServiceRoleDefaultPolicy9F60AFB5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereConfigurationBucket70B4698A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereConfigurationBucket70B4698A",
+             "Arn"
+            ]
+           },
+           "/configuration.json"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereAllocationsTable4ECEFD7B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "AtmosphereEnvironmentsTable430B8CE1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": "scheduler:CreateSchedule",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerRole0116FB56",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AdminC75D2A91",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereAllocateFunctionServiceRoleDefaultPolicy9F60AFB5",
+    "Roles": [
+     {
+      "Ref": "AtmosphereAllocateFunctionServiceRole64EB08B6"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAllocateFunctionDFA4621D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "437dc7f834bf775430ea01cbed9dcb053e1d3877865637602fcd488cb3618699.zip"
+    },
+    "Description": "src/allocate/allocate.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+       "Ref": "AtmosphereConfigurationBucket70B4698A"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocationsTable4ECEFD7B"
+      },
+      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerDLQCF6976A3",
+        "Arn"
+       ]
+      },
+      "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerRole0116FB56",
+        "Arn"
+       ]
+      },
+      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerAllocationTimeout5187E9EA",
+        "Arn"
+       ]
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerCleanupTimeout19EF968B",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereAllocateFunctionServiceRole64EB08B6",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "AtmosphereAllocateFunctionServiceRoleDefaultPolicy9F60AFB5",
+    "AtmosphereAllocateFunctionServiceRole64EB08B6"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereDeallocateFunctionServiceRoleDefaultPolicyE4D8C221": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereAllocationsTable4ECEFD7B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "AtmosphereEnvironmentsTable430B8CE1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": "scheduler:CreateSchedule",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerRole0116FB56",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereDeallocateFunctionServiceRoleDefaultPolicyE4D8C221",
+    "Roles": [
+     {
+      "Ref": "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereDeallocateFunctionBAD17B7D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ba395380f08af142b1bed8a0d11a961396fe54043fe62f6b7cb05130cc9d7c84.zip"
+    },
+    "Description": "src/deallocate/deallocate.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocationsTable4ECEFD7B"
+      },
+      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerDLQCF6976A3",
+        "Arn"
+       ]
+      },
+      "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerRole0116FB56",
+        "Arn"
+       ]
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerCleanupTimeout19EF968B",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "AtmosphereDeallocateFunctionServiceRoleDefaultPolicyE4D8C221",
+    "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApi64E91738": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "RESTful endpoint for the Atmosphere service",
+    "Name": "Atmosphere",
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "execute-api:Invoke",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": [
+        "execute-api:/prod/DELETE/allocations/{id}",
+        "execute-api:/prod/POST/allocations"
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiDeployment2DF1AFBEef617c1338fea6cd9a98c3bd22320995": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "RESTful endpoint for the Atmosphere service",
+    "RestApiId": {
+     "Ref": "AtmosphereEndpointApi64E91738"
+    }
+   },
+   "DependsOn": [
+    "AtmosphereEndpointApiallocationsidDELETE40B2AB4B",
+    "AtmosphereEndpointApiallocationsidC14194C1",
+    "AtmosphereEndpointApiallocationsPOSTEBE420FF",
+    "AtmosphereEndpointApiallocations8406C04D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiDeploymentStageprod2712B9E2": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEef617c1338fea6cd9a98c3bd22320995"
+    },
+    "RestApiId": {
+     "Ref": "AtmosphereEndpointApi64E91738"
+    },
+    "StageName": "prod"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocations8406C04D": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "AtmosphereEndpointApi64E91738",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "allocations",
+    "RestApiId": {
+     "Ref": "AtmosphereEndpointApi64E91738"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsPOSTApiPermissionatmosphereintegallocationtimeoutAtmosphereEndpointApi4F34533EPOSTallocations4A52FD69": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereAllocateFunctionDFA4621D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "AtmosphereEndpointApi64E91738"
+       },
+       "/",
+       {
+        "Ref": "AtmosphereEndpointApiDeploymentStageprod2712B9E2"
+       },
+       "/POST/allocations"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsPOSTApiPermissionTestatmosphereintegallocationtimeoutAtmosphereEndpointApi4F34533EPOSTallocationsE83EC502": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereAllocateFunctionDFA4621D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "AtmosphereEndpointApi64E91738"
+       },
+       "/test-invoke-stage/POST/allocations"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsPOSTEBE420FF": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "AWS_IAM",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "AtmosphereAllocateFunctionDFA4621D",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "AtmosphereEndpointApiallocations8406C04D"
+    },
+    "RestApiId": {
+     "Ref": "AtmosphereEndpointApi64E91738"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsidC14194C1": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "AtmosphereEndpointApiallocations8406C04D"
+    },
+    "PathPart": "{id}",
+    "RestApiId": {
+     "Ref": "AtmosphereEndpointApi64E91738"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsidDELETEApiPermissionatmosphereintegallocationtimeoutAtmosphereEndpointApi4F34533EDELETEallocationsidCD165FFA": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereDeallocateFunctionBAD17B7D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "AtmosphereEndpointApi64E91738"
+       },
+       "/",
+       {
+        "Ref": "AtmosphereEndpointApiDeploymentStageprod2712B9E2"
+       },
+       "/DELETE/allocations/*"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsidDELETEApiPermissionTestatmosphereintegallocationtimeoutAtmosphereEndpointApi4F34533EDELETEallocationsidBF9B6AE6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereDeallocateFunctionBAD17B7D",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "AtmosphereEndpointApi64E91738"
+       },
+       "/test-invoke-stage/DELETE/allocations/*"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEndpointApiallocationsidDELETE40B2AB4B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "AWS_IAM",
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "AtmosphereDeallocateFunctionBAD17B7D",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "AtmosphereEndpointApiallocationsidC14194C1"
+    },
+    "RestApiId": {
+     "Ref": "AtmosphereEndpointApi64E91738"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1656,7 +1415,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
+        "Ref": "AtmosphereConfigurationBucket70B4698A"
        },
        " S3 bucket."
       ]
@@ -1765,7 +1524,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
+          "AtmosphereConfigurationBucket70B4698A",
           "Arn"
          ]
         },
@@ -1775,7 +1534,7 @@
           [
            {
             "Fn::GetAtt": [
-             "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91",
+             "AtmosphereConfigurationBucket70B4698A",
              "Arn"
             ]
            },
@@ -1815,7 +1574,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "AtmosphereIntegTestAtmosphereConfigurationDeploymentAwsCliLayerF1F55BB3"
+      "Ref": "AtmosphereConfigurationDeploymentAwsCliLayerA5154841"
      }
     ],
     "Role": {
@@ -1836,14 +1595,14 @@
   }
  },
  "Outputs": {
-  "AtmosphereIntegTestAtmosphereEndpointApiEndpoint2C7EF6F8": {
+  "AtmosphereEndpointApiEndpointB8F6FA40": {
    "Value": {
     "Fn::Join": [
      "",
      [
       "https://",
       {
-       "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
+       "Ref": "AtmosphereEndpointApi64E91738"
       },
       ".execute-api.",
       {
@@ -1855,89 +1614,111 @@
       },
       "/",
       {
-       "Ref": "AtmosphereIntegTestAtmosphereEndpointApiDeploymentStageprod7AB3668E"
+       "Ref": "AtmosphereEndpointApiDeploymentStageprod2712B9E2"
       },
       "/"
      ]
     ]
    }
   },
-  "CDK0ATMOSPHERE0ENVIRONMENTS0TABLE0NAME": {
+  "ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F": {
    "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751"
-   }
-  },
-  "CDK0ATMOSPHERE0ALLOCATIONS0TABLE0NAME": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereAllocationsTable724969BB"
-   }
-  },
-  "CDK0ATMOSPHERE0CONFIGURATION0FILE0BUCKET": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereConfigurationBucket97338F91"
-   }
-  },
-  "CDK0ATMOSPHERE0CONFIGURATION0FILE0KEY": {
-   "Value": "configuration.json"
-  },
-  "CDK0ATMOSPHERE0SCHEDULER0DLQ0ARN": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AtmosphereIntegTestAtmosphereSchedulerDLQE48F3BD7",
-     "Arn"
-    ]
-   }
-  },
-  "CDK0ATMOSPHERE0SCHEDULER0ROLE0ARN": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AtmosphereIntegTestAtmosphereSchedulerRoleD9B38FE1",
-     "Arn"
-    ]
-   }
-  },
-  "CDK0ATMOSPHERE0ALLOCATION0TIMEOUT0FUNCTION0ARN": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AtmosphereIntegTestAtmosphereSchedulerAllocationTimeout2B1BFCB7",
-     "Arn"
-    ]
-   }
-  },
-  "CDK0ATMOSPHERE0CLEANUP0TIMEOUT0FUNCTION0ARN": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AtmosphereIntegTestAtmosphereSchedulerCleanupTimeout48A41B25",
-     "Arn"
-    ]
-   }
-  },
-  "CDK0ATMOSPHERE0REST0API0ID": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereEndpointApi786BAA32"
-   }
-  },
-  "CDK0ATMOSPHERE0ALLOCATIONS0RESOURCE0ID": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocations688D98A7"
-   }
-  },
-  "CDK0ATMOSPHERE0ALLOCATION0RESOURCE0ID": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereEndpointApiallocationsid11F044C0"
-   }
-  },
-  "CDK0ATMOSPHERE0DEALLOCATE0FUNCTION0NAME": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAtmosphereDeallocateFunction07522CDB"
-   }
-  },
-  "ExportsOutputRefAtmosphereIntegTestAssertBF67A3D0004A1435": {
-   "Value": {
-    "Ref": "AtmosphereIntegTestAssertBF67A3D0"
+    "Ref": "AtmosphereEnvironmentsTable430B8CE1"
    },
    "Export": {
-    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereIntegTestAssertBF67A3D0004A1435"
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
+   }
+  },
+  "ExportsOutputRefAtmosphereAllocationsTable4ECEFD7B5F03CFB2": {
+   "Value": {
+    "Ref": "AtmosphereAllocationsTable4ECEFD7B"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereAllocationsTable4ECEFD7B5F03CFB2"
+   }
+  },
+  "ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514": {
+   "Value": {
+    "Ref": "AtmosphereConfigurationBucket70B4698A"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
+   }
+  },
+  "ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AtmosphereSchedulerDLQCF6976A3",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+   }
+  },
+  "ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AtmosphereSchedulerRole0116FB56",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
+   }
+  },
+  "ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AtmosphereSchedulerAllocationTimeout5187E9EA",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9"
+   }
+  },
+  "ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AtmosphereSchedulerCleanupTimeout19EF968B",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B"
+   }
+  },
+  "ExportsOutputRefAtmosphereEndpointApi64E9173819330649": {
+   "Value": {
+    "Ref": "AtmosphereEndpointApi64E91738"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+   }
+  },
+  "ExportsOutputRefAtmosphereEndpointApiallocations8406C04D55150FB2": {
+   "Value": {
+    "Ref": "AtmosphereEndpointApiallocations8406C04D"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereEndpointApiallocations8406C04D55150FB2"
+   }
+  },
+  "ExportsOutputRefAtmosphereEndpointApiallocationsidC14194C12556D7F0": {
+   "Value": {
+    "Ref": "AtmosphereEndpointApiallocationsidC14194C1"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereEndpointApiallocationsidC14194C12556D7F0"
+   }
+  },
+  "ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD": {
+   "Value": {
+    "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
    }
   }
  },

@@ -12,12 +12,21 @@ class ProxyError extends Error {
   }
 }
 
-export interface DeallocationRequest {
+export interface DeallocateRequest {
   readonly outcome: string;
 
   // honestly this is just so that we can easily write timeout
   // integration tests.
   readonly cleanupDurationSeconds?: number;
+}
+
+export interface DeallocateResponse {
+  /**
+   * How many seconds should the cleanup task run before timing out.
+   *
+   * Negative number means the cleanup will not run because the allocation has already ended.
+   */
+  readonly cleanupDurationSeconds: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -61,14 +70,14 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
     console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
 
-    return success();
+    return success({ cleanupDurationSeconds });
   } catch (e: any) {
 
     if (e instanceof AllocationAlreadyEndedError) {
       // expected because deallocation can be requested either
       // by the timeout event or explicitly by the user.
       console.log(`Returning success because: ${e.message}`);
-      return success();
+      return success({ cleanupDurationSeconds: -1 });
     }
 
     console.error(e);
@@ -80,7 +89,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 }
 
-function parseRequestBody(body: string | null): DeallocationRequest {
+function parseRequestBody(body: string | null): DeallocateRequest {
 
   if (!body) {
     throw new ProxyError(400, 'Request body not found');
@@ -105,11 +114,9 @@ async function endAllocation(id: string, outcome: string): Promise<Allocation> {
   }
 }
 
-function success() {
+function success(response: DeallocateResponse) {
   return {
     statusCode: 200,
-    // we currently don't need a response body for a
-    // succesfull dellocation
-    body: JSON.stringify({}),
+    body: JSON.stringify(response),
   };
 }
