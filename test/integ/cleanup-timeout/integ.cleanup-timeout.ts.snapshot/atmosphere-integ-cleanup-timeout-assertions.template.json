@@ -1,6 +1,112 @@
 {
  "Resources": {
-  "LambdaInvoke96d4d00a4fa22b56bb13e8e700dbd739": {
+  "AssertServiceRoleE8D7787D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AdministratorAccess"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AssertC205B4DA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c071fb9452c5a0744b3993e9ebf174fb9ec3c9b1bbaf3061f3510df409f4164f.zip"
+    },
+    "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "CDK_ATMOSPHERE_INTEG": "true",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereAllocationsTable4ECEFD7B5F03CFB2"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+      },
+      "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
+      },
+      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B"
+      },
+      "CDK_ATMOSPHERE_REST_API_ID": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApiallocations8406C04D55150FB2"
+      },
+      "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApiallocationsidC14194C12556D7F0"
+      },
+      "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AssertServiceRoleE8D7787D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "AssertServiceRoleE8D7787D"
+   ]
+  },
+  "LambdaInvoke2f913ec1967134622ebb03d58dfcaef8": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
@@ -19,7 +125,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereIntegTestAssertBF67A3D0004A1435"
+         "Ref": "AssertC205B4DA"
         },
         "\""
        ]
@@ -27,17 +133,17 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1736033154518"
+    "salt": "1736089686498"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "LambdaInvoke96d4d00a4fa22b56bb13e8e700dbd739Invoke9A6F26F3": {
+  "LambdaInvoke2f913ec1967134622ebb03d58dfcaef8Invoke1B8B7373": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereIntegTestAssertBF67A3D0004A1435"
+     "Ref": "AssertC205B4DA"
     },
     "Principal": {
      "Fn::GetAtt": [
@@ -106,7 +212,7 @@
              },
              ":function:",
              {
-              "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereIntegTestAssertBF67A3D0004A1435"
+              "Ref": "AssertC205B4DA"
              }
             ]
            ]
@@ -149,10 +255,68 @@
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvoke96d4d00a4fa22b56bb13e8e700dbd739": {
+  "CDK0ATMOSPHERE0ENVIRONMENTS0TABLE0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATIONS0TABLE0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereAllocationsTable4ECEFD7B5F03CFB2"
+   }
+  },
+  "CDK0ATMOSPHERE0CONFIGURATION0FILE0BUCKET": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
+   }
+  },
+  "CDK0ATMOSPHERE0CONFIGURATION0FILE0KEY": {
+   "Value": "configuration.json"
+  },
+  "CDK0ATMOSPHERE0SCHEDULER0DLQ0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+   }
+  },
+  "CDK0ATMOSPHERE0SCHEDULER0ROLE0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATION0TIMEOUT0FUNCTION0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TIMEOUT0FUNCTION0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B"
+   }
+  },
+  "CDK0ATMOSPHERE0REST0API0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATIONS0RESOURCE0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApiallocations8406C04D55150FB2"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATION0RESOURCE0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApiallocationsidC14194C12556D7F0"
+   }
+  },
+  "CDK0ATMOSPHERE0DEALLOCATE0FUNCTION0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
+   }
+  },
+  "AssertionResultsLambdaInvoke2f913ec1967134622ebb03d58dfcaef8": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvoke96d4d00a4fa22b56bb13e8e700dbd739",
+     "LambdaInvoke2f913ec1967134622ebb03d58dfcaef8",
      "assertion"
     ]
    }

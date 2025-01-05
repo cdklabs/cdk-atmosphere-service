@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/cleanup-timeout/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler3
@@ -724,8 +724,9 @@ var cfn = new import_client_cloudformation.CloudFormation();
 var scheduler = new import_client_scheduler2.Scheduler();
 var SUCCESS_PAYLOAD = "OK";
 var Session = class _Session {
-  constructor(vars) {
+  constructor(vars, name) {
     this.vars = vars;
+    this.name = name;
     this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
     this.environments = new EnvironmentsClient(this.vars[ENVIRONMENTS_TABLE_NAME_ENV]);
   }
@@ -739,16 +740,16 @@ var Session = class _Session {
    * Run an assertion function in a fresh service state.
    */
   static async assert(assertion, name = "default") {
-    const session = await this.create();
+    const session = await this.create(name);
     await session.clear();
     let failed = false;
     try {
-      session.sessionLog(`\u{1F3AC} Start | ${name} | \u{1F3AC}`);
+      session.log("\u{1F3AC} Start \u{1F3AC}");
       await assertion(session);
-      session.sessionLog(`\u2705 Success | ${name} | \u2705`);
+      session.log("\u2705 Success \u2705");
       return SUCCESS_PAYLOAD;
     } catch (error) {
-      session.sessionLog(`\u274C !! Fail | ${name} | !! \u274C`);
+      session.log("\u274C !! Fail !! \u274C");
       failed = true;
       throw error;
     } finally {
@@ -759,10 +760,10 @@ var Session = class _Session {
       }
     }
   }
-  static async create() {
+  static async create(sessionName) {
     let envValue;
     if (_Session.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev-assertions" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value2 = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
@@ -785,12 +786,12 @@ var Session = class _Session {
       [ALLOCATIONS_RESOURCE_ID_ENV]: envValue(ALLOCATIONS_RESOURCE_ID_ENV),
       [ALLOCATION_RESOURCE_ID_ENV]: envValue(ALLOCATION_RESOURCE_ID_ENV),
       [DEALLOCATE_FUNCTION_NAME_ENV]: envValue(DEALLOCATE_FUNCTION_NAME_ENV)
-    });
+    }, sessionName);
   }
   async allocate(body) {
     const json = JSON.stringify(body);
     const response = _Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
-    if (!response.body) {
+    if (response.status !== 200) {
       return [response, Promise.resolve()];
     }
     const responseBody = JSON.parse(response.body);
@@ -799,7 +800,7 @@ var Session = class _Session {
   async deallocate(id, body) {
     const json = JSON.stringify(body);
     const response = _Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
-    if (!response.body) {
+    if (response.status !== 200) {
       return [response, Promise.resolve()];
     }
     const responseBody = JSON.parse(response.body);
@@ -832,7 +833,7 @@ var Session = class _Session {
     });
     return response.Schedules?.[0];
   }
-  async waitFor(condition, timeoutSeconds) {
+  async waitFor(condition, timeoutSeconds, opts = {}) {
     const startTime = Date.now();
     const timeoutMs = timeoutSeconds * 1e3;
     while (true) {
@@ -841,7 +842,7 @@ var Session = class _Session {
         return;
       }
       const elapsed = Date.now() - startTime;
-      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds`);
+      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds waiting for ${opts.message}`);
       await new Promise((resolve) => setTimeout(resolve, 1e3));
     }
   }
@@ -860,6 +861,7 @@ var Session = class _Session {
   }
   async deallocateLocal(id, jsonBody) {
     this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
+    console.log();
     const response = await env(this.vars, async () => {
       return handler2({ body: jsonBody, pathParameters: { id } });
     });
@@ -926,47 +928,65 @@ var Session = class _Session {
   }
   async waitForAllocationTimeout(response) {
     const waitTimeSeconds = response.durationSeconds + 60;
-    this.log(`Waiting ${waitTimeSeconds} seconds for allocation ${response.id} to timeout`);
-    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds);
+    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds, {
+      message: `allocation ${response.id} to timeout`
+    });
     return new Promise((resolve) => setTimeout(resolve, 5e3));
   }
   async waitForCleanupTimeout(id, response) {
     const waitTimeSeconds = response.cleanupDurationSeconds + 60;
-    this.log(`Waiting ${waitTimeSeconds} seconds for cleanup of allocation ${id} to timeout`);
-    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds);
+    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds, {
+      message: `cleanup of allocation ${id} to timeout`
+    });
     return new Promise((resolve) => setTimeout(resolve, 5e3));
   }
   log(message) {
-    console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [assertion] ${message}`);
+    console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [assertion] [${this.name}] ${message}`);
   }
   sessionLog(message) {
-    console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [session] ${message}`);
+    console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [session] [${this.name}] ${message}`);
   }
 };
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/cleanup-timeout/assert.lambda.ts
 async function handler3(_) {
   await Session.assert(async (session) => {
-    const [allocateResponse] = await session.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    const account = allocationResponseBody.environment.account;
-    const region = allocationResponseBody.environment.region;
-    const [deallocateResponse] = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(deallocateResponse.status, 200);
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [, timeout] = await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: 10 });
+    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
+    await timeout;
     const environment = await session.fetchEnvironment(account, region);
-    assert2.strictEqual(environment.Item.status.S, "cleaning");
-    const allocation = await session.fetchAllocation(allocationResponseBody.id);
-    assert2.ok(allocation.Item.end?.S);
-    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
-    assert2.ok(cleanupTimeoutSchedule);
-  }, "deallocate-creates-right-resources");
+    assert2.strictEqual(environment.Item?.status?.S, "dirty");
+  }, "cleanup-timeout-triggered-before-cleanup-finished");
   await Session.assert(async (session) => {
-    const [allocateResponse] = await session.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    [] = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    const [secondDeallocateResponse] = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(secondDeallocateResponse.status, 200);
-  }, "deallocate-is-idempotent");
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [, timeout] = await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: 30 });
+    await session.environments.release(body.id, account, region);
+    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
+    await timeout;
+    const environment = await session.fetchEnvironment(account, region);
+    assert2.ok(!environment.Item);
+  }, "cleanup-timeout-triggered-after-cleanup-finished");
+  await Session.assert(async (session) => {
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const allocationId = body.id;
+    const [, timeout] = await session.deallocate(allocationId, { outcome: "success", cleanupDurationSeconds: 60 });
+    await session.environments.release(allocationId, account, region);
+    [] = await session.allocate({ pool: "release", requester: "test" });
+    session.log(`Waiting for cleanup of allocation ${allocationId} to timeout`);
+    await timeout;
+    const environment = await session.fetchEnvironment(account, region);
+    assert2.notStrictEqual(environment.Item?.status?.S, "dirty");
+  }, "cleanup-timeout-triggered-on-reallocated-environment");
   return SUCCESS_PAYLOAD;
 }
 if (Session.isLocal()) {
