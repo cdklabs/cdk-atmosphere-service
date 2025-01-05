@@ -20,7 +20,7 @@ class ProxyError extends Error {
   }
 }
 
-export interface AllocationRequest {
+export interface AllocateRequest {
   readonly pool: string;
   readonly requester: string;
 
@@ -29,16 +29,17 @@ export interface AllocationRequest {
   readonly durationSeconds?: number;
 }
 
-interface Credentials {
+export interface Credentials {
   readonly accessKeyId: string;
   readonly secretAccessKey: string;
   readonly sessionToken: string;
 }
 
-interface AllocationResponse {
+export interface AllocateResponse {
   readonly id: string;
   readonly environment: Environment;
   readonly credentials: Credentials;
+  readonly durationSeconds: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -70,7 +71,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     console.log(`Allocation '${allocationId}' started successfully`);
 
-    const response: AllocationResponse = { id: allocationId, environment, credentials };
+    const response: AllocateResponse = { id: allocationId, environment, credentials, durationSeconds };
 
     console.log(`Scheduling timeout for allocation '${allocationId}' to ${timeoutDate}`);
     await clients.scheduler.scheduleAllocationTimeout({
@@ -93,7 +94,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 }
 
-function parseRequestBody(body: string | null): AllocationRequest {
+function parseRequestBody(body: string | null): AllocateRequest {
 
   if (!body) {
     throw new ProxyError(400, 'Request body not found');
