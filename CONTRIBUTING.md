@@ -7,7 +7,8 @@ and is comporised of:
 
 - `integ.*.ts.snapshot`: Snapshot directory of all test related resources.
 - `assert.lambda.ts`: Lambda handler function that performs assertions on the deployed resources.
-- `integ.*.ts`: CDK integration test definition file.
+- `integ.*.ts`: CDK integration test definition file. This is where you define the properties
+of the service you need for the test.
 
 The assertion runs within an AWS Lambda that is executed after the service is deployed.
 
@@ -96,7 +97,7 @@ times before getting it right. Having to deploy it each iteration can take a lot
 assertion locally against an instance of a deployed service. To do so, first deploy the service by running:
 
 ```console
-yarn integ:dev
+yarn integ:test/dev:deploy
 ```
 
 Then, invoke your assertion locally by running:
@@ -120,19 +121,23 @@ For example:
 yarn run v1.22.19
 $ npx projen integ:test/allocate:assert
 👾 integ:test/allocate:assert | ts-node test/integ/allocate/assert.lambda.ts
-[2024-12-31T14:36:47.629Z] [session] Created session with variables:
-{
-  "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": "atmosphere-integ-dev-AtmosphereIntegTestAtmosphereAllocationsTable724969BB-1KCIN3TALIL7W",
-  "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": "atmosphere-integ-dev-AtmosphereIntegTestAtmosphereEnvironmentsTableA3B14751-1FLJPKLNW0NY3",
-  "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": "atmosphere-integ-dev-atmosphereintegtestatmosphere-dbs98ifmvur4",
+[2025-01-05T08:15:12.911Z] [session] [allocate-creates-the-right-resources] Created session with variables: {
+  "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": "atmosphere-integ-dev-AtmosphereAllocationsTable4ECEFD7B-18GGEOKH9VASI",
+  "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": "atmosphere-integ-dev-AtmosphereEnvironmentsTable430B8CE1-M4NVROOBIL3N",
+  "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": "atmosphere-integ-dev-atmosphereconfigurationbucket-1ffnmqzdhay2",
   "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-  "CDK_ATMOSPHERE_REST_API_ID": "taguvtqka5",
-  "CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": "5fn6ba",
-  "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": "6toc3p"
+  "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": "arn:aws:sqs:us-east-1:185706627232:atmosphere-integ-dev-AtmosphereSchedulerDLQCF6976A3-uID7dpThkmHh",
+  "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": "arn:aws:iam::185706627232:role/atmosphere-integ-dev-AtmosphereSchedulerRole0116FB5-MMgLRLmArFy2",
+  "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": "arn:aws:lambda:us-east-1:185706627232:function:atmosphere-integ-dev-AtmosphereSchedulerCleanupTim-woOP12FJIXZV",
+  "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": "arn:aws:lambda:us-east-1:185706627232:function:atmosphere-integ-dev-AtmosphereSchedulerAllocation-NNLjg7vxcUps",
+  "CDK_ATMOSPHERE_REST_API_ID": "3mlxjlvbze",
+  "CDK_ATMOSPHERE_ALLOCATIONS_RESOURCE_ID": "qxuldz",
+  "CDK_ATMOSPHERE_ALLOCATION_RESOURCE_ID": "9jrk05",
+  "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": "atmosphere-integ-dev-AtmosphereDeallocateFunctionB-IttAVkzgK5pA"
 }
-[2024-12-31T14:36:47.630Z] [session] Clearing state
-[2024-12-31T14:36:48.459Z] [session] 🎬 Start 🎬
-[2024-12-31T14:36:48.459Z] [assertion] Invoking local allocate handler with body: {"pool":"release","requester":"test"}
+[2025-01-05T08:15:12.912Z] [session] [allocate-creates-the-right-resources] Clearing state
+[2025-01-05T08:15:14.183Z] [assertion] [allocate-creates-the-right-resources] 🎬 Start 🎬
+[2025-01-05T08:15:14.183Z] [assertion] [allocate-creates-the-right-resources] Invoking local allocate handler with body: {"pool":"release","requester":"test"}
 
 Event: {
   "body": "{\"pool\":\"release\",\"requester\":\"test\"}"
@@ -140,37 +145,18 @@ Event: {
 Parsing request body
 Acquiring environment from pool 'release'
 Found 1 environments in pool 'release'
-Acquiring environment 'aws://012345678901/us-west-2'...
-Starting allocation of 'aws://012345678901/us-west-2'
-Grabbing credentials to aws://012345678901/us-west-2 using role: arn:aws:iam::012345678901:role/atmosphere-integ-dev-AdminC75D2A91-5xlocylmXxan
-Allocation '7bf74bda-c5fb-4433-9011-2016fbdf63a2' started successfully
+Acquiring environment 'aws://185706627232/eu-central-1'...
+Starting allocation of 'aws://185706627232/eu-central-1'
+Grabbing credentials to aws://185706627232/eu-central-1 using role: arn:aws:iam::185706627232:role/atmosphere-integ-dev-AdminC75D2A91-epQH9bqiZcrd
+Allocation '172c8c5e-fad6-4ebe-9495-c1ca8a0a58e6' started successfully
+Scheduling timeout for allocation '172c8c5e-fad6-4ebe-9495-c1ca8a0a58e6' to Sun Jan 05 2025 11:15:14 GMT+0200 (שעון ישראל (חורף))
 
-[2024-12-31T14:36:51.361Z] [assertion] Invoking local allocate handler with body: {"pool":"release","requester":"test"}
-
-Event: {
-  "body": "{\"pool\":\"release\",\"requester\":\"test\"}"
-}
-Parsing request body
-Acquiring environment from pool 'release'
-Found 1 environments in pool 'release'
-Acquiring environment 'aws://012345678901/us-west-2'...
-Environment 'aws://012345678901/us-west-2' already acquired. Trying the next one.
-ProxyError: No environments available in pool 'release'
-    at acquireEnvironment (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/src/allocate/allocate.lambda.ts:109:9)
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async Object.handler (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/src/allocate/allocate.lambda.ts:46:25)
-    at async Object.env (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/with.ts:10:12)
-    at async Session.allocate (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/service.session.ts:101:24)
-    at async /Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/allocate/assert.lambda.ts:21:14
-    at async Function.assert (/Users/epolon/dev/src/github.com/cdklabs/cdk-atmosphere-service/test/integ/service.session.ts:40:7) {
-  statusCode: 423
-}
-
-[2024-12-31T14:36:51.531Z] [session] ✅ Success ✅
-[2024-12-31T14:36:51.531Z] [session] Clearing state
-[2024-12-31T14:36:51.712Z] [session]   » deleting environment aws://012345678901/us-west-2
-[2024-12-31T14:36:52.064Z] [session]   » deleting allocation 7bf74bda-c5fb-4433-9011-2016fbdf63a2
-✨  Done in 11.76s.
+[2025-01-05T08:15:17.590Z] [assertion] [allocate-creates-the-right-resources] ✅ Success ✅
+[2025-01-05T08:15:17.590Z] [session] [allocate-creates-the-right-resources] Clearing state
+[2025-01-05T08:15:17.757Z] [session] [allocate-creates-the-right-resources]   » deleting environment aws://185706627232/eu-central-1
+[2025-01-05T08:15:18.087Z] [session] [allocate-creates-the-right-resources]   » deleting allocation 172c8c5e-fad6-4ebe-9495-c1ca8a0a58e6
+[2025-01-05T08:15:18.409Z] [session] [allocate-creates-the-right-resources]   » deleting schedule atmosphere.timeout.aloc_172c8c5e-fad6-4ebe-9495-c1ca8a0a58e6
+✨  Done in 17.86s.
 ```
 
 Update your assertion and repeat this command until it passes.

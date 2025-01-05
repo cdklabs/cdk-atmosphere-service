@@ -11,6 +11,7 @@ export async function handler(_: any) {
 
     const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
 
+    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
     await timeout;
 
     const environment = await session.fetchEnvironment(account, region);
@@ -28,6 +29,7 @@ export async function handler(_: any) {
 
     await session.environments.release(body.id, account, region);
 
+    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
     await timeout;
 
     const environment = await session.fetchEnvironment(account, region);
@@ -51,6 +53,7 @@ export async function handler(_: any) {
     // and now allocate again - acquiring the same environment
     [] = await session.allocate({ pool: 'release', requester: 'test' } );
 
+    session.log(`Waiting for cleanup of allocation ${allocationId} to timeout`);
     await timeout;
 
     const environment = await session.fetchEnvironment(account, region);

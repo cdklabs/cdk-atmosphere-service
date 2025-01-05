@@ -5,10 +5,10 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Construct, IConstruct } from 'constructs';
+import { IConstruct } from 'constructs';
 import { SUCCESS_PAYLOAD } from './service.session';
-import { ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
-import { AtmosphereService } from '../../src';
+import { INTEG_RUNNER_REGIONS, ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
+import { AtmosphereService, Environment } from '../../src';
 import * as envars from '../../src/envars';
 
 /**
@@ -32,23 +32,39 @@ export interface IntegTestAtmosphereServiceProps {
 /**
  * Integration test for the service.
  */
-export class AtmosphereIntegTest extends Construct {
+export class AtmosphereIntegTest {
 
   public readonly integ: IntegTest;
 
-  constructor(scope: Construct, id: string, props: IntegTestAtmosphereServiceProps) {
-    super(scope, id);
+  constructor(props: IntegTestAtmosphereServiceProps) {
 
-    const adminRole = new iam.Role(scope, 'Admin', {
+    const app = new cdk.App();
+    const serviceStack = new cdk.Stack(app, `atmosphere-integ-${props.dir}`);
+    const assertionsStack = new cdk.Stack(app, `${serviceStack.stackName}-assertions`);
+
+    const adminRole = new iam.Role(serviceStack, 'Admin', {
       assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')],
     });
 
-    const environments = Object.entries(props.pools).flatMap(([pool, regions]) =>
-      regions.map(region => ({ account: cdk.Aws.ACCOUNT_ID, region, adminRoleArn: adminRole.roleArn, pool })),
-    );
+    const environments: Environment[] = [];
+    for (const [pool, regions] of Object.entries(props.pools)) {
+      for (const region of regions) {
+        if (INTEG_RUNNER_REGIONS.includes(region)) {
+          // environments cannot be the same as the one running
+          // the test because the test will delete all stacks being tested
+          throw new Error(`Invalid region '${region}': Cannot be one of ${INTEG_RUNNER_REGIONS}`);
+        }
+        environments.push({
+          account: cdk.Aws.ACCOUNT_ID,
+          region,
+          adminRoleArn: adminRole.roleArn,
+          pool,
+        });
+      }
+    }
 
-    const service = new AtmosphereService(this, 'Atmosphere', {
+    const service = new AtmosphereService(serviceStack, 'Atmosphere', {
       config: { environments },
     });
 
@@ -63,13 +79,14 @@ export class AtmosphereIntegTest extends Construct {
       throw new Error(`Bundle not found: ${bundlePath}. Add your test to .projenrc.ts so that a bundle will be created during build.`);
     }
 
-    const assert = new lambda.Function(this, 'Assert', {
+    const assert = new lambda.Function(assertionsStack, 'Assert', {
       description: `test/integ/${props.dir}/assert.lambda.ts`,
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       code: lambda.Code.fromAsset(path.dirname(bundlePath)),
     });
+    assert.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
     assert.addEnvironment('CDK_ATMOSPHERE_INTEG', 'true');
 
     assert.node.addDependency(service);
@@ -96,28 +113,11 @@ export class AtmosphereIntegTest extends Construct {
       // for running local assertions
       new cdk.CfnOutput(assert, key, { value, key: key.replace(/_/g, '0') });
     }
+    cdk.Aspects.of(cdk.Stack.of(serviceStack)).add(new DestroyAspect());
 
-    // give the assert function the necessary permissions
-    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
-      Effect: 'Allow',
-      Action: 'apigateway:*',
-      Resource: ['*'],
-    }));
-    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
-      Effect: 'Allow',
-      Action: 'dynamodb:*',
-      Resource: ['*'],
-    }));
-    assert.addToRolePolicy(iam.PolicyStatement.fromJson({
-      Effect: 'Allow',
-      Action: 'scheduler:*',
-      Resource: ['*'],
-    }));
-    cdk.Aspects.of(cdk.Stack.of(this)).add(new DestroyAspect());
-
-    this.integ = new IntegTest(cdk.App.of(this)!, 'IntegTest', {
-      testCases: [cdk.Stack.of(this)],
-      assertionStack: new cdk.Stack(cdk.App.of(this), `${cdk.Stack.of(this).stackName}-assertions`),
+    this.integ = new IntegTest(app, 'IntegTest', {
+      testCases: [serviceStack],
+      assertionStack: assertionsStack,
       diffAssets: true,
     });
 

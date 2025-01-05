@@ -29,7 +29,6 @@
     "eslint": "npx projen eslint",
     "integ": "npx projen integ",
     "integ:assert": "npx projen integ:assert",
-    "integ:dev": "npx projen integ:dev",
     "integ:force": "npx projen integ:force",
     "integ:list": "npx projen integ:list",
     "integ:test/allocate": "npx projen integ:test/allocate",

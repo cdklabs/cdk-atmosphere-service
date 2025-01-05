@@ -7,6 +7,7 @@ export async function handler(_: any) {
     const [response, timeout] = await session.allocate({ pool: 'release', requester: 'test', durationSeconds: 10 } );
     const body = JSON.parse(response.body!);
 
+    session.log(`Waiting for allocation ${body.id} to timeout`);
     await timeout;
 
     const allocation = await session.fetchAllocation(body.id);
@@ -14,20 +15,21 @@ export async function handler(_: any) {
 
   }, 'allocation-timeout-triggered-before-deallocate');
 
-  // await Session.assert(async (session: Session) => {
-  //   const [response, timeout] = await session.allocate({ pool: 'release', requester: 'test', durationSeconds: 30 } );
-  //   const body = JSON.parse(response.body!);
+  await Session.assert(async (session: Session) => {
+    const [response, timeout] = await session.allocate({ pool: 'release', requester: 'test', durationSeconds: 30 } );
+    const body = JSON.parse(response.body!);
 
-  //   // explicitly dellocate before the allocation expires (happy path)
-  //   [] = await session.deallocate(body.id, { outcome: 'success' });
+    // explicitly dellocate before the allocation expires (happy path)
+    [] = await session.deallocate(body.id, { outcome: 'success' });
 
-  //   await timeout;
+    session.log(`Waiting for allocation ${body.id} to timeout`);
+    await timeout;
 
-  //   // make sure the outcome is success and not timeout
-  //   const allocation = await session.fetchAllocation(body.id);
-  //   assert.strictEqual(allocation.Item!.outcome.S, 'success');
+    // make sure the outcome is success and not timeout
+    const allocation = await session.fetchAllocation(body.id);
+    assert.strictEqual(allocation.Item!.outcome.S, 'success');
 
-  // }, 'allocation-timeout-triggered-after-deallocate');
+  }, 'allocation-timeout-triggered-after-deallocate');
 
   return SUCCESS_PAYLOAD;
 

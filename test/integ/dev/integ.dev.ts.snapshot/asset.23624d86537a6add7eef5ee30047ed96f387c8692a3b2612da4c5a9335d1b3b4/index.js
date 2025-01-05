@@ -761,7 +761,7 @@ var Session = class _Session {
   static async create() {
     let envValue;
     if (_Session.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev-assertions" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value2 = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
@@ -789,7 +789,7 @@ var Session = class _Session {
   async allocate(body) {
     const json = JSON.stringify(body);
     const response = _Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
-    if (!response.body) {
+    if (response.status !== 200) {
       return [response, Promise.resolve()];
     }
     const responseBody = JSON.parse(response.body);
@@ -798,7 +798,7 @@ var Session = class _Session {
   async deallocate(id, body) {
     const json = JSON.stringify(body);
     const response = _Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
-    if (!response.body) {
+    if (response.status !== 200) {
       return [response, Promise.resolve()];
     }
     const responseBody = JSON.parse(response.body);
@@ -831,7 +831,7 @@ var Session = class _Session {
     });
     return response.Schedules?.[0];
   }
-  async waitFor(condition, timeoutSeconds) {
+  async waitFor(condition, timeoutSeconds, opts = {}) {
     const startTime = Date.now();
     const timeoutMs = timeoutSeconds * 1e3;
     while (true) {
@@ -840,7 +840,7 @@ var Session = class _Session {
         return;
       }
       const elapsed = Date.now() - startTime;
-      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds`);
+      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds waiting for ${opts.message}`);
       await new Promise((resolve) => setTimeout(resolve, 1e3));
     }
   }
@@ -859,6 +859,7 @@ var Session = class _Session {
   }
   async deallocateLocal(id, jsonBody) {
     this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
+    console.log();
     const response = await env(this.vars, async () => {
       return handler2({ body: jsonBody, pathParameters: { id } });
     });
@@ -925,14 +926,16 @@ var Session = class _Session {
   }
   async waitForAllocationTimeout(response) {
     const waitTimeSeconds = response.durationSeconds + 60;
-    this.log(`Waiting ${waitTimeSeconds} seconds for allocation ${response.id} to timeout`);
-    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds);
+    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds, {
+      message: `allocation ${response.id} to timeout`
+    });
     return new Promise((resolve) => setTimeout(resolve, 5e3));
   }
   async waitForCleanupTimeout(id, response) {
     const waitTimeSeconds = response.cleanupDurationSeconds + 60;
-    this.log(`Waiting ${waitTimeSeconds} seconds for cleanup of allocation ${id} to timeout`);
-    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds);
+    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds, {
+      message: `cleanup of allocation ${id} to timeout`
+    });
     return new Promise((resolve) => setTimeout(resolve, 5e3));
   }
   log(message) {

@@ -20,6 +20,13 @@ export const SUCCESS_PAYLOAD = 'OK';
 
 export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;
 
+export interface WaitForOptions {
+  /**
+   * Message to print before starting the waiting loop.
+   */
+  readonly message?: string;
+}
+
 /**
  * Helper class for integration tests that creates a fresh state
  * and exposes methods to invoke various service components.
@@ -37,16 +44,16 @@ export class Session {
    * Run an assertion function in a fresh service state.
    */
   public static async assert(assertion: (session: Session) => Promise<void>, name: string = 'default'): Promise<string> {
-    const session = await this.create();
+    const session = await this.create(name);
     await session.clear();
     let failed = false;
     try {
-      session.sessionLog(`🎬 Start | ${name} | 🎬`);
+      session.log('🎬 Start 🎬');
       await assertion(session);
-      session.sessionLog(`✅ Success | ${name} | ✅`);
+      session.log('✅ Success ✅');
       return SUCCESS_PAYLOAD;
     } catch (error: any) {
-      session.sessionLog(`❌ !! Fail | ${name} | !! ❌`);
+      session.log('❌ !! Fail !! ❌');
       failed = true;
       throw error;
     } finally {
@@ -58,14 +65,14 @@ export class Session {
     }
   }
 
-  private static async create(): Promise<Session> {
+  private static async create(sessionName: string): Promise<Session> {
 
     let envValue: (name: string) => string;
 
     if (Session.isLocal()) {
 
       // locally we use dev stack outputs
-      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-dev' })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-dev-assertions' })).Stacks ?? [])[0];
       assert.ok(devStack, 'Missing dev stack. Deploy by running: \'yarn integ:dev\'');
       envValue = (name: string) => {
         const value = (devStack.Outputs ?? []).find((o: any) => o.OutputKey === name.replace(/_/g, '0'))?.OutputValue;
@@ -94,12 +101,12 @@ export class Session {
       [envars.ALLOCATIONS_RESOURCE_ID_ENV]: envValue(envars.ALLOCATIONS_RESOURCE_ID_ENV),
       [envars.ALLOCATION_RESOURCE_ID_ENV]: envValue(envars.ALLOCATION_RESOURCE_ID_ENV),
       [envars.DEALLOCATE_FUNCTION_NAME_ENV]: envValue(envars.DEALLOCATE_FUNCTION_NAME_ENV),
-    });
+    }, sessionName);
   }
 
   public readonly environments: EnvironmentsClient;
 
-  private constructor(private readonly vars: envars.EnvironmentVariables) {
+  private constructor(private readonly vars: envars.EnvironmentVariables, private readonly name: string) {
     this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
     this.environments = new EnvironmentsClient(this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV]);
   }
@@ -108,11 +115,11 @@ export class Session {
     const json = JSON.stringify(body);
     const response = Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
 
-    if (!response.body) {
+    if (response.status !== 200) {
       return [response, Promise.resolve()];
     }
 
-    const responseBody = JSON.parse(response.body);
+    const responseBody = JSON.parse(response.body!);
     return [response, this.waitForAllocationTimeout(responseBody)];
   }
 
@@ -121,11 +128,11 @@ export class Session {
 
     const response = Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
 
-    if (!response.body) {
+    if (response.status !== 200) {
       return [response, Promise.resolve()];
     }
 
-    const responseBody = JSON.parse(response.body);
+    const responseBody = JSON.parse(response.body!);
     return [response, this.waitForCleanupTimeout(id, responseBody)];
 
   }
@@ -161,7 +168,7 @@ export class Session {
     return response.Schedules?.[0];
   }
 
-  public async waitFor(condition: () => Promise<Boolean>, timeoutSeconds: number) {
+  public async waitFor(condition: () => Promise<Boolean>, timeoutSeconds: number, opts: WaitForOptions = {}) {
     const startTime = Date.now();
     const timeoutMs = timeoutSeconds * 1000;
     while (true) {
@@ -170,7 +177,7 @@ export class Session {
         return;
       }
       const elapsed = Date.now() - startTime;
-      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds`);
+      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds waiting for ${opts.message}`);
 
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
@@ -195,6 +202,7 @@ export class Session {
   private async deallocateLocal(id: string, jsonBody: string) {
 
     this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
+    console.log();
     const response = await _with.env(this.vars, async () => {
       return deallocate.handler({ body: jsonBody, pathParameters: { id } } as any);
     });
@@ -275,10 +283,10 @@ export class Session {
     // give a 1 minute spair because event bridge schedules have a 1 minute granularity
     const waitTimeSeconds = response.durationSeconds + 60;
 
-    this.log(`Waiting ${waitTimeSeconds} seconds for allocation ${response.id} to timeout`);
-
     // wait for the schedule to trigger
-    await this.waitFor(async () => (await this.fetchAllocationTimeoutSchedule(response.id)) === undefined, waitTimeSeconds);
+    await this.waitFor(async () => (await this.fetchAllocationTimeoutSchedule(response.id)) === undefined, waitTimeSeconds, {
+      message: `allocation ${response.id} to timeout`,
+    });
 
     // wait another 5 seconds for the schedule target to actually do its thing
     return new Promise(resolve => setTimeout(resolve, 5000));
@@ -290,10 +298,10 @@ export class Session {
     // give a 1 minute spair because event bridge schedules have a 1 minute granularity
     const waitTimeSeconds = response.cleanupDurationSeconds + 60;
 
-    this.log(`Waiting ${waitTimeSeconds} seconds for cleanup of allocation ${id} to timeout`);
-
     // wait for the schedule to trigger
-    await this.waitFor(async () => (await this.fetchCleanupTimeoutSchedule(id)) === undefined, waitTimeSeconds);
+    await this.waitFor(async () => (await this.fetchCleanupTimeoutSchedule(id)) === undefined, waitTimeSeconds, {
+      message: `cleanup of allocation ${id} to timeout`,
+    });
 
     // wait another 5 seconds for the schedule target to actually do its thing
     return new Promise(resolve => setTimeout(resolve, 5000));
@@ -301,11 +309,11 @@ export class Session {
   }
 
   public log(message: string) {
-    console.log(`[${new Date().toISOString()}] [assertion] ${message}`);
+    console.log(`[${new Date().toISOString()}] [assertion] [${this.name}] ${message}`);
   }
 
   private sessionLog(message: string) {
-    console.log(`[${new Date().toISOString()}] [session] ${message}`);
+    console.log(`[${new Date().toISOString()}] [session] [${this.name}] ${message}`);
   }
 
 }
