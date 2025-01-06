@@ -29,6 +29,15 @@ export class EnvironmentAlreadyReleasedError extends EnvironmentsError {
 };
 
 /**
+ * Error thrown when an environment is already in-use.
+ */
+export class EnvironmentAlreadyInUseError extends EnvironmentsError {
+  constructor(account: string, region: string) {
+    super(account, region, 'already in-use');
+  }
+};
+
+/**
  * Error thrown when an environment is already in the target status.
  */
 export class EnvironmentAlreadyInStatusError extends EnvironmentsError {
@@ -62,6 +71,27 @@ export class EnvironmentAlreadyReallocated extends EnvironmentsError {
   constructor(account: string, region: string) {
     super(account, region, 'already reallocated');
   }
+}
+
+/**
+ * Possible status an environment can be in.
+ *
+ * Note that there is no `FREE` status because free
+ * environments don't appear in the table.
+ */
+export enum EnvironmentStatus {
+  /**
+   * Currently in use by an alloaction.
+   */
+  IN_USE = 'in-use',
+  /**
+   * Environment being cleaned.
+   */
+  CLEANING = 'cleaning',
+  /**
+   * Environment is dirty, meaning the cleanup did not finish successfully, or timed out.
+   */
+  DIRTY = 'dirty'
 }
 
 /**
@@ -129,11 +159,14 @@ export class EnvironmentsClient {
         },
         ExpressionAttributeValues: {
           ':allocation_value': { S: allocationId },
-          ':expected_status_value': { S: 'dirty' },
+          // we only expect to release an environment that is currenly being cleaned.
+          // 'in-use' environments should not be released until they cleaned
+          // 'dirty' environments should not be released because they trigger human intervention.
+          ':expected_status_value': { S: 'cleaning' },
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :expected_status_value',
+        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status = :expected_status_value',
         ReturnValuesOnConditionCheckFailure: 'ALL_OLD',
       });
     } catch (e: any) {
@@ -149,9 +182,13 @@ export class EnvironmentsClient {
         }
 
         const old_status = e.Item.status?.S;
-        if (old_status && old_status === 'dirty') {
-          // dirty environments should not be released.
-          throw new EnvironmentAlreadyDirtyError(account, region);
+
+        if (old_status) {
+          switch (old_status) {
+            case EnvironmentStatus.IN_USE: throw new EnvironmentAlreadyInUseError(account, region);
+            case EnvironmentStatus.DIRTY: throw new EnvironmentAlreadyDirtyError(account, region);
+            default: throw new Error(`Unexpected status for environment aws://${account}/${region}: ${old_status}`);
+          }
         }
 
       }
