@@ -125,13 +125,15 @@ export class EnvironmentsClient {
           '#region': 'region',
           '#account': 'account',
           '#allocation': 'allocation',
+          '#status': 'status',
         },
         ExpressionAttributeValues: {
           ':allocation_value': { S: allocationId },
+          ':expected_status_value': { S: 'dirty' },
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value',
+        ConditionExpression: 'attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :expected_status_value',
         ReturnValuesOnConditionCheckFailure: 'ALL_OLD',
       });
     } catch (e: any) {
@@ -144,6 +146,12 @@ export class EnvironmentsClient {
         const old_allocation = e.Item.allocation?.S;
         if (old_allocation && old_allocation !== allocationId) {
           throw new EnvironmentAlreadyReallocated(account, region);
+        }
+
+        const old_status = e.Item.status?.S;
+        if (old_status && old_status === 'dirty') {
+          // dirty environments should not be released.
+          throw new EnvironmentAlreadyDirtyError(account, region);
         }
 
       }

@@ -96,6 +96,22 @@ describe('EnvironmentsClient', () => {
 
     });
 
+    test('throws explicit error when an environment is dirty', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {
+            status: { S: 'dirty' },
+          },
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyDirtyError);
+
+    });
+
     test('throws explicit error when an environment is already reallocated', async () => {
 
       ddbMock.on(DeleteItemCommand)
