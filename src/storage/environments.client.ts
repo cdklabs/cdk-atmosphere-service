@@ -76,23 +76,14 @@ export class EnvironmentAlreadyReallocated extends EnvironmentsError {
 /**
  * Possible status an environment can be in.
  *
- * Note that there is no `FREE` status because free
+ * - `in-use`: Currently in use by an alloaction.
+ * - `cleaning`: Environment being cleaned.
+ * - `dirty`: Environment is dirty, meaning the cleanup did not finish successfully, or timed out.
+ *
+ * Note that there is no `free` status because free
  * environments don't appear in the table.
  */
-export enum EnvironmentStatus {
-  /**
-   * Currently in use by an alloaction.
-   */
-  IN_USE = 'in-use',
-  /**
-   * Environment being cleaned.
-   */
-  CLEANING = 'cleaning',
-  /**
-   * Environment is dirty, meaning the cleanup did not finish successfully, or timed out.
-   */
-  DIRTY = 'dirty'
-}
+type EnvironmentStatus = 'in-use' | 'cleaning' | 'dirty';
 
 /**
  * Client for accessing the environments table at runtime.
@@ -116,7 +107,7 @@ export class EnvironmentsClient {
         Item: {
           account: { S: account },
           region: { S: region },
-          status: { S: EnvironmentStatus.IN_USE },
+          status: { S: 'in-use' },
           allocation: { S: allocationId },
         },
         // avoid attribute name collisions with reserved keywords.
@@ -162,7 +153,7 @@ export class EnvironmentsClient {
           // we only expect to release an environment that is currenly being cleaned.
           // 'in-use' environments should not be released until they cleaned
           // 'dirty' environments should not be released because they trigger human intervention.
-          ':expected_status_value': { S: EnvironmentStatus.CLEANING },
+          ':expected_status_value': { S: 'cleaning' },
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
@@ -185,8 +176,8 @@ export class EnvironmentsClient {
 
         if (old_status) {
           switch (old_status) {
-            case EnvironmentStatus.IN_USE: throw new EnvironmentAlreadyInUseError(account, region);
-            case EnvironmentStatus.DIRTY: throw new EnvironmentAlreadyDirtyError(account, region);
+            case 'in-use': throw new EnvironmentAlreadyInUseError(account, region);
+            case 'dirty': throw new EnvironmentAlreadyDirtyError(account, region);
             default: throw new Error(`Unexpected status for environment aws://${account}/${region}: ${old_status}`);
           }
         }
@@ -202,7 +193,7 @@ export class EnvironmentsClient {
    */
   public async cleaning(allocationId: string, account: string, region: string) {
     try {
-      await this.setStatus(allocationId, account, region, EnvironmentStatus.CLEANING);
+      await this.setStatus(allocationId, account, region, 'cleaning');
     } catch (e: any) {
       if (e instanceof EnvironmentAlreadyInStatusError) {
         throw new EnvironmentAlreadyCleaningError(account, region);
@@ -217,7 +208,7 @@ export class EnvironmentsClient {
    */
   public async dirty(allocationId: string, account: string, region: string) {
     try {
-      await this.setStatus(allocationId, account, region, EnvironmentStatus.DIRTY);
+      await this.setStatus(allocationId, account, region, 'dirty');
     } catch (e: any) {
       if (e instanceof EnvironmentAlreadyInStatusError) {
         throw new EnvironmentAlreadyDirtyError(account, region);
