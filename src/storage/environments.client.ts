@@ -116,7 +116,7 @@ export class EnvironmentsClient {
         Item: {
           account: { S: account },
           region: { S: region },
-          status: { S: 'in-use' },
+          status: { S: EnvironmentStatus.IN_USE },
           allocation: { S: allocationId },
         },
         // avoid attribute name collisions with reserved keywords.
@@ -162,7 +162,7 @@ export class EnvironmentsClient {
           // we only expect to release an environment that is currenly being cleaned.
           // 'in-use' environments should not be released until they cleaned
           // 'dirty' environments should not be released because they trigger human intervention.
-          ':expected_status_value': { S: 'cleaning' },
+          ':expected_status_value': { S: EnvironmentStatus.CLEANING },
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
@@ -202,7 +202,7 @@ export class EnvironmentsClient {
    */
   public async cleaning(allocationId: string, account: string, region: string) {
     try {
-      await this.setStatus(allocationId, account, region, 'cleaning');
+      await this.setStatus(allocationId, account, region, EnvironmentStatus.CLEANING);
     } catch (e: any) {
       if (e instanceof EnvironmentAlreadyInStatusError) {
         throw new EnvironmentAlreadyCleaningError(account, region);
@@ -217,7 +217,7 @@ export class EnvironmentsClient {
    */
   public async dirty(allocationId: string, account: string, region: string) {
     try {
-      await this.setStatus(allocationId, account, region, 'dirty');
+      await this.setStatus(allocationId, account, region, EnvironmentStatus.DIRTY);
     } catch (e: any) {
       if (e instanceof EnvironmentAlreadyInStatusError) {
         throw new EnvironmentAlreadyDirtyError(account, region);
@@ -226,7 +226,7 @@ export class EnvironmentsClient {
     }
   }
 
-  private async setStatus(allocationId: string, account: string, region: string, status: string) {
+  private async setStatus(allocationId: string, account: string, region: string, status: EnvironmentStatus) {
     try {
       await this.ddbClient.updateItem({
         TableName: this.tableName,
