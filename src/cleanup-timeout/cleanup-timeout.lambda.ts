@@ -1,5 +1,5 @@
 import { RuntimeClients } from '../clients';
-import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated } from '../storage/environments.client';
+import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
 interface CleanupTimeoutEvent {
   readonly allocationId: string;
@@ -43,6 +43,11 @@ export async function handler(event: CleanupTimeoutEvent) {
   } catch (e: any) {
     if (e instanceof EnvironmentAlreadyReleasedError) {
       // happy path - the cleanup task succeeded and released the environment
+      console.log(e.message);
+      return;
+    }
+    if (e instanceof EnvironmentAlreadyDirtyError) {
+      // happy path - the cleanup task already marked it as dirty
       console.log(e.message);
       return;
     }

@@ -38,6 +38,24 @@ export class EnvironmentAlreadyInStatusError extends EnvironmentsError {
 };
 
 /**
+ * Error thrown when an environment is already dirty.
+ */
+export class EnvironmentAlreadyDirtyError extends EnvironmentsError {
+  constructor(account: string, region: string) {
+    super(account, region, 'already dirty');
+  }
+}
+
+/**
+ * Error thrown when an environment is already cleaning.
+ */
+export class EnvironmentAlreadyCleaningError extends EnvironmentsError {
+  constructor(account: string, region: string) {
+    super(account, region, 'already cleaning');
+  }
+}
+
+/**
  * Error thrown when an environment is already reallocated.
  */
 export class EnvironmentAlreadyReallocated extends EnvironmentsError {
@@ -138,7 +156,14 @@ export class EnvironmentsClient {
    * If the environment is already in a 'cleaning' status, this will fail.
    */
   public async cleaning(allocationId: string, account: string, region: string) {
-    await this.setStatus(allocationId, account, region, 'cleaning');
+    try {
+      await this.setStatus(allocationId, account, region, 'cleaning');
+    } catch (e: any) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyCleaningError(account, region);
+      }
+      throw e;
+    }
   }
 
   /**
@@ -146,7 +171,14 @@ export class EnvironmentsClient {
    * If the environment is already in a 'dirty' status, this will fail.
    */
   public async dirty(allocationId: string, account: string, region: string) {
-    await this.setStatus(allocationId, account, region, 'dirty');
+    try {
+      await this.setStatus(allocationId, account, region, 'dirty');
+    } catch (e: any) {
+      if (e instanceof EnvironmentAlreadyInStatusError) {
+        throw new EnvironmentAlreadyDirtyError(account, region);
+      }
+      throw e;
+    }
   }
 
   private async setStatus(allocationId: string, account: string, region: string, status: string) {

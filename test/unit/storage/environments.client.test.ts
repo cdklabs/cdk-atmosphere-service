@@ -1,6 +1,6 @@
 import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyInStatusError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('EnvironmentsClient', () => {
@@ -173,7 +173,7 @@ describe('EnvironmentsClient', () => {
         }));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.cleaning('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyInStatusError);
+      await expect(() => client.cleaning('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyCleaningError);
 
     });
 
@@ -257,7 +257,7 @@ describe('EnvironmentsClient', () => {
         }));
 
       const client = new EnvironmentsClient('table');
-      await expect(() => client.dirty('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyInStatusError);
+      await expect(() => client.dirty('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyDirtyError);
 
     });
 
