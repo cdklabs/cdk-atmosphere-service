@@ -1,6 +1,6 @@
 import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyInUseError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('EnvironmentsClient', () => {
@@ -96,6 +96,68 @@ describe('EnvironmentsClient', () => {
 
     });
 
+    test('throws explicit error when an environment is dirty', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {
+            status: { S: 'dirty' },
+          },
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyDirtyError);
+
+    });
+
+    test('throws explicit error when an environment is in-use', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {
+            status: { S: 'in-use' },
+          },
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow(EnvironmentAlreadyInUseError);
+
+    });
+
+    test('throws unexpected error when an environment is in unexpected status', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {
+            status: { S: 'unexpected' },
+          },
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow('Unexpected status for environment aws://1111/us-east-1: unexpected');
+
+    });
+
+    test('re-throws if environment doesnt have a status', async () => {
+
+      ddbMock.on(DeleteItemCommand)
+        .rejectsOnce(new ConditionalCheckFailedException({
+          $metadata: {},
+          message: 'The conditional request failed',
+          Item: {},
+        }));
+
+      const client = new EnvironmentsClient('table');
+      await expect(() => client.release('id', '1111', 'us-east-1')).rejects.toThrow(ConditionalCheckFailedException);
+
+    });
+
     test('throws explicit error when an environment is already reallocated', async () => {
 
       ddbMock.on(DeleteItemCommand)
@@ -120,15 +182,19 @@ describe('EnvironmentsClient', () => {
       expect(ddbMock).toHaveReceivedCommandTimes(DeleteItemCommand, 1);
       expect(ddbMock.commandCall(0, DeleteItemCommand).args[0].input).toMatchInlineSnapshot(`
 {
-  "ConditionExpression": "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value",
+  "ConditionExpression": "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status = :expected_status_value",
   "ExpressionAttributeNames": {
     "#account": "account",
     "#allocation": "allocation",
     "#region": "region",
+    "#status": "status",
   },
   "ExpressionAttributeValues": {
     ":allocation_value": {
       "S": "id",
+    },
+    ":expected_status_value": {
+      "S": "cleaning",
     },
   },
   "Key": {
