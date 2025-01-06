@@ -1,6 +1,6 @@
 import { handler } from '../../../src/cleanup-timeout/cleanup-timeout.lambda';
 import { RuntimeClients } from '../../../src/clients';
-import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated } from '../../../src/storage/environments.client';
+import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../../../src/storage/environments.client';
 import { RuntimeClientsMock } from '../clients.mock';
 
 // this grabs the same instance the handler uses
@@ -27,6 +27,17 @@ describe('handler', () => {
   test('no ops if the environment has been reallocated', async () => {
 
     jest.spyOn(clients.environments, 'dirty').mockRejectedValue(new EnvironmentAlreadyReallocated('1111', 'us-east-1'));
+
+    await handler({ allocationId: 'id', account: '1111', region: 'us-east-1' });
+
+    expect(clients.environments.dirty).toHaveBeenCalledTimes(1);
+    expect(clients.environments.dirty).toHaveBeenCalledWith('id', '1111', 'us-east-1');
+
+  });
+
+  test('no ops if the environment is already dirty', async () => {
+
+    jest.spyOn(clients.environments, 'dirty').mockRejectedValue(new EnvironmentAlreadyDirtyError('1111', 'us-east-1'));
 
     await handler({ allocationId: 'id', account: '1111', region: 'us-east-1' });
 
