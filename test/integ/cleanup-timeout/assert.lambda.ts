@@ -9,60 +9,57 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    // deploy a stack that takes 2 minute to delete
-    await session.deploy({ templatePath: 'cleanup-timeout/stacks/two-minutes-delete-delay.yaml', region });
-
     const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
 
     session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
     await timeout;
 
-    let environment = await session.fetchEnvironment(account, region);
+    const environment = await session.fetchEnvironment(account, region);
     assert.strictEqual(environment.Item?.status?.S, 'dirty');
 
   }, 'cleanup-timeout-triggered-before-cleanup-finished');
 
-  // await Session.assert(async (session: Session) => {
-  //   const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
-  //   const body = JSON.parse(response.body!);
-  //   const account = body.environment.account;
-  //   const region = body.environment.region;
+  await Session.assert(async (session: Session) => {
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(response.body!);
+    const account = body.environment.account;
+    const region = body.environment.region;
 
-  //   const cleanupTimeoutSeconds = 2 * 60;
-  //   const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: cleanupTimeoutSeconds });
+    const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 30 });
 
-  //   session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
-  //   await timeout;
+    await session.environments.release(body.id, account, region);
 
-  //   const environment = await session.fetchEnvironment(account, region);
-  //   assert.ok(!environment.Item);
+    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
+    await timeout;
 
-  // }, 'cleanup-timeout-triggered-after-cleanup-finished');
+    const environment = await session.fetchEnvironment(account, region);
+    assert.ok(!environment.Item);
 
-  // await Session.assert(async (session: Session) => {
-  //   const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
-  //   const body = JSON.parse(response.body!);
+  }, 'cleanup-timeout-triggered-after-cleanup-finished');
 
-  //   const account = body.environment.account;
-  //   const region = body.environment.region;
-  //   const allocationId = body.id;
+  await Session.assert(async (session: Session) => {
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(response.body!);
 
-  //   const [, timeout] = await session.deallocate(allocationId, { outcome: 'success', cleanupDurationSeconds: 60 });
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const allocationId = body.id;
 
-  //   let waitTime = 60; // 1 minute should be enough time for cleanup to succeed
-  //   session.log(`Waiting for ${waitTime} seconds for environment 'aws://${account}/${region}' to be released...`);
-  //   await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTime);
+    const [, timeout] = await session.deallocate(allocationId, { outcome: 'success', cleanupDurationSeconds: 60 });
 
-  //   // and now allocate again - acquiring the same environment
-  //   [] = await session.allocate({ pool: 'release', requester: 'test' } );
+    // in the meantime simulate a quick and successfull cleanup
+    await session.environments.release(allocationId, account, region);
 
-  //   session.log(`Waiting for cleanup of allocation ${allocationId} to timeout`);
-  //   await timeout;
+    // and now allocate again - acquiring the same environment
+    [] = await session.allocate({ pool: 'release', requester: 'test' } );
 
-  //   const environment = await session.fetchEnvironment(account, region);
-  //   assert.notStrictEqual(environment.Item?.status?.S, 'dirty');
+    session.log(`Waiting for cleanup of allocation ${allocationId} to timeout`);
+    await timeout;
 
-  // }, 'cleanup-timeout-triggered-on-reallocated-environment');
+    const environment = await session.fetchEnvironment(account, region);
+    assert.notStrictEqual(environment.Item?.status?.S, 'dirty');
+
+  }, 'cleanup-timeout-triggered-on-reallocated-environment');
 
   return SUCCESS_PAYLOAD;
 
