@@ -45,6 +45,11 @@ export class AtmosphereIntegTest {
       assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')],
     });
+    // because the cleaner passes this role to CloudFormation when deleting stacks
+    adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      principals: [new iam.ServicePrincipal('cloudformation.amazonaws.com')],
+    }));
 
     const environments: Environment[] = [];
     for (const [pool, regions] of Object.entries(props.pools)) {

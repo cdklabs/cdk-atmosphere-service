@@ -37,6 +37,11 @@ export interface DeployOptions {
    * @default false
    */
   readonly terminationProtection?: boolean;
+  /**
+   * How many minutes should CloudFormation wait for the stack to complete creation.
+   * If the timeout passes, the stack is placed in `CREATE_FAILED`.
+   */
+  readonly timeoutMinutes?: number;
 }
 export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;
 
@@ -261,6 +266,8 @@ export class Session {
       TemplateBody: templateBody,
       EnableTerminationProtection: opts.terminationProtection ?? false,
       Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+      OnFailure: 'DO_NOTHING',
+      TimeoutInMinutes: opts.timeoutMinutes ?? 5,
     });
 
     this.log(`Waiting for stack '${stackName}' to be created in region '${opts.region}'`);

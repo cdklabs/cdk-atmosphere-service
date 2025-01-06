@@ -7,31 +7,28 @@ Resources:
     Properties:
       Handler: "index.handler"
       Runtime: "nodejs18.x"
+      Timeout: 300
       Role: !GetAtt LambdaExecutionRole.Arn
       Code:
         ZipFile: |
-          exports.handler = async (event) => {
+          var response = require('cfn-response');
+          exports.handler = async function(event, context) {
             console.log("Request received:", JSON.stringify(event));
-            
+
             if (event.RequestType === "Delete") {
-              console.log("Delete event: delaying for 60 seconds.");
+              console.log("Delete event: delaying for 120 seconds.");
               await new Promise(resolve => setTimeout(resolve, 120000)); // Wait for 120 seconds
             }
 
             console.log("Signaling success.");
-            return {
-              Status: 'SUCCESS',
-              PhysicalResourceId: 'delay-on-delete-custom-resource',
-              StackId: event.StackId,
-              RequestId: event.RequestId,
-              LogicalResourceId: event.LogicalResourceId
-            };
+            await response.send(event, context, response.SUCCESS, {});
           };
 
   CustomResource:
-    Type: "Custom::DelayOnDelete"
+    Type: "AWS::CloudFormation::CustomResource"
     Properties:
       ServiceToken: !GetAtt DelayFunction.Arn
+      ServiceTimeout: 180
 
   LambdaExecutionRole:
     Type: "AWS::IAM::Role"
@@ -54,8 +51,3 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "arn:aws:logs:*:*:*"
-
-Outputs:
-  CustomResourceOutput:
-    Description: "Custom resource to delay stack deletion."
-    Value: !Ref CustomResource

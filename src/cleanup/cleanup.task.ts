@@ -29,11 +29,13 @@ export async function handler() {
 
     console.log('Done!');
   } catch (e: any) {
-    console.error(`Failed cleaning '${env}}'`, e.message);
+    console.error(`Failed cleaning '${env}':`, e.message);
     if (e instanceof CleanerError) {
+      console.log('>> Failed stacks errors report <<');
+      console.log();
       for (const f of e.failedStacks) {
         console.log('');
-        console.log(`----- ${f.name} -----`);
+        console.log(`----- Stack: ${f.name} -----`);
         console.log(f.error);
       }
     }

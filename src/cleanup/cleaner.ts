@@ -84,7 +84,7 @@ export class Cleaner {
 
       this.log(`Stack ${stack.StackName} deleting. Waiting for completion.`);
       await waitUntilStackDeleteComplete(
-        { client: this.cfn, maxWaitTime: timeoutSeconds },
+        { client: this.cfn, maxWaitTime: timeoutSeconds, minDelay: 5, maxDelay: 5 },
         { StackName: stack.StackName },
       );
 

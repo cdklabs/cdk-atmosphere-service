@@ -3,10 +3,8 @@ import { Session, SUCCESS_PAYLOAD } from '../service.session';
 
 export async function handler(_: any) {
 
-  // scenario 1
-  // cleanup needs to delete a single simple stack
   await Session.assert(async (session: Session) => {
-    const allocateResponse = await session.allocate({ pool: 'release', requester: 'test' } );
+    const [allocateResponse] = await session.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(allocateResponse.body!);
 
     const account = body.environment.account;
@@ -14,7 +12,7 @@ export async function handler(_: any) {
 
     await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region });
 
-    await session.deallocate(body.id, { outcome: 'success' });
+    [] = await session.deallocate(body.id, { outcome: 'success' });
 
     const waitTimeSeconds = 120;
     session.log(`Waiting ${waitTimeSeconds} seconds for environment aws://${account}/${region} to be released...`);
@@ -30,10 +28,8 @@ export async function handler(_: any) {
 
   }, 'cleanup-deletes-simple-stack');
 
-  // scenario 2
-  // cleanup is able to overcome termination protection
   await Session.assert(async (session: Session) => {
-    const allocateResponse = await session.allocate({ pool: 'release', requester: 'test' } );
+    const [allocateResponse] = await session.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(allocateResponse.body!);
 
     const account = body.environment.account;
@@ -41,7 +37,7 @@ export async function handler(_: any) {
 
     await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region, terminationProtection: true });
 
-    await session.deallocate(body.id, { outcome: 'success' });
+    [] = await session.deallocate(body.id, { outcome: 'success' });
 
     const waitTimeSeconds = 120;
     session.log(`Waiting ${waitTimeSeconds} seconds for environment aws://${account}/${region} to be released...`);
