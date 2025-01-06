@@ -793,7 +793,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "16abbff071cf38ae997ac7eaac6e694c77c3eb43fa9ce3c7c4bd121d5e446d68.zip"
+                              "s3Key": "1e829c1b8204711e7b5788cd2a0f1a3374aa0d2268811cd443016c44f4511cb6.zip"
                             },
                             "deadLetterConfig": {
                               "targetArn": {
@@ -1304,7 +1304,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "437dc7f834bf775430ea01cbed9dcb053e1d3877865637602fcd488cb3618699.zip"
+                              "s3Key": "97c224100ba678a71da8dc0bdd465c1334d6b64111f55d8e0798ee0487a41fa4.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -1565,7 +1565,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "ba395380f08af142b1bed8a0d11a961396fe54043fe62f6b7cb05130cc9d7c84.zip"
+                              "s3Key": "448297dfa3dd106f163a9f84d735119dfe557e4d85dbc08b96395ec6ac32d1b9.zip"
                             },
                             "description": "src/deallocate/deallocate.lambda.ts",
                             "environment": {
@@ -2656,7 +2656,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "18258c0de1b5775553881ea0ffe7f5de027f1561285ed758a82dcbefbb77d8dd.zip"
+                      "s3Key": "277811538c9004e81f5d94100b0093fb82d77156dedc971f3851fc8968e94952.zip"
                     },
                     "description": "test/integ/allocation-timeout/assert.lambda.ts",
                     "environment": {
