@@ -129,7 +129,7 @@ export class Session {
     if (Session.isLocal()) {
 
       // locally we use dev stack outputs
-      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-dev-assertions' })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-cleanup-timeout-assertions' })).Stacks ?? [])[0];
       assert.ok(devStack, 'Missing dev stack. Deploy by running: \'yarn integ:dev\'');
       envValue = (name: string) => {
         const value = (devStack.Outputs ?? []).find((o: any) => o.OutputKey === name.replace(/_/g, '0'))?.OutputValue;

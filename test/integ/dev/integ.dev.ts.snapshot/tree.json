@@ -1057,7 +1057,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:bdde1cc68125dc920c85343aa00f3b1ee1b755741077814fa3f4aa7f3fda5dac"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:e7179c47c7ca3fa93e1aef8af5c3e7798be895deaa42e283bbdcb660e82aba97"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -3622,7 +3622,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b487479f1b15c6be9fd131d7c1bc6e7eacaa79d2887caecd8163a826e405d294.zip"
+                      "s3Key": "f02dfdcf9210a5009e6a4a14c62d90c86c5c0b91636e9b1650bdcc83b5d40e1c.zip"
                     },
                     "description": "test/integ/dev/assert.lambda.ts",
                     "environment": {
