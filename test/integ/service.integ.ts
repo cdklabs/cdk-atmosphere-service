@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3Assets from 'aws-cdk-lib/aws-s3-assets';
 import { IConstruct } from 'constructs';
 import { SUCCESS_PAYLOAD } from './service.session';
 import { INTEG_RUNNER_REGIONS, ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
@@ -74,6 +75,7 @@ export class AtmosphereIntegTest {
 
     const assertionPath = path.join(__dirname, props.dir, ASSERT_HANDLER_FILE);
     const bundlePath = path.join(__dirname, `../../assets/test/integ/${props.dir}/index.js`);
+    const stacksPath = path.join(__dirname, props.dir, 'stacks');
 
     if (!fs.existsSync(assertionPath)) {
       throw new Error(`Assertion handler not found: ${assertionPath}. Please make sure to name it '${ASSERT_HANDLER_FILE}'.`);
@@ -92,6 +94,18 @@ export class AtmosphereIntegTest {
     });
     assert.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
     assert.addEnvironment('CDK_ATMOSPHERE_INTEG', 'true');
+
+    if (fs.existsSync(stacksPath)) {
+      // the test has stacks it intends to deploy so we need to make them
+      // available as an asset to the assertion lambda
+      const stacksAsset = new s3Assets.Asset(assertionsStack, 'Stacks', {
+        path: stacksPath,
+      });
+      // the session takes care of downloading this before the test begins.
+      assert.addEnvironment('CDK_ATMOSPHERE_INTEG_STACKS_BUCKET', stacksAsset.s3BucketName);
+      assert.addEnvironment('CDK_ATMOSPHERE_INTEG_STACKS_KEY', stacksAsset.s3ObjectKey);
+      stacksAsset.grantRead(assert);
+    }
 
     assert.node.addDependency(service);
 

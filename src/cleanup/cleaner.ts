@@ -102,6 +102,7 @@ export class Cleaner {
         { client: this.cfn, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
         { StackName: stack.StackName },
       );
+      this.log(`Stack ${stack.StackName} deleted.`);
 
       return { name: stack.StackName };
     } catch (e: any) {
@@ -110,7 +111,7 @@ export class Cleaner {
   }
 
   private log(message: string | Error) {
-    console.log(`aws://${this.environment.account}/${this.environment.region} | ${message}`);
+    console.log(`${new Date().toISOString()} | aws://${this.environment.account}/${this.environment.region} | ${message}`);
   }
 
 }

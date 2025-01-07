@@ -1057,7 +1057,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:e7179c47c7ca3fa93e1aef8af5c3e7798be895deaa42e283bbdcb660e82aba97"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:622cdba53540176aaf3fc4ce55b35b7d555ea3b825a46e873385b9b1739b16de"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1296,9 +1296,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.3]}": {
-                    "id": "AdminRole${Token[AWS.AccountId.3]}",
-                    "path": "atmosphere-integ-cleanup/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.3]}",
+                  "AdminRole${Token[AWS.AccountId.4]}": {
+                    "id": "AdminRole${Token[AWS.AccountId.4]}",
+                    "path": "atmosphere-integ-cleanup/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.4]}",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2218,9 +2218,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.3]}": {
-                    "id": "AdminRole${Token[AWS.AccountId.3]}",
-                    "path": "atmosphere-integ-cleanup/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.3]}",
+                  "AdminRole${Token[AWS.AccountId.4]}": {
+                    "id": "AdminRole${Token[AWS.AccountId.4]}",
+                    "path": "atmosphere-integ-cleanup/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3579,6 +3579,81 @@
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "2.173.1"
                     }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "atmosphere-integ-cleanup-assertions/Assert/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-cleanup-assertions/Assert/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AssertServiceRoleDefaultPolicyEF886BAB",
+                            "roles": [
+                              {
+                                "Ref": "AssertServiceRoleE8D7787D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.173.1"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -3622,12 +3697,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "c3d80413a567613fdf52d925cb737952797caf5db59fab81199cf3ee8401e84d.zip"
+                      "s3Key": "5d7f302f829275c8e17fb8a513424c0c97059db34dff7f40c295f20ae36069f5.zip"
                     },
                     "description": "test/integ/cleanup/assert.lambda.ts",
                     "environment": {
                       "variables": {
                         "CDK_ATMOSPHERE_INTEG": "true",
+                        "CDK_ATMOSPHERE_INTEG_STACKS_BUCKET": {
+                          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                        },
+                        "CDK_ATMOSPHERE_INTEG_STACKS_KEY": "372d85f5350ceeddb13eced94bacf556e74268e2313651122505de05b6273f5f.zip",
                         "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
                           "Fn::ImportValue": "atmosphere-integ-cleanup:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
                         },
@@ -3832,6 +3911,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.173.1"
+            }
+          },
+          "Stacks": {
+            "id": "Stacks",
+            "path": "atmosphere-integ-cleanup-assertions/Stacks",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "atmosphere-integ-cleanup-assertions/Stacks/Stage",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "2.173.1"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "atmosphere-integ-cleanup-assertions/Stacks/AssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "2.173.1"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
               "version": "2.173.1"
             }
           },

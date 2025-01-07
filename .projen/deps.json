@@ -63,6 +63,10 @@
       "type": "build"
     },
     {
+      "name": "@types/unzipper",
+      "type": "build"
+    },
+    {
       "name": "@typescript-eslint/eslint-plugin",
       "version": "^8",
       "type": "build"
@@ -150,6 +154,10 @@
     },
     {
       "name": "typescript",
+      "type": "build"
+    },
+    {
+      "name": "unzipper",
       "type": "build"
     },
     {

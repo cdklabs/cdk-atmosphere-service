@@ -12,26 +12,25 @@ export interface CleanupRequest {
 
 export async function handler(req: CleanupRequest) {
 
-
-  console.log(`Fetching allocation '${req.allocationId}'`);
+  log(`Fetching allocation '${req.allocationId}'`);
   const allocation = await clients.allocations.get(req.allocationId);
 
   const env = `aws://${allocation.account}/${allocation.region}`;
 
-  console.log(`Fetching environment '${env}'`);
+  log(`Fetching environment '${env}'`);
   const environment = await clients.configuration.getEnvironment(allocation.account, allocation.region);
 
   const cleaner = new Cleaner(environment);
   try {
-    console.log(`Starting cleanup of '${env}'`);
+    log(`Starting cleanup of '${env}'`);
     await cleaner.clean(req.timeoutSeconds);
-    console.log(`Successfully cleaned '${env}'`);
+    log(`Successfully cleaned '${env}'`);
 
-    console.log(`Releasing environment '${env}'`);
+    log(`Releasing environment '${env}'`);
     await clients.environments.release(req.allocationId, environment.account, environment.region);
-    console.log(`Successfully released environment '${env}'`);
+    log(`Successfully released environment '${env}'`);
 
-    console.log('Done!');
+    log('Done!');
   } catch (e: any) {
 
     if (e instanceof EnvironmentAlreadyDirtyError) {
@@ -42,7 +41,7 @@ export async function handler(req: CleanupRequest) {
     }
 
     if (e instanceof CleanerError) {
-      console.error(`Unable to clean '${env}':`, e.message);
+      log(`Unable to clean '${env}': ${e.message}`);
       console.log();
       console.log('>> Failed stacks errors report <<');
       for (const f of e.failedStacks) {
@@ -53,9 +52,9 @@ export async function handler(req: CleanupRequest) {
       }
 
       console.log('');
-      console.log(`Marking environment '${env}' as 'dirty'`);
+      log(`Marking environment '${env}' as 'dirty'`);
       await clients.environments.dirty(req.allocationId, environment.account, environment.region);
-      console.log(`Successfully marked environment '${env}' as 'dirty'`);
+      log(`Successfully marked environment '${env}' as 'dirty'`);
 
       return;
 
@@ -64,6 +63,10 @@ export async function handler(req: CleanupRequest) {
     throw e;
   }
 
+}
+
+function log(message: string) {
+  console.log(`${new Date().toISOString()} | ${message}`);
 }
 
 if (require.main !== module) {

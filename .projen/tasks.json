@@ -385,7 +385,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --disable-update-workflow --update-on-failed --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --force --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -454,7 +454,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --disable-update-workflow --update-on-failed --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --force --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -535,7 +535,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --disable-update-workflow --update-on-failed --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --force --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -592,7 +592,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --disable-update-workflow --update-on-failed --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --force --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -661,7 +661,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --disable-update-workflow --update-on-failed --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --force --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -730,7 +730,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --disable-update-workflow --update-on-failed --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --force --disable-update-workflow --update-on-failed --no-clean"
         }
       ]
     },
@@ -965,13 +965,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-ecs,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@aws-sdk/credential-providers,@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,uuid"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-ecs,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@aws-sdk/credential-providers,@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,@types/unzipper,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,unzipper,uuid"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper uuid @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"

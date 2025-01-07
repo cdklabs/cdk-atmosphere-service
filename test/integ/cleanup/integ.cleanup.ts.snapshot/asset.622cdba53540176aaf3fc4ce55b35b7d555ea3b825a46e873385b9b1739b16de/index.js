@@ -60482,39 +60482,40 @@ var Cleaner = class {
         { client: this.cfn, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
         { StackName: stack.StackName }
       );
+      this.log(`Stack ${stack.StackName} deleted.`);
       return { name: stack.StackName };
     } catch (e) {
       return { name: stack.StackName, error: e };
     }
   }
   log(message) {
-    console.log(`aws://${this.environment.account}/${this.environment.region} | ${message}`);
+    console.log(`${(/* @__PURE__ */ new Date()).toISOString()} | aws://${this.environment.account}/${this.environment.region} | ${message}`);
   }
 };
 
 // src/cleanup/cleanup.task.ts
 var clients = RuntimeClients.getOrCreate();
 async function handler(req) {
-  console.log(`Fetching allocation '${req.allocationId}'`);
+  log(`Fetching allocation '${req.allocationId}'`);
   const allocation = await clients.allocations.get(req.allocationId);
   const env = `aws://${allocation.account}/${allocation.region}`;
-  console.log(`Fetching environment '${env}'`);
+  log(`Fetching environment '${env}'`);
   const environment = await clients.configuration.getEnvironment(allocation.account, allocation.region);
   const cleaner = new Cleaner(environment);
   try {
-    console.log(`Starting cleanup of '${env}'`);
+    log(`Starting cleanup of '${env}'`);
     await cleaner.clean(req.timeoutSeconds);
-    console.log(`Successfully cleaned '${env}'`);
-    console.log(`Releasing environment '${env}'`);
+    log(`Successfully cleaned '${env}'`);
+    log(`Releasing environment '${env}'`);
     await clients.environments.release(req.allocationId, environment.account, environment.region);
-    console.log(`Successfully released environment '${env}'`);
-    console.log("Done!");
+    log(`Successfully released environment '${env}'`);
+    log("Done!");
   } catch (e) {
     if (e instanceof EnvironmentAlreadyDirtyError) {
       return;
     }
     if (e instanceof CleanerError) {
-      console.error(`Unable to clean '${env}':`, e.message);
+      log(`Unable to clean '${env}': ${e.message}`);
       console.log();
       console.log(">> Failed stacks errors report <<");
       for (const f of e.failedStacks) {
@@ -60524,13 +60525,16 @@ async function handler(req) {
         console.log(f.error);
       }
       console.log("");
-      console.log(`Marking environment '${env}' as 'dirty'`);
+      log(`Marking environment '${env}' as 'dirty'`);
       await clients.environments.dirty(req.allocationId, environment.account, environment.region);
-      console.log(`Successfully marked environment '${env}' as 'dirty'`);
+      log(`Successfully marked environment '${env}' as 'dirty'`);
       return;
     }
     throw e;
   }
+}
+function log(message) {
+  console.log(`${(/* @__PURE__ */ new Date()).toISOString()} | ${message}`);
 }
 if (require.main !== module) {
 } else {

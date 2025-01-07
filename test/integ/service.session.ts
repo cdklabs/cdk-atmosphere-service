@@ -1,11 +1,14 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Readable } from 'stream';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
 import { CloudFormation, CloudFormationServiceException, paginateDescribeStacks, Stack, StackResource, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
+import { S3 } from '@aws-sdk/client-s3';
 import { Scheduler } from '@aws-sdk/client-scheduler';
+import * as unzipper from 'unzipper';
 import type { AllocateRequest } from '../../src/allocate/allocate.lambda';
 import * as allocate from '../../src/allocate/allocate.lambda';
 import * as cleanup from '../../src/cleanup/cleanup.task';
@@ -22,6 +25,7 @@ const dynamo = new DynamoDB();
 const cfn = new CloudFormation();
 const scheduler = new Scheduler();
 const ecs = new ECS();
+const s3 = new S3();
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -29,7 +33,7 @@ export const SUCCESS_PAYLOAD = 'OK';
 
 export interface DeployOptions {
   /**
-   * Path to the tempalte file.
+   * Path to the tempalte file. Relative to the 'integ' directory.
    */
   readonly templatePath: string;
   /**
@@ -103,7 +107,6 @@ export class Session {
   public static async assert(assertion: (session: Session) => Promise<void>, name: string = 'default'): Promise<string> {
     const session = await this.create(name);
     await session.clear();
-    let failed = false;
     try {
       session.log('🎬 Start 🎬');
       await assertion(session);
@@ -111,15 +114,23 @@ export class Session {
       return SUCCESS_PAYLOAD;
     } catch (error: any) {
       session.log('❌ !! Fail !! ❌');
-      failed = true;
       throw error;
-    } finally {
-      if (failed && Session.isLocal()) {
-        session.sessionLog('Not clearing state to help troubleshoot the error');
-      } else {
-        await session.clear();
-      }
     }
+  }
+
+  private static async unzip(bucket: string, key: string, to: string) {
+    const response = await s3.getObject({
+      Bucket: bucket,
+      Key: key,
+    });
+    const readableStream = response.Body as Readable;
+
+    await new Promise<void>((resolve, reject) => {
+      readableStream
+        .pipe(unzipper.Extract({ path: to }))
+        .on('close', resolve)
+        .on('error', reject);
+    });
   }
 
   private static async create(sessionName: string): Promise<Session> {
@@ -129,7 +140,7 @@ export class Session {
     if (Session.isLocal()) {
 
       // locally we use dev stack outputs
-      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-cleanup-timeout-assertions' })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-cleanup-assertions' })).Stacks ?? [])[0];
       assert.ok(devStack, 'Missing dev stack. Deploy by running: \'yarn integ:dev\'');
       envValue = (name: string) => {
         const value = (devStack.Outputs ?? []).find((o: any) => o.OutputKey === name.replace(/_/g, '0'))?.OutputValue;
@@ -143,6 +154,14 @@ export class Session {
       // it to the assertion function in our test wrapper.
       envValue = (name: string) => envars.Envars.required(name as any);
 
+    }
+
+    let stacksBasePath = __dirname;
+    const stacksBucket = envars.Envars.optional('CDK_ATMOSPHERE_INTEG_STACKS_BUCKET' as any);
+    const stacksKey = envars.Envars.optional('CDK_ATMOSPHERE_INTEG_STACKS_KEY' as any);
+    if (stacksBucket && stacksKey) {
+      stacksBasePath = '/tmp/stacks';
+      await Session.unzip(stacksBucket, stacksKey, stacksBasePath);
     }
 
     return new Session({
@@ -163,13 +182,16 @@ export class Session {
       [envars.CLEANUP_TASK_SUBNET_ID_ENV]: envValue(envars.CLEANUP_TASK_SUBNET_ID_ENV),
       [envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV]: envValue(envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV),
       [envars.CLEANUP_TASK_CONTAINER_NAME_ENV]: envValue(envars.CLEANUP_TASK_CONTAINER_NAME_ENV),
-    }, sessionName);
+    }, sessionName, stacksBasePath);
   }
 
   public readonly environments: EnvironmentsClient;
   public readonly allocations: AllocationsClient;
 
-  private constructor(private readonly vars: envars.EnvironmentVariables, private readonly name: string) {
+  private constructor(
+    private readonly vars: envars.EnvironmentVariables,
+    private readonly name: string,
+    private readonly stacksBasePath: string) {
     this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
     this.environments = new EnvironmentsClient(this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV]);
     this.allocations = new AllocationsClient(this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV]);
@@ -321,7 +343,8 @@ export class Session {
    */
   public async deploy(opts: DeployOptions): Promise<[string, StackResource[]]> {
     const cfnRegion = new CloudFormation({ region: opts.region });
-    const templateBody = fs.readFileSync(path.join(__dirname, opts.templatePath), { encoding: 'utf-8' });
+    const templatePath = this.stacksBasePath === __dirname ? opts.templatePath : path.basename(opts.templatePath);
+    const templateBody = fs.readFileSync(path.join(this.stacksBasePath, templatePath), { encoding: 'utf-8' });
     const stackName = `cdk-atmosphere-integ-${this.name}-${path.basename(opts.templatePath).split('.')[0]}`;
 
     this.log(`Deploying stack '${stackName}' from path '${opts.templatePath}' to region '${opts.region}'`);
@@ -389,8 +412,9 @@ export class Session {
       timeoutSeconds: req.timeoutSeconds,
     });
 
-    this.log(`Waiting ${req.timeoutSeconds} seconds for cleanup task ${taskInstanceArn} to stop`);
-    await this.waitFor(async () => (await this.fetchStoppedCleanupTask(req.allocationId)) !== undefined, req.timeoutSeconds);
+    const waitTime = req.timeoutSeconds + 60; // give ECS time to run the task.
+    this.log(`Waiting ${waitTime} seconds for cleanup task ${taskInstanceArn} to stop`);
+    await this.waitFor(async () => (await this.fetchStoppedCleanupTask(req.allocationId)) !== undefined, waitTime);
   }
 
   private async deallocateLocal(id: string, jsonBody: string) {
