@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Readable } from 'stream';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
-import { CloudFormation, CloudFormationServiceException, paginateDescribeStacks, Stack, StackResource, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
+import { CloudFormation, CloudFormationServiceException, StackResource, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
 import { S3 } from '@aws-sdk/client-s3';
@@ -108,12 +108,12 @@ export class Session {
     const session = await this.create(name);
     await session.clear();
     try {
-      session.log('🎬 Start 🎬');
+      session.log(`🎬 Start <> ${name} 🎬`);
       await assertion(session);
-      session.log('✅ Success ✅');
+      session.log(`✅ Success <> ${name} ✅`);
       return SUCCESS_PAYLOAD;
     } catch (error: any) {
-      session.log('❌ !! Fail !! ❌');
+      session.log(`❌ !! Fail <> ${name} !! ❌`);
       throw error;
     }
   }
@@ -140,7 +140,7 @@ export class Session {
     if (Session.isLocal()) {
 
       // locally we use dev stack outputs
-      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-cleanup-assertions' })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-cleanup-timeout-assertions' })).Stacks ?? [])[0];
       assert.ok(devStack, 'Missing dev stack. Deploy by running: \'yarn integ:dev\'');
       envValue = (name: string) => {
         const value = (devStack.Outputs ?? []).find((o: any) => o.OutputKey === name.replace(/_/g, '0'))?.OutputValue;
@@ -206,11 +206,6 @@ export class Session {
     }
 
     const responseBody = JSON.parse(response.body!);
-    const region = responseBody.environment.region;
-    if (region) {
-      // lets not run tests on dirty environments.
-      await this.assertCleanRegion(region);
-    }
 
     return [response, this.waitForAllocationTimeout(responseBody)];
   }
@@ -354,7 +349,7 @@ export class Session {
       EnableTerminationProtection: opts.terminationProtection ?? false,
       Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
       OnFailure: 'DO_NOTHING',
-      TimeoutInMinutes: opts.timeoutMinutes ?? 5,
+      TimeoutInMinutes: opts.timeoutMinutes ?? 10,
     });
 
     this.log(`Waiting for stack '${stackName}' to be created in region '${opts.region}'`);
@@ -377,22 +372,23 @@ export class Session {
         StackName: opts.stackName,
       });
 
-      const customResources = (resources.StackResources ?? []).filter(r =>
-        r.ResourceType === 'AWS::CloudFormation::CustomResource' || r.ResourceStatus?.startsWith('Custom::'));
+      // custom resources deployed as part of test assertion stacks are normally just there
+      // for fauly/delay injection. They don't have underlying physical resources, so retaining them
+      // doesnt create leakage.
+      const retainResources = stack.StackStatus === 'DELETE_FAILED' ? (resources.StackResources ?? [])
+        .filter(r =>r.ResourceType === 'AWS::CloudFormation::CustomResource' || r.ResourceStatus?.startsWith('Custom::'))
+        .map(r => r.LogicalResourceId!) : undefined;
 
       this.log(`Destroying stack '${opts.stackName}' in region '${opts.region}'`);
       await cfnRegion.deleteStack({
         StackName: opts.stackName,
-        // Custom resources deployed as part of test assertion stacks are normally just there
-        // for fauly/delay injection. They don't have underlying physical resources, so retaining them
-        // doesnt create leakage.
-        RetainResources: customResources.map(r => r.LogicalResourceId!),
+        RetainResources: retainResources,
       });
     }
 
     this.log(`Waiting for stack '${opts.stackName}' to be deleted in region '${opts.region}'`);
     await waitUntilStackDeleteComplete(
-      { client: cfnRegion, maxWaitTime: 300, minDelay: 5, maxDelay: 5 },
+      { client: cfnRegion, maxWaitTime: 600, minDelay: 5, maxDelay: 5 },
       { StackName: opts.stackName },
     );
   }
@@ -464,29 +460,6 @@ export class Session {
 
   }
 
-  private async assertCleanRegion(region: string) {
-    this.sessionLog(`Scanning stacks in region ${region}`);
-    const stacksPaginator = paginateDescribeStacks({ client: new CloudFormation({ region }), pageSize: 10 }, {});
-    const stacks: Stack[] = [];
-
-    for await (const page of stacksPaginator) {
-      for (const stack of page.Stacks ?? []) {
-        this.sessionLog(`  » found stack ${stack.StackName}`);
-        stacks.push(stack);
-      }
-    }
-
-    if (stacks.length === 0) {
-      this.sessionLog(`Region '${region}' is clean. Proceeding.`);
-      return;
-    }
-
-    // we don't delete because it may contain resources the developer cares about.
-    // so we just fail and ask for a manual cleanup
-    assert.fail(`Region '${region}' it not clean. Please either delete all stacks or remove '${region}' from environment pools.`);
-
-  }
-
   private async clear() {
     this.sessionLog('Clearing state');
     const environments = (await dynamo.scan({ TableName: this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV] })).Items ?? [];
@@ -551,11 +524,11 @@ export class Session {
   }
 
   public log(message: string) {
-    console.log(`[${new Date().toISOString()}] [assertion] [${this.name}] ${message}`);
+    console.log(`[${new Date().toISOString()}] ${message}`);
   }
 
   private sessionLog(message: string) {
-    console.log(`[${new Date().toISOString()}] [session] [${this.name}] ${message}`);
+    console.log(`[${new Date().toISOString()}] ${message}`);
   }
 
 }

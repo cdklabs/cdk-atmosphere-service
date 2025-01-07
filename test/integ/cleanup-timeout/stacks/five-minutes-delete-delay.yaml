@@ -13,7 +13,7 @@ Resources:
             console.log("Request received:", JSON.stringify(event));
 
             if (event.RequestType === "Delete") {
-              await response.send(event, context, response.FAILED, {});
+              await new Promise(resolve => setTimeout(resolve, 300000));
             }
 
             console.log("Signaling success.");
