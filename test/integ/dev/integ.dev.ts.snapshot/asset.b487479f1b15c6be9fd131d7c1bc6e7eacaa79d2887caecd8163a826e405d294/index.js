@@ -866,19 +866,25 @@ async function handler2(req) {
     console.log(`Successfully released environment '${env2}'`);
     console.log("Done!");
   } catch (e) {
-    console.error(`Failed cleaning '${env2}':`, e.message);
+    if (e instanceof EnvironmentAlreadyDirtyError) {
+      return;
+    }
     if (e instanceof CleanerError) {
-      console.log(">> Failed stacks errors report <<");
+      console.error(`Unable to clean '${env2}':`, e.message);
       console.log();
+      console.log(">> Failed stacks errors report <<");
       for (const f of e.failedStacks) {
         console.log("");
         console.log(`----- Stack: ${f.name} -----`);
+        console.log("");
         console.log(f.error);
       }
+      console.log("");
+      console.log(`Marking environment '${env2}' as 'dirty'`);
+      await clients2.environments.dirty(req.allocationId, environment.account, environment.region);
+      console.log(`Successfully marked environment '${env2}' as 'dirty'`);
+      return;
     }
-    console.log(`Marking environment '${env2}' as 'dirty'`);
-    await clients2.environments.dirty(req.allocationId, environment.account, environment.region);
-    console.log(`Successfully marked environment '${env2}' as 'dirty'`);
     throw e;
   }
 }
@@ -996,6 +1002,7 @@ var Session = class _Session {
     this.name = name;
     this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
     this.environments = new EnvironmentsClient(this.vars[ENVIRONMENTS_TABLE_NAME_ENV]);
+    this.allocations = new AllocationsClient(this.vars[ALLOCATIONS_TABLE_NAME_ENV]);
   }
   /**
    * Running locally or in lambda as part of integ.
@@ -1164,8 +1171,15 @@ var Session = class _Session {
   }
   async fetchStack(name, region) {
     const cfnRegion = new import_client_cloudformation2.CloudFormation({ region });
-    const response = await cfnRegion.describeStacks({ StackName: name });
-    return response.Stacks?.[0];
+    try {
+      const response = await cfnRegion.describeStacks({ StackName: name });
+      return response.Stacks?.[0];
+    } catch (e) {
+      if (e instanceof import_client_cloudformation2.CloudFormationServiceException && e.name === "ValidationError") {
+        return void 0;
+      }
+      throw e;
+    }
   }
   /**
    * Deploy a stack onto a region and return its name.
@@ -1174,7 +1188,7 @@ var Session = class _Session {
   async deploy(opts) {
     const cfnRegion = new import_client_cloudformation2.CloudFormation({ region: opts.region });
     const templateBody = fs.readFileSync(path.join(__dirname, opts.templatePath), { encoding: "utf-8" });
-    const stackName = path.basename(opts.templatePath).split(".")[0];
+    const stackName = `cdk-atmosphere-integ-${this.name}-${path.basename(opts.templatePath).split(".")[0]}`;
     this.log(`Deploying stack '${stackName}' from path '${opts.templatePath}' to region '${opts.region}'`);
     await cfnRegion.createStack({
       StackName: stackName,
@@ -1186,23 +1200,48 @@ var Session = class _Session {
     });
     this.log(`Waiting for stack '${stackName}' to be created in region '${opts.region}'`);
     await (0, import_client_cloudformation2.waitUntilStackCreateComplete)(
-      { client: cfnRegion, maxWaitTime: 300 },
+      { client: cfnRegion, maxWaitTime: 300, minDelay: 5, maxDelay: 5 },
       { StackName: stackName }
     );
     return stackName;
   }
+  async destroy(opts) {
+    const cfnRegion = new import_client_cloudformation2.CloudFormation({ region: opts.region });
+    const stack = ((await cfnRegion.describeStacks({ StackName: opts.stackName })).Stacks ?? [])[0];
+    if (stack.StackStatus !== "DELETE_IN_PROGRESS") {
+      const resources = await cfnRegion.describeStackResources({
+        StackName: opts.stackName
+      });
+      const customResources = (resources.StackResources ?? []).filter((r) => r.ResourceType === "AWS::CloudFormation::CustomResource" || r.ResourceStatus?.startsWith("Custom::"));
+      this.log(`Destroying stack '${opts.stackName}' in region '${opts.region}'`);
+      await cfnRegion.deleteStack({
+        StackName: opts.stackName,
+        // Custom resources deployed as part of test assertion stacks are normally just there
+        // for fauly/delay injection. They don't have underlying physical resources, so retaining them
+        // doesnt create leakage.
+        RetainResources: customResources.map((r) => r.LogicalResourceId)
+      });
+    }
+    this.log(`Waiting for stack '${opts.stackName}' to be deleted in region '${opts.region}'`);
+    await (0, import_client_cloudformation2.waitUntilStackDeleteComplete)(
+      { client: cfnRegion, maxWaitTime: 300, minDelay: 5, maxDelay: 5 },
+      { StackName: opts.stackName }
+    );
+  }
   async cleanupLocal(req) {
-    this.log(`Invoking local cleanup task handler with body: ${req}`);
+    this.log(`Invoking local cleanup task handler with body: ${JSON.stringify(req)}`);
+    console.log();
     await handler2(req);
+    console.log();
   }
   async cleanupRemote(req) {
-    this.log(`Starting ECS cleanup task with body: ${req}`);
-    const allocation = await clients4.allocations.end({ id: req.allocationId, outcome: "success" });
+    this.log(`Starting ECS cleanup task with body: ${JSON.stringify(req)}`);
+    const allocation = await clients4.allocations.get(req.allocationId);
     const taskInstanceArn = await clients4.cleanup.start({
       allocation,
       timeoutSeconds: req.timeoutSeconds
     });
-    this.log(`Waiting ${req.timeoutSeconds} seconds for cleanup task ${taskInstanceArn} to exit`);
+    this.log(`Waiting ${req.timeoutSeconds} seconds for cleanup task ${taskInstanceArn} to stop`);
     await this.waitFor(async () => await this.fetchStoppedCleanupTask(req.allocationId) !== void 0, req.timeoutSeconds);
   }
   async deallocateLocal(id, jsonBody) {

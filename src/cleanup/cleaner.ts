@@ -1,10 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CloudFormationClient, DeleteStackCommand, paginateDescribeStacks, Stack, UpdateTerminationProtectionCommand, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
+import { CloudFormation, DeleteStackCommand, paginateDescribeStacks, Stack, UpdateTerminationProtectionCommand, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { S3 } from '@aws-sdk/client-s3';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { Environment } from '../config';
+import { BucketCleaner } from './cleaner.bucket';
 
 export interface DeleteStackResult {
   readonly name: string;
@@ -24,7 +27,7 @@ export class CleanerError extends Error {
 export class Cleaner {
 
   private readonly credentials: AwsCredentialIdentityProvider;
-  private readonly cfn: CloudFormationClient;
+  private readonly cfn: CloudFormation;
 
   constructor(private readonly environment: Environment) {
     this.credentials = fromTemporaryCredentials({
@@ -33,13 +36,15 @@ export class Cleaner {
         RoleSessionName: `atmosphere.cleanup.${this.environment.account}.${this.environment.region}`,
       },
     });
-    this.cfn = new CloudFormationClient({ credentials: this.credentials, region: this.environment.region });
+    this.cfn = new CloudFormation({ credentials: this.credentials, region: this.environment.region });
   }
 
   public async clean(timeoutSeconds: number) {
 
+    const timeoutDate = new Date(Date.now() + 1000 * timeoutSeconds);
+
     const stacks = await this.listStacks();
-    const promises = stacks.map(async (s) => this.deleteStack(s, timeoutSeconds));
+    const promises = stacks.map(async (s) => this.deleteStack(s, timeoutDate));
     const results = await Promise.all(promises);
 
     const failed = results.filter(r => r.error);
@@ -62,7 +67,7 @@ export class Cleaner {
 
   }
 
-  private async deleteStack(stack: Stack, timeoutSeconds: number): Promise<DeleteStackResult> {
+  private async deleteStack(stack: Stack, timeoutDate: Date): Promise<DeleteStackResult> {
 
     if (!stack.StackName) {
       // how can this be...
@@ -70,7 +75,16 @@ export class Cleaner {
     }
 
     try {
+
       if (stack.StackStatus !== 'DELETE_IN_PROGRESS') {
+
+        console.log(`Gathering buckets in stack ${stack.StackName}`);
+        const buckets = ((await this.cfn.describeStackResources({ StackName: stack.StackName })).StackResources ?? []).filter(r => r.ResourceType === 'AWS::S3::Bucket').map(r => r.PhysicalResourceId!);
+        const bucketCleaner = new BucketCleaner(new S3({ credentials: this.credentials, region: this.environment.region }));
+
+        console.log(`Emptying buckets in stack ${stack.StackName}`);
+        const bucketCleanup = buckets.map(b => bucketCleaner.empty({ bucketName: b, timeoutDate }));
+        await Promise.all(bucketCleanup);
 
         this.log(`Disabling termination protection of stack ${stack.StackName}`);
         await this.cfn.send(new UpdateTerminationProtectionCommand({
@@ -82,9 +96,10 @@ export class Cleaner {
         await this.cfn.send(new DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
       }
 
-      this.log(`Stack ${stack.StackName} deleting. Waiting for completion.`);
+      const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1000;
+      this.log(`Stack ${stack.StackName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
       await waitUntilStackDeleteComplete(
-        { client: this.cfn, maxWaitTime: timeoutSeconds, minDelay: 5, maxDelay: 5 },
+        { client: this.cfn, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
         { StackName: stack.StackName },
       );
 

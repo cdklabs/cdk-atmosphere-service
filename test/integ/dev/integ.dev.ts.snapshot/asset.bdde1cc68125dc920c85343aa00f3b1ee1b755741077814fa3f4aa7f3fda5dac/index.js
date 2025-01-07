@@ -60443,19 +60443,25 @@ async function handler(req) {
     console.log(`Successfully released environment '${env}'`);
     console.log("Done!");
   } catch (e) {
-    console.error(`Failed cleaning '${env}':`, e.message);
+    if (e instanceof EnvironmentAlreadyDirtyError) {
+      return;
+    }
     if (e instanceof CleanerError) {
-      console.log(">> Failed stacks errors report <<");
+      console.error(`Unable to clean '${env}':`, e.message);
       console.log();
+      console.log(">> Failed stacks errors report <<");
       for (const f of e.failedStacks) {
         console.log("");
         console.log(`----- Stack: ${f.name} -----`);
+        console.log("");
         console.log(f.error);
       }
+      console.log("");
+      console.log(`Marking environment '${env}' as 'dirty'`);
+      await clients.environments.dirty(req.allocationId, environment.account, environment.region);
+      console.log(`Successfully marked environment '${env}' as 'dirty'`);
+      return;
     }
-    console.log(`Marking environment '${env}' as 'dirty'`);
-    await clients.environments.dirty(req.allocationId, environment.account, environment.region);
-    console.log(`Successfully marked environment '${env}' as 'dirty'`);
     throw e;
   }
 }

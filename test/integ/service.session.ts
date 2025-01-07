@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
-import { CloudFormation, CloudFormationServiceException, paginateDescribeStacks, Stack, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
+import { CloudFormation, CloudFormationServiceException, paginateDescribeStacks, Stack, StackResource, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
 import { Scheduler } from '@aws-sdk/client-scheduler';
@@ -58,6 +58,21 @@ export interface DestroyOptions {
    * Region the stack is deployed to.
    */
   readonly region: string;
+}
+
+export interface PutObjectKeyOptions {
+  /**
+   * Bucket.
+   */
+  readonly bucketName: string;
+  /**
+   * Object contents.
+   */
+  readonly contents: string;
+  /**
+   * Target key.
+   */
+  readonly key: string;
 }
 
 export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;
@@ -304,7 +319,7 @@ export class Session {
    * Deploy a stack onto a region and return its name.
    * This will also wait for stack creation to complete.
    */
-  public async deploy(opts: DeployOptions): Promise<string> {
+  public async deploy(opts: DeployOptions): Promise<[string, StackResource[]]> {
     const cfnRegion = new CloudFormation({ region: opts.region });
     const templateBody = fs.readFileSync(path.join(__dirname, opts.templatePath), { encoding: 'utf-8' });
     const stackName = `cdk-atmosphere-integ-${this.name}-${path.basename(opts.templatePath).split('.')[0]}`;
@@ -325,7 +340,8 @@ export class Session {
       { StackName: stackName },
     );
 
-    return stackName;
+    const resources = await cfnRegion.describeStackResources({ StackName: stackName });
+    return [stackName, resources.StackResources ?? []];
   }
 
   public async destroy(opts: DestroyOptions) {
