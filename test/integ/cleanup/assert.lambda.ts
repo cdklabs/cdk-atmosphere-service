@@ -4,52 +4,29 @@ import { Session, SUCCESS_PAYLOAD } from '../service.session';
 export async function handler(_: any) {
 
   await Session.assert(async (session: Session) => {
-    const [allocateResponse] = await session.allocate({ pool: 'release', requester: 'test' } );
-    const body = JSON.parse(allocateResponse.body!);
-
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(response.body!);
     const account = body.environment.account;
     const region = body.environment.region;
 
-    await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region });
+    const stackName = await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region });
 
-    [] = await session.deallocate(body.id, { outcome: 'success' });
+    // simulate a deallocation
+    await session.allocations.end({ id: body.id, outcome: 'success' });
+    await session.environments.cleaning(body.id, account, region);
 
-    const waitTimeSeconds = 120;
-    session.log(`Waiting ${waitTimeSeconds} seconds for environment aws://${account}/${region} to be released...`);
-    await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTimeSeconds);
+    // invoke cleanup task
+    await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
 
-    session.log(`Waiting ${waitTimeSeconds} seconds for cleanup task to stop`);
-    await session.waitFor(async () => (await session.fetchStoppedCleanupTask(body.id)) !== undefined, waitTimeSeconds);
+    // assert environment is released
+    const environment = await session.fetchEnvironment(account, region);
+    assert.ok(!environment.Item);
 
-    const task = await session.fetchStoppedCleanupTask(body.id);
-    assert.strictEqual(task!.containers![0].exitCode, 0);
+    // assert stack is deleted
+    const stack = await session.fetchStack(stackName, region);
+    assert.ok(!stack);
 
-    // TODO assert stack was deleted
-
-  }, 'cleanup-deletes-simple-stack');
-
-  await Session.assert(async (session: Session) => {
-    const [allocateResponse] = await session.allocate({ pool: 'release', requester: 'test' } );
-    const body = JSON.parse(allocateResponse.body!);
-
-    const account = body.environment.account;
-    const region = body.environment.region;
-
-    await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region, terminationProtection: true });
-
-    [] = await session.deallocate(body.id, { outcome: 'success' });
-
-    const waitTimeSeconds = 120;
-    session.log(`Waiting ${waitTimeSeconds} seconds for environment aws://${account}/${region} to be released...`);
-    await session.waitFor(async () => (await session.fetchEnvironment(account, region)).Item === undefined, waitTimeSeconds);
-
-    session.log(`Waiting ${waitTimeSeconds} seconds for cleanup task to stop`);
-    await session.waitFor(async () => (await session.fetchStoppedCleanupTask(body.id)) !== undefined, waitTimeSeconds);
-
-    const task = await session.fetchStoppedCleanupTask(body.id);
-    assert.strictEqual(task!.containers![0].exitCode, 0);
-
-  }, 'cleanup-disables-termination-protection');
+  }, 'cleanup-deletes-stack-and-releases-environment');
 
   await Session.assert(async (session: Session) => {
     const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
@@ -57,25 +34,91 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    // deploy a stack that takes 2 minute to delete
-    await session.deploy({ templatePath: 'cleanup-timeout/stacks/two-minutes-delete-delay.yaml', region });
+    const stackName = await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region, terminationProtection: true });
 
-    // deallocate and limit the cleanup task duration to 10 seconds.
-    // ensuring the timoeout is triggered before the task completes
-    const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
+    // simulate a deallocation
+    await session.allocations.end({ id: body.id, outcome: 'success' });
+    await session.environments.cleaning(body.id, account, region);
 
-    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
-    await timeout;
+    // invoke cleanup task
+    await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
 
-    let environment = await session.fetchEnvironment(account, region);
-    assert.strictEqual(environment.Item?.status?.S, 'dirty');
+    // assert stack is deleted
+    const stack = await session.fetchStack(stackName, region);
+    assert.ok(!stack);
 
-    // wait for the cleanup task to complete
-    await session.waitFor(async () => (await session.fetchStoppedCleanupTask(body.id)) !== undefined, 180);
+  }, 'cleanup-disables-termination-protection');
 
-    // assert it didn't release the environment
+  await Session.assert(async (session: Session) => {
+
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(response.body!);
+    const account = body.environment.account;
+    const region = body.environment.region;
+
+    // simulate a deallocation
+    await session.allocations.end({ id: body.id, outcome: 'success' });
+    await session.environments.cleaning(body.id, account, region);
+
+    // simulates a cleanup timeout
+    await session.environments.dirty(body.id, account, region);
+
+    // invoke cleanup task
+    await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+
+    // assert stack remains dirty
+    const environment = await session.fetchEnvironment(account, region);
+    assert.strictEqual(environment.Item?.status.S, 'dirty');
 
   }, 'cleanup-doesnt-release-a-dirty-environment');
+
+  await Session.assert(async (session: Session) => {
+
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(response.body!);
+    const account = body.environment.account;
+    const region = body.environment.region;
+
+    const stackName = await session.deploy({ templatePath: 'cleanup/stacks/cannot-delete.yaml', region });
+
+    // simulate a deallocation
+    await session.allocations.end({ id: body.id, outcome: 'success' });
+    await session.environments.cleaning(body.id, account, region);
+
+    // invoke cleanup task
+    await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+
+    // assert environment is dirty
+    const environment = await session.fetchEnvironment(account, region);
+    assert.strictEqual(environment.Item?.status.S, 'dirty');
+
+    await session.destroy({ stackName, region });
+
+  }, 'cleanup-marks-environment-dirty-if-fails-to-delete-stack');
+
+  await Session.assert(async (session: Session) => {
+
+    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(response.body!);
+    const account = body.environment.account;
+    const region = body.environment.region;
+
+    const stackName = await session.deploy({ templatePath: 'cleanup/stacks/thiry-seconds-delete-delay.yaml', region });
+
+    // simulate a deallocation
+    await session.allocations.end({ id: body.id, outcome: 'success' });
+    await session.environments.cleaning(body.id, account, region);
+
+    // invoke cleanup task with a short timeout so it fails on timeout
+    await session.cleanup({ allocationId: body.id, timeoutSeconds: 10 });
+
+    // assert environment is dirty
+    const environment = await session.fetchEnvironment(account, region);
+    assert.strictEqual(environment.Item?.status.S, 'dirty');
+
+    await session.destroy({ stackName, region });
+
+  }, 'cleanup-marks-environment-dirty-if-fails-on-timeout');
 
   return SUCCESS_PAYLOAD;
 
