@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { DeleteObjectsCommand, DeleteObjectsCommandInput, ListObjectVersionsCommandOutput, S3 } from '@aws-sdk/client-s3';
+import { DeleteObjectsCommand, ListObjectVersionsCommandOutput, S3 } from '@aws-sdk/client-s3';
 
 /**
  * Options for `empty`.
@@ -19,7 +19,7 @@ export class BucketCleaner {
 
   constructor(private readonly s3: S3) {}
 
-  public async empty(opts: EmptyOptions): Promise<void> {
+  public async clean(opts: EmptyOptions): Promise<void> {
     let isTruncated = true;
     let keyMarker: string | undefined = undefined;
     let versionIdMarker: string | undefined = undefined;
@@ -42,36 +42,37 @@ export class BucketCleaner {
         VersionIdMarker: versionIdMarker,
       });
 
-      if (!response.Versions && !response.DeleteMarkers) {
-        console.log('Bucket is already empty.');
-        break;
-      }
+      const versions = response.Versions ?? [];
+      const deleteMarkers = response.DeleteMarkers ?? [];
 
       const objectsToDelete = [
-        ...(response.Versions || []).map((version) => ({
+        ...versions.map((version) => ({
           Key: version.Key!,
           VersionId: version.VersionId,
         })),
-        ...(response.DeleteMarkers || []).map((marker) => ({
+        ...deleteMarkers.map((marker) => ({
           Key: marker.Key!,
           VersionId: marker.VersionId,
         })),
       ];
 
+      if (objectsToDelete.length === 0) {
+        console.log('Bucket is already empty.');
+        break;
+      }
+
       if (objectsToDelete.length > 0) {
-        const deleteCommand: DeleteObjectsCommandInput = {
+        await this.s3.send(new DeleteObjectsCommand({
           Bucket: opts.bucketName,
           Delete: {
             Objects: objectsToDelete,
             Quiet: true,
           },
-        };
-
-        await this.s3.send(new DeleteObjectsCommand(deleteCommand));
+        }));
         console.log(`Deleted ${objectsToDelete.length} objects.`);
       }
 
-      isTruncated = response.IsTruncated || false;
+      isTruncated = response.IsTruncated ?? false;
       keyMarker = response.NextKeyMarker;
       versionIdMarker = response.NextVersionIdMarker;
     }

@@ -21,7 +21,31 @@ describe('BucketCleaner', () => {
 
       jest.advanceTimersByTime(1000);
 
-      await expect(cleaner.empty({ bucketName: 'bucket', timeoutDate })).rejects.toThrow(`Operation timed out. Timeout date: ${timeoutDate.toISOString()}`);
+      await expect(cleaner.clean({ bucketName: 'bucket', timeoutDate })).rejects.toThrow(`Operation timed out. Timeout date: ${timeoutDate.toISOString()}`);
+
+    });
+
+    test('isTruncated defaults to false', async () => {
+
+      const cleaner = new BucketCleaner(new S3());
+      const timeoutDate = new Date(Date.now() + 10 * 1000);
+
+      s3Mock.on(ListObjectVersionsCommand)
+        .resolvesOnce({
+          Versions: [{ Key: 'key1', VersionId: 'v1' }],
+          DeleteMarkers: [{ Key: 'key2', VersionId: 'v2' }],
+        });
+
+      await cleaner.clean({ bucketName: 'bucket', timeoutDate });
+
+      expect(s3Mock).toHaveReceivedCommandTimes(ListObjectVersionsCommand, 1);
+      expect(s3Mock).toHaveReceivedCommandWith(DeleteObjectsCommand, {
+        Bucket: 'bucket',
+        Delete: {
+          Objects: [{ Key: 'key1', VersionId: 'v1' }, { Key: 'key2', VersionId: 'v2' }],
+          Quiet: true,
+        },
+      });
 
     });
 
@@ -31,14 +55,22 @@ describe('BucketCleaner', () => {
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       s3Mock.on(ListObjectVersionsCommand)
-        .resolvesOnce({ Versions: [{ Key: 'key1', VersionId: 'v1' }], DeleteMarkers: [{ Key: 'key2', VersionId: 'v2' }] })
+        .resolvesOnce({
+          Versions: [{ Key: 'key1', VersionId: 'v1' }],
+          DeleteMarkers: [{ Key: 'key2', VersionId: 'v2' }],
+          IsTruncated: true,
+        })
         .resolvesOnce({});
 
-      await cleaner.empty({ bucketName: 'bucket', timeoutDate });
+      await cleaner.clean({ bucketName: 'bucket', timeoutDate });
 
       expect(s3Mock).toHaveReceivedCommandTimes(ListObjectVersionsCommand, 2);
       expect(s3Mock).toHaveReceivedCommandWith(DeleteObjectsCommand, {
-        Bucket: 'asd',
+        Bucket: 'bucket',
+        Delete: {
+          Objects: [{ Key: 'key1', VersionId: 'v1' }, { Key: 'key2', VersionId: 'v2' }],
+          Quiet: true,
+        },
       });
 
     });
@@ -50,7 +82,7 @@ describe('BucketCleaner', () => {
 
       s3Mock.on(ListObjectVersionsCommand).resolves({});
 
-      await cleaner.empty({ bucketName: 'bucket', timeoutDate });
+      await cleaner.clean({ bucketName: 'bucket', timeoutDate });
 
     });
 

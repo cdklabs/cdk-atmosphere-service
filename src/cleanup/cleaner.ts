@@ -28,6 +28,7 @@ export class Cleaner {
 
   private readonly credentials: AwsCredentialIdentityProvider;
   private readonly cfn: CloudFormation;
+  private readonly bucketCleaner: BucketCleaner;
 
   constructor(private readonly environment: Environment) {
     this.credentials = fromTemporaryCredentials({
@@ -37,6 +38,7 @@ export class Cleaner {
       },
     });
     this.cfn = new CloudFormation({ credentials: this.credentials, region: this.environment.region });
+    this.bucketCleaner = new BucketCleaner(new S3({ credentials: this.credentials, region: this.environment.region }));
   }
 
   public async clean(timeoutSeconds: number) {
@@ -69,21 +71,15 @@ export class Cleaner {
 
   private async deleteStack(stack: Stack, timeoutDate: Date): Promise<DeleteStackResult> {
 
-    if (!stack.StackName) {
-      // how can this be...
-      throw new Error('Stack name is undefined');
-    }
-
     try {
 
       if (stack.StackStatus !== 'DELETE_IN_PROGRESS') {
 
         console.log(`Gathering buckets in stack ${stack.StackName}`);
         const buckets = ((await this.cfn.describeStackResources({ StackName: stack.StackName })).StackResources ?? []).filter(r => r.ResourceType === 'AWS::S3::Bucket').map(r => r.PhysicalResourceId!);
-        const bucketCleaner = new BucketCleaner(new S3({ credentials: this.credentials, region: this.environment.region }));
 
         console.log(`Emptying buckets in stack ${stack.StackName}`);
-        const bucketCleanup = buckets.map(b => bucketCleaner.empty({ bucketName: b, timeoutDate }));
+        const bucketCleanup = buckets.map(b => this.bucketCleaner.clean({ bucketName: b, timeoutDate }));
         await Promise.all(bucketCleanup);
 
         this.log(`Disabling termination protection of stack ${stack.StackName}`);
@@ -104,7 +100,7 @@ export class Cleaner {
       );
       this.log(`Stack ${stack.StackName} deleted.`);
 
-      return { name: stack.StackName };
+      return { name: stack.StackName! };
     } catch (e: any) {
       return { name: stack.StackName!, error: e };
     }

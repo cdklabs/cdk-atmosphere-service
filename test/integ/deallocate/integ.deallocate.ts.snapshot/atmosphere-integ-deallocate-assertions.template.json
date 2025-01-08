@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2334f2532772b00c9e0343548b869f188a6dc89c67c79d824c728201f9e8cbad.zip"
+     "S3Key": "b5b0fe0bd053430267cd9c03f9c37304f48597d17a3493034c43595ecc3c8ef5.zip"
     },
     "Description": "test/integ/deallocate/assert.lambda.ts",
     "Environment": {
@@ -89,7 +89,20 @@
       },
       "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
        "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
-      }
+      },
+      "CDK_ATMOSPHERE_CLEANUP_CLUSTER_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputFnGetAttAtmosphereCleanupCluster30204BBCArn57501D75"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_DEFINITION_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereCleanupTaskDefinition211D8C31C390C734"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_SUBNET_ID": {
+       "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereCleanupVpcPublicSubnet1Subnet655A8A5BBE644BE4"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_SECURITY_GROUP_ID": {
+       "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_CONTAINER_NAME": "main"
      }
     },
     "Handler": "index.handler",
@@ -133,7 +146,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1736169404335"
+    "salt": "1736314598680"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -312,6 +325,29 @@
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
    }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0CLUSTER0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputFnGetAttAtmosphereCleanupCluster30204BBCArn57501D75"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0DEFINITION0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereCleanupTaskDefinition211D8C31C390C734"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0SUBNET0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereCleanupVpcPublicSubnet1Subnet655A8A5BBE644BE4"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0SECURITY0GROUP0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0CONTAINER0NAME": {
+   "Value": "main"
   },
   "AssertionResultsLambdaInvoke2f913ec1967134622ebb03d58dfcaef8": {
    "Value": {
