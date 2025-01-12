@@ -27,13 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/dev/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler3
 });
 module.exports = __toCommonJS(assert_lambda_exports);
-var assert2 = __toESM(require("assert"));
 
 // test/integ/service.session.ts
 var assert = __toESM(require("assert"));
@@ -76,11 +75,17 @@ function v4(options, buf, offset) {
     return native_default.randomUUID();
   }
   options = options || {};
-  const rnds = options.random || (options.rng || rng)();
+  const rnds = options.random ?? options.rng?.() ?? rng();
+  if (rnds.length < 16) {
+    throw new Error("Random bytes length must be >= 16");
+  }
   rnds[6] = rnds[6] & 15 | 64;
   rnds[8] = rnds[8] & 63 | 128;
   if (buf) {
     offset = offset || 0;
+    if (offset < 0 || offset + 16 > buf.length) {
+      throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
+    }
     for (let i = 0; i < 16; ++i) {
       buf[offset + i] = rnds[i];
     }
@@ -993,46 +998,11 @@ var Session = class _Session {
   }
 };
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/dev/assert.lambda.ts
 async function handler3(_) {
-  await Session.assert(async (session) => {
-    const [response] = await session.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const [, timeout] = await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: 10 });
-    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
-    await timeout;
-    const environment = await session.fetchEnvironment(account, region);
-    assert2.strictEqual(environment.Item?.status?.S, "dirty");
-  }, "cleanup-timeout-triggered-before-cleanup-finished");
-  await Session.assert(async (session) => {
-    const [response] = await session.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const [, timeout] = await session.deallocate(body.id, { outcome: "success", cleanupDurationSeconds: 30 });
-    await session.environments.release(body.id, account, region);
-    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
-    await timeout;
-    const environment = await session.fetchEnvironment(account, region);
-    assert2.ok(!environment.Item);
-  }, "cleanup-timeout-triggered-after-cleanup-finished");
-  await Session.assert(async (session) => {
-    const [response] = await session.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const allocationId = body.id;
-    const [, timeout] = await session.deallocate(allocationId, { outcome: "success", cleanupDurationSeconds: 60 });
-    await session.environments.release(allocationId, account, region);
-    [] = await session.allocate({ pool: "release", requester: "test" });
-    session.log(`Waiting for cleanup of allocation ${allocationId} to timeout`);
-    await timeout;
-    const environment = await session.fetchEnvironment(account, region);
-    assert2.notStrictEqual(environment.Item?.status?.S, "dirty");
-  }, "cleanup-timeout-triggered-on-reallocated-environment");
-  return SUCCESS_PAYLOAD;
+  return Session.assert(async () => {
+    return;
+  });
 }
 if (Session.isLocal()) {
   void handler3({});
