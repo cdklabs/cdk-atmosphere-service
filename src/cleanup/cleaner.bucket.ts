@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { DeleteObjectsCommand, ListObjectVersionsCommandOutput, S3 } from '@aws-sdk/client-s3';
+import { DeleteObjectsCommand, ListObjectVersionsCommandOutput, NoSuchBucket, S3, waitUntilBucketNotExists } from '@aws-sdk/client-s3';
 
 /**
- * Options for `empty`.
+ * Options for `clean`.
  */
-export interface EmptyOptions {
+export interface CleanOptions {
   /**
    * Bucket name.
    */
@@ -15,11 +15,26 @@ export interface EmptyOptions {
   readonly timeoutDate: Date;
 }
 
+/**
+ * Options for `delete`.
+ */
+export interface DeleteOptions {
+  /**
+   * Bucket name.
+   */
+  readonly bucketName: string;
+
+  /**
+   * Timeout date after which the operation should fail.
+   */
+  readonly timeoutDate: Date;
+}
+
 export class BucketCleaner {
 
   constructor(private readonly s3: S3) {}
 
-  public async clean(opts: EmptyOptions): Promise<void> {
+  public async clean(opts: CleanOptions): Promise<void> {
     let isTruncated = true;
     let keyMarker: string | undefined = undefined;
     let versionIdMarker: string | undefined = undefined;
@@ -78,5 +93,28 @@ export class BucketCleaner {
     }
 
     console.log(`Bucket ${opts.bucketName} has been emptied.`);
+  }
+
+  public async delete(opts: DeleteOptions) {
+
+    console.log(`Deleting bucket: ${opts.bucketName}`);
+
+    try {
+      await this.s3.deleteBucket({ Bucket: opts.bucketName });
+    } catch (e: any) {
+      if (e instanceof NoSuchBucket) {
+        console.log(`Bucket ${opts.bucketName} does not exist. Skipping.`);
+        return;
+      }
+      throw e;
+    }
+
+    const maxWaitSeconds = (opts.timeoutDate.getTime() - Date.now()) / 1000;
+
+    console.log(`Bucket ${opts.bucketName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
+    await waitUntilBucketNotExists(
+      { client: this.s3, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
+      { Bucket: opts.bucketName },
+    );
   }
 }

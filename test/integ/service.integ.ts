@@ -169,7 +169,7 @@ export class AtmosphereIntegTest {
   }
 }
 
-class DestroyAspect implements cdk.IAspect {
+export class DestroyAspect implements cdk.IAspect {
   visit(node: IConstruct): void {
     if (cdk.CfnResource.isCfnResource(node)) {
       node.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);

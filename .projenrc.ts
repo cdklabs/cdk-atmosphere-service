@@ -21,6 +21,7 @@ const project = new CdklabsConstructLibrary({
     '@aws-sdk/client-cloudformation',
     '@aws-sdk/client-lambda',
     '@aws-sdk/client-ecs',
+    '@aws-sdk/client-ecr',
     '@aws-sdk/credential-providers',
     'uuid',
     'unzipper',

@@ -84,7 +84,7 @@ export class Cleanup extends Construct {
     // cleanup must be able to assume admin roles for all its environments
     // because it performs operations in those environments.
     for (const env of props.configuration.data.environments) {
-      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}`, env.adminRoleArn);
+      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}${env.region}`, env.adminRoleArn);
       adminRole.grantAssumeRole(this.task.taskRole);
     }
 
