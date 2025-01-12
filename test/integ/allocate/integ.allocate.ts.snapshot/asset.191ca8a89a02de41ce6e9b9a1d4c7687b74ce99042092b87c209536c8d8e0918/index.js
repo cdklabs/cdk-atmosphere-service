@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler3
@@ -76,11 +76,17 @@ function v4(options, buf, offset) {
     return native_default.randomUUID();
   }
   options = options || {};
-  const rnds = options.random || (options.rng || rng)();
+  const rnds = options.random ?? options.rng?.() ?? rng();
+  if (rnds.length < 16) {
+    throw new Error("Random bytes length must be >= 16");
+  }
   rnds[6] = rnds[6] & 15 | 64;
   rnds[8] = rnds[8] & 63 | 128;
   if (buf) {
     offset = offset || 0;
+    if (offset < 0 || offset + 16 > buf.length) {
+      throw new RangeError(`UUID byte range ${offset}:${offset + 15} is out of buffer bounds`);
+    }
     for (let i = 0; i < 16; ++i) {
       buf[offset + i] = rnds[i];
     }
@@ -993,29 +999,25 @@ var Session = class _Session {
   }
 };
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 async function handler3(_) {
   await Session.assert(async (session) => {
-    const [allocateResponse] = await session.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    const account = allocationResponseBody.environment.account;
-    const region = allocationResponseBody.environment.region;
-    const [deallocateResponse] = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(deallocateResponse.status, 200);
-    const environment = await session.fetchEnvironment(account, region);
-    assert2.strictEqual(environment.Item.status.S, "cleaning");
-    const allocation = await session.fetchAllocation(allocationResponseBody.id);
-    assert2.ok(allocation.Item.end?.S);
-    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
-    assert2.ok(cleanupTimeoutSchedule);
-  }, "deallocate-creates-right-resources");
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 200);
+    const body = JSON.parse(response.body);
+    const environment = await session.fetchEnvironment(body.environment.account, body.environment.region);
+    assert2.strictEqual(environment.Item.status.S, "in-use");
+    const allocation = await session.fetchAllocation(body.id);
+    assert2.strictEqual(allocation.Item.account.S, body.environment.account);
+    assert2.strictEqual(allocation.Item.region.S, body.environment.region);
+    const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
+    assert2.ok(timeoutSchedule);
+  }, "allocate-creates-the-right-resources");
   await Session.assert(async (session) => {
-    const [allocateResponse] = await session.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    [] = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    const [secondDeallocateResponse] = await session.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(secondDeallocateResponse.status, 200);
-  }, "deallocate-is-idempotent");
+    [] = await session.allocate({ pool: "release", requester: "test" });
+    const [response] = await session.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 423);
+  }, "allocate-responds-with-locked");
   return SUCCESS_PAYLOAD;
 }
 if (Session.isLocal()) {
