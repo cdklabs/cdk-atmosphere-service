@@ -27,12 +27,21 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/allocate/allocate.lambda.ts
-var allocate_lambda_exports = {};
-__export(allocate_lambda_exports, {
-  handler: () => handler
+// test/integ/dev/assert.lambda.ts
+var assert_lambda_exports = {};
+__export(assert_lambda_exports, {
+  handler: () => handler3
 });
-module.exports = __toCommonJS(allocate_lambda_exports);
+module.exports = __toCommonJS(assert_lambda_exports);
+
+// test/integ/service.session.ts
+var assert = __toESM(require("assert"));
+var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
+var import_client_cloudformation = require("@aws-sdk/client-cloudformation");
+var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
+var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
+
+// src/allocate/allocate.lambda.ts
 var import_client_sts = require("@aws-sdk/client-sts");
 
 // node_modules/uuid/dist/esm/stringify.js
@@ -86,90 +95,8 @@ function v4(options, buf, offset) {
 }
 var v4_default = v4;
 
-// src/cleanup/cleanup.client.ts
-var import_client_ecs = require("@aws-sdk/client-ecs");
-
-// src/envars.ts
-var ENV_PREFIX = "CDK_ATMOSPHERE_";
-var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
-var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
-var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
-var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
-var SCHEDULER_DLQ_ARN_ENV = `${ENV_PREFIX}SCHEDULER_DLQ_ARN`;
-var SCHEDULER_ROLE_ARN_ENV = `${ENV_PREFIX}SCHEDULER_ROLE_ARN`;
-var CLEANUP_TIMEOUT_FUNCTION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_FUNCTION_ARN`;
-var ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_FUNCTION_ARN`;
-var REST_API_ID_ENV = `${ENV_PREFIX}REST_API_ID`;
-var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
-var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
-var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
-var CLEANUP_CLUSTER_ARN_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_ARN`;
-var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`;
-var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
-var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
-var CLEANUP_TASK_CONTAINER_NAME_ENV = `${ENV_PREFIX}CLEANUP_TASK_CONTAINER_NAME`;
-var CLEANUP_TASK_ALLOCATION_ID = `${ENV_PREFIX}RUNTIME_CLEANUP_TASK_ALLOCATION_ID`;
-var CLEANUP_TASK_TIMEOUT_SECONDS = `${ENV_PREFIX}RUNTIME_CLEANUP_TASK_TIMEOUT_SECONDS`;
-var Envars = class _Envars {
-  static required(name) {
-    const value2 = _Envars.optional(name);
-    if (!value2) {
-      throw new Error(`Missing environment variable: ${name}`);
-    }
-    return value2;
-  }
-  static optional(name) {
-    return process.env[name];
-  }
-};
-
-// src/cleanup/cleanup.client.ts
-var CleanupClient = class {
-  constructor(props) {
-    this.props = props;
-    this.ecs = new import_client_ecs.ECS();
-  }
-  async start(opts) {
-    const response = await this.ecs.runTask({
-      cluster: this.props.clusterArn,
-      taskDefinition: this.props.taskDefinitionArn,
-      launchType: "FARGATE",
-      // for troubleshooting. this allows task filtering
-      // on the aws console.
-      startedBy: opts.allocation.id,
-      group: `aws://${opts.allocation.account}/${opts.allocation.region}`,
-      networkConfiguration: {
-        awsvpcConfiguration: {
-          subnets: [this.props.subnetId],
-          securityGroups: [this.props.securityGroupId],
-          assignPublicIp: "ENABLED"
-        }
-      },
-      overrides: {
-        containerOverrides: [
-          {
-            name: this.props.containerName,
-            environment: [
-              { name: CLEANUP_TASK_ALLOCATION_ID, value: opts.allocation.id },
-              { name: CLEANUP_TASK_TIMEOUT_SECONDS, value: `${opts.timeoutSeconds}` }
-            ]
-          }
-        ]
-      }
-    });
-    return response.tasks[0].taskArn;
-  }
-};
-
 // src/config/configuration.client.ts
 var s3 = __toESM(require("@aws-sdk/client-s3"));
-var EnvironmentNotFoundError = class extends Error {
-  constructor(account, region) {
-    super(`Environment aws://${account}/${region} not found`);
-    this.account = account;
-    this.region = region;
-  }
-};
 var ConfigurationClient = class {
   constructor(s3Location) {
     this.s3Location = s3Location;
@@ -180,19 +107,6 @@ var ConfigurationClient = class {
    */
   async listEnvironments(opts = {}) {
     return (await this.data).environments.filter((e) => opts.pool ? e.pool === opts.pool : true);
-  }
-  /**
-   * Retrieve a single environment based on account + region.
-   */
-  async getEnvironment(account, region) {
-    const envs = (await this.data).environments.filter((e) => e.account === account && e.region === region);
-    if (envs.length === 0) {
-      throw new EnvironmentNotFoundError(account, region);
-    }
-    if (envs.length > 1) {
-      throw new Error(`Multiple environments found for aws://${account}/${region}`);
-    }
-    return envs[0];
   }
   // lazy async getter
   get data() {
@@ -213,6 +127,33 @@ var ConfigurationClient = class {
       throw new Error(`Configuration file (s3://${this.s3Location.bucket}/${this.s3Location.key}) is empty`);
     }
     return JSON.parse(await response.Body.transformToString("utf-8"));
+  }
+};
+
+// src/envars.ts
+var ENV_PREFIX = "CDK_ATMOSPHERE_";
+var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
+var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
+var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
+var SCHEDULER_DLQ_ARN_ENV = `${ENV_PREFIX}SCHEDULER_DLQ_ARN`;
+var SCHEDULER_ROLE_ARN_ENV = `${ENV_PREFIX}SCHEDULER_ROLE_ARN`;
+var CLEANUP_TIMEOUT_FUNCTION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_FUNCTION_ARN`;
+var ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_FUNCTION_ARN`;
+var REST_API_ID_ENV = `${ENV_PREFIX}REST_API_ID`;
+var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
+var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
+var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
+var Envars = class _Envars {
+  static required(name) {
+    const value2 = _Envars.optional(name);
+    if (!value2) {
+      throw new Error(`Missing environment variable: ${name}`);
+    }
+    return value2;
+  }
+  static optional(name) {
+    return process.env[name];
   }
 };
 
@@ -284,39 +225,10 @@ var InvalidInputError = class extends Error {
     super(`Invalid input: ${message}`);
   }
 };
-var AllocationNotFoundError = class extends Error {
-  constructor(id) {
-    super(`Allocation ${id} not found`);
-  }
-};
 var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
-  }
-  /**
-   * Retrieve an allocation by id.
-   */
-  async get(id) {
-    const response = await this.ddbClient.getItem({
-      TableName: this.tableName,
-      Key: {
-        id: { S: id }
-      }
-    });
-    if (!response.Item) {
-      throw new AllocationNotFoundError(id);
-    }
-    return {
-      account: value("account", response.Item),
-      region: value("region", response.Item),
-      pool: value("pool", response.Item),
-      start: value("start", response.Item),
-      end: value("end", response.Item),
-      requester: value("requester", response.Item),
-      id: value("id", response.Item),
-      outcome: value("outcome", response.Item)
-    };
   }
   /**
    * Start an allocation for a specific environment. Returns the allocation id.
@@ -644,17 +556,6 @@ var RuntimeClients = class _RuntimeClients {
     }
     return this._scheduler;
   }
-  get cleanup() {
-    if (!this._cleanup) {
-      const clusterArn = Envars.required(CLEANUP_CLUSTER_ARN_ENV);
-      const taskDefinitionArn = Envars.required(CLEANUP_TASK_DEFINITION_ARN_ENV);
-      const subnetId = Envars.required(CLEANUP_TASK_SUBNET_ID_ENV);
-      const securityGroupId = Envars.required(CLEANUP_TASK_SECURITY_GROUP_ID_ENV);
-      const containerName = Envars.required(CLEANUP_TASK_CONTAINER_NAME_ENV);
-      this._cleanup = new CleanupClient({ clusterArn, taskDefinitionArn, subnetId, securityGroupId, containerName });
-    }
-    return this._cleanup;
-  }
 };
 
 // src/allocate/allocate.lambda.ts
@@ -774,6 +675,337 @@ async function grabCredentials(id, environment) {
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken
   };
+}
+
+// src/deallocate/deallocate.lambda.ts
+var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var ProxyError2 = class extends Error {
+  constructor(statusCode, message) {
+    super(`${statusCode}: ${message}`);
+    this.statusCode = statusCode;
+    this.message = message;
+  }
+};
+var clients2 = RuntimeClients.getOrCreate();
+async function handler2(event) {
+  console.log("Event:", JSON.stringify(event, null, 2));
+  try {
+    const id = (event.pathParameters ?? {}).id;
+    if (!id) {
+      throw new ProxyError2(400, "Missing 'id' path parameter");
+    }
+    console.log(`Extracted allocation id from path: ${id}`);
+    console.log("Parsing request body");
+    const request = parseRequestBody2(event.body);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError2(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
+    await clients2.environments.cleaning(id, allocation.account, allocation.region);
+    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients2.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
+    });
+    return success({ cleanupDurationSeconds });
+  } catch (e) {
+    if (e instanceof AllocationAlreadyEndedError) {
+      console.log(`Returning success because: ${e.message}`);
+      return success({ cleanupDurationSeconds: -1 });
+    }
+    console.error(e);
+    return {
+      statusCode: e instanceof ProxyError2 ? e.statusCode : 500,
+      body: JSON.stringify({ message: e.message })
+    };
+  }
+}
+function parseRequestBody2(body) {
+  if (!body) {
+    throw new ProxyError2(400, "Request body not found");
+  }
+  const parsed = JSON.parse(body);
+  if (!parsed.outcome) {
+    throw new ProxyError2(400, "'outcome' must be provided in the request body");
+  }
+  return parsed;
+}
+async function endAllocation(id, outcome) {
+  try {
+    return await clients2.allocations.end({ id, outcome });
+  } catch (e) {
+    if (e instanceof InvalidInputError) {
+      throw new ProxyError2(400, e.message);
+    }
+    throw e;
+  }
+}
+function success(response) {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(response)
+  };
+}
+
+// test/with.ts
+async function env(envVars, fn) {
+  const originalEnv = { ...process.env };
+  try {
+    Object.entries(envVars).forEach(([key, value2]) => {
+      process.env[key] = value2;
+    });
+    return await fn();
+  } finally {
+    process.env = originalEnv;
+  }
+}
+
+// test/integ/service.session.ts
+var apigw = new import_client_api_gateway.APIGateway();
+var dynamo = new import_client_dynamodb.DynamoDB();
+var cfn = new import_client_cloudformation.CloudFormation();
+var scheduler = new import_client_scheduler2.Scheduler();
+var SUCCESS_PAYLOAD = "OK";
+var Session = class _Session {
+  constructor(vars, name) {
+    this.vars = vars;
+    this.name = name;
+    this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
+    this.environments = new EnvironmentsClient(this.vars[ENVIRONMENTS_TABLE_NAME_ENV]);
+  }
+  /**
+   * Running locally or in lambda as part of integ.
+   */
+  static isLocal() {
+    return process.env.CDK_ATMOSPHERE_INTEG !== "true";
+  }
+  /**
+   * Run an assertion function in a fresh service state.
+   */
+  static async assert(assertion, name = "default") {
+    const session = await this.create(name);
+    await session.clear();
+    let failed = false;
+    try {
+      session.log("\u{1F3AC} Start \u{1F3AC}");
+      await assertion(session);
+      session.log("\u2705 Success \u2705");
+      return SUCCESS_PAYLOAD;
+    } catch (error) {
+      session.log("\u274C !! Fail !! \u274C");
+      failed = true;
+      throw error;
+    } finally {
+      if (failed && _Session.isLocal()) {
+        session.sessionLog("Not clearing state to help troubleshoot the error");
+      } else {
+        await session.clear();
+      }
+    }
+  }
+  static async create(sessionName) {
+    let envValue;
+    if (_Session.isLocal()) {
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev-assertions" })).Stacks ?? [])[0];
+      assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
+      envValue = (name) => {
+        const value2 = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
+        assert.ok(value2, `Missing output '${name}' from dev stack`);
+        return value2;
+      };
+    } else {
+      envValue = (name) => Envars.required(name);
+    }
+    return new _Session({
+      [ALLOCATIONS_TABLE_NAME_ENV]: envValue(ALLOCATIONS_TABLE_NAME_ENV),
+      [ENVIRONMENTS_TABLE_NAME_ENV]: envValue(ENVIRONMENTS_TABLE_NAME_ENV),
+      [CONFIGURATION_BUCKET_ENV]: envValue(CONFIGURATION_BUCKET_ENV),
+      [CONFIGURATION_KEY_ENV]: envValue(CONFIGURATION_KEY_ENV),
+      [SCHEDULER_DLQ_ARN_ENV]: envValue(SCHEDULER_DLQ_ARN_ENV),
+      [SCHEDULER_ROLE_ARN_ENV]: envValue(SCHEDULER_ROLE_ARN_ENV),
+      [CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: envValue(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
+      [ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: envValue(ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
+      [REST_API_ID_ENV]: envValue(REST_API_ID_ENV),
+      [ALLOCATIONS_RESOURCE_ID_ENV]: envValue(ALLOCATIONS_RESOURCE_ID_ENV),
+      [ALLOCATION_RESOURCE_ID_ENV]: envValue(ALLOCATION_RESOURCE_ID_ENV),
+      [DEALLOCATE_FUNCTION_NAME_ENV]: envValue(DEALLOCATE_FUNCTION_NAME_ENV)
+    }, sessionName);
+  }
+  async allocate(body) {
+    const json = JSON.stringify(body);
+    const response = _Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
+    if (response.status !== 200) {
+      return [response, Promise.resolve()];
+    }
+    const responseBody = JSON.parse(response.body);
+    return [response, this.waitForAllocationTimeout(responseBody)];
+  }
+  async deallocate(id, body) {
+    const json = JSON.stringify(body);
+    const response = _Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
+    if (response.status !== 200) {
+      return [response, Promise.resolve()];
+    }
+    const responseBody = JSON.parse(response.body);
+    return [response, this.waitForCleanupTimeout(id, responseBody)];
+  }
+  async fetchEnvironment(account, region) {
+    return dynamo.getItem({
+      TableName: this.vars[ENVIRONMENTS_TABLE_NAME_ENV],
+      Key: {
+        account: { S: account },
+        region: { S: region }
+      }
+    });
+  }
+  async fetchAllocation(id) {
+    return dynamo.getItem({
+      TableName: this.vars[ALLOCATIONS_TABLE_NAME_ENV],
+      Key: { id: { S: id } }
+    });
+  }
+  async fetchAllocationTimeoutSchedule(allocationId) {
+    const response = await scheduler.listSchedules({
+      NamePrefix: `atmosphere.timeout.aloc_${allocationId}`
+    });
+    return response.Schedules?.[0];
+  }
+  async fetchCleanupTimeoutSchedule(allocationId) {
+    const response = await scheduler.listSchedules({
+      NamePrefix: `atmosphere.timeout.clean_${allocationId}`
+    });
+    return response.Schedules?.[0];
+  }
+  async waitFor(condition, timeoutSeconds, opts = {}) {
+    const startTime = Date.now();
+    const timeoutMs = timeoutSeconds * 1e3;
+    while (true) {
+      const finish = await condition();
+      if (finish) {
+        return;
+      }
+      const elapsed = Date.now() - startTime;
+      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds waiting for ${opts.message}`);
+      await new Promise((resolve) => setTimeout(resolve, 1e3));
+    }
+  }
+  async okFor(condition, timeoutSeconds) {
+    const startTime = Date.now();
+    const timeoutMs = timeoutSeconds * 1e3;
+    while (true) {
+      const result = await condition();
+      assert.ok(result);
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= timeoutMs) {
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1e3));
+    }
+  }
+  async deallocateLocal(id, jsonBody) {
+    this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
+    console.log();
+    const response = await env(this.vars, async () => {
+      return handler2({ body: jsonBody, pathParameters: { id } });
+    });
+    console.log();
+    return { status: response.statusCode, body: response.body };
+  }
+  async deallocateRemote(id, jsonBody) {
+    this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
+    return apigw.testInvokeMethod({
+      restApiId: this.vars[REST_API_ID_ENV],
+      resourceId: this.vars[ALLOCATION_RESOURCE_ID_ENV],
+      httpMethod: "DELETE",
+      pathWithQueryString: `/allocations/${id}`,
+      body: jsonBody
+    });
+  }
+  async allocateLocal(jsonBody) {
+    this.log(`Invoking local allocate handler with body: ${jsonBody}`);
+    console.log();
+    const response = await env(this.vars, async () => {
+      return handler({ body: jsonBody });
+    });
+    console.log();
+    return { status: response.statusCode, body: response.body };
+  }
+  async allocateRemote(jsonBody) {
+    this.log(`Sending allocation request with body: ${jsonBody}`);
+    return apigw.testInvokeMethod({
+      restApiId: this.vars[REST_API_ID_ENV],
+      resourceId: this.vars[ALLOCATIONS_RESOURCE_ID_ENV],
+      httpMethod: "POST",
+      pathWithQueryString: "/allocations",
+      body: jsonBody
+    });
+  }
+  async clear() {
+    this.sessionLog("Clearing state");
+    const environments = (await dynamo.scan({ TableName: this.vars[ENVIRONMENTS_TABLE_NAME_ENV] })).Items ?? [];
+    for (const environment of environments) {
+      this.sessionLog(`  \xBB deleting environment aws://${environment.account.S}/${environment.region.S}`);
+      await dynamo.deleteItem({
+        TableName: this.vars[ENVIRONMENTS_TABLE_NAME_ENV],
+        Key: {
+          account: { S: environment.account.S },
+          region: { S: environment.region.S }
+        }
+      });
+    }
+    const allocations = (await dynamo.scan({ TableName: this.vars[ALLOCATIONS_TABLE_NAME_ENV] })).Items ?? [];
+    for (const allocation of allocations) {
+      this.sessionLog(`  \xBB deleting allocation ${allocation.id.S}`);
+      await dynamo.deleteItem({
+        TableName: this.vars[ALLOCATIONS_TABLE_NAME_ENV],
+        Key: {
+          id: { S: allocation.id.S }
+        }
+      });
+    }
+    const schedules = (await scheduler.listSchedules({})).Schedules ?? [];
+    for (const schedule of schedules) {
+      this.sessionLog(`  \xBB deleting schedule ${schedule.Name}`);
+      await scheduler.deleteSchedule({ Name: schedule.Name });
+    }
+  }
+  async waitForAllocationTimeout(response) {
+    const waitTimeSeconds = response.durationSeconds + 60;
+    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds, {
+      message: `allocation ${response.id} to timeout`
+    });
+    return new Promise((resolve) => setTimeout(resolve, 5e3));
+  }
+  async waitForCleanupTimeout(id, response) {
+    const waitTimeSeconds = response.cleanupDurationSeconds + 60;
+    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds, {
+      message: `cleanup of allocation ${id} to timeout`
+    });
+    return new Promise((resolve) => setTimeout(resolve, 5e3));
+  }
+  log(message) {
+    console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [assertion] [${this.name}] ${message}`);
+  }
+  sessionLog(message) {
+    console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] [session] [${this.name}] ${message}`);
+  }
+};
+
+// test/integ/dev/assert.lambda.ts
+async function handler3(_) {
+  return Session.assert(async () => {
+    return;
+  });
+}
+if (Session.isLocal()) {
+  void handler3({});
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

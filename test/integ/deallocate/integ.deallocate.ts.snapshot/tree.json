@@ -2155,7 +2155,11 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
+<<<<<<< HEAD
                               "s3Key": "4561f98ecaff3d41ebd05fdeff4eb8c242f7e718e6b8969e114f5454cb6a52b2.zip"
+=======
+                              "s3Key": "5154070af0817467f7b568c29e0f11c2c3a434a2615aa465dbc2b3e69ee09080.zip"
+>>>>>>> main
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -2218,9 +2222,15 @@
                       "version": "2.173.1"
                     }
                   },
+<<<<<<< HEAD
                   "AdminRole${Token[AWS.AccountId.6]}": {
                     "id": "AdminRole${Token[AWS.AccountId.6]}",
                     "path": "atmosphere-integ-deallocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.6]}",
+=======
+                  "AdminRole${Token[AWS.AccountId.1]}": {
+                    "id": "AdminRole${Token[AWS.AccountId.1]}",
+                    "path": "atmosphere-integ-deallocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}",
+>>>>>>> main
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3622,7 +3632,11 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
+<<<<<<< HEAD
                       "s3Key": "b5b0fe0bd053430267cd9c03f9c37304f48597d17a3493034c43595ecc3c8ef5.zip"
+=======
+                      "s3Key": "4055d69ee22e54ac7b19067ef7f0d57f31b2f6d0cc21ab3584f2e762bc70fc14.zip"
+>>>>>>> main
                     },
                     "description": "test/integ/deallocate/assert.lambda.ts",
                     "environment": {
@@ -3854,7 +3868,7 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.173.4-alpha.0"
+                  "version": "2.175.1-alpha.0"
                 }
               },
               "Default": {
@@ -3894,7 +3908,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.173.4-alpha.0"
+              "version": "2.175.1-alpha.0"
             }
           },
           "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -3980,13 +3994,13 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "2.173.4-alpha.0"
+              "version": "2.175.1-alpha.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "2.173.4-alpha.0"
+          "version": "2.175.1-alpha.0"
         }
       },
       "Tree": {
