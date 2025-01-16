@@ -27,6 +27,8 @@ const regions = [
 const adminRoles = [
   { account: '897395725265', adminRole: 'arn:aws:iam::897395725265:role/CDKAtmosphereAdmin' },
   { account: '480359821526', adminRole: 'arn:aws:iam::480359821526:role/CDKAtmosphereAdmin' },
+  { account: '061039769633', adminRole: 'arn:aws:iam::061039769633:role/CDKAtmosphereAdmin' },
+  { account: '626635430101', adminRole: 'arn:aws:iam::626635430101:role/CDKAtmosphereAdmin' },
 ];
 
 const environments: Environment[] = [];

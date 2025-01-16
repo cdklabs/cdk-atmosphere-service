@@ -1,3 +1,4 @@
+import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -43,9 +44,11 @@ export class Scheduler extends Construct {
 
     this.cleanupTimeoutFunction = new CleanupTimeoutFunction(this, 'CleanupTimeout', {
       deadLetterQueue: this.dlq,
+      timeout: Duration.minutes(1),
     });
     this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout', {
       deadLetterQueue: this.dlq,
+      timeout: Duration.minutes(1),
     },
     );
 

@@ -1,16 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudFormation, DeleteStackCommand, paginateDescribeStacks, Stack, UpdateTerminationProtectionCommand, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ECR } from '@aws-sdk/client-ecr';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { S3 } from '@aws-sdk/client-s3';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { Environment } from '../config';
-import { BucketCleaner } from './cleaner.bucket';
-import { EcrCleaner } from './cleaner.ecr';
+import { BucketsCleaner } from './cleaner.buckets';
+import { ReposCleaner } from './cleaner.repos';
 
 export interface DeleteStackResult {
   readonly name: string;
@@ -31,8 +27,6 @@ export class Cleaner {
 
   private readonly credentials: AwsCredentialIdentityProvider;
   private readonly cfn: CloudFormation;
-  private readonly bucketCleaner: BucketCleaner;
-  private readonly ecrCleaner: EcrCleaner;
 
   constructor(private readonly environment: Environment) {
     this.credentials = fromTemporaryCredentials({
@@ -42,8 +36,6 @@ export class Cleaner {
       },
     });
     this.cfn = new CloudFormation({ credentials: this.credentials, region: this.environment.region });
-    this.bucketCleaner = new BucketCleaner(new S3({ credentials: this.credentials, region: this.environment.region }));
-    this.ecrCleaner = new EcrCleaner(new ECR({ credentials: this.credentials, region: this.environment.region }));
   }
 
   public async clean(timeoutSeconds: number) {
@@ -78,17 +70,27 @@ export class Cleaner {
 
     try {
 
-      console.log(`Gathering buckets in stack ${stack.StackName}`);
-      const buckets = ((await this.cfn.describeStackResources({ StackName: stack.StackName })).StackResources ?? []).filter(r => r.ResourceType === 'AWS::S3::Bucket').map(r => r.PhysicalResourceId!);
+      // most commonly, stacks cannot be deleted because their buckets or ECR repositories
+      // contain objects, and must be cleaned before attempting deletion.
+      // so instead, we just forcefully remove them and hope it happens before CFN decides to fail
+      // stack deletion. if this won't suffice, we can catch a DELETE_FAILED state and retry.
 
-      console.log(`Gathering ECR repositories in stack ${stack.StackName}`);
-      const ecrRepos = ((await this.cfn.describeStackResources({ StackName: stack.StackName })).StackResources ?? []).filter(r => r.ResourceType === 'AWS::ECR::Repository').map(r => r.PhysicalResourceId!);
+      const bucketsCleaner = new BucketsCleaner(this.credentials, this.environment.region, stack);
+      console.log(`Cleaning buckets in stack ${stack.StackName}`);
+      await bucketsCleaner.clean({ timeoutDate });
+
+      const reposCleaner = new ReposCleaner(this.credentials, this.environment.region, stack);
+      console.log(`Cleaning repositories in stack ${stack.StackName}`);
+      // not passing timeout date here because this operation does not need to wait for anything
+      await reposCleaner.clean();
+
+      if (stack.ParentId) {
+        // for nested stacks, we stop here because deletion
+        // itself will be done via the parent stack.
+        return { name: stack.StackName! };
+      }
 
       if (stack.StackStatus !== 'DELETE_IN_PROGRESS') {
-
-        console.log(`Emptying buckets in stack ${stack.StackName}`);
-        const bucketCleanup = buckets.map(b => this.bucketCleaner.clean({ bucketName: b, timeoutDate }));
-        await Promise.all(bucketCleanup);
 
         this.log(`Disabling termination protection of stack ${stack.StackName}`);
         await this.cfn.send(new UpdateTerminationProtectionCommand({
@@ -107,12 +109,6 @@ export class Cleaner {
         { StackName: stack.StackName },
       );
       this.log(`Stack ${stack.StackName} deleted.`);
-
-      const bucketsDeletion = buckets.map(b => this.bucketCleaner.delete({ bucketName: b, timeoutDate }));
-      await Promise.all(bucketsDeletion);
-
-      const reposDeletion = ecrRepos.map(r => this.ecrCleaner.delete({ repositoryName: r, timeoutDate }));
-      await Promise.all(reposDeletion);
 
       return { name: stack.StackName! };
     } catch (e: any) {

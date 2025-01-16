@@ -1,3 +1,4 @@
+import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
@@ -43,7 +44,9 @@ export class Allocate extends Construct {
   constructor(scope: Construct, id: string, props: AllocateProps) {
     super(scope, id);
 
-    this.function = new AllocateFunction(this, 'Function');
+    this.function = new AllocateFunction(this, 'Function', {
+      timeout: Duration.minutes(1),
+    });
 
     props.configuration.grantRead(this.function);
     props.environments.grantReadWrite(this.function);

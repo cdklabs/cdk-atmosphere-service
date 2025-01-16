@@ -1,3 +1,4 @@
+import { Duration } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
@@ -42,7 +43,9 @@ export class Deallocate extends Construct {
   constructor(scope: Construct, id: string, props: DeallocateProps) {
     super(scope, id);
 
-    this.function = new DeallocateFunction(this, 'Function');
+    this.function = new DeallocateFunction(this, 'Function', {
+      timeout: Duration.minutes(1),
+    });
 
     props.allocations.grantReadWrite(this.function);
     props.environments.grantReadWrite(this.function);

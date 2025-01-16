@@ -34,9 +34,10 @@ export async function handler(req: CleanupRequest) {
   } catch (e: any) {
 
     if (e instanceof EnvironmentAlreadyDirtyError) {
-      // unlikely but can happen if the cleanup timeout event already triggered
-      // nothing to do here since cleanup was successfull and we don't need to make any
-      // db changes.
+      // unlikely but can happen if the cleanup timeout event already triggered.
+      // even though we successfully cleaned the environment, we still keep it marked as
+      // dirty because it took too long, and needs investigation.
+      console.log(`Environment ${env} was cleaned successfully, but it took too long to complete.`);
       return;
     }
 

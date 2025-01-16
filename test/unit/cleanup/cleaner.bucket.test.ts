@@ -1,7 +1,7 @@
 import { S3Client, S3, ListObjectVersionsCommand, DeleteObjectsCommand } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import { BucketCleaner } from '../../../src/cleanup/cleaner.bucket';
+import { BucketsCleaner } from '../../../src/cleanup/cleaner.buckets';
 
 describe('BucketCleaner', () => {
 
@@ -12,11 +12,11 @@ describe('BucketCleaner', () => {
     s3Mock.reset();
   });
 
-  describe('empty', () => {
+  describe('delete', () => {
 
     test('throws error if timeout expires', async () => {
 
-      const cleaner = new BucketCleaner(new S3());
+      const cleaner = new BucketsCleaner(new S3());
       const timeoutDate = new Date();
 
       jest.advanceTimersByTime(1000);
@@ -27,7 +27,7 @@ describe('BucketCleaner', () => {
 
     test('isTruncated defaults to false', async () => {
 
-      const cleaner = new BucketCleaner(new S3());
+      const cleaner = new BucketsCleaner(new S3());
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       s3Mock.on(ListObjectVersionsCommand)
@@ -51,7 +51,7 @@ describe('BucketCleaner', () => {
 
     test('keeps going until no versions and no delete markers', async () => {
 
-      const cleaner = new BucketCleaner(new S3());
+      const cleaner = new BucketsCleaner(new S3());
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       s3Mock.on(ListObjectVersionsCommand)
@@ -77,7 +77,7 @@ describe('BucketCleaner', () => {
 
     test('returns when no versions and no delete markers exists', async () => {
 
-      const cleaner = new BucketCleaner(new S3());
+      const cleaner = new BucketsCleaner(new S3());
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       s3Mock.on(ListObjectVersionsCommand).resolves({});
