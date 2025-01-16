@@ -17,6 +17,10 @@ export interface CleanOptions {
 
 export class BucketsCleaner {
 
+  public static forStack(credentials: AwsCredentialIdentityProvider, region: string, stack: Stack): BucketsCleaner {
+    return new BucketsCleaner(credentials, region, stack);
+  }
+
   private readonly cfn: CloudFormation;
   private readonly s3: S3;
 
