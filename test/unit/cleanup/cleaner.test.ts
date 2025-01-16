@@ -97,7 +97,9 @@ describe('Cleaner', () => {
       cfnMock.on(DescribeStacksCommand)
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() }] })
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'DELETE_COMPLETE', CreationTime: new Date() }] });
-      cfnMock.on(DescribeStackResourcesCommand).resolves({});
+
+      jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
+      jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
       const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
       await cleaner.clean(10);
@@ -118,7 +120,9 @@ describe('Cleaner', () => {
       cfnMock.on(DescribeStacksCommand)
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'DELETE_IN_PROGRESS', CreationTime: new Date() }] })
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'DELETE_COMPLETE', CreationTime: new Date() }] });
-      cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+
+      jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
+      jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
       const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
       await cleaner.clean(10);
@@ -131,7 +135,9 @@ describe('Cleaner', () => {
 
       cfnMock.on(DescribeStacksCommand)
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date(), ParentId: 'parent' }] });
-      cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
+
+      jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
+      jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
       const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
       await cleaner.clean(10);
@@ -146,8 +152,10 @@ describe('Cleaner', () => {
       cfnMock.on(DescribeStacksCommand)
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'CREATE_COMPLETE', CreationTime: new Date() }] })
         .resolvesOnce({ Stacks: [{ StackName: 'stack', StackStatus: 'DELETE_COMPLETE', CreationTime: new Date() }] });
-      cfnMock.on(DescribeStackResourcesCommand).resolves({ StackResources: [] });
       cfnMock.on(UpdateTerminationProtectionCommand).rejects(new Error('Cannot do it'));
+
+      jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
+      jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
       const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
       try {

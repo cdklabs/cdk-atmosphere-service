@@ -17,10 +17,6 @@ export interface CleanOptions {
 
 export class BucketsCleaner {
 
-  public static forStack(credentials: AwsCredentialIdentityProvider, region: string, stack: Stack): BucketsCleaner {
-    return new BucketsCleaner(credentials, region, stack);
-  }
-
   private readonly cfn: CloudFormation;
   private readonly s3: S3;
 
@@ -49,7 +45,8 @@ export class BucketsCleaner {
 
   private async listBuckets(): Promise<string[]> {
     console.log(`Collecting buckets in stack ${this.stack.StackName}`);
-    return ((await this.cfn.describeStackResources({ StackName: this.stack.StackName })).StackResources ?? [])
+    const resources = await this.cfn.describeStackResources({ StackName: this.stack.StackName });
+    return (resources.StackResources ?? [])
       .filter(r => r.ResourceType === 'AWS::S3::Bucket').map(r => r.PhysicalResourceId!);
   }
 
