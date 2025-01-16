@@ -57,4 +57,6 @@ tsconfig.json
 !/.github/workflows/upgrade.yml
 !/.github/workflows/upgrade-dev-deps.yml
 src/cleanup/image/index.js
+cdk.out
+test/dev.ts
 !/.projenrc.ts
