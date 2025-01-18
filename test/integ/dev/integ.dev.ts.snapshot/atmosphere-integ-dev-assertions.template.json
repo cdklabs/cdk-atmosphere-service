@@ -50,12 +50,13 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0ffa52b5f78d4a45c54d7f89a5f639e1ccb2f1be061b3c6253f23afc2403dd91.zip"
+     "S3Key": "f317a4fc8d4cb1bafc474f77d69b0a4be56ef9bc32ffbb43f9bcd2e2a08cf563.zip"
     },
     "Description": "test/integ/dev/assert.lambda.ts",
     "Environment": {
      "Variables": {
-      "CDK_ATMOSPHERE_INTEG": "true",
+      "CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT": "false",
+      "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME": "false",
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
       },
@@ -146,7 +147,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1737209552946"
+    "salt": "1737231160629"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

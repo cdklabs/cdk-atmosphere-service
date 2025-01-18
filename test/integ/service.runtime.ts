@@ -12,37 +12,48 @@ import * as _with from '../with';
 
 export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;
 
+/**
+ * Determines if runtime components are invoked locally or remotely.
+ *
+ * - When running `yarn integ:test/* tasks it is set to `false`.
+ * - When running `yarn integ:test/*:assert` tasks it defaults to `true`.
+ */
+export const CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME_ENV = 'CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME';
+
 const clients = RuntimeClients.getOrCreate();
 
 export class Runtime {
+
+  public static isLocal() {
+    const value = process.env[CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME_ENV];
+    if (value === 'false' || value === '0') return false;
+    return true;
+  }
 
   private readonly apigw = new APIGateway();
   private readonly lambda = new Lambda();
   private readonly ecs = new ECS();
 
-  public constructor(
-    private readonly isLocal: boolean,
-    private readonly vars: envars.EnvironmentVariables,
-  ) {}
+  public constructor(private readonly vars: envars.EnvironmentVariables) {}
 
   public async allocate(body: allocate.AllocateRequest): Promise<APIGatewayResponse> {
     const json = JSON.stringify(body);
-    const response = this.isLocal ? await this.allocateLocal(json) : await this.allocateRemote(json);
+    const response = Runtime.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
     return response;
   }
 
   public async deallocate(id: string, body: deallocate.DeallocateRequest): Promise<APIGatewayResponse> {
     const json = JSON.stringify(body);
-    const response = this.isLocal ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
+    const response = Runtime.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
     return response;
   }
 
   public async cleanupTimeout(event: cleanupTimeout.CleanupTimeoutEvent) {
-    this.isLocal ? await this.cleanupTimeoutLocal(event) : await this.cleanupTimeoutRemote(event);
+    Runtime.isLocal() ? await this.cleanupTimeoutLocal(event) : await this.cleanupTimeoutRemote(event);
   }
 
   public async allocationTimeout(event: allocationTimeout.AllocationTimeoutEvent) {
-    this.isLocal ? await this.allocationTimeoutLocal(event) : await this.allocationTimeoutRemote(event);
+    Runtime.isLocal() ? await this.allocationTimeoutLocal(event) : await this.allocationTimeoutRemote(event);
   }
 
   /**
@@ -50,7 +61,7 @@ export class Runtime {
    * invoke the cleanup task in-process, when running remotely, this will trigger the ECS task.
    */
   public async cleanup(req: cleanup.CleanupRequest) {
-    return this.isLocal ? this.cleanupLocal(req) : this.cleanupRemote(req);
+    return Runtime.isLocal() ? this.cleanupLocal(req) : this.cleanupRemote(req);
   }
 
   private async allocationTimeoutLocal(event: allocationTimeout.AllocationTimeoutEvent) {
@@ -104,10 +115,10 @@ export class Runtime {
       timeoutSeconds: req.timeoutSeconds,
     });
 
-    this.log('Waiting for cleanup task to stop');
+    this.log(`Waiting for cleanup task '${taskInstanceArn}' to stop`);
     await waitUntilTasksStopped(
-      { client: this.ecs, maxWaitTime: 300, minDelay: 5, maxDelay: 5 },
-      { tasks: [taskInstanceArn!] });
+      { client: this.ecs, maxWaitTime: 300, minDelay: 1, maxDelay: 1 },
+      { cluster: this.vars[envars.CLEANUP_CLUSTER_ARN_ENV], tasks: [taskInstanceArn!] });
 
   }
 

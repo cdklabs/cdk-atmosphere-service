@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { RuntimeClients } from '../../../src/clients';
-import { Session, SUCCESS_PAYLOAD } from '../service.session';
+import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('creates-right-resources', async (session: Assert) => {
     const allocateResponse = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const allocationResponseBody = JSON.parse(allocateResponse.body!);
 
@@ -25,9 +25,9 @@ export async function handler(_: any) {
     const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
     assert.ok(cleanupTimeoutSchedule);
 
-  }, 'creates-right-resources');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('is-idempotent', async (session: Assert) => {
     const allocateResponse = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const allocationResponseBody = JSON.parse(allocateResponse.body!);
 
@@ -36,13 +36,13 @@ export async function handler(_: any) {
     const secondDeallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: 'success' });
     assert.strictEqual(secondDeallocateResponse.status, 200);
 
-  }, 'is-idempotent');
+  });
 
   return SUCCESS_PAYLOAD;
 
 }
 
 // allows running the handler locally with ts-node
-if (Session.isLocal()) {
+if (Assert.isLocal()) {
   void handler({});
 }

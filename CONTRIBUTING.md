@@ -8,6 +8,7 @@ and is comporised of:
 - `integ.*.ts.snapshot`: Snapshot directory of all test related resources.
 - `assert.lambda.ts`: Lambda handler function that performs assertions on the deployed resources.
 - `integ.*.ts`: CDK integration test definition file. This is where you define the properties
+- `stacks`: A directory containing CloudFormation template that can be deployed as part of tests.
 of the service you need for the test.
 
 The assertion runs within an AWS Lambda that is executed after the service is deployed.
@@ -73,12 +74,12 @@ yarn integ:force
 Each integration test defines its own set of projen tasks that allow you to operate on a single test.
 
 ```console
-projen integ:test/allocate             Run the test in snapshot mode
-projen integ:test/allocate:assert      Run the assertion locally against a deployed service
-projen integ:test/allocate:deploy      Deploy and update the snapshot while keeping the service running
-projen integ:test/allocate:force       Force update the snapshot by deploying the test
-projen integ:test/allocate:snapshot    Update snapshot without deploying (discoureged)
-projen integ:test/allocate:update      Deploy and update the snapshot if necessary
+projen integ:test/allocate             Deploy -> Update Snapshot -> Destroy
+projen integ:test/allocate:assert      Run the assertion locally
+projen integ:test/allocate:force       Force Deploy -> Update Snapshot -> Destroy
+projen integ:test/allocate:deploy      Force Deploy -> Update Snapshot -> Dont Destroy
+projen integ:test/allocate:snapshot    Dont Deploy -> Update snapshot (discoureged)
+projen integ:test/allocate:update      Deploy -> Update Snapshot (if needed)
 ```
 
 ### Adding
@@ -113,3 +114,6 @@ Assertion code will be executed locally using `ts-node`, which will:
 
 This means that if you change the runtime code of any component, you can just run the assertion immediately,
 without needing to either build or deploy the service.
+
+> To run local assertions against the remote runtime set `CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME=false`
+before running the projen task. Remember that in this case you will need to redeploy the service.

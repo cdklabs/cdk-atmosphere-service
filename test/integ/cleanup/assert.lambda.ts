@@ -1,13 +1,13 @@
 import * as assert from 'assert';
 import { S3 } from '@aws-sdk/client-s3';
 import { RuntimeClients } from '../../../src/clients';
-import { Session, SUCCESS_PAYLOAD } from '../service.session';
+import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('deletes-stack-and-releases-environment', async (session: Assert) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
@@ -28,9 +28,9 @@ export async function handler(_: any) {
     const stack = await session.fetchStack(stackName, region);
     assert.ok(!stack);
 
-  }, 'deletes-stack-and-releases-environment');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('empties-and-deletes-buckets', async (session: Assert) => {
 
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
@@ -59,9 +59,9 @@ export async function handler(_: any) {
       assert.strictEqual(err.name, 'NotFound');
     }
 
-  }, 'empties-and-deletes-buckets');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('disables-termination-protection', async (session: Assert) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
@@ -75,9 +75,9 @@ export async function handler(_: any) {
     const stack = await session.fetchStack(stackName, region);
     assert.ok(!stack);
 
-  }, 'disables-termination-protection');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('doesnt-release-a-dirty-environment', async (session: Assert) => {
 
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
@@ -91,9 +91,9 @@ export async function handler(_: any) {
     const environment = await clients.environments.get(account, region);
     assert.strictEqual(environment.status, 'dirty');
 
-  }, 'doesnt-release-a-dirty-environment');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('marks-environment-dirty-if-fail', async (session: Assert) => {
 
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
@@ -110,13 +110,13 @@ export async function handler(_: any) {
 
     await session.destroyStack({ stackName, region });
 
-  }, 'marks-environment-dirty-if-fail');
+  });
 
   return SUCCESS_PAYLOAD;
 
 }
 
 // allows running the handler locally with ts-node
-if (Session.isLocal()) {
+if (Assert.isLocal()) {
   void handler({});
 }

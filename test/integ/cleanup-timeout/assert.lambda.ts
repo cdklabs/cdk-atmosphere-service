@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { RuntimeClients } from '../../../src/clients';
-import { Session, SUCCESS_PAYLOAD } from '../service.session';
+import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('marks-dirty-when-environment-is-still-cleaning', async (session: Assert) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
@@ -18,9 +18,9 @@ export async function handler(_: any) {
     const environment = await clients.environments.get(account, region);
     assert.strictEqual(environment.status, 'dirty');
 
-  }, 'marks-dirty-when-environment-is-still-cleaning');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('no-ops-when-environment-is-already-released', async (session: Assert) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
@@ -37,9 +37,9 @@ export async function handler(_: any) {
       assert.strictEqual(err.constructor.name, 'EnvironmentNotFound');
     }
 
-  }, 'no-ops-when-environment-is-already-released');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('no-ops-when-environment-has-been-reallocated', async (session: Assert) => {
     const allocateResponse1 = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(allocateResponse1.body!);
 
@@ -58,13 +58,13 @@ export async function handler(_: any) {
     assert.strictEqual(environment.status, 'in-use');
     assert.strictEqual(environment.allocation, allocateResponseBody2.id);
 
-  }, 'no-ops-when-environment-has-been-reallocated');
+  });
 
   return SUCCESS_PAYLOAD;
 
 }
 
 // allows running the handler locally with ts-node
-if (Session.isLocal()) {
+if (Assert.isLocal()) {
   void handler({});
 }

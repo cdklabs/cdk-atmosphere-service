@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { RuntimeClients } from '../../../src/clients';
-import { Session, SUCCESS_PAYLOAD } from '../service.session';
+import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('creates-the-right-resources', async (session: Assert) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     assert.strictEqual(response.status, 200);
 
@@ -23,21 +23,21 @@ export async function handler(_: any) {
     const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
     assert.ok(timeoutSchedule);
 
-  }, 'creates-the-right-resources');
+  });
 
-  await Session.assert(async (session: Session) => {
+  await Assert.run('responds-with-locked-when-no-environments-are-available', async (session: Assert) => {
     await session.runtime.allocate({ pool: 'release', requester: 'test' } );
 
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' });
     assert.strictEqual(response.status, 423);
 
-  }, 'responds-with-locked-when-no-environments-are-available');
+  });
 
   return SUCCESS_PAYLOAD;
 
 }
 
 // allows running the handler locally with ts-node
-if (Session.isLocal()) {
+if (Assert.isLocal()) {
   void handler({});
 }
