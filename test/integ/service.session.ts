@@ -144,10 +144,16 @@ export class Session {
     }
 
     let stacksBasePath = __dirname;
-    const stacksBucket = envars.Envars.optional('CDK_ATMOSPHERE_INTEG_STACKS_BUCKET' as any);
-    const stacksKey = envars.Envars.optional('CDK_ATMOSPHERE_INTEG_STACKS_KEY' as any);
-    if (stacksBucket && stacksKey) {
-      stacksBasePath = '/tmp/stacks';
+    if (!Session.isLocal()) {
+      // when running in lambda, we need to download and unzip the stacks from
+      // the assets bucket. stacks are uploaded there during the deployment of the
+      // integration test stack.
+      const stacksBucket = envars.Envars.required('CDK_ATMOSPHERE_INTEG_STACKS_BUCKET' as any);
+      const stacksKey = envars.Envars.required('CDK_ATMOSPHERE_INTEG_STACKS_KEY' as any);
+
+      // a writable location in lambda.
+      stacksBasePath = '/tmp/integ-stacks';
+
       await Session.unzip(stacksBucket, stacksKey, stacksBasePath);
     }
 
@@ -235,7 +241,13 @@ export class Session {
    */
   public async deployStack(opts: DeployStackOptions): Promise<[string, StackResource[]]> {
     const cfnRegion = new CloudFormation({ region: opts.region });
-    const templatePath = this.stacksBasePath === __dirname ? opts.templatePath : path.basename(opts.templatePath);
+    const templatePath = Session.isLocal()
+      ? opts.templatePath
+
+      // stack files don't preverse their directory structure when uploaded as an asset.
+      // so we just use the basename to find the file.
+      : path.basename(opts.templatePath);
+
     const templateBody = fs.readFileSync(path.join(this.stacksBasePath, templatePath), { encoding: 'utf-8' });
     const stackName = `cdk-atmosphere-integ-${this.name}-${path.basename(opts.templatePath).split('.')[0]}`;
 
