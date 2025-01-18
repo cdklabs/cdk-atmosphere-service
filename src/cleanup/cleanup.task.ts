@@ -41,8 +41,12 @@ export async function handler(req: CleanupRequest) {
       return;
     }
 
+    log(`Unable to clean '${env}': ${e.message}`);
+    log(`Marking environment '${env}' as 'dirty'`);
+    await clients.environments.dirty(req.allocationId, environment.account, environment.region);
+    log(`Successfully marked environment '${env}' as 'dirty'`);
+
     if (e instanceof CleanerError) {
-      log(`Unable to clean '${env}': ${e.message}`);
       console.log();
       console.log('>> Failed stacks errors report <<');
       for (const f of e.failedStacks) {
@@ -51,11 +55,6 @@ export async function handler(req: CleanupRequest) {
         console.log('');
         console.log(f.error);
       }
-
-      console.log('');
-      log(`Marking environment '${env}' as 'dirty'`);
-      await clients.environments.dirty(req.allocationId, environment.account, environment.region);
-      log(`Successfully marked environment '${env}' as 'dirty'`);
 
       return;
 

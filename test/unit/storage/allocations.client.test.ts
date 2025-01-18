@@ -1,6 +1,6 @@
-import { ConditionalCheckFailedException, DynamoDBClient, PutItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
+import { ConditionalCheckFailedException, DynamoDBClient, GetItemCommand, PutItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { AllocationAlreadyEndedError, AllocationsClient, InvalidInputError } from '../../../src/storage/allocations.client';
+import { AllocationAlreadyEndedError, AllocationNotFoundError, AllocationsClient, InvalidInputError } from '../../../src/storage/allocations.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('AllocationsClient', () => {
@@ -9,6 +9,61 @@ describe('AllocationsClient', () => {
 
   beforeEach(() => {
     ddbMock.reset();
+  });
+
+  describe('get', () => {
+
+    test('retrieves an element from the db', async () => {
+
+      const client = new AllocationsClient('table');
+      ddbMock.on(GetItemCommand).resolves({
+        Item: {
+          account: { S: '1111' },
+          outcome: { S: 'success' },
+          id: { S: 'id' },
+          region: { S: 'us-east-1' },
+          pool: { S: 'canary' },
+          requester: { S: 'user1' },
+          start: { S: '2022-01-01T00:00:00.000Z' },
+          end: { S: '2022-01-01T01:00:00.000Z' },
+          ttl: { N: '1640995200' },
+        },
+      });
+
+      const allocation = await client.get('id');
+
+      expect(allocation).toEqual({
+        account: '1111',
+        id: 'id',
+        region: 'us-east-1',
+        pool: 'canary',
+        requester: 'user1',
+        start: '2022-01-01T00:00:00.000Z',
+        end: '2022-01-01T01:00:00.000Z',
+        outcome: 'success',
+      });
+
+      expect(ddbMock).toHaveReceivedCommandWith(GetItemCommand, {
+        TableName: 'table',
+        Key: {
+          id: { S: 'id' },
+        },
+      });
+
+    });
+
+    test('throws an error if doesnt exist', async () => {
+
+      const client = new AllocationsClient('table');
+      ddbMock.on(GetItemCommand).resolves({
+        Item: undefined,
+      });
+
+      await expect(client.get('id')).rejects.toThrow(AllocationNotFoundError);
+
+    });
+
+
   });
 
   describe('start', () => {
