@@ -33,6 +33,7 @@
     "integ:assert": "npx projen integ:assert",
     "integ:force": "npx projen integ:force",
     "integ:list": "npx projen integ:list",
+    "integ:snapshot": "npx projen integ:snapshot",
     "integ:test/allocate": "npx projen integ:test/allocate",
     "integ:test/allocate:assert": "npx projen integ:test/allocate:assert",
     "integ:test/allocate:deploy": "npx projen integ:test/allocate:deploy",

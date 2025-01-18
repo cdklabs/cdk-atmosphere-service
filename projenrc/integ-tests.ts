@@ -33,6 +33,10 @@ export class IntegTests {
     integTask.prependSpawn(bundle);
     integUpdateTask.prependSpawn(bundle);
 
+    const integSnapshotTask = project.tasks.addTask('integ:snapshot');
+    integSnapshotTask.prependSpawn(bundle);
+    integSnapshotTask.exec(`${INTEG_COMMAND} --force --dry-run`);
+
     // lets also add an update command with force to definitely
     // run everything and override local snapshots.
     const forceUpdate = project.tasks.addTask('integ:force');
