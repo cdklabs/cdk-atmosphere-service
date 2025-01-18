@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { RuntimeClients } from '../../../src/clients';
-import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
+import { Runner, SUCCESS_PAYLOAD } from '../atmosphere.runner';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Assert.run('ends-allocation-if-active', async (session: Assert) => {
+  await Runner.assert('ends-allocation-if-active', async (session: Runner) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
 
@@ -17,7 +17,7 @@ export async function handler(_: any) {
 
   });
 
-  await Assert.run('no-ops-if-allocation-has-ended', async (session: Assert) => {
+  await Runner.assert('no-ops-if-allocation-has-ended', async (session: Runner) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test', durationSeconds: 30 } );
     const body = JSON.parse(response.body!);
 
@@ -34,6 +34,6 @@ export async function handler(_: any) {
 }
 
 // allows running the handler locally with ts-node
-if (Assert.isLocal()) {
+if (Runner.isLocal()) {
   void handler({});
 }

@@ -1,10 +1,10 @@
-import { Assert } from '../service.assert';
+import { Runner } from '../atmosphere.runner';
 
 export async function handler(_: any) {
-  return Assert.run('default', async () => { return; });
+  return Runner.assert('default', async () => { return; });
 }
 
 // allows running the handler locally with ts-node
-if (Assert.isLocal()) {
+if (Runner.isLocal()) {
   void handler({});
 }

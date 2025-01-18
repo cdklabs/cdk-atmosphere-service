@@ -1,4 +1,4 @@
-import { AtmosphereIntegTest } from '../service.integ';
+import { AtmosphereIntegTest } from '../atmosphere.integ';
 
 new AtmosphereIntegTest({
   pools: { release: ['eu-central-1'] },

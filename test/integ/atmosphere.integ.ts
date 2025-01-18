@@ -7,8 +7,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3Assets from 'aws-cdk-lib/aws-s3-assets';
 import { IConstruct } from 'constructs';
-import * as session from './service.assert';
-import * as runtime from './service.runtime';
+import * as runner from './atmosphere.runner';
+import * as runtime from './atmosphere.runtime';
 import { INTEG_RUNNER_REGIONS, ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
 import { AtmosphereService, Environment } from '../../src';
 import * as envars from '../../src/envars';
@@ -96,7 +96,7 @@ export class AtmosphereIntegTest {
     assert.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
 
     // this prevents the assertion from running as a script
-    assert.addEnvironment(session.CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV, 'false');
+    assert.addEnvironment(runner.CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV, 'false');
 
     // this redirects all runtime invocations to the live service components
     assert.addEnvironment(runtime.CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME_ENV, 'false');
@@ -108,8 +108,8 @@ export class AtmosphereIntegTest {
         path: stacksPath,
       });
       // the session takes care of downloading this before the test begins.
-      assert.addEnvironment(session.CDK_ATMOSPHERE_INTEG_STACKS_BUCKET_ENV, stacksAsset.s3BucketName);
-      assert.addEnvironment(session.CDK_ATMOSPHERE_INTEG_STACKS_KEY_ENV, stacksAsset.s3ObjectKey);
+      assert.addEnvironment(runner.CDK_ATMOSPHERE_INTEG_STACKS_BUCKET_ENV, stacksAsset.s3BucketName);
+      assert.addEnvironment(runner.CDK_ATMOSPHERE_INTEG_STACKS_KEY_ENV, stacksAsset.s3ObjectKey);
       stacksAsset.grantRead(assert);
     }
 
@@ -158,7 +158,7 @@ export class AtmosphereIntegTest {
     const lambdaProvider = this.findLambdaProvider(assertCall);
     lambdaProvider.addPropertyOverride('Timeout', assert.timeout?.toSeconds() ?? 120);
 
-    assertCall.expect(ExpectedResult.objectLike({ Payload: `"${session.SUCCESS_PAYLOAD}"` }));
+    assertCall.expect(ExpectedResult.objectLike({ Payload: `"${runner.SUCCESS_PAYLOAD}"` }));
 
   }
 

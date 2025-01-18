@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { RuntimeClients } from '../../../src/clients';
-import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
+import { Runner, SUCCESS_PAYLOAD } from '../atmosphere.runner';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Assert.run('creates-the-right-resources', async (session: Assert) => {
+  await Runner.assert('creates-the-right-resources', async (session: Runner) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     assert.strictEqual(response.status, 200);
 
@@ -25,7 +25,7 @@ export async function handler(_: any) {
 
   });
 
-  await Assert.run('responds-with-locked-when-no-environments-are-available', async (session: Assert) => {
+  await Runner.assert('responds-with-locked-when-no-environments-are-available', async (session: Runner) => {
     await session.runtime.allocate({ pool: 'release', requester: 'test' } );
 
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' });
@@ -38,6 +38,6 @@ export async function handler(_: any) {
 }
 
 // allows running the handler locally with ts-node
-if (Assert.isLocal()) {
+if (Runner.isLocal()) {
   void handler({});
 }

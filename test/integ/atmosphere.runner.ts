@@ -9,7 +9,7 @@ import { Scheduler } from '@aws-sdk/client-scheduler';
 import * as unzipper from 'unzipper';
 import * as envars from '../../src/envars';
 import * as _with from '../with';
-import { Runtime } from './service.runtime';
+import { Runtime } from './atmosphere.runtime';
 
 export const SUCCESS_PAYLOAD = 'OK';
 export const CDK_ATMOSPHERE_INTEG_STACKS_BUCKET_ENV = 'CDK_ATMOSPHERE_INTEG_STACKS_BUCKET';
@@ -87,21 +87,21 @@ const s3 = new S3();
  * Helper class for integration tests that creates a fresh state
  * and exposes methods to invoke various service components.
  */
-export class Assert {
+export class Runner {
 
   /**
    * Run an assertion function in a fresh service state.
    */
-  public static async run(name: string, assertion: (session: Assert) => Promise<void>): Promise<string> {
-    const session = await Assert.create(name);
-    await session.clear();
+  public static async assert(testCase: string, assertion: (runner: Runner) => Promise<void>): Promise<string> {
+    const test = await Runner.create(testCase);
+    await test.clear();
     try {
-      session.log(`🎬 Start <> ${name} 🎬`);
-      await _with.env(session.vars, async () => assertion(session));
-      session.log(`✅ Success <> ${name} ✅`);
+      test.log(`🎬 Start <> ${testCase} 🎬`);
+      await _with.env(test.vars, async () => assertion(test));
+      test.log(`✅ Success <> ${testCase} ✅`);
       return SUCCESS_PAYLOAD;
     } catch (error: any) {
-      session.log(`❌ !! Fail <> ${name} !! ❌`);
+      test.log(`❌ !! Fail <> ${testCase} !! ❌`);
       throw error;
     }
   }
@@ -127,11 +127,11 @@ export class Assert {
     });
   }
 
-  private static async create(sessionName: string): Promise<Assert> {
+  private static async create(testCase: string): Promise<Runner> {
 
     let envValue: (name: string) => string;
 
-    if (Assert.isLocal()) {
+    if (Runner.isLocal()) {
 
       // locally we use dev stack outputs
       const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-dev-assertions' })).Stacks ?? [])[0];
@@ -150,7 +150,7 @@ export class Assert {
 
     }
 
-    return new Assert({
+    return new Runner({
       [envars.ALLOCATIONS_TABLE_NAME_ENV]: envValue(envars.ALLOCATIONS_TABLE_NAME_ENV),
       [envars.ENVIRONMENTS_TABLE_NAME_ENV]: envValue(envars.ENVIRONMENTS_TABLE_NAME_ENV),
       [envars.CONFIGURATION_BUCKET_ENV]: envValue(envars.CONFIGURATION_BUCKET_ENV),
@@ -168,7 +168,7 @@ export class Assert {
       [envars.CLEANUP_TASK_SUBNET_ID_ENV]: envValue(envars.CLEANUP_TASK_SUBNET_ID_ENV),
       [envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV]: envValue(envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV),
       [envars.CLEANUP_TASK_CONTAINER_NAME_ENV]: envValue(envars.CLEANUP_TASK_CONTAINER_NAME_ENV),
-    }, sessionName);
+    }, testCase);
   }
 
   public readonly runtime: Runtime;
@@ -311,7 +311,7 @@ export class Assert {
       // we are running inside a lambda function so need to download and unzip
       // the stack files to a writable lambda location.
       const to = '/tmp/integ-stacks';
-      await Assert.unzip(stacksBucket, stacksKey, to);
+      await Runner.unzip(stacksBucket, stacksKey, to);
 
       // stack files don't preverse their directory structure when uploaded as an asset.
       // so we just use the basename to find the file.

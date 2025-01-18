@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { RuntimeClients } from '../../../src/clients';
-import { Assert, SUCCESS_PAYLOAD } from '../service.assert';
+import { Runner, SUCCESS_PAYLOAD } from '../atmosphere.runner';
 
 const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Assert.run('marks-dirty-when-environment-is-still-cleaning', async (session: Assert) => {
+  await Runner.assert('marks-dirty-when-environment-is-still-cleaning', async (session: Runner) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
@@ -20,7 +20,7 @@ export async function handler(_: any) {
 
   });
 
-  await Assert.run('no-ops-when-environment-is-already-released', async (session: Assert) => {
+  await Runner.assert('no-ops-when-environment-is-already-released', async (session: Runner) => {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
@@ -39,7 +39,7 @@ export async function handler(_: any) {
 
   });
 
-  await Assert.run('no-ops-when-environment-has-been-reallocated', async (session: Assert) => {
+  await Runner.assert('no-ops-when-environment-has-been-reallocated', async (session: Runner) => {
     const allocateResponse1 = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(allocateResponse1.body!);
 
@@ -65,6 +65,6 @@ export async function handler(_: any) {
 }
 
 // allows running the handler locally with ts-node
-if (Assert.isLocal()) {
+if (Runner.isLocal()) {
   void handler({});
 }
