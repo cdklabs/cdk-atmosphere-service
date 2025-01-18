@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as ddb from '@aws-sdk/client-dynamodb';
+import { value } from './dynamo-item';
 
 /**
  * Base error originating from actions on the environments table.
@@ -74,6 +75,39 @@ export class EnvironmentAlreadyReallocated extends EnvironmentsError {
 }
 
 /**
+ * Error thrown when an environment is not found.
+ */
+export class EnvironmentNotFound extends EnvironmentsError {
+  constructor(account: string, region: string) {
+    super(account, region, 'not found');
+  }
+
+}
+
+/**
+ * Represents an active environment, ie one that is currently allocated and exists
+ * in the database.
+ */
+export interface ActiveEnvironment {
+  /**
+   * Account.
+   */
+  readonly account: string;
+  /**
+   * Region.
+   */
+  readonly region: string;
+  /**
+   * Status.
+   */
+  readonly status: string;
+  /**
+   * Allocation id.
+   */
+  readonly allocation: string;
+}
+
+/**
  * Possible status an environment can be in.
  *
  * - `in-use`: Currently in use by an alloaction.
@@ -94,6 +128,32 @@ export class EnvironmentsClient {
 
   constructor(private readonly tableName: string) {
     this.ddbClient = new ddb.DynamoDB({});
+  }
+
+  /**
+   * Fetch a specific environment by account and region.
+   * Will throw if it doesn't exists.
+   */
+  public async get(account: string, region: string): Promise<ActiveEnvironment> {
+    const response = await this.ddbClient.getItem({
+      TableName: this.tableName,
+      Key: {
+        account: { S: account },
+        region: { S: region },
+      },
+    });
+
+    if (!response.Item) {
+      throw new EnvironmentNotFound(account, region);
+    }
+
+    return {
+      account: value('account', response.Item),
+      region: value('region', response.Item),
+      status: value('status', response.Item),
+      allocation: value('allocation', response.Item),
+    };
+
   }
 
   /**

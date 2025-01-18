@@ -6,12 +6,15 @@ import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-g
 import { CloudFormation, CloudFormationServiceException, StackResource, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
+import { Lambda } from '@aws-sdk/client-lambda';
 import { S3 } from '@aws-sdk/client-s3';
 import { Scheduler } from '@aws-sdk/client-scheduler';
 import * as unzipper from 'unzipper';
 import type { AllocateRequest } from '../../src/allocate/allocate.lambda';
 import * as allocate from '../../src/allocate/allocate.lambda';
+import * as allocationTimeout from '../../src/allocation-timeout/allocation-timeout.lambda';
 import * as cleanup from '../../src/cleanup/cleanup.task';
+import * as cleanupTimeout from '../../src/cleanup-timeout/cleanup-timeout.lambda';
 import { RuntimeClients } from '../../src/clients';
 import * as deallocate from '../../src/deallocate/deallocate.lambda';
 import type { DeallocateRequest } from '../../src/deallocate/deallocate.lambda';
@@ -26,6 +29,7 @@ const cfn = new CloudFormation();
 const scheduler = new Scheduler();
 const ecs = new ECS();
 const s3 = new S3();
+const lambda = new Lambda();
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -197,31 +201,48 @@ export class Session {
     this.allocations = new AllocationsClient(this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV]);
   }
 
-  public async allocate(body: AllocateRequest): Promise<[APIGatewayResponse, Promise<void>]> {
+  public async allocate(body: AllocateRequest): Promise<APIGatewayResponse> {
     const json = JSON.stringify(body);
     const response = Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
-
-    if (response.status !== 200) {
-      return [response, Promise.resolve()];
-    }
-
-    const responseBody = JSON.parse(response.body!);
-
-    return [response, this.waitForAllocationTimeout(responseBody)];
+    return response;
   }
 
-  public async deallocate(id: string, body: DeallocateRequest): Promise<[APIGatewayResponse, Promise<void>]> {
+  public async deallocate(id: string, body: DeallocateRequest): Promise<APIGatewayResponse> {
     const json = JSON.stringify(body);
-
     const response = Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
+    return response;
+  }
 
-    if (response.status !== 200) {
-      return [response, Promise.resolve()];
-    }
+  public async cleanupTimeout(event: cleanupTimeout.CleanupTimeoutEvent) {
+    Session.isLocal() ? await this.cleanupTimeoutLocal(event) : await this.cleanupTimeoutRemote(event);
+  }
 
-    const responseBody = JSON.parse(response.body!);
-    return [response, this.waitForCleanupTimeout(id, responseBody)];
+  public async allocationTimeout(event: allocationTimeout.AllocationTimeoutEvent) {
+    Session.isLocal() ? await this.allocationTimeoutLocal(event) : await this.allocationTimeoutRemote(event);
+  }
 
+  private async allocationTimeoutLocal(event: allocationTimeout.AllocationTimeoutEvent) {
+    await allocationTimeout.handler(event);
+  }
+
+  private async allocationTimeoutRemote(event: allocationTimeout.AllocationTimeoutEvent) {
+    await lambda.invoke({
+      Payload: JSON.stringify(event),
+      FunctionName: this.vars[envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV],
+      InvocationType: 'RequestResponse',
+    });
+  }
+
+  private async cleanupTimeoutLocal(event: cleanupTimeout.CleanupTimeoutEvent) {
+    await cleanupTimeout.handler(event);
+  }
+
+  private async cleanupTimeoutRemote(event: cleanupTimeout.CleanupTimeoutEvent) {
+    await lambda.invoke({
+      Payload: JSON.stringify(event),
+      FunctionName: this.vars[envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV],
+      InvocationType: 'RequestResponse',
+    });
   }
 
   /**
@@ -229,28 +250,7 @@ export class Session {
    * invoke the cleanup task in-process, when running remotely, this will trigger the ECS task.
    */
   public async cleanup(req: cleanup.CleanupRequest) {
-    if (Session.isLocal()) {
-      return this.cleanupLocal(req);
-    } else {
-      return this.cleanupRemote(req);
-    }
-  }
-
-  public async fetchEnvironment(account: string, region: string) {
-    return dynamo.getItem({
-      TableName: this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV],
-      Key: {
-        account: { S: account },
-        region: { S: region },
-      },
-    });
-  }
-
-  public async fetchAllocation(id: string) {
-    return dynamo.getItem({
-      TableName: this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV],
-      Key: { id: { S: id } },
-    });
+    return Session.isLocal() ? this.cleanupLocal(req) : this.cleanupRemote(req);
   }
 
   public async fetchAllocationTimeoutSchedule(allocationId: string) {
@@ -490,36 +490,6 @@ export class Session {
       this.sessionLog(`  » deleting schedule ${schedule.Name!}`);
       await scheduler.deleteSchedule({ Name: schedule.Name! });
     }
-
-  }
-
-  private async waitForAllocationTimeout(response: allocate.AllocateResponse): Promise<void> {
-
-    // give a 1 minute spair because event bridge schedules have a 1 minute granularity
-    const waitTimeSeconds = response.durationSeconds + 60;
-
-    // wait for the schedule to trigger
-    await this.waitFor(async () => (await this.fetchAllocationTimeoutSchedule(response.id)) === undefined, waitTimeSeconds, {
-      message: `allocation ${response.id} to timeout`,
-    });
-
-    // wait another 5 seconds for the schedule target to actually do its thing
-    return new Promise(resolve => setTimeout(resolve, 5000));
-
-  }
-
-  private async waitForCleanupTimeout(id: string, response: deallocate.DeallocateResponse): Promise<void> {
-
-    // give a 1 minute spair because event bridge schedules have a 1 minute granularity
-    const waitTimeSeconds = response.cleanupDurationSeconds + 60;
-
-    // wait for the schedule to trigger
-    await this.waitFor(async () => (await this.fetchCleanupTimeoutSchedule(id)) === undefined, waitTimeSeconds, {
-      message: `cleanup of allocation ${id} to timeout`,
-    });
-
-    // wait another 5 seconds for the schedule target to actually do its thing
-    return new Promise(resolve => setTimeout(resolve, 5000));
 
   }
 

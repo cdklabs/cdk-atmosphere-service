@@ -1,6 +1,6 @@
-import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException, GetItemCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
-import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyInUseError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentsClient } from '../../../src/storage/environments.client';
+import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyInUseError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentNotFound, EnvironmentsClient } from '../../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('EnvironmentsClient', () => {
@@ -9,6 +9,44 @@ describe('EnvironmentsClient', () => {
 
   beforeEach(() => {
     ddbMock.reset();
+  });
+
+  describe('get', () => {
+
+    test('fetches from the databse', async () => {
+
+      const client = new EnvironmentsClient('table');
+
+      ddbMock.on(GetItemCommand).resolves({
+        Item: {
+          account: { S: '1111' },
+          region: { S: 'us-east-1' },
+          status: { S: 'in-use' },
+          allocation: { S: 'id' },
+        },
+      });
+
+      const environment = await client.get('1111', 'us-east-1');
+
+      expect(environment).toEqual({
+        account: '1111',
+        region: 'us-east-1',
+        status: 'in-use',
+        allocation: 'id',
+      });
+
+    });
+
+    test('throws if doesnt exist', async () => {
+
+      const client = new EnvironmentsClient('table');
+
+      ddbMock.on(GetItemCommand).resolves({ Item: undefined });
+
+      await expect(client.get('1111', 'us-east-1')).rejects.toThrow(EnvironmentNotFound);
+
+    });
+
   });
 
   describe('acquire', () => {

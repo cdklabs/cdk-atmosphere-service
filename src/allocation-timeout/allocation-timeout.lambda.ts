@@ -2,7 +2,7 @@
 import { Lambda } from '@aws-sdk/client-lambda';
 import { Envars, DEALLOCATE_FUNCTION_NAME_ENV } from '../envars';
 
-interface AllocationTimeoutEvent {
+export interface AllocationTimeoutEvent {
   readonly allocationId: string;
 }
 
