@@ -7,13 +7,13 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(_: any) {
 
   await Session.assert(async (session: Session) => {
-    const allocateResponse = await session.allocate({ pool: 'release', requester: 'test' } );
+    const allocateResponse = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const allocationResponseBody = JSON.parse(allocateResponse.body!);
 
     const account = allocationResponseBody.environment.account;
     const region = allocationResponseBody.environment.region;
 
-    const deallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: 'success' });
+    const deallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: 'success' });
     assert.strictEqual(deallocateResponse.status, 200);
 
     const environment = await clients.environments.get(account, region);
@@ -28,12 +28,12 @@ export async function handler(_: any) {
   }, 'creates-right-resources');
 
   await Session.assert(async (session: Session) => {
-    const allocateResponse = await session.allocate({ pool: 'release', requester: 'test' } );
+    const allocateResponse = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const allocationResponseBody = JSON.parse(allocateResponse.body!);
 
-    await session.deallocate(allocationResponseBody.id, { outcome: 'success' });
+    await session.runtime.deallocate(allocationResponseBody.id, { outcome: 'success' });
 
-    const secondDeallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: 'success' });
+    const secondDeallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: 'success' });
     assert.strictEqual(secondDeallocateResponse.status, 200);
 
   }, 'is-idempotent');

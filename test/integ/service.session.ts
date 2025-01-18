@@ -2,34 +2,21 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Readable } from 'stream';
-import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
 import { CloudFormation, CloudFormationServiceException, StackResource, waitUntilStackCreateComplete, waitUntilStackDeleteComplete } from '@aws-sdk/client-cloudformation';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { ECS } from '@aws-sdk/client-ecs';
-import { Lambda } from '@aws-sdk/client-lambda';
 import { S3 } from '@aws-sdk/client-s3';
 import { Scheduler } from '@aws-sdk/client-scheduler';
 import * as unzipper from 'unzipper';
-import type { AllocateRequest } from '../../src/allocate/allocate.lambda';
-import * as allocate from '../../src/allocate/allocate.lambda';
-import * as allocationTimeout from '../../src/allocation-timeout/allocation-timeout.lambda';
-import * as cleanup from '../../src/cleanup/cleanup.task';
-import * as cleanupTimeout from '../../src/cleanup-timeout/cleanup-timeout.lambda';
-import { RuntimeClients } from '../../src/clients';
-import * as deallocate from '../../src/deallocate/deallocate.lambda';
-import type { DeallocateRequest } from '../../src/deallocate/deallocate.lambda';
 import * as envars from '../../src/envars';
 import * as _with from '../with';
+import { Runtime } from './service.runtime';
 
-const apigw = new APIGateway();
 const dynamo = new DynamoDB();
 const cfn = new CloudFormation();
 const scheduler = new Scheduler();
 const ecs = new ECS();
 const s3 = new S3();
-const lambda = new Lambda();
-
-const clients = RuntimeClients.getOrCreate();
 
 export const SUCCESS_PAYLOAD = 'OK';
 
@@ -80,8 +67,6 @@ export interface PutObjectKeyOptions {
    */
   readonly key: string;
 }
-
-export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;
 
 export interface WaitForOptions {
   /**
@@ -187,39 +172,13 @@ export class Session {
     }, sessionName, stacksBasePath);
   }
 
+  public readonly runtime: Runtime;
+
   private constructor(
     private readonly vars: envars.EnvironmentVariables,
     private readonly name: string,
     private readonly stacksBasePath: string) {
-    this.log(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
-  }
-
-  public async allocate(body: AllocateRequest): Promise<APIGatewayResponse> {
-    const json = JSON.stringify(body);
-    const response = Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
-    return response;
-  }
-
-  public async deallocate(id: string, body: DeallocateRequest): Promise<APIGatewayResponse> {
-    const json = JSON.stringify(body);
-    const response = Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
-    return response;
-  }
-
-  public async cleanupTimeout(event: cleanupTimeout.CleanupTimeoutEvent) {
-    Session.isLocal() ? await this.cleanupTimeoutLocal(event) : await this.cleanupTimeoutRemote(event);
-  }
-
-  public async allocationTimeout(event: allocationTimeout.AllocationTimeoutEvent) {
-    Session.isLocal() ? await this.allocationTimeoutLocal(event) : await this.allocationTimeoutRemote(event);
-  }
-
-  /**
-   * Perform a cleanup for a specific allocation. When running locally, this will
-   * invoke the cleanup task in-process, when running remotely, this will trigger the ECS task.
-   */
-  public async cleanup(req: cleanup.CleanupRequest) {
-    return Session.isLocal() ? this.cleanupLocal(req) : this.cleanupRemote(req);
+    this.runtime = new Runtime(Session.isLocal(), this.vars);
   }
 
   public async fetchAllocationTimeoutSchedule(allocationId: string) {
@@ -254,21 +213,6 @@ export class Session {
       tasks: taskArns,
     });
     return tasks.tasks![0];
-  }
-
-  public async waitFor(condition: () => Promise<Boolean>, timeoutSeconds: number, opts: WaitForOptions = {}) {
-    const startTime = Date.now();
-    const timeoutMs = timeoutSeconds * 1000;
-    while (true) {
-      const finish = await condition();
-      if (finish) {
-        return;
-      }
-      const elapsed = Date.now() - startTime;
-      assert.ok(elapsed < timeoutMs, `Timeout after ${timeoutSeconds} seconds waiting for ${opts.message}`);
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
   }
 
   public async fetchStack(name: string, region: string) {
@@ -344,109 +288,6 @@ export class Session {
       { client: cfnRegion, maxWaitTime: 600, minDelay: 5, maxDelay: 5 },
       { StackName: opts.stackName },
     );
-  }
-
-  private async allocationTimeoutLocal(event: allocationTimeout.AllocationTimeoutEvent) {
-    const payload = JSON.stringify(event);
-    this.log(`Invoking local allocation timeout handler with event: ${payload}`);
-    console.log('');
-    await _with.env(this.vars, async () => allocationTimeout.handler(event));
-    console.log('');
-  }
-
-  private async allocationTimeoutRemote(event: allocationTimeout.AllocationTimeoutEvent) {
-    const payload = JSON.stringify(event);
-    this.log(`Invoking allocation timeout lambda with event: ${payload}`);
-    await lambda.invoke({
-      Payload: payload,
-      FunctionName: this.vars[envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV],
-      InvocationType: 'RequestResponse',
-    });
-  }
-
-  private async cleanupTimeoutLocal(event: cleanupTimeout.CleanupTimeoutEvent) {
-    const payload = JSON.stringify(event);
-    this.log(`Invoking local cleanup timeout handler with event: ${payload}`);
-    console.log('');
-    await _with.env(this.vars, async () => cleanupTimeout.handler(event));
-    console.log('');
-  }
-
-  private async cleanupTimeoutRemote(event: cleanupTimeout.CleanupTimeoutEvent) {
-    const payload = JSON.stringify(event);
-    this.log(`Invoking cleanup timeout lambda with event: ${payload}`);
-    await lambda.invoke({
-      Payload: payload,
-      FunctionName: this.vars[envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV],
-      InvocationType: 'RequestResponse',
-    });
-  }
-
-  private async cleanupLocal(req: cleanup.CleanupRequest) {
-    this.log(`Invoking local cleanup task handler with body: ${JSON.stringify(req)}`);
-    console.log();
-    await cleanup.handler(req);
-    console.log();
-  }
-
-  private async cleanupRemote(req: cleanup.CleanupRequest) {
-    this.log(`Starting ECS cleanup task with body: ${JSON.stringify(req)}`);
-    const allocation = await clients.allocations.get(req.allocationId);
-    const taskInstanceArn = await clients.cleanup.start({
-      allocation,
-      timeoutSeconds: req.timeoutSeconds,
-    });
-
-    const waitTime = req.timeoutSeconds + 60; // give ECS time to run the task.
-    this.log(`Waiting ${waitTime} seconds for cleanup task ${taskInstanceArn} to stop`);
-    await this.waitFor(async () => (await this.fetchStoppedCleanupTask(req.allocationId)) !== undefined, waitTime);
-  }
-
-  private async deallocateLocal(id: string, jsonBody: string) {
-
-    this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
-    console.log();
-    const response = await _with.env(this.vars, async () => {
-      return deallocate.handler({ body: jsonBody, pathParameters: { id } } as any);
-    });
-    console.log();
-    return { status: response.statusCode, body: response.body };
-
-  }
-
-  private async deallocateRemote(id: string, jsonBody: string) {
-
-    this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
-    return apigw.testInvokeMethod({
-      restApiId: this.vars[envars.REST_API_ID_ENV],
-      resourceId: this.vars[envars.ALLOCATION_RESOURCE_ID_ENV],
-      httpMethod: 'DELETE',
-      pathWithQueryString: `/allocations/${id}`,
-      body: jsonBody,
-    });
-
-  }
-
-  private async allocateLocal(jsonBody: string) {
-    this.log(`Invoking local allocate handler with body: ${jsonBody}`);
-    console.log();
-    const response = await _with.env(this.vars, async () => {
-      return allocate.handler({ body: jsonBody } as any);
-    });
-    console.log();
-    return { status: response.statusCode, body: response.body };
-  }
-
-  private async allocateRemote(jsonBody: string) {
-    this.log(`Sending allocation request with body: ${jsonBody}`);
-    return apigw.testInvokeMethod({
-      restApiId: this.vars[envars.REST_API_ID_ENV],
-      resourceId: this.vars[envars.ALLOCATIONS_RESOURCE_ID_ENV],
-      httpMethod: 'POST',
-      pathWithQueryString: '/allocations',
-      body: jsonBody,
-    });
-
   }
 
   private async clear() {

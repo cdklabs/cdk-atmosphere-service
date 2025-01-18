@@ -7,7 +7,7 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(_: any) {
 
   await Session.assert(async (session: Session) => {
-    const response = await session.allocate({ pool: 'release', requester: 'test' } );
+    const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     assert.strictEqual(response.status, 200);
 
     const body = JSON.parse(response.body!);
@@ -26,9 +26,9 @@ export async function handler(_: any) {
   }, 'creates-the-right-resources');
 
   await Session.assert(async (session: Session) => {
-    await session.allocate({ pool: 'release', requester: 'test' } );
+    await session.runtime.allocate({ pool: 'release', requester: 'test' } );
 
-    const response = await session.allocate({ pool: 'release', requester: 'test' });
+    const response = await session.runtime.allocate({ pool: 'release', requester: 'test' });
     assert.strictEqual(response.status, 423);
 
   }, 'responds-with-locked-when-no-environments-are-available');
