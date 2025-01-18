@@ -1,5 +1,8 @@
 import * as assert from 'assert';
+import { RuntimeClients } from '../../../src/clients';
 import { Session, SUCCESS_PAYLOAD } from '../service.session';
+
+const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
@@ -9,10 +12,10 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    await session.environments.cleaning(body.id, account, region);
+    await clients.environments.cleaning(body.id, account, region);
     await session.cleanupTimeout({ allocationId: body.id, account, region });
 
-    const environment = await session.environments.get(account, region);
+    const environment = await clients.environments.get(account, region);
     assert.strictEqual(environment.status, 'dirty');
 
   }, 'marks-dirty-when-environment-is-still-cleaning');
@@ -23,12 +26,12 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    await session.environments.cleaning(body.id, account, region);
-    await session.environments.release(body.id, account, region);
+    await clients.environments.cleaning(body.id, account, region);
+    await clients.environments.release(body.id, account, region);
     await session.cleanupTimeout({ allocationId: body.id, account, region });
 
     try {
-      await session.environments.get(account, region);
+      await clients.environments.get(account, region);
     } catch (err: any) {
       assert.strictEqual(err.constructor.name, 'EnvironmentNotFound');
     }
@@ -43,14 +46,14 @@ export async function handler(_: any) {
     const region = body.environment.region;
     const allocationId = body.id;
 
-    await session.environments.cleaning(allocationId, account, region);
-    await session.environments.release(allocationId, account, region);
+    await clients.environments.cleaning(allocationId, account, region);
+    await clients.environments.release(allocationId, account, region);
     const allocateResponse2 = await session.allocate({ pool: 'release', requester: 'test' } );
     const allocateResponseBody2 = JSON.parse(allocateResponse2.body!);
 
     await session.cleanupTimeout({ allocationId, account, region });
 
-    const environment = await session.environments.get(account, region);
+    const environment = await clients.environments.get(account, region);
     assert.strictEqual(environment.status, 'in-use');
     assert.strictEqual(environment.allocation, allocateResponseBody2.id);
 

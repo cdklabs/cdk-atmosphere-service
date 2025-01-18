@@ -1,5 +1,8 @@
 import * as assert from 'assert';
+import { RuntimeClients } from '../../../src/clients';
 import { Session, SUCCESS_PAYLOAD } from '../service.session';
+
+const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
@@ -13,10 +16,10 @@ export async function handler(_: any) {
     const deallocateResponse = await session.deallocate(allocationResponseBody.id, { outcome: 'success' });
     assert.strictEqual(deallocateResponse.status, 200);
 
-    const environment = await session.environments.get(account, region);
+    const environment = await clients.environments.get(account, region);
     assert.strictEqual(environment.status, 'cleaning');
 
-    const allocation = await session.allocations.get(allocationResponseBody.id);
+    const allocation = await clients.allocations.get(allocationResponseBody.id);
     assert.ok(allocation.end);
 
     const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);

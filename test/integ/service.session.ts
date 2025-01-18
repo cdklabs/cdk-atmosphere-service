@@ -19,8 +19,6 @@ import { RuntimeClients } from '../../src/clients';
 import * as deallocate from '../../src/deallocate/deallocate.lambda';
 import type { DeallocateRequest } from '../../src/deallocate/deallocate.lambda';
 import * as envars from '../../src/envars';
-import { AllocationsClient } from '../../src/storage/allocations.client';
-import { EnvironmentsClient } from '../../src/storage/environments.client';
 import * as _with from '../with';
 
 const apigw = new APIGateway();
@@ -189,16 +187,11 @@ export class Session {
     }, sessionName, stacksBasePath);
   }
 
-  public readonly environments: EnvironmentsClient;
-  public readonly allocations: AllocationsClient;
-
   private constructor(
     private readonly vars: envars.EnvironmentVariables,
     private readonly name: string,
     private readonly stacksBasePath: string) {
     this.log(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
-    this.environments = new EnvironmentsClient(this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV]);
-    this.allocations = new AllocationsClient(this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV]);
   }
 
   public async allocate(body: AllocateRequest): Promise<APIGatewayResponse> {

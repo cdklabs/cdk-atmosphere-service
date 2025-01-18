@@ -1,5 +1,8 @@
 import * as assert from 'assert';
+import { RuntimeClients } from '../../../src/clients';
 import { Session, SUCCESS_PAYLOAD } from '../service.session';
+
+const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
@@ -9,11 +12,11 @@ export async function handler(_: any) {
 
     const body = JSON.parse(response.body!);
 
-    const environment = await session.environments.get(body.environment.account, body.environment.region);
+    const environment = await clients.environments.get(body.environment.account, body.environment.region);
     assert.strictEqual(environment.status, 'in-use');
     assert.strictEqual(environment.allocation, body.id);
 
-    const allocation = await session.allocations.get(environment.allocation);
+    const allocation = await clients.allocations.get(environment.allocation);
     assert.strictEqual(allocation.account, body.environment.account);
     assert.strictEqual(allocation.region, body.environment.region);
 

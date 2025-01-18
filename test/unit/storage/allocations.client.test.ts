@@ -161,7 +161,7 @@ describe('AllocationsClient', () => {
       });
 
       const client = new AllocationsClient('table');
-      await expect(client.end({ id: '1234', outcome: 'fail' })).rejects.toThrow('Attribute \'account\' does not have a value');
+      await expect(client.end({ id: '1234', outcome: 'fail' })).rejects.toThrow('Attribute \'account\' not found');
 
     });
 
