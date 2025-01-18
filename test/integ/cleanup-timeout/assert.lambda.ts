@@ -23,6 +23,7 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
+    await session.environments.cleaning(body.id, account, region);
     await session.environments.release(body.id, account, region);
     await session.cleanupTimeout({ allocationId: body.id, account, region });
 
@@ -42,14 +43,16 @@ export async function handler(_: any) {
     const region = body.environment.region;
     const allocationId = body.id;
 
-    await session.deallocate(allocationId, { outcome: 'success' });
+    await session.environments.cleaning(allocationId, account, region);
+    await session.environments.release(allocationId, account, region);
     const allocateResponse2 = await session.allocate({ pool: 'release', requester: 'test' } );
     const allocateResponseBody2 = JSON.parse(allocateResponse2.body!);
 
-    await session.cleanupTimeout({ allocationId: allocateResponseBody2.id, account, region });
+    await session.cleanupTimeout({ allocationId, account, region });
 
     const environment = await session.environments.get(account, region);
     assert.strictEqual(environment.status, 'in-use');
+    assert.strictEqual(environment.allocation, allocateResponseBody2.id);
 
   }, 'no-ops-when-environment-has-been-reallocated');
 

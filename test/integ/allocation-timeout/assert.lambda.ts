@@ -18,7 +18,7 @@ export async function handler(_: any) {
     const response = await session.allocate({ pool: 'release', requester: 'test', durationSeconds: 30 } );
     const body = JSON.parse(response.body!);
 
-    await session.deallocate(body.id, { outcome: 'success' });
+    await session.allocations.end({ id: body.id, outcome: 'success' });
     await session.allocationTimeout({ allocationId: body.id });
 
     const allocation = await session.allocations.get(body.id);

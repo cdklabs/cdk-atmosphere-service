@@ -27,12 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/cleanup-timeout/cleanup-timeout.lambda.ts
-var cleanup_timeout_lambda_exports = {};
-__export(cleanup_timeout_lambda_exports, {
+// src/deallocate/deallocate.lambda.ts
+var deallocate_lambda_exports = {};
+__export(deallocate_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(cleanup_timeout_lambda_exports);
+module.exports = __toCommonJS(deallocate_lambda_exports);
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -222,6 +222,20 @@ var SchedulerClient = class _SchedulerClient {
 
 // src/storage/allocations.client.ts
 var ddb = __toESM(require("@aws-sdk/client-dynamodb"));
+
+// src/storage/dynamo-item.ts
+function value(name, attributes) {
+  const attribute = attributes[name];
+  if (!attribute) {
+    throw new Error(`Attribute '${name}' not found`);
+  }
+  if (attribute.S) {
+    return attribute.S;
+  }
+  throw new Error(`Attribute '${name}' does not have a value`);
+}
+
+// src/storage/allocations.client.ts
 var AllocationAlreadyEndedError = class extends Error {
   constructor(id) {
     super(`Allocation ${id} is already ended`);
@@ -338,16 +352,6 @@ var AllocationsClient = class {
     }
   }
 };
-function value(name, attributes) {
-  const attribute = attributes[name];
-  if (!attribute) {
-    throw new Error(`Attribute '${name}' not found`);
-  }
-  if (attribute.S) {
-    return attribute.S;
-  }
-  throw new Error(`Attribute '${name}' does not have a value`);
-}
 
 // src/storage/environments.client.ts
 var ddb2 = __toESM(require("@aws-sdk/client-dynamodb"));
@@ -391,10 +395,37 @@ var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
     super(account, region, "already reallocated");
   }
 };
+var EnvironmentNotFound = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "not found");
+  }
+};
 var EnvironmentsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb2.DynamoDB({});
+  }
+  /**
+   * Fetch a specific environment by account and region.
+   * Will throw if it doesn't exists.
+   */
+  async get(account, region) {
+    const response = await this.ddbClient.getItem({
+      TableName: this.tableName,
+      Key: {
+        account: { S: account },
+        region: { S: region }
+      }
+    });
+    if (!response.Item) {
+      throw new EnvironmentNotFound(account, region);
+    }
+    return {
+      account: value("account", response.Item),
+      region: value("region", response.Item),
+      status: value("status", response.Item),
+      allocation: value("allocation", response.Item)
+    };
   }
   /**
    * Acquire an environment by inserting a new item into the table.
@@ -605,32 +636,84 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
-// src/cleanup-timeout/cleanup-timeout.lambda.ts
+// src/deallocate/deallocate.lambda.ts
+var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var ProxyError = class extends Error {
+  constructor(statusCode, message) {
+    super(`${statusCode}: ${message}`);
+    this.statusCode = statusCode;
+    this.message = message;
+  }
+};
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const account = event.account;
-  const region = event.region;
-  const allocationId = event.allocationId;
   try {
-    console.log(`Marking environment 'aws://${account}/${region}' as dirty`);
-    await clients.environments.dirty(allocationId, account, region);
-    console.log("Done");
+    const id = (event.pathParameters ?? {}).id;
+    if (!id) {
+      throw new ProxyError(400, "Missing 'id' path parameter");
+    }
+    console.log(`Extracted allocation id from path: ${id}`);
+    console.log("Parsing request body");
+    const request = parseRequestBody(event.body);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
+    });
+    console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
+    return success({ cleanupDurationSeconds });
   } catch (e) {
-    if (e instanceof EnvironmentAlreadyReleasedError) {
-      console.log(e.message);
-      return;
+    if (e instanceof AllocationAlreadyEndedError) {
+      console.log(`Returning success because: ${e.message}`);
+      return success({ cleanupDurationSeconds: -1 });
     }
-    if (e instanceof EnvironmentAlreadyDirtyError) {
-      console.log(e.message);
-      return;
-    }
-    if (e instanceof EnvironmentAlreadyReallocated) {
-      console.log(e.message);
-      return;
+    console.error(e);
+    return {
+      statusCode: e instanceof ProxyError ? e.statusCode : 500,
+      body: JSON.stringify({ message: e.message })
+    };
+  }
+}
+function parseRequestBody(body) {
+  if (!body) {
+    throw new ProxyError(400, "Request body not found");
+  }
+  const parsed = JSON.parse(body);
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
+  }
+  return parsed;
+}
+async function endAllocation(id, outcome) {
+  try {
+    return await clients.allocations.end({ id, outcome });
+  } catch (e) {
+    if (e instanceof InvalidInputError) {
+      throw new ProxyError(400, e.message);
     }
     throw e;
   }
+}
+function success(response) {
+  return {
+    statusCode: 200,
+    body: JSON.stringify(response)
+  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

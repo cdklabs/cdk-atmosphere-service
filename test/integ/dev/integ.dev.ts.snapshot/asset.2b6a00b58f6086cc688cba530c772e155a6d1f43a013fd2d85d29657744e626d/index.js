@@ -69946,6 +69946,20 @@ var SchedulerClient = class _SchedulerClient {
 
 // src/storage/allocations.client.ts
 var ddb = __toESM(require_dist_cjs84());
+
+// src/storage/dynamo-item.ts
+function value(name, attributes) {
+  const attribute = attributes[name];
+  if (!attribute) {
+    throw new Error(`Attribute '${name}' not found`);
+  }
+  if (attribute.S) {
+    return attribute.S;
+  }
+  throw new Error(`Attribute '${name}' does not have a value`);
+}
+
+// src/storage/allocations.client.ts
 var AllocationAlreadyEndedError = class extends Error {
   constructor(id) {
     super(`Allocation ${id} is already ended`);
@@ -70062,16 +70076,6 @@ var AllocationsClient = class {
     }
   }
 };
-function value(name, attributes) {
-  const attribute = attributes[name];
-  if (!attribute) {
-    throw new Error(`Attribute '${name}' not found`);
-  }
-  if (attribute.S) {
-    return attribute.S;
-  }
-  throw new Error(`Attribute '${name}' does not have a value`);
-}
 
 // src/storage/environments.client.ts
 var ddb2 = __toESM(require_dist_cjs84());
@@ -70115,10 +70119,37 @@ var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
     super(account, region, "already reallocated");
   }
 };
+var EnvironmentNotFound = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "not found");
+  }
+};
 var EnvironmentsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb2.DynamoDB({});
+  }
+  /**
+   * Fetch a specific environment by account and region.
+   * Will throw if it doesn't exists.
+   */
+  async get(account, region) {
+    const response = await this.ddbClient.getItem({
+      TableName: this.tableName,
+      Key: {
+        account: { S: account },
+        region: { S: region }
+      }
+    });
+    if (!response.Item) {
+      throw new EnvironmentNotFound(account, region);
+    }
+    return {
+      account: value("account", response.Item),
+      region: value("region", response.Item),
+      status: value("status", response.Item),
+      allocation: value("allocation", response.Item)
+    };
   }
   /**
    * Acquire an environment by inserting a new item into the table.

@@ -11,8 +11,9 @@ export async function handler(_: any) {
 
     const environment = await session.environments.get(body.environment.account, body.environment.region);
     assert.strictEqual(environment.status, 'in-use');
+    assert.strictEqual(environment.allocation, body.id);
 
-    const allocation = await session.allocations.get(body.id);
+    const allocation = await session.allocations.get(environment.allocation);
     assert.strictEqual(allocation.account, body.environment.account);
     assert.strictEqual(allocation.region, body.environment.region);
 

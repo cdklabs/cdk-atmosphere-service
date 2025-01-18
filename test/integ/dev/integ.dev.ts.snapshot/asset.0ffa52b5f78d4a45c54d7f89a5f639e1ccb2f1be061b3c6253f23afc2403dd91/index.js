@@ -6676,7 +6676,7 @@ var require_debuggability = __commonJS({
       };
       Promise2.prototype._onCancel = function() {
       };
-      Promise2.prototype._setOnCancel = function(handler5) {
+      Promise2.prototype._setOnCancel = function(handler7) {
         ;
       };
       Promise2.prototype._attachCancellationCallback = function(onCancel) {
@@ -7285,10 +7285,10 @@ var require_finally = __commonJS({
       var CancellationError = Promise2.CancellationError;
       var errorObj2 = util.errorObj;
       var catchFilter = require_catch_filter()(NEXT_FILTER);
-      function PassThroughHandlerContext(promise, type, handler5) {
+      function PassThroughHandlerContext(promise, type, handler7) {
         this.promise = promise;
         this.type = type;
-        this.handler = handler5;
+        this.handler = handler7;
         this.called = false;
         this.cancelPromise = null;
       }
@@ -7323,10 +7323,10 @@ var require_finally = __commonJS({
       }
       function finallyHandler(reasonOrValue) {
         var promise = this.promise;
-        var handler5 = this.handler;
+        var handler7 = this.handler;
         if (!this.called) {
           this.called = true;
-          var ret2 = this.isFinallyHandler() ? handler5.call(promise._boundValue()) : handler5.call(promise._boundValue(), reasonOrValue);
+          var ret2 = this.isFinallyHandler() ? handler7.call(promise._boundValue()) : handler7.call(promise._boundValue(), reasonOrValue);
           if (ret2 === NEXT_FILTER) {
             return ret2;
           } else if (ret2 !== void 0) {
@@ -7364,26 +7364,26 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler5, type, success2, fail2) {
-        if (typeof handler5 !== "function") return this.then();
+      Promise2.prototype._passThrough = function(handler7, type, success2, fail2) {
+        if (typeof handler7 !== "function") return this.then();
         return this._then(
           success2,
           fail2,
           void 0,
-          new PassThroughHandlerContext(this, type, handler5),
+          new PassThroughHandlerContext(this, type, handler7),
           void 0
         );
       };
-      Promise2.prototype.lastly = Promise2.prototype["finally"] = function(handler5) {
+      Promise2.prototype.lastly = Promise2.prototype["finally"] = function(handler7) {
         return this._passThrough(
-          handler5,
+          handler7,
           0,
           finallyHandler,
           finallyHandler
         );
       };
-      Promise2.prototype.tap = function(handler5) {
-        return this._passThrough(handler5, 1, finallyHandler);
+      Promise2.prototype.tap = function(handler7) {
+        return this._passThrough(handler7, 1, finallyHandler);
       };
       Promise2.prototype.tapCatch = function(handlerOrPredicate) {
         var len = arguments.length;
@@ -7407,9 +7407,9 @@ var require_finally = __commonJS({
             }
           }
           catchInstances.length = j;
-          var handler5 = arguments[i];
+          var handler7 = arguments[i];
           return this._passThrough(
-            catchFilter(catchInstances, handler5, this),
+            catchFilter(catchInstances, handler7, this),
             1,
             void 0,
             finallyHandler
@@ -7771,10 +7771,10 @@ var require_direct_resolve = __commonJS({
           );
         } else {
           var _reason = arguments[1];
-          var handler5 = function() {
+          var handler7 = function() {
             throw _reason;
           };
-          return this.caught(reason, handler5);
+          return this.caught(reason, handler7);
         }
       };
       Promise2.prototype.catchReturn = function(value2) {
@@ -7790,10 +7790,10 @@ var require_direct_resolve = __commonJS({
         } else {
           var _value = arguments[1];
           if (_value instanceof Promise2) _value.suppressUnhandledRejections();
-          var handler5 = function() {
+          var handler7 = function() {
             return _value;
           };
-          return this.caught(value2, handler5);
+          return this.caught(value2, handler7);
         }
       };
     };
@@ -9940,22 +9940,22 @@ var require_promise = __commonJS({
         }
         var context = getContext();
         if (!((bitField & 50397184) === 0)) {
-          var handler5, value2, settler = target._settlePromiseCtx;
+          var handler7, value2, settler = target._settlePromiseCtx;
           if ((bitField & 33554432) !== 0) {
             value2 = target._rejectionHandler0;
-            handler5 = didFulfill;
+            handler7 = didFulfill;
           } else if ((bitField & 16777216) !== 0) {
             value2 = target._fulfillmentHandler0;
-            handler5 = didReject;
+            handler7 = didReject;
             target._unsetRejectionIsUnhandled();
           } else {
             settler = target._settlePromiseLateCancellationObserver;
             value2 = new CancellationError("late cancellation observer");
             target._attachExtraTrace(value2);
-            handler5 = didReject;
+            handler7 = didReject;
           }
           async.invoke(settler, target, {
-            handler: util.contextBind(context, handler5),
+            handler: util.contextBind(context, handler7),
             promise,
             receiver: receiver2,
             value: value2
@@ -10147,7 +10147,7 @@ var require_promise = __commonJS({
           promise._rejectCallback(r, true);
         }
       };
-      Promise2.prototype._settlePromiseFromHandler = function(handler5, receiver2, value2, promise) {
+      Promise2.prototype._settlePromiseFromHandler = function(handler7, receiver2, value2, promise) {
         var bitField = promise._bitField;
         if ((bitField & 65536) !== 0) return;
         promise._pushContext();
@@ -10157,10 +10157,10 @@ var require_promise = __commonJS({
             x = errorObj2;
             x.e = new TypeError2("cannot .spread() a non-array: " + util.classString(value2));
           } else {
-            x = tryCatch2(handler5).apply(this._boundValue(), value2);
+            x = tryCatch2(handler7).apply(this._boundValue(), value2);
           }
         } else {
-          x = tryCatch2(handler5).call(receiver2, value2);
+          x = tryCatch2(handler7).call(receiver2, value2);
         }
         var promiseCreated = promise._popContext();
         bitField = promise._bitField;
@@ -10185,7 +10185,7 @@ var require_promise = __commonJS({
       Promise2.prototype._setFollowee = function(promise) {
         this._rejectionHandler0 = promise;
       };
-      Promise2.prototype._settlePromise = function(promise, handler5, receiver2, value2) {
+      Promise2.prototype._settlePromise = function(promise, handler7, receiver2, value2) {
         var isPromise = promise instanceof Promise2;
         var bitField = this._bitField;
         var asyncGuaranteed = (bitField & 134217728) !== 0;
@@ -10193,10 +10193,10 @@ var require_promise = __commonJS({
           if (isPromise) promise._invokeInternalOnCancel();
           if (receiver2 instanceof PassThroughHandlerContext && receiver2.isFinallyHandler()) {
             receiver2.cancelPromise = promise;
-            if (tryCatch2(handler5).call(receiver2, value2) === errorObj2) {
+            if (tryCatch2(handler7).call(receiver2, value2) === errorObj2) {
               promise._reject(errorObj2.e);
             }
-          } else if (handler5 === reflectHandler2) {
+          } else if (handler7 === reflectHandler2) {
             promise._fulfill(reflectHandler2.call(receiver2));
           } else if (receiver2 instanceof Proxyable) {
             receiver2._promiseCancelled(promise);
@@ -10205,12 +10205,12 @@ var require_promise = __commonJS({
           } else {
             receiver2.cancel();
           }
-        } else if (typeof handler5 === "function") {
+        } else if (typeof handler7 === "function") {
           if (!isPromise) {
-            handler5.call(receiver2, value2, promise);
+            handler7.call(receiver2, value2, promise);
           } else {
             if (asyncGuaranteed) promise._setAsyncGuaranteed();
-            this._settlePromiseFromHandler(handler5, receiver2, value2, promise);
+            this._settlePromiseFromHandler(handler7, receiver2, value2, promise);
           }
         } else if (receiver2 instanceof Proxyable) {
           if (!receiver2._isResolved()) {
@@ -10230,15 +10230,15 @@ var require_promise = __commonJS({
         }
       };
       Promise2.prototype._settlePromiseLateCancellationObserver = function(ctx) {
-        var handler5 = ctx.handler;
+        var handler7 = ctx.handler;
         var promise = ctx.promise;
         var receiver2 = ctx.receiver;
         var value2 = ctx.value;
-        if (typeof handler5 === "function") {
+        if (typeof handler7 === "function") {
           if (!(promise instanceof Promise2)) {
-            handler5.call(receiver2, value2, promise);
+            handler7.call(receiver2, value2, promise);
           } else {
-            this._settlePromiseFromHandler(handler5, receiver2, value2, promise);
+            this._settlePromiseFromHandler(handler7, receiver2, value2, promise);
           }
         } else if (promise instanceof Promise2) {
           promise._reject(value2);
@@ -10247,12 +10247,12 @@ var require_promise = __commonJS({
       Promise2.prototype._settlePromiseCtx = function(ctx) {
         this._settlePromise(ctx.promise, ctx.handler, ctx.receiver, ctx.value);
       };
-      Promise2.prototype._settlePromise0 = function(handler5, value2, bitField) {
+      Promise2.prototype._settlePromise0 = function(handler7, value2, bitField) {
         var promise = this._promise0;
         var receiver2 = this._receiverAt(0);
         this._promise0 = void 0;
         this._receiver0 = void 0;
-        this._settlePromise(promise, handler5, receiver2, value2);
+        this._settlePromise(promise, handler7, receiver2, value2);
       };
       Promise2.prototype._clearCallbackDataAtIndex = function(index) {
         var base = index * 4 - 4;
@@ -10293,20 +10293,20 @@ var require_promise = __commonJS({
       };
       Promise2.prototype._fulfillPromises = function(len, value2) {
         for (var i = 1; i < len; i++) {
-          var handler5 = this._fulfillmentHandlerAt(i);
+          var handler7 = this._fulfillmentHandlerAt(i);
           var promise = this._promiseAt(i);
           var receiver2 = this._receiverAt(i);
           this._clearCallbackDataAtIndex(i);
-          this._settlePromise(promise, handler5, receiver2, value2);
+          this._settlePromise(promise, handler7, receiver2, value2);
         }
       };
       Promise2.prototype._rejectPromises = function(len, reason) {
         for (var i = 1; i < len; i++) {
-          var handler5 = this._rejectionHandlerAt(i);
+          var handler7 = this._rejectionHandlerAt(i);
           var promise = this._promiseAt(i);
           var receiver2 = this._receiverAt(i);
           this._clearCallbackDataAtIndex(i);
-          this._settlePromise(promise, handler5, receiver2, reason);
+          this._settlePromise(promise, handler7, receiver2, reason);
         }
       };
       Promise2.prototype._settlePromises = function() {
@@ -10777,7 +10777,7 @@ var require_unzip2 = __commonJS({
 // test/integ/dev/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
-  handler: () => handler4
+  handler: () => handler6
 });
 module.exports = __toCommonJS(assert_lambda_exports);
 
@@ -10789,6 +10789,7 @@ var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
 var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
 var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
 var import_client_ecs2 = require("@aws-sdk/client-ecs");
+var import_client_lambda2 = require("@aws-sdk/client-lambda");
 var import_client_s32 = require("@aws-sdk/client-s3");
 var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
 var unzipper = __toESM(require_unzip2());
@@ -11035,6 +11036,20 @@ var SchedulerClient = class _SchedulerClient {
 
 // src/storage/allocations.client.ts
 var ddb = __toESM(require("@aws-sdk/client-dynamodb"));
+
+// src/storage/dynamo-item.ts
+function value(name, attributes) {
+  const attribute = attributes[name];
+  if (!attribute) {
+    throw new Error(`Attribute '${name}' not found`);
+  }
+  if (attribute.S) {
+    return attribute.S;
+  }
+  throw new Error(`Attribute '${name}' does not have a value`);
+}
+
+// src/storage/allocations.client.ts
 var AllocationAlreadyEndedError = class extends Error {
   constructor(id) {
     super(`Allocation ${id} is already ended`);
@@ -11151,16 +11166,6 @@ var AllocationsClient = class {
     }
   }
 };
-function value(name, attributes) {
-  const attribute = attributes[name];
-  if (!attribute) {
-    throw new Error(`Attribute '${name}' not found`);
-  }
-  if (attribute.S) {
-    return attribute.S;
-  }
-  throw new Error(`Attribute '${name}' does not have a value`);
-}
 
 // src/storage/environments.client.ts
 var ddb2 = __toESM(require("@aws-sdk/client-dynamodb"));
@@ -11204,10 +11209,37 @@ var EnvironmentAlreadyReallocated = class extends EnvironmentsError {
     super(account, region, "already reallocated");
   }
 };
+var EnvironmentNotFound = class extends EnvironmentsError {
+  constructor(account, region) {
+    super(account, region, "not found");
+  }
+};
 var EnvironmentsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb2.DynamoDB({});
+  }
+  /**
+   * Fetch a specific environment by account and region.
+   * Will throw if it doesn't exists.
+   */
+  async get(account, region) {
+    const response = await this.ddbClient.getItem({
+      TableName: this.tableName,
+      Key: {
+        account: { S: account },
+        region: { S: region }
+      }
+    });
+    if (!response.Item) {
+      throw new EnvironmentNotFound(account, region);
+    }
+    return {
+      account: value("account", response.Item),
+      region: value("region", response.Item),
+      status: value("status", response.Item),
+      allocation: value("allocation", response.Item)
+    };
   }
   /**
    * Acquire an environment by inserting a new item into the table.
@@ -11537,6 +11569,23 @@ async function grabCredentials(id, environment) {
   };
 }
 
+// src/allocation-timeout/allocation-timeout.lambda.ts
+var import_client_lambda = require("@aws-sdk/client-lambda");
+async function handler2(event) {
+  console.log("Event:", JSON.stringify(event, null, 2));
+  const body = JSON.stringify({ outcome: "timeout" });
+  const lambda2 = new import_client_lambda.Lambda();
+  const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
+  const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
+  console.log(`Invoking ${target} with payload: ${payload}`);
+  const response = await lambda2.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
+  const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
+  if (responsePayload.statusCode !== 200) {
+    throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
+  }
+  console.log("Done");
+}
+
 // src/cleanup/cleaner.ts
 var import_client_cloudformation3 = require("@aws-sdk/client-cloudformation");
 var import_credential_providers = require("@aws-sdk/credential-providers");
@@ -11747,7 +11796,7 @@ var Cleaner = class {
 
 // src/cleanup/cleanup.task.ts
 var clients2 = RuntimeClients.getOrCreate();
-async function handler2(req) {
+async function handler3(req) {
   log(`Fetching allocation '${req.allocationId}'`);
   const allocation = await clients2.allocations.get(req.allocationId);
   const env3 = `aws://${allocation.account}/${allocation.region}`;
@@ -11792,7 +11841,35 @@ if (require.main !== module) {
 } else {
   const allocationId = Envars.required(CLEANUP_TASK_ALLOCATION_ID);
   const timeoutSeconds = Number(Envars.required(CLEANUP_TASK_TIMEOUT_SECONDS));
-  void handler2({ allocationId, timeoutSeconds });
+  void handler3({ allocationId, timeoutSeconds });
+}
+
+// src/cleanup-timeout/cleanup-timeout.lambda.ts
+var clients3 = RuntimeClients.getOrCreate();
+async function handler4(event) {
+  console.log("Event:", JSON.stringify(event, null, 2));
+  const account = event.account;
+  const region = event.region;
+  const allocationId = event.allocationId;
+  try {
+    console.log(`Marking environment 'aws://${account}/${region}' as dirty`);
+    await clients3.environments.dirty(allocationId, account, region);
+    console.log("Done");
+  } catch (e) {
+    if (e instanceof EnvironmentAlreadyReleasedError) {
+      console.log(e.message);
+      return;
+    }
+    if (e instanceof EnvironmentAlreadyDirtyError) {
+      console.log(e.message);
+      return;
+    }
+    if (e instanceof EnvironmentAlreadyReallocated) {
+      console.log(e.message);
+      return;
+    }
+    throw e;
+  }
 }
 
 // src/deallocate/deallocate.lambda.ts
@@ -11804,8 +11881,8 @@ var ProxyError2 = class extends Error {
     this.message = message;
   }
 };
-var clients3 = RuntimeClients.getOrCreate();
-async function handler3(event) {
+var clients4 = RuntimeClients.getOrCreate();
+async function handler5(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   try {
     const id = (event.pathParameters ?? {}).id;
@@ -11823,9 +11900,9 @@ async function handler3(event) {
     console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
     console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
-    await clients3.environments.cleaning(id, allocation.account, allocation.region);
+    await clients4.environments.cleaning(id, allocation.account, allocation.region);
     console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
-    await clients3.scheduler.scheduleCleanupTimeout({
+    await clients4.scheduler.scheduleCleanupTimeout({
       allocationId: allocation.id,
       account: allocation.account,
       region: allocation.region,
@@ -11833,7 +11910,7 @@ async function handler3(event) {
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
     console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
-    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    const taskInstanceArn = await clients4.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
     console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
     return success({ cleanupDurationSeconds });
   } catch (e) {
@@ -11860,7 +11937,7 @@ function parseRequestBody2(body) {
 }
 async function endAllocation(id, outcome) {
   try {
-    return await clients3.allocations.end({ id, outcome });
+    return await clients4.allocations.end({ id, outcome });
   } catch (e) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError2(400, e.message);
@@ -11895,7 +11972,8 @@ var cfn = new import_client_cloudformation4.CloudFormation();
 var scheduler = new import_client_scheduler2.Scheduler();
 var ecs = new import_client_ecs2.ECS();
 var s32 = new import_client_s32.S3();
-var clients4 = RuntimeClients.getOrCreate();
+var lambda = new import_client_lambda2.Lambda();
+var clients5 = RuntimeClients.getOrCreate();
 var SUCCESS_PAYLOAD = "OK";
 var Session = class _Session {
   constructor(vars, name, stacksBasePath) {
@@ -11981,46 +12059,45 @@ var Session = class _Session {
   async allocate(body) {
     const json = JSON.stringify(body);
     const response = _Session.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
-    if (response.status !== 200) {
-      return [response, Promise.resolve()];
-    }
-    const responseBody = JSON.parse(response.body);
-    return [response, this.waitForAllocationTimeout(responseBody)];
+    return response;
   }
   async deallocate(id, body) {
     const json = JSON.stringify(body);
     const response = _Session.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
-    if (response.status !== 200) {
-      return [response, Promise.resolve()];
-    }
-    const responseBody = JSON.parse(response.body);
-    return [response, this.waitForCleanupTimeout(id, responseBody)];
+    return response;
+  }
+  async cleanupTimeout(event) {
+    _Session.isLocal() ? await this.cleanupTimeoutLocal(event) : await this.cleanupTimeoutRemote(event);
+  }
+  async allocationTimeout(event) {
+    _Session.isLocal() ? await this.allocationTimeoutLocal(event) : await this.allocationTimeoutRemote(event);
+  }
+  async allocationTimeoutLocal(event) {
+    await handler2(event);
+  }
+  async allocationTimeoutRemote(event) {
+    await lambda.invoke({
+      Payload: JSON.stringify(event),
+      FunctionName: this.vars[ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV],
+      InvocationType: "RequestResponse"
+    });
+  }
+  async cleanupTimeoutLocal(event) {
+    await handler4(event);
+  }
+  async cleanupTimeoutRemote(event) {
+    await lambda.invoke({
+      Payload: JSON.stringify(event),
+      FunctionName: this.vars[CLEANUP_TIMEOUT_FUNCTION_ARN_ENV],
+      InvocationType: "RequestResponse"
+    });
   }
   /**
    * Perform a cleanup for a specific allocation. When running locally, this will
    * invoke the cleanup task in-process, when running remotely, this will trigger the ECS task.
    */
   async cleanup(req) {
-    if (_Session.isLocal()) {
-      return this.cleanupLocal(req);
-    } else {
-      return this.cleanupRemote(req);
-    }
-  }
-  async fetchEnvironment(account, region) {
-    return dynamo.getItem({
-      TableName: this.vars[ENVIRONMENTS_TABLE_NAME_ENV],
-      Key: {
-        account: { S: account },
-        region: { S: region }
-      }
-    });
-  }
-  async fetchAllocation(id) {
-    return dynamo.getItem({
-      TableName: this.vars[ALLOCATIONS_TABLE_NAME_ENV],
-      Key: { id: { S: id } }
-    });
+    return _Session.isLocal() ? this.cleanupLocal(req) : this.cleanupRemote(req);
   }
   async fetchAllocationTimeoutSchedule(allocationId) {
     const response = await scheduler.listSchedules({
@@ -12137,13 +12214,13 @@ var Session = class _Session {
   async cleanupLocal(req) {
     this.log(`Invoking local cleanup task handler with body: ${JSON.stringify(req)}`);
     console.log();
-    await handler2(req);
+    await handler3(req);
     console.log();
   }
   async cleanupRemote(req) {
     this.log(`Starting ECS cleanup task with body: ${JSON.stringify(req)}`);
-    const allocation = await clients4.allocations.get(req.allocationId);
-    const taskInstanceArn = await clients4.cleanup.start({
+    const allocation = await clients5.allocations.get(req.allocationId);
+    const taskInstanceArn = await clients5.cleanup.start({
       allocation,
       timeoutSeconds: req.timeoutSeconds
     });
@@ -12155,7 +12232,7 @@ var Session = class _Session {
     this.log(`Invoking local deallocate handler for allocation '${id}' with body: ${jsonBody}`);
     console.log();
     const response = await env2(this.vars, async () => {
-      return handler3({ body: jsonBody, pathParameters: { id } });
+      return handler5({ body: jsonBody, pathParameters: { id } });
     });
     console.log();
     return { status: response.statusCode, body: response.body };
@@ -12218,20 +12295,6 @@ var Session = class _Session {
       await scheduler.deleteSchedule({ Name: schedule.Name });
     }
   }
-  async waitForAllocationTimeout(response) {
-    const waitTimeSeconds = response.durationSeconds + 60;
-    await this.waitFor(async () => await this.fetchAllocationTimeoutSchedule(response.id) === void 0, waitTimeSeconds, {
-      message: `allocation ${response.id} to timeout`
-    });
-    return new Promise((resolve) => setTimeout(resolve, 5e3));
-  }
-  async waitForCleanupTimeout(id, response) {
-    const waitTimeSeconds = response.cleanupDurationSeconds + 60;
-    await this.waitFor(async () => await this.fetchCleanupTimeoutSchedule(id) === void 0, waitTimeSeconds, {
-      message: `cleanup of allocation ${id} to timeout`
-    });
-    return new Promise((resolve) => setTimeout(resolve, 5e3));
-  }
   log(message) {
     console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`);
   }
@@ -12241,13 +12304,13 @@ var Session = class _Session {
 };
 
 // test/integ/dev/assert.lambda.ts
-async function handler4(_) {
+async function handler6(_) {
   return Session.assert(async () => {
     return;
   });
 }
 if (Session.isLocal()) {
-  void handler4({});
+  void handler6({});
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

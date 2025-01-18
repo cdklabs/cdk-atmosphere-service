@@ -35,7 +35,7 @@ const clients = RuntimeClients.getOrCreate();
 
 export const SUCCESS_PAYLOAD = 'OK';
 
-export interface DeployOptions {
+export interface DeployStackOptions {
   /**
    * Path to the tempalte file. Relative to the 'integ' directory.
    */
@@ -57,7 +57,7 @@ export interface DeployOptions {
   readonly timeoutMinutes?: number;
 }
 
-export interface DestroyOptions {
+export interface DestroyStackOptions {
   /**
    * Stack to destroy.
    */
@@ -144,7 +144,7 @@ export class Session {
     if (Session.isLocal()) {
 
       // locally we use dev stack outputs
-      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-cleanup-timeout-assertions' })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: 'atmosphere-integ-dev-assertions' })).Stacks ?? [])[0];
       assert.ok(devStack, 'Missing dev stack. Deploy by running: \'yarn integ:dev\'');
       envValue = (name: string) => {
         const value = (devStack.Outputs ?? []).find((o: any) => o.OutputKey === name.replace(/_/g, '0'))?.OutputValue;
@@ -196,7 +196,7 @@ export class Session {
     private readonly vars: envars.EnvironmentVariables,
     private readonly name: string,
     private readonly stacksBasePath: string) {
-    this.sessionLog(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
+    this.log(`Created session with variables: ${JSON.stringify(this.vars, null, 2)}`);
     this.environments = new EnvironmentsClient(this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV]);
     this.allocations = new AllocationsClient(this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV]);
   }
@@ -219,30 +219,6 @@ export class Session {
 
   public async allocationTimeout(event: allocationTimeout.AllocationTimeoutEvent) {
     Session.isLocal() ? await this.allocationTimeoutLocal(event) : await this.allocationTimeoutRemote(event);
-  }
-
-  private async allocationTimeoutLocal(event: allocationTimeout.AllocationTimeoutEvent) {
-    await allocationTimeout.handler(event);
-  }
-
-  private async allocationTimeoutRemote(event: allocationTimeout.AllocationTimeoutEvent) {
-    await lambda.invoke({
-      Payload: JSON.stringify(event),
-      FunctionName: this.vars[envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV],
-      InvocationType: 'RequestResponse',
-    });
-  }
-
-  private async cleanupTimeoutLocal(event: cleanupTimeout.CleanupTimeoutEvent) {
-    await cleanupTimeout.handler(event);
-  }
-
-  private async cleanupTimeoutRemote(event: cleanupTimeout.CleanupTimeoutEvent) {
-    await lambda.invoke({
-      Payload: JSON.stringify(event),
-      FunctionName: this.vars[envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV],
-      InvocationType: 'RequestResponse',
-    });
   }
 
   /**
@@ -302,22 +278,6 @@ export class Session {
     }
   }
 
-  public async okFor(condition: () => Promise<Boolean>, timeoutSeconds: number) {
-    const startTime = Date.now();
-    const timeoutMs = timeoutSeconds * 1000;
-    while (true) {
-      const result = await condition();
-      assert.ok(result);
-
-      const elapsed = Date.now() - startTime;
-      if (elapsed >= timeoutMs) {
-        return;
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-  }
-
   public async fetchStack(name: string, region: string) {
     const cfnRegion = new CloudFormation({ region });
     try {
@@ -336,7 +296,7 @@ export class Session {
    * Deploy a stack onto a region and return its name.
    * This will also wait for stack creation to complete.
    */
-  public async deploy(opts: DeployOptions): Promise<[string, StackResource[]]> {
+  public async deployStack(opts: DeployStackOptions): Promise<[string, StackResource[]]> {
     const cfnRegion = new CloudFormation({ region: opts.region });
     const templatePath = this.stacksBasePath === __dirname ? opts.templatePath : path.basename(opts.templatePath);
     const templateBody = fs.readFileSync(path.join(this.stacksBasePath, templatePath), { encoding: 'utf-8' });
@@ -362,7 +322,7 @@ export class Session {
     return [stackName, resources.StackResources ?? []];
   }
 
-  public async destroy(opts: DestroyOptions) {
+  public async destroyStack(opts: DestroyStackOptions) {
 
     const cfnRegion = new CloudFormation({ region: opts.region });
 
@@ -391,6 +351,42 @@ export class Session {
       { client: cfnRegion, maxWaitTime: 600, minDelay: 5, maxDelay: 5 },
       { StackName: opts.stackName },
     );
+  }
+
+  private async allocationTimeoutLocal(event: allocationTimeout.AllocationTimeoutEvent) {
+    const payload = JSON.stringify(event);
+    this.log(`Invoking local allocation timeout handler with event: ${payload}`);
+    console.log('');
+    await _with.env(this.vars, async () => allocationTimeout.handler(event));
+    console.log('');
+  }
+
+  private async allocationTimeoutRemote(event: allocationTimeout.AllocationTimeoutEvent) {
+    const payload = JSON.stringify(event);
+    this.log(`Invoking allocation timeout lambda with event: ${payload}`);
+    await lambda.invoke({
+      Payload: payload,
+      FunctionName: this.vars[envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV],
+      InvocationType: 'RequestResponse',
+    });
+  }
+
+  private async cleanupTimeoutLocal(event: cleanupTimeout.CleanupTimeoutEvent) {
+    const payload = JSON.stringify(event);
+    this.log(`Invoking local cleanup timeout handler with event: ${payload}`);
+    console.log('');
+    await _with.env(this.vars, async () => cleanupTimeout.handler(event));
+    console.log('');
+  }
+
+  private async cleanupTimeoutRemote(event: cleanupTimeout.CleanupTimeoutEvent) {
+    const payload = JSON.stringify(event);
+    this.log(`Invoking cleanup timeout lambda with event: ${payload}`);
+    await lambda.invoke({
+      Payload: payload,
+      FunctionName: this.vars[envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV],
+      InvocationType: 'RequestResponse',
+    });
   }
 
   private async cleanupLocal(req: cleanup.CleanupRequest) {
@@ -461,10 +457,10 @@ export class Session {
   }
 
   private async clear() {
-    this.sessionLog('Clearing state');
+    this.log('Clearing state');
     const environments = (await dynamo.scan({ TableName: this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV] })).Items ?? [];
     for (const environment of environments) {
-      this.sessionLog(`  » deleting environment aws://${environment.account.S!}/${environment.region.S!}`);
+      this.log(`  » deleting environment aws://${environment.account.S!}/${environment.region.S!}`);
       await dynamo.deleteItem({
         TableName: this.vars[envars.ENVIRONMENTS_TABLE_NAME_ENV],
         Key: {
@@ -476,7 +472,7 @@ export class Session {
 
     const allocations = (await dynamo.scan({ TableName: this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV] })).Items ?? [];
     for (const allocation of allocations) {
-      this.sessionLog(`  » deleting allocation ${allocation.id.S!}`);
+      this.log(`  » deleting allocation ${allocation.id.S!}`);
       await dynamo.deleteItem({
         TableName: this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV],
         Key: {
@@ -487,17 +483,13 @@ export class Session {
 
     const schedules = (await scheduler.listSchedules({})).Schedules ?? [];
     for (const schedule of schedules) {
-      this.sessionLog(`  » deleting schedule ${schedule.Name!}`);
+      this.log(`  » deleting schedule ${schedule.Name!}`);
       await scheduler.deleteSchedule({ Name: schedule.Name! });
     }
 
   }
 
   public log(message: string) {
-    console.log(`[${new Date().toISOString()}] ${message}`);
-  }
-
-  private sessionLog(message: string) {
     console.log(`[${new Date().toISOString()}] ${message}`);
   }
 

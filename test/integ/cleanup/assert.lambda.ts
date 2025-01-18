@@ -10,7 +10,7 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    const [stackName] = await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region });
+    const [stackName] = await session.deployStack({ templatePath: 'cleanup/stacks/simple.yaml', region });
 
     await session.environments.cleaning(body.id, account, region);
     await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
@@ -33,7 +33,7 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    const [stackName, resources] = await session.deploy({ templatePath: 'cleanup/stacks/versioned-bucket.yaml', region });
+    const [stackName, resources] = await session.deployStack({ templatePath: 'cleanup/stacks/versioned-bucket.yaml', region });
 
     const bucketName = resources.filter(r => r.ResourceType === 'AWS::S3::Bucket').map(r => r.PhysicalResourceId!)[0]!;
 
@@ -63,7 +63,7 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    const [stackName] = await session.deploy({ templatePath: 'cleanup/stacks/simple.yaml', region, terminationProtection: true });
+    const [stackName] = await session.deployStack({ templatePath: 'cleanup/stacks/simple.yaml', region, terminationProtection: true });
 
     await session.environments.cleaning(body.id, account, region);
     await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
@@ -96,7 +96,7 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    const [stackName] = await session.deploy({ templatePath: 'cleanup/stacks/cannot-delete.yaml', region });
+    const [stackName] = await session.deployStack({ templatePath: 'cleanup/stacks/cannot-delete.yaml', region });
 
     await session.environments.cleaning(body.id, account, region);
     await session.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
@@ -104,7 +104,7 @@ export async function handler(_: any) {
     const environment = await session.environments.get(account, region);
     assert.strictEqual(environment.status, 'dirty');
 
-    await session.destroy({ stackName, region });
+    await session.destroyStack({ stackName, region });
 
   }, 'marks-environment-dirty-if-fail');
 

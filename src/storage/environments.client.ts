@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as ddb from '@aws-sdk/client-dynamodb';
-import { value } from './dynamo-item';
+import { requiredValue } from './dynamo-item';
 
 /**
  * Base error originating from actions on the environments table.
@@ -148,10 +148,10 @@ export class EnvironmentsClient {
     }
 
     return {
-      account: value('account', response.Item),
-      region: value('region', response.Item),
-      status: value('status', response.Item),
-      allocation: value('allocation', response.Item),
+      account: requiredValue('account', response.Item),
+      region: requiredValue('region', response.Item),
+      status: requiredValue('status', response.Item),
+      allocation: requiredValue('allocation', response.Item),
     };
 
   }
