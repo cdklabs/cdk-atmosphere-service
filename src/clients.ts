@@ -1,3 +1,4 @@
+import { CleanupClient } from './cleanup/cleanup.client';
 import { ConfigurationClient } from './config/configuration.client';
 import * as envars from './envars';
 import { SchedulerClient } from './scheduler/scheduler.client';
@@ -24,6 +25,7 @@ export class RuntimeClients {
   private _environments: EnvironmentsClient | undefined;
   private _allocations: AllocationsClient | undefined;
   private _scheduler: SchedulerClient | undefined;
+  private _cleanup: CleanupClient | undefined;
 
   public get configuration(): ConfigurationClient {
     if (!this._configuration) {
@@ -57,6 +59,18 @@ export class RuntimeClients {
       this._scheduler = new SchedulerClient({ roleArn, dlqArn });
     }
     return this._scheduler;
+  }
+
+  public get cleanup(): CleanupClient {
+    if (!this._cleanup) {
+      const clusterArn = envars.Envars.required(envars.CLEANUP_CLUSTER_ARN_ENV);
+      const taskDefinitionArn = envars.Envars.required(envars.CLEANUP_TASK_DEFINITION_ARN_ENV);
+      const subnetId = envars.Envars.required(envars.CLEANUP_TASK_SUBNET_ID_ENV);
+      const securityGroupId = envars.Envars.required(envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV);
+      const containerName = envars.Envars.required(envars.CLEANUP_TASK_CONTAINER_NAME_ENV);
+      this._cleanup = new CleanupClient({ clusterArn, taskDefinitionArn, subnetId, securityGroupId, containerName });
+    }
+    return this._cleanup;
   }
 
 }

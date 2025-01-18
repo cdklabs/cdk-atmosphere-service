@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f2f957d4eb6e2e47cc4e03bb41c5fa5382410d04c88ca2af11208dc59312125.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/819d8a77e9a2b2e4b14bcd71c31c0f1820e8539acccf3d202c319f8b87e0637e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -80,6 +80,135 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereAllocationsTable4ECEFD7B"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcAA5D8E20"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet1Subnet655A8A5B"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet1RouteTableB3F8D458"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet1RouteTableAssociationD9673F81"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet1DefaultRouteA5A13A6A"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet2SubnetEE820C65"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet2RouteTableE76AC38D"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet2RouteTableAssociation9A4342B7"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcPublicSubnet2DefaultRoute4F700D87"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcIGWFD7B1A93"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcVPCGW5EDFD82B"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupVpcRestrictDefaultSecurityGroupCustomResourceBCD653E5"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupLogGroup72856C89"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupSecurityGroupFA8836F2"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupCluster30204BBC"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/Cluster/Cluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupCluster6751E732"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/TaskDefinition/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupTaskDefinitionTaskRoleDC03F82A"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/TaskDefinition/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupTaskDefinitionTaskRoleDefaultPolicy9EA1C620"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/TaskDefinition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupTaskDefinition211D8C31",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/TaskDefinition/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupTaskDefinitionExecutionRoleA76612D9"
+          }
+        ],
+        "/atmosphere-integ-allocate/Atmosphere/Cleanup/TaskDefinition/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupTaskDefinitionExecutionRoleDefaultPolicy93792DC7"
           }
         ],
         "/atmosphere-integ-allocate/Atmosphere/Scheduler/Role/Resource": [
@@ -296,6 +425,24 @@
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
+        "/atmosphere-integ-allocate/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/atmosphere-integ-allocate/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/atmosphere-integ-allocate/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
         "/atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereEnvironmentsTable430B8CE1\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -362,6 +509,30 @@
             "data": "ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
           }
         ],
+        "/atmosphere-integ-allocate/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereCleanupCluster30204BBC\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAtmosphereCleanupCluster30204BBCArn57501D75"
+          }
+        ],
+        "/atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereCleanupTaskDefinition211D8C31\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereCleanupTaskDefinition211D8C31C390C734"
+          }
+        ],
+        "/atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereCleanupVpcPublicSubnet1Subnet655A8A5B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereCleanupVpcPublicSubnet1Subnet655A8A5BBE644BE4"
+          }
+        ],
+        "/atmosphere-integ-allocate/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereCleanupSecurityGroupFA8836F2\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+          }
+        ],
         "/atmosphere-integ-allocate/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -394,7 +565,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8918f9eaa4e5642f04477705d78aa895dd1cf3dfc01480092ff8b9697bddc0b0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9cd7d930b7c93d17adacfd5f8cc24ba081f17a6dcbdd723a0d5d4543112c4681.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -493,6 +664,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertCDKATMOSPHEREDEALLOCATEFUNCTIONNAME5C356A74"
+          }
+        ],
+        "/atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_CLUSTER_ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPCLUSTERARNDFAFC15B"
+          }
+        ],
+        "/atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TASK_DEFINITION_ARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPTASKDEFINITIONARNA63495E8"
+          }
+        ],
+        "/atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TASK_SUBNET_ID": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPTASKSUBNETID7FAEA35A"
+          }
+        ],
+        "/atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TASK_SECURITY_GROUP_ID": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPTASKSECURITYGROUPID88F8A8C8"
+          }
+        ],
+        "/atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TASK_CONTAINER_NAME": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPTASKCONTAINERNAME5526A6AD"
           }
         ],
         "/atmosphere-integ-allocate-assertions/LambdaInvoke2f913ec1967134622ebb03d58dfcaef8/Default/Default": [

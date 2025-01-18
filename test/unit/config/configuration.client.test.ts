@@ -3,7 +3,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { mockClient } from 'aws-sdk-client-mock';
 import { ConfigurationData } from '../../../src/config/configuration';
-import { ConfigurationClient } from '../../../src/config/configuration.client';
+import { ConfigurationClient, EnvironmentNotFoundError } from '../../../src/config/configuration.client';
 import 'aws-sdk-client-mock-jest';
 
 describe('ConfigurationClient', () => {
@@ -12,6 +12,79 @@ describe('ConfigurationClient', () => {
 
   beforeEach(() => {
     s3Mock.reset();
+  });
+
+  describe('getEnvironment', () => {
+
+    test('returns the environment', async () => {
+
+      const data: ConfigurationData = {
+        environments: [
+          {
+            account: '1111',
+            region: 'us-east-1',
+            pool: 'canary',
+            adminRoleArn: 'adminRoleArn',
+          },
+          {
+            account: '2222',
+            region: 'us-east-1',
+            pool: 'canary',
+            adminRoleArn: 'adminRoleArn',
+          },
+        ],
+      };
+
+      s3Mock.on(GetObjectCommand).resolves({ Body: sdkStreamMixin(Readable.from([JSON.stringify(data)])) });
+
+      const client = new ConfigurationClient({ bucket: 'Bucket', key: 'configuration.json' });
+      const env = await client.getEnvironment('1111', 'us-east-1');
+
+      expect(env).toEqual({
+        account: '1111',
+        region: 'us-east-1',
+        pool: 'canary',
+        adminRoleArn: 'adminRoleArn',
+      });
+
+    });
+
+    test('throws if environment doesnt exist', async () => {
+
+      const data: ConfigurationData = { environments: [] };
+      s3Mock.on(GetObjectCommand).resolves({ Body: sdkStreamMixin(Readable.from([JSON.stringify(data)])) });
+
+      const client = new ConfigurationClient({ bucket: 'Bucket', key: 'configuration.json' });
+      await expect(client.getEnvironment('1111', 'us-east-1')).rejects.toThrow(EnvironmentNotFoundError);
+
+    });
+
+    test('throws if more than one environment is found', async () => {
+
+      const data: ConfigurationData = {
+        environments: [
+          {
+            account: '1111',
+            region: 'us-east-1',
+            pool: 'canary',
+            adminRoleArn: 'adminRoleArn',
+          },
+          {
+            account: '1111',
+            region: 'us-east-1',
+            pool: 'canary',
+            adminRoleArn: 'adminRoleArn',
+          },
+        ],
+      };
+
+      s3Mock.on(GetObjectCommand).resolves({ Body: sdkStreamMixin(Readable.from([JSON.stringify(data)])) });
+
+      const client = new ConfigurationClient({ bucket: 'Bucket', key: 'configuration.json' });
+      await expect(client.getEnvironment('1111', 'us-east-1')).rejects.toThrow(Error);
+
+    });
+
   });
 
   describe('listEnvironments', () => {

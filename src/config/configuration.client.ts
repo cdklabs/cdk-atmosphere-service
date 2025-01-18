@@ -3,6 +3,15 @@ import * as s3 from '@aws-sdk/client-s3';
 import type { ConfigurationData, Environment } from './configuration';
 
 /**
+ * Error thrown when an environment is not found.
+ */
+export class EnvironmentNotFoundError extends Error {
+  constructor(readonly account: string, readonly region: string) {
+    super(`Environment aws://${account}/${region} not found`);
+  }
+}
+
+/**
  * Options for `listEnvironments`.
  */
 export interface ListEnvironmentsOptions {
@@ -34,6 +43,20 @@ export class ConfigurationClient {
    */
   public async listEnvironments(opts: ListEnvironmentsOptions = {}): Promise<Environment[]> {
     return (await this.data).environments.filter(e => opts.pool ? e.pool === opts.pool : true);
+  }
+
+  /**
+   * Retrieve a single environment based on account + region.
+   */
+  public async getEnvironment(account: string, region: string): Promise<Environment> {
+    const envs = (await this.data).environments.filter(e => e.account === account && e.region === region);
+    if (envs.length === 0) {
+      throw new EnvironmentNotFoundError(account, region);
+    }
+    if (envs.length > 1) {
+      throw new Error(`Multiple environments found for aws://${account}/${region}`);
+    }
+    return envs[0];
   }
 
   // lazy async getter

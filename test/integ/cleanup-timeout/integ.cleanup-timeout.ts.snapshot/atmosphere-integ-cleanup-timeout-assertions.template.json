@@ -43,6 +43,63 @@
     ]
    }
   },
+  "AssertServiceRoleDefaultPolicyEF886BAB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AssertServiceRoleDefaultPolicyEF886BAB",
+    "Roles": [
+     {
+      "Ref": "AssertServiceRoleE8D7787D"
+     }
+    ]
+   }
+  },
   "AssertC205B4DA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -50,12 +107,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fc6be08c53ffa80d53e100a4b462993a6f564e9bf9a3ca03b02e37fc88dbd1a5.zip"
+     "S3Key": "9ca7239a00f7072eb236e39053a43bccf18da2a75644abf5690ebf7cf5ffd221.zip"
     },
     "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
     "Environment": {
      "Variables": {
       "CDK_ATMOSPHERE_INTEG": "true",
+      "CDK_ATMOSPHERE_INTEG_STACKS_BUCKET": {
+       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      },
+      "CDK_ATMOSPHERE_INTEG_STACKS_KEY": "d81248eac4ffbd37e5f74df3c8ec02683b11fe9941ed803e6102fbdc6852b4cf.zip",
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
       },
@@ -89,7 +150,20 @@
       },
       "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
        "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
-      }
+      },
+      "CDK_ATMOSPHERE_CLEANUP_CLUSTER_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereCleanupCluster30204BBCArn57501D75"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_DEFINITION_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereCleanupTaskDefinition211D8C31C390C734"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_SUBNET_ID": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereCleanupVpcPublicSubnet1Subnet655A8A5BBE644BE4"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_SECURITY_GROUP_ID": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TASK_CONTAINER_NAME": "main"
      }
     },
     "Handler": "index.handler",
@@ -103,6 +177,7 @@
     "Timeout": 900
    },
    "DependsOn": [
+    "AssertServiceRoleDefaultPolicyEF886BAB",
     "AssertServiceRoleE8D7787D"
    ]
   },
@@ -133,7 +208,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1736701336095"
+    "salt": "1737200577872"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -312,6 +387,29 @@
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereDeallocateFunctionBAD17B7D20581FAD"
    }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0CLUSTER0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereCleanupCluster30204BBCArn57501D75"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0DEFINITION0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereCleanupTaskDefinition211D8C31C390C734"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0SUBNET0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereCleanupVpcPublicSubnet1Subnet655A8A5BBE644BE4"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0SECURITY0GROUP0ID": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TASK0CONTAINER0NAME": {
+   "Value": "main"
   },
   "AssertionResultsLambdaInvoke2f913ec1967134622ebb03d58dfcaef8": {
    "Value": {

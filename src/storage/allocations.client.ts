@@ -21,6 +21,15 @@ export class InvalidInputError extends Error {
 }
 
 /**
+ * Error thrown if the allocation is not found.
+ */
+export class AllocationNotFoundError extends Error {
+  constructor(id: string) {
+    super(`Allocation ${id} not found`);
+  }
+}
+
+/**
  * Options for `start`.
  */
 export interface AllocationsStartOptions {
@@ -122,6 +131,34 @@ export class AllocationsClient {
 
   constructor(private readonly tableName: string) {
     this.ddbClient = new ddb.DynamoDB({});
+  }
+
+  /**
+   * Retrieve an allocation by id.
+   */
+  public async get(id: string): Promise<Allocation> {
+    const response = await this.ddbClient.getItem({
+      TableName: this.tableName,
+      Key: {
+        id: { S: id },
+      },
+    });
+
+    if (!response.Item) {
+      throw new AllocationNotFoundError(id);
+    }
+
+    return {
+      account: value('account', response.Item),
+      region: value('region', response.Item),
+      pool: value('pool', response.Item),
+      start: value('start', response.Item),
+      end: value('end', response.Item),
+      requester: value('requester', response.Item),
+      id: value('id', response.Item),
+      outcome: value('outcome', response.Item),
+    };
+
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Allocate } from './allocate';
 import { Endpoint, EndpointOptions } from './api';
+import { Cleanup } from './cleanup';
 import { Configuration, ConfigurationData } from './config/configuration';
 import { Deallocate } from './deallocate';
 import { Scheduler } from './scheduler';
@@ -63,6 +64,11 @@ export class AtmosphereService extends Construct {
    */
   public readonly scheduler: Scheduler;
 
+  /**
+   * Provides access to the cleanup task.
+   */
+  public readonly cleanup: Cleanup;
+
   constructor(scope: Construct, id: string, props: AtmosphereServiceProps) {
     super(scope, id);
 
@@ -72,6 +78,12 @@ export class AtmosphereService extends Construct {
 
     this.environments = new Environments(this, 'Environments');
     this.allocations = new Allocations(this, 'Allocations');
+
+    this.cleanup = new Cleanup(this, 'Cleanup', {
+      configuration: this.config,
+      environments: this.environments,
+      allocations: this.allocations,
+    });
 
     this.scheduler = new Scheduler(this, 'Scheduler', {
       environments: this.environments,
@@ -88,6 +100,7 @@ export class AtmosphereService extends Construct {
       environments: this.environments,
       allocations: this.allocations,
       scheduler: this.scheduler,
+      cleanup: this.cleanup,
     });
 
     this.endpoint = new Endpoint(this, 'Endpoint', {

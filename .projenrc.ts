@@ -20,9 +20,15 @@ const project = new CdklabsConstructLibrary({
     '@aws-sdk/client-scheduler',
     '@aws-sdk/client-cloudformation',
     '@aws-sdk/client-lambda',
+    '@aws-sdk/client-ecs',
+    '@aws-sdk/client-ecr',
+    '@aws-sdk/credential-providers',
     'uuid',
+    'unzipper',
     '@smithy/util-stream',
+    '@smithy/types',
     '@types/aws-lambda',
+    '@types/unzipper',
     'aws-sdk-client-mock',
     'aws-sdk-client-mock-jest',
   ],
@@ -59,5 +65,27 @@ const project = new CdklabsConstructLibrary({
 project.package.file.patch(JsonPatch.add('/jest/randomize', true));
 
 IntegTests.discover(project);
+
+const bundleAll = project.tasks.tryFind('bundle')!;
+const cleanupBundle = project.tasks.addTask('bundle:cleanup');
+const taskPath = 'src/cleanup/cleanup.task.ts';
+const outfile = 'src/cleanup/image/index.js';
+const command = [
+  'esbuild',
+  '--bundle',
+  taskPath,
+  '--target=\"node18\"',
+  '--platform=\"node\"',
+  `--outfile=\"${outfile}\"`,
+  '--tsconfig=\"tsconfig.dev.json\"',
+];
+cleanupBundle.exec(command.join(' '));
+bundleAll.spawn(cleanupBundle);
+
+project.gitignore.exclude(outfile);
+
+// we sometimes run `cdk` commands directly from the root
+// for dev/testing purposes
+project.gitignore.exclude('cdk.out');
 
 project.synth();

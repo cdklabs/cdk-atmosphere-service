@@ -319,6 +319,7 @@ Any object.
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.allocate">allocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate">Allocate</a></code> | Provides access to the allocate function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Provides access to the allocations table. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.cleanup">cleanup</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a></code> | Provides access to the cleanup task. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | Provides access to the service configuration file. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Provides access to the deaclloce function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.endpoint">endpoint</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint">Endpoint</a></code> | Provides access to the API gateway endpoint. |
@@ -360,6 +361,18 @@ public readonly allocations: Allocations;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
 
 Provides access to the allocations table.
+
+---
+
+##### `cleanup`<sup>Required</sup> <a name="cleanup" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.cleanup"></a>
+
+```typescript
+public readonly cleanup: Cleanup;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a>
+
+Provides access to the cleanup task.
 
 ---
 
@@ -420,6 +433,175 @@ public readonly scheduler: Scheduler;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a>
 
 Provides access to the scheduler.
+
+---
+
+
+### Cleanup <a name="Cleanup" id="@cdklabs/cdk-atmosphere-service.Cleanup"></a>
+
+Provides a cleanup task.
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.Cleanup.Initializer"></a>
+
+```typescript
+import { Cleanup } from '@cdklabs/cdk-atmosphere-service'
+
+new Cleanup(scope: Construct, id: string, props: CleanupProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupProps">CleanupProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.Cleanup.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.Cleanup.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.Cleanup.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.CleanupProps">CleanupProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.grantRun">grantRun</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.Cleanup.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `grantRun` <a name="grantRun" id="@cdklabs/cdk-atmosphere-service.Cleanup.grantRun"></a>
+
+```typescript
+public grantRun(grantee: IGrantable): void
+```
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-atmosphere-service.Cleanup.grantRun.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.Cleanup.isConstruct"></a>
+
+```typescript
+import { Cleanup } from '@cdklabs/cdk-atmosphere-service'
+
+Cleanup.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.Cleanup.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.property.cluster">cluster</a></code> | <code>aws-cdk-lib.aws_ecs.Cluster</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.property.containerName">containerName</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.property.securityGroupId">securityGroupId</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.property.subnetId">subnetId</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.property.task">task</a></code> | <code>aws-cdk-lib.aws_ecs.FargateTaskDefinition</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.Cleanup.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `cluster`<sup>Required</sup> <a name="cluster" id="@cdklabs/cdk-atmosphere-service.Cleanup.property.cluster"></a>
+
+```typescript
+public readonly cluster: Cluster;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.Cluster
+
+---
+
+##### `containerName`<sup>Required</sup> <a name="containerName" id="@cdklabs/cdk-atmosphere-service.Cleanup.property.containerName"></a>
+
+```typescript
+public readonly containerName: string;
+```
+
+- *Type:* string
+
+---
+
+##### `securityGroupId`<sup>Required</sup> <a name="securityGroupId" id="@cdklabs/cdk-atmosphere-service.Cleanup.property.securityGroupId"></a>
+
+```typescript
+public readonly securityGroupId: string;
+```
+
+- *Type:* string
+
+---
+
+##### `subnetId`<sup>Required</sup> <a name="subnetId" id="@cdklabs/cdk-atmosphere-service.Cleanup.property.subnetId"></a>
+
+```typescript
+public readonly subnetId: string;
+```
+
+- *Type:* string
+
+---
+
+##### `task`<sup>Required</sup> <a name="task" id="@cdklabs/cdk-atmosphere-service.Cleanup.property.task"></a>
+
+```typescript
+public readonly task: FargateTaskDefinition;
+```
+
+- *Type:* aws-cdk-lib.aws_ecs.FargateTaskDefinition
 
 ---
 
@@ -1227,6 +1409,64 @@ Options for the API endpoint.
 
 ---
 
+### CleanupProps <a name="CleanupProps" id="@cdklabs/cdk-atmosphere-service.CleanupProps"></a>
+
+Properties for `Cleanup`.
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.CleanupProps.Initializer"></a>
+
+```typescript
+import { CleanupProps } from '@cdklabs/cdk-atmosphere-service'
+
+const cleanupProps: CleanupProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Allocations storage. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupProps.property.configuration">configuration</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | Service configuration. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Environments storage. |
+
+---
+
+##### `allocations`<sup>Required</sup> <a name="allocations" id="@cdklabs/cdk-atmosphere-service.CleanupProps.property.allocations"></a>
+
+```typescript
+public readonly allocations: Allocations;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
+
+Allocations storage.
+
+---
+
+##### `configuration`<sup>Required</sup> <a name="configuration" id="@cdklabs/cdk-atmosphere-service.CleanupProps.property.configuration"></a>
+
+```typescript
+public readonly configuration: Configuration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
+
+Service configuration.
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.CleanupProps.property.environments"></a>
+
+```typescript
+public readonly environments: Environments;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
+
+Environments storage.
+
+---
+
 ### ConfigurationData <a name="ConfigurationData" id="@cdklabs/cdk-atmosphere-service.ConfigurationData"></a>
 
 Configuration Data.
@@ -1308,6 +1548,7 @@ const deallocateProps: DeallocateProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Allocations storage. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.cleanup">cleanup</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a></code> | Cleanup. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Environments storage. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DeallocateProps.property.scheduler">scheduler</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a></code> | Scheduler. |
 
@@ -1322,6 +1563,18 @@ public readonly allocations: Allocations;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
 
 Allocations storage.
+
+---
+
+##### `cleanup`<sup>Required</sup> <a name="cleanup" id="@cdklabs/cdk-atmosphere-service.DeallocateProps.property.cleanup"></a>
+
+```typescript
+public readonly cleanup: Cleanup;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a>
+
+Cleanup.
 
 ---
 

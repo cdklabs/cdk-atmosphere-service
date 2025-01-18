@@ -9,6 +9,9 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
+    // this will ensure cleanup takes at least two minutes
+    const [stackName] = await session.deploy({ templatePath: 'cleanup-timeout/stacks/two-minutes-delete-delay.yaml', region });
+
     const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
 
     session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
@@ -16,6 +19,8 @@ export async function handler(_: any) {
 
     const environment = await session.fetchEnvironment(account, region);
     assert.strictEqual(environment.Item?.status?.S, 'dirty');
+
+    await session.destroy({ stackName, region });
 
   }, 'cleanup-timeout-triggered-before-cleanup-finished');
 
@@ -25,7 +30,10 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
 
-    const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 30 });
+    // this will ensure cleanup takes at least two minutes
+    const [stackName] = await session.deploy({ templatePath: 'cleanup-timeout/stacks/two-minutes-delete-delay.yaml', region });
+
+    const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
 
     await session.environments.release(body.id, account, region);
 
@@ -34,6 +42,8 @@ export async function handler(_: any) {
 
     const environment = await session.fetchEnvironment(account, region);
     assert.ok(!environment.Item);
+
+    await session.destroy({ stackName, region });
 
   }, 'cleanup-timeout-triggered-after-cleanup-finished');
 
@@ -44,6 +54,9 @@ export async function handler(_: any) {
     const account = body.environment.account;
     const region = body.environment.region;
     const allocationId = body.id;
+
+    // this will ensure cleanup takes at least 5 minutes
+    const [stackName] = await session.deploy({ templatePath: 'cleanup-timeout/stacks/five-minutes-delete-delay.yaml', region });
 
     const [, timeout] = await session.deallocate(allocationId, { outcome: 'success', cleanupDurationSeconds: 60 });
 
@@ -58,6 +71,8 @@ export async function handler(_: any) {
 
     const environment = await session.fetchEnvironment(account, region);
     assert.notStrictEqual(environment.Item?.status?.S, 'dirty');
+
+    await session.destroy({ stackName, region });
 
   }, 'cleanup-timeout-triggered-on-reallocated-environment');
 

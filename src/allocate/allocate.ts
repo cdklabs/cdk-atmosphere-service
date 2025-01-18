@@ -1,3 +1,4 @@
+import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
@@ -43,7 +44,9 @@ export class Allocate extends Construct {
   constructor(scope: Construct, id: string, props: AllocateProps) {
     super(scope, id);
 
-    this.function = new AllocateFunction(this, 'Function');
+    this.function = new AllocateFunction(this, 'Function', {
+      timeout: Duration.minutes(1),
+    });
 
     props.configuration.grantRead(this.function);
     props.environments.grantReadWrite(this.function);
@@ -65,7 +68,7 @@ export class Allocate extends Construct {
     // allocation must be able to assume admin roles for all its environments
     // because it passes credentials to clients.
     for (const env of props.configuration.data.environments) {
-      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}`, env.adminRoleArn);
+      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}${env.region}`, env.adminRoleArn);
       adminRole.grantAssumeRole(this.function.grantPrincipal);
     }
 

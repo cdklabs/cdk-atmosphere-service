@@ -13,6 +13,14 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-ecr",
+      "type": "build"
+    },
+    {
+      "name": "@aws-sdk/client-ecs",
+      "type": "build"
+    },
+    {
       "name": "@aws-sdk/client-lambda",
       "type": "build"
     },
@@ -26,6 +34,14 @@
     },
     {
       "name": "@aws-sdk/client-sts",
+      "type": "build"
+    },
+    {
+      "name": "@aws-sdk/credential-providers",
+      "type": "build"
+    },
+    {
+      "name": "@smithy/types",
       "type": "build"
     },
     {
@@ -48,6 +64,10 @@
     {
       "name": "@types/node",
       "version": "^18",
+      "type": "build"
+    },
+    {
+      "name": "@types/unzipper",
       "type": "build"
     },
     {
@@ -138,6 +158,10 @@
     },
     {
       "name": "typescript",
+      "type": "build"
+    },
+    {
+      "name": "unzipper",
       "type": "build"
     },
     {

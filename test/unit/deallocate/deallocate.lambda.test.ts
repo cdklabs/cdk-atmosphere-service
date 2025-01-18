@@ -107,6 +107,7 @@ describe('handler', () => {
       outcome: 'failed',
     }));
     jest.spyOn(clients.scheduler, 'scheduleCleanupTimeout').mockImplementation(jest.fn());
+    jest.spyOn(clients.cleanup, 'start').mockImplementation(jest.fn());
 
     const response = await _with.env({ [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({
       pathParameters: { id: 'id' },
@@ -143,6 +144,7 @@ describe('handler', () => {
       outcome: 'failed',
     }));
     jest.spyOn(clients.scheduler, 'scheduleCleanupTimeout').mockImplementation(jest.fn());
+    jest.spyOn(clients.cleanup, 'start').mockImplementation(jest.fn());
 
     const response = await _with.env({ [envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({
       pathParameters: { id: 'id' },
@@ -159,6 +161,19 @@ describe('handler', () => {
       region: 'us-east-1',
       functionArn: 'arn',
       timeoutDate: new Date(now.getTime() + 10 * 1000),
+    });
+    expect(clients.cleanup.start).toHaveBeenCalledWith({
+      allocation: {
+        account: '1111',
+        region: 'us-east-1',
+        pool: 'release',
+        start: '0',
+        end: '1',
+        requester: 'user',
+        id: 'id',
+        outcome: 'failed',
+      },
+      timeoutSeconds: 10,
     });
 
   });

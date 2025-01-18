@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import * as envars from '../envars';
@@ -67,7 +66,9 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       functionArn: envars.Envars.required(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
     });
 
-    // TODO - trigger cleanup task
+    console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
 
     return success({ cleanupDurationSeconds });
   } catch (e: any) {

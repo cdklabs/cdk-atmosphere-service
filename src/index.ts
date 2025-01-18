@@ -5,3 +5,4 @@ export * from './allocate';
 export * from './deallocate';
 export * from './api';
 export * from './scheduler';
+export * from './cleanup';
