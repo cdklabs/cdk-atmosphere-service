@@ -88,6 +88,4 @@ project.gitignore.exclude(outfile);
 // for dev/testing purposes
 project.gitignore.exclude('cdk.out');
 
-project.gitignore.exclude('test/dev.ts');
-
 project.synth();
