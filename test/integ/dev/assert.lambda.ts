@@ -1,10 +1,10 @@
-import { Session } from '../service.session';
+import { Runner } from '../atmosphere.runner';
 
 export async function handler(_: any) {
-  return Session.assert(async () => { return; });
+  return Runner.assert('default', async () => { return; });
 }
 
 // allows running the handler locally with ts-node
-if (Session.isLocal()) {
+if (Runner.isLocal()) {
   void handler({});
 }

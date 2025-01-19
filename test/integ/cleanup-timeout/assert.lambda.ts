@@ -1,86 +1,70 @@
 import * as assert from 'assert';
-import { Session, SUCCESS_PAYLOAD } from '../service.session';
+import { RuntimeClients } from '../../../src/clients';
+import { Runner, SUCCESS_PAYLOAD } from '../atmosphere.runner';
+
+const clients = RuntimeClients.getOrCreate();
 
 export async function handler(_: any) {
 
-  await Session.assert(async (session: Session) => {
-    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+  await Runner.assert('marks-dirty-when-environment-is-still-cleaning', async (session: Runner) => {
+    const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
     const region = body.environment.region;
 
-    // this will ensure cleanup takes at least two minutes
-    const [stackName] = await session.deploy({ templatePath: 'cleanup-timeout/stacks/two-minutes-delete-delay.yaml', region });
+    await clients.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
 
-    const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
+    const environment = await clients.environments.get(account, region);
+    assert.strictEqual(environment.status, 'dirty');
 
-    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
-    await timeout;
+  });
 
-    const environment = await session.fetchEnvironment(account, region);
-    assert.strictEqual(environment.Item?.status?.S, 'dirty');
-
-    await session.destroy({ stackName, region });
-
-  }, 'cleanup-timeout-triggered-before-cleanup-finished');
-
-  await Session.assert(async (session: Session) => {
-    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
+  await Runner.assert('no-ops-when-environment-is-already-released', async (session: Runner) => {
+    const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
     const account = body.environment.account;
     const region = body.environment.region;
 
-    // this will ensure cleanup takes at least two minutes
-    const [stackName] = await session.deploy({ templatePath: 'cleanup-timeout/stacks/two-minutes-delete-delay.yaml', region });
+    await clients.environments.cleaning(body.id, account, region);
+    await clients.environments.release(body.id, account, region);
+    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
 
-    const [, timeout] = await session.deallocate(body.id, { outcome: 'success', cleanupDurationSeconds: 10 });
+    try {
+      await clients.environments.get(account, region);
+      assert.fail('expected environment to be deleted');
+    } catch (err: any) {
+      assert.strictEqual(err.constructor.name, 'EnvironmentNotFound');
+    }
 
-    await session.environments.release(body.id, account, region);
+  });
 
-    session.log(`Waiting for cleanup of allocation ${body.id} to timeout`);
-    await timeout;
-
-    const environment = await session.fetchEnvironment(account, region);
-    assert.ok(!environment.Item);
-
-    await session.destroy({ stackName, region });
-
-  }, 'cleanup-timeout-triggered-after-cleanup-finished');
-
-  await Session.assert(async (session: Session) => {
-    const [response] = await session.allocate({ pool: 'release', requester: 'test' } );
-    const body = JSON.parse(response.body!);
+  await Runner.assert('no-ops-when-environment-has-been-reallocated', async (session: Runner) => {
+    const allocateResponse1 = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
+    const body = JSON.parse(allocateResponse1.body!);
 
     const account = body.environment.account;
     const region = body.environment.region;
     const allocationId = body.id;
 
-    // this will ensure cleanup takes at least 5 minutes
-    const [stackName] = await session.deploy({ templatePath: 'cleanup-timeout/stacks/five-minutes-delete-delay.yaml', region });
+    await clients.environments.cleaning(allocationId, account, region);
+    await clients.environments.release(allocationId, account, region);
+    const allocateResponse2 = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
+    const allocateResponseBody2 = JSON.parse(allocateResponse2.body!);
 
-    const [, timeout] = await session.deallocate(allocationId, { outcome: 'success', cleanupDurationSeconds: 60 });
+    await session.runtime.cleanupTimeout({ allocationId, account, region });
 
-    // in the meantime simulate a quick and successfull cleanup
-    await session.environments.release(allocationId, account, region);
+    const environment = await clients.environments.get(account, region);
+    assert.strictEqual(environment.status, 'in-use');
+    assert.strictEqual(environment.allocation, allocateResponseBody2.id);
 
-    // and now allocate again - acquiring the same environment
-    [] = await session.allocate({ pool: 'release', requester: 'test' } );
-
-    session.log(`Waiting for cleanup of allocation ${allocationId} to timeout`);
-    await timeout;
-
-    const environment = await session.fetchEnvironment(account, region);
-    assert.notStrictEqual(environment.Item?.status?.S, 'dirty');
-
-    await session.destroy({ stackName, region });
-
-  }, 'cleanup-timeout-triggered-on-reallocated-environment');
+  });
 
   return SUCCESS_PAYLOAD;
 
 }
 
 // allows running the handler locally with ts-node
-if (Session.isLocal()) {
+if (Runner.isLocal()) {
   void handler({});
 }

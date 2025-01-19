@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as ddb from '@aws-sdk/client-dynamodb';
+import { optionalValue, requiredValue } from './dynamo-item';
 
 /**
  * Error thrown if the allocation is already ended.
@@ -102,8 +103,10 @@ export interface Allocation {
 
   /**
    * End date of the allocation.
+   *
+   * @default - undefined (allocation is not ended)
    */
-  readonly end: string;
+  readonly end?: string;
 
   /**
    * Identifier for the requester.
@@ -117,8 +120,10 @@ export interface Allocation {
 
   /**
    * Allocation outcome.
+   *
+   * @default - undefined (allocation is not ended)
    */
-  readonly outcome: string;
+  readonly outcome?: string;
 
 }
 
@@ -149,14 +154,17 @@ export class AllocationsClient {
     }
 
     return {
-      account: value('account', response.Item),
-      region: value('region', response.Item),
-      pool: value('pool', response.Item),
-      start: value('start', response.Item),
-      end: value('end', response.Item),
-      requester: value('requester', response.Item),
-      id: value('id', response.Item),
-      outcome: value('outcome', response.Item),
+      account: requiredValue('account', response.Item),
+      region: requiredValue('region', response.Item),
+      pool: requiredValue('pool', response.Item),
+      start: requiredValue('start', response.Item),
+      requester: requiredValue('requester', response.Item),
+      id: requiredValue('id', response.Item),
+
+      // if an allocation is queried before it ended, these attributes
+      // will be missing.
+      end: optionalValue('end', response.Item),
+      outcome: optionalValue('outcome', response.Item),
     };
 
   }
@@ -225,14 +233,14 @@ export class AllocationsClient {
       }
 
       return {
-        account: value('account', response.Attributes),
-        region: value('region', response.Attributes),
-        pool: value('pool', response.Attributes),
-        start: value('start', response.Attributes),
-        end: value('end', response.Attributes),
-        requester: value('requester', response.Attributes),
-        id: value('id', response.Attributes),
-        outcome: value('outcome', response.Attributes),
+        account: requiredValue('account', response.Attributes),
+        region: requiredValue('region', response.Attributes),
+        pool: requiredValue('pool', response.Attributes),
+        start: requiredValue('start', response.Attributes),
+        end: requiredValue('end', response.Attributes),
+        requester: requiredValue('requester', response.Attributes),
+        id: requiredValue('id', response.Attributes),
+        outcome: requiredValue('outcome', response.Attributes),
       };
 
     } catch (e: any) {
@@ -245,13 +253,3 @@ export class AllocationsClient {
 
 }
 
-function value(name: string, attributes: Record<string, ddb.AttributeValue>) {
-  const attribute = attributes[name];
-  if (!attribute) {
-    throw new Error(`Attribute '${name}' not found`);
-  }
-  if (attribute.S) {
-    return attribute.S;
-  }
-  throw new Error(`Attribute '${name}' does not have a value`);
-}

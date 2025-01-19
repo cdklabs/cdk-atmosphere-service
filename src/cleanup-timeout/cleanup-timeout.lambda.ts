@@ -1,7 +1,7 @@
 import { RuntimeClients } from '../clients';
 import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
-interface CleanupTimeoutEvent {
+export interface CleanupTimeoutEvent {
   readonly allocationId: string;
   readonly account: string;
   readonly region: string;

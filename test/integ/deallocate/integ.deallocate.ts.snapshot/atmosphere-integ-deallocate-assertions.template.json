@@ -50,12 +50,13 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "428553cb7f81fa83737c797f1ff3fe006edd33f976d3e0624c72cd4ef512827c.zip"
+     "S3Key": "ca6467f102b6a6a8913464ac39f5c5ec1364779f098a7930765b1960b420ae73.zip"
     },
     "Description": "test/integ/deallocate/assert.lambda.ts",
     "Environment": {
      "Variables": {
-      "CDK_ATMOSPHERE_INTEG": "true",
+      "CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT": "false",
+      "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME": "false",
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
       },
@@ -146,7 +147,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1737200577872"
+    "salt": "1737238700492"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

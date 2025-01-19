@@ -107,12 +107,13 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ca7239a00f7072eb236e39053a43bccf18da2a75644abf5690ebf7cf5ffd221.zip"
+     "S3Key": "e485f7b5d6fe01f60c0a80624c598a9cf36c6ee123bfa3ebb0639c46f8e4f273.zip"
     },
     "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
     "Environment": {
      "Variables": {
-      "CDK_ATMOSPHERE_INTEG": "true",
+      "CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT": "false",
+      "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME": "false",
       "CDK_ATMOSPHERE_INTEG_STACKS_BUCKET": {
        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
       },
@@ -208,7 +209,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1737200577872"
+    "salt": "1737238740916"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
