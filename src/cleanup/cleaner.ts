@@ -7,6 +7,7 @@ import { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { Environment } from '../config';
 import { BucketsCleaner } from './cleaner.buckets';
 import { ReposCleaner } from './cleaner.repos';
+import { AllocationLogger } from '../logging';
 
 export interface DeleteStackResult {
   readonly name: string;
@@ -28,7 +29,9 @@ export class Cleaner {
   private readonly credentials: AwsCredentialIdentityProvider;
   private readonly cfn: CloudFormation;
 
-  constructor(private readonly environment: Environment) {
+  constructor(
+    private readonly environment: Environment,
+    private readonly log: AllocationLogger) {
     this.credentials = fromTemporaryCredentials({
       params: {
         RoleArn: this.environment.adminRoleArn,
@@ -75,12 +78,12 @@ export class Cleaner {
       // so instead, we just forcefully remove them and hope it happens before CFN decides to fail
       // stack deletion. if this won't suffice, we can catch a DELETE_FAILED state and retry.
 
-      const bucketsCleaner = new BucketsCleaner(this.credentials, this.environment.region, stack);
-      console.log(`Cleaning buckets in stack ${stack.StackName}`);
+      const bucketsCleaner = new BucketsCleaner(this.credentials, this.environment.region, stack, this.log);
+      this.log.info(`Cleaning buckets in stack ${stack.StackName}`);
       await bucketsCleaner.clean({ timeoutDate });
 
-      const reposCleaner = new ReposCleaner(this.credentials, this.environment.region, stack);
-      console.log(`Cleaning repositories in stack ${stack.StackName}`);
+      const reposCleaner = new ReposCleaner(this.credentials, this.environment.region, stack, this.log);
+      this.log.info(`Cleaning repositories in stack ${stack.StackName}`);
       // not passing timeout date here because this operation does not need to wait for anything
       await reposCleaner.clean();
 
@@ -92,32 +95,28 @@ export class Cleaner {
 
       if (stack.StackStatus !== 'DELETE_IN_PROGRESS') {
 
-        this.log(`Disabling termination protection of stack ${stack.StackName}`);
+        this.log.info(`Disabling termination protection of stack ${stack.StackName}`);
         await this.cfn.send(new UpdateTerminationProtectionCommand({
           StackName: stack.StackName,
           EnableTerminationProtection: false,
         }));
 
-        this.log(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
+        this.log.info(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
         await this.cfn.send(new DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
       }
 
       const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1000;
-      this.log(`Stack ${stack.StackName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
+      this.log.info(`Stack ${stack.StackName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
       await waitUntilStackDeleteComplete(
         { client: this.cfn, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
         { StackName: stack.StackName },
       );
-      this.log(`Stack ${stack.StackName} deleted.`);
+      this.log.info(`Stack ${stack.StackName} deleted.`);
 
       return { name: stack.StackName! };
     } catch (e: any) {
       return { name: stack.StackName!, error: e };
     }
-  }
-
-  private log(message: string | Error) {
-    console.log(`${new Date().toISOString()} | aws://${this.environment.account}/${this.environment.region} | ${message}`);
   }
 
 }

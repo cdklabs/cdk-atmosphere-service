@@ -59,20 +59,41 @@ var Envars = class _Envars {
   }
 };
 
+// src/loggers.ts
+var AllocationLogger = class {
+  constructor(component, allocationId) {
+    this.component = component;
+    this.allocationId = allocationId;
+    this.prefix = `[${this.component}] [aloc:${this.allocationId}]`;
+  }
+  log(message = "") {
+    console.log(`${this.prefix} ${message}`);
+  }
+  error(error) {
+    console.error(`${this.prefix} ${error.message}`);
+  }
+};
+var RuntimeLoggers = class {
+  static forAllocation(allocationId, component) {
+    return new AllocationLogger(component, allocationId);
+  }
+};
+
 // src/allocation-timeout/allocation-timeout.lambda.ts
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   const body = JSON.stringify({ outcome: "timeout" });
+  const logger = RuntimeLoggers.forAllocation(event.allocationId, "allocation-timeout");
   const lambda = new import_client_lambda.Lambda();
   const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
   const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
-  console.log(`Invoking ${target} with payload: ${payload}`);
+  logger.log(`Invoking ${target} with payload: ${payload}`);
   const response = await lambda.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
   const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
   if (responsePayload.statusCode !== 200) {
     throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
   }
-  console.log("Done");
+  logger.log("Done");
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

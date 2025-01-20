@@ -94,42 +94,42 @@ class IntegTest extends Component {
     const integCommand = `${INTEG_COMMAND} --directory test/integ/${props.directory}`;
     const integName = `integ:test/${props.directory}`;
 
-    // lets also create test specific tasks
     const integTask = this.project.tasks.addTask(integName, {
       description: 'Deploy -> Update Snapshot -> Destroy',
     });
     integTask.prependSpawn(bundleAll);
     integTask.exec(integCommand);
 
-    // task to force deploy the test
     const integForceTask = this.project.tasks.addTask(`${integName}:force`, {
       description: 'Force Deploy -> Update Snapshot -> Destroy',
     });
     integForceTask.prependSpawn(bundleAll);
     integForceTask.exec(`${integCommand} --force`);
 
-    // task to deploy and update the snapshot if needed
     const integUpdateTask = this.project.tasks.addTask(`${integName}:update`, {
-      description: 'Deploy -> Update Snapshot (if needed)',
+      description: 'Deploy -> Update Snapshot',
     });
     integUpdateTask.prependSpawn(bundleAll);
     integUpdateTask.exec(`${integCommand} --update-on-failed`);
 
-    // task to deploy the test and keep in running
     const integDeployTask = this.project.tasks.addTask(`${integName}:deploy`, {
-      description: 'Force Deploy -> Update Snapshot -> Dont Destroy',
+      description: 'Deploy -> Update Snapshot -> Dont Destroy',
     });
     integDeployTask.prependSpawn(bundleAll);
-    integDeployTask.exec(`${integCommand} --force --disable-update-workflow --no-clean`);
+    integDeployTask.exec(`${integCommand} --update-on-failed --disable-update-workflow --no-clean`);
 
-    // task to update the snapshot
+    const integForceDeployTask = this.project.tasks.addTask(`${integName}:force-deploy`, {
+      description: 'Force Deploy -> Update Snapshot -> Dont Destroy',
+    });
+    integForceDeployTask.prependSpawn(bundleAll);
+    integForceDeployTask.exec(`${integCommand} --force --disable-update-workflow --no-clean`);
+
     const integSnapshotTask = this.project.tasks.addTask(`${integName}:snapshot`, {
-      description: 'Dont Deploy -> Update snapshot (discoureged)',
+      description: 'Dont Deploy -> Update snapshot',
     });
     integSnapshotTask.prependSpawn(bundleAll);
     integSnapshotTask.exec(`${integCommand} --dry-run --force`);
 
-    // task to run the assertion handler
     const integAssertTask = this.project.tasks.addTask(`${integName}:assert`, {
       description: 'Run the assertion locally',
     });

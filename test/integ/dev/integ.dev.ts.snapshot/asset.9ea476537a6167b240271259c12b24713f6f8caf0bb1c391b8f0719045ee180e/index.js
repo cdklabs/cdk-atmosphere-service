@@ -11469,6 +11469,26 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
+// src/loggers.ts
+var AllocationLogger = class {
+  constructor(component, allocationId) {
+    this.component = component;
+    this.allocationId = allocationId;
+    this.prefix = `[${this.component}] [aloc:${this.allocationId}]`;
+  }
+  log(message = "") {
+    console.log(`${this.prefix} ${message}`);
+  }
+  error(error) {
+    console.error(`${this.prefix} ${error.message}`);
+  }
+};
+var RuntimeLoggers = class {
+  static forAllocation(allocationId, component) {
+    return new AllocationLogger(component, allocationId);
+  }
+};
+
 // src/allocate/allocate.lambda.ts
 var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
@@ -11482,7 +11502,6 @@ var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   try {
-    console.log("Parsing request body");
     const request = parseRequestBody(event.body);
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
@@ -11490,15 +11509,16 @@ async function handler(event) {
     }
     const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
     const allocationId = v4_default();
-    console.log(`Acquiring environment from pool '${request.pool}'`);
+    const logger = RuntimeLoggers.forAllocation(allocationId, "allocate");
+    logger.log(`Acquiring environment from pool '${request.pool}'`);
     const environment = await acquireEnvironment(allocationId, request.pool);
-    console.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
+    logger.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
     await startAllocation(allocationId, environment, request.requester);
-    console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
+    logger.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
     const credentials = await grabCredentials(allocationId, environment);
-    console.log(`Allocation '${allocationId}' started successfully`);
+    logger.log("Allocation started successfully");
     const response = { id: allocationId, environment, credentials, durationSeconds };
-    console.log(`Scheduling timeout for allocation '${allocationId}' to ${timeoutDate}`);
+    logger.log(`Scheduling allocation timeout to ${timeoutDate}`);
     await clients.scheduler.scheduleAllocationTimeout({
       allocationId,
       timeoutDate,
@@ -11593,16 +11613,17 @@ var import_client_lambda = require("@aws-sdk/client-lambda");
 async function handler2(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   const body = JSON.stringify({ outcome: "timeout" });
+  const logger = RuntimeLoggers.forAllocation(event.allocationId, "allocation-timeout");
   const lambda = new import_client_lambda.Lambda();
   const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
   const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
-  console.log(`Invoking ${target} with payload: ${payload}`);
+  logger.log(`Invoking ${target} with payload: ${payload}`);
   const response = await lambda.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
   const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
   if (responsePayload.statusCode !== 200) {
     throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
   }
-  console.log("Done");
+  logger.log("Done");
 }
 
 // src/cleanup/cleaner.ts
@@ -11613,8 +11634,9 @@ var import_credential_providers = require("@aws-sdk/credential-providers");
 var import_client_cloudformation = require("@aws-sdk/client-cloudformation");
 var import_client_s3 = require("@aws-sdk/client-s3");
 var BucketsCleaner = class {
-  constructor(credentials, region, stack) {
+  constructor(credentials, region, stack, logger) {
     this.stack = stack;
+    this.logger = logger;
     this.cfn = new import_client_cloudformation.CloudFormation({ credentials, region });
     this.s3 = new import_client_s3.S3({ credentials, region });
   }
@@ -11626,7 +11648,7 @@ var BucketsCleaner = class {
     await Promise.all(deleteBuckets);
   }
   async listBuckets() {
-    console.log(`Collecting buckets in stack ${this.stack.StackName}`);
+    this.logger.log(`Collecting buckets in stack ${this.stack.StackName}`);
     const resources = await this.cfn.describeStackResources({ StackName: this.stack.StackName });
     return (resources.StackResources ?? []).filter((r) => r.ResourceType === "AWS::S3::Bucket").map((r) => r.PhysicalResourceId);
   }
@@ -11640,7 +11662,7 @@ var BucketsCleaner = class {
           throw new Error(`Operation timed out. Timeout date: ${timeoutDate.toISOString()}`);
         }
       };
-      console.log(`Starting to clean bucket: ${bucketName}`);
+      this.logger.log(`Starting to clean bucket: ${bucketName}`);
       while (isTruncated) {
         checkTimeout();
         const response = await this.s3.listObjectVersions({
@@ -11661,7 +11683,7 @@ var BucketsCleaner = class {
           }))
         ];
         if (objectsToDelete.length === 0) {
-          console.log("Bucket is already empty.");
+          this.logger.log("Bucket is already empty.");
           break;
         }
         if (objectsToDelete.length > 0) {
@@ -11672,34 +11694,34 @@ var BucketsCleaner = class {
               Quiet: true
             }
           }));
-          console.log(`Deleted ${objectsToDelete.length} objects.`);
+          this.logger.log(`Deleted ${objectsToDelete.length} objects.`);
         }
         isTruncated = response.IsTruncated ?? false;
         keyMarker = response.NextKeyMarker;
         versionIdMarker = response.NextVersionIdMarker;
       }
-      console.log(`Bucket ${bucketName} has been emptied.`);
+      this.logger.log(`Bucket ${bucketName} has been emptied.`);
     } catch (e) {
       if (e instanceof import_client_s3.NoSuchBucket) {
-        console.log(`Bucket ${bucketName} does not exist. Skipping.`);
+        this.logger.log(`Bucket ${bucketName} does not exist. Skipping.`);
         return;
       }
       throw e;
     }
   }
   async deleteBucket(bucketName, timeoutDate) {
-    console.log(`Deleting bucket: ${bucketName}`);
+    this.logger.log(`Deleting bucket: ${bucketName}`);
     try {
       await this.s3.deleteBucket({ Bucket: bucketName });
     } catch (e) {
       if (e instanceof import_client_s3.NoSuchBucket) {
-        console.log(`Bucket ${bucketName} does not exist. Skipping.`);
+        this.logger.log(`Bucket ${bucketName} does not exist. Skipping.`);
         return;
       }
       throw e;
     }
     const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1e3;
-    console.log(`Bucket ${bucketName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
+    this.logger.log(`Bucket ${bucketName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
     await (0, import_client_s3.waitUntilBucketNotExists)(
       { client: this.s3, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
       { Bucket: bucketName }
@@ -11711,8 +11733,9 @@ var BucketsCleaner = class {
 var import_client_cloudformation2 = require("@aws-sdk/client-cloudformation");
 var import_client_ecr = require("@aws-sdk/client-ecr");
 var ReposCleaner = class {
-  constructor(credentials, region, stack) {
+  constructor(credentials, region, stack, logger) {
     this.stack = stack;
+    this.logger = logger;
     this.cfn = new import_client_cloudformation2.CloudFormation({ credentials, region });
     this.ecr = new import_client_ecr.ECR({ credentials, region });
   }
@@ -11723,16 +11746,16 @@ var ReposCleaner = class {
     }
   }
   async listRepos() {
-    console.log(`Collecting ECR repositories in stack ${this.stack.StackName}`);
+    this.logger.log(`Collecting ECR repositories in stack ${this.stack.StackName}`);
     return ((await this.cfn.describeStackResources({ StackName: this.stack.StackName })).StackResources ?? []).filter((r) => r.ResourceType === "AWS::ECR::Repository").map((r) => r.PhysicalResourceId);
   }
   async deleteRepo(repositoryName) {
-    console.log(`Deleting repository: ${repositoryName}`);
+    this.logger.log(`Deleting repository: ${repositoryName}`);
     try {
       await this.ecr.deleteRepository({ repositoryName, force: true });
     } catch (e) {
       if (e instanceof import_client_ecr.RepositoryNotFoundException) {
-        console.log(`Repository ${repositoryName} does not exist. Skipping.`);
+        this.logger.log(`Repository ${repositoryName} does not exist. Skipping.`);
         return;
       }
       throw e;
@@ -11748,8 +11771,9 @@ var CleanerError = class extends Error {
   }
 };
 var Cleaner = class {
-  constructor(environment) {
+  constructor(environment, logger) {
     this.environment = environment;
+    this.logger = logger;
     this.credentials = (0, import_credential_providers.fromTemporaryCredentials)({
       params: {
         RoleArn: this.environment.adminRoleArn,
@@ -11778,83 +11802,78 @@ var Cleaner = class {
   }
   async deleteStack(stack, timeoutDate) {
     try {
-      const bucketsCleaner = new BucketsCleaner(this.credentials, this.environment.region, stack);
-      console.log(`Cleaning buckets in stack ${stack.StackName}`);
+      const bucketsCleaner = new BucketsCleaner(this.credentials, this.environment.region, stack, this.logger);
+      this.logger.log(`Cleaning buckets in stack ${stack.StackName}`);
       await bucketsCleaner.clean({ timeoutDate });
-      const reposCleaner = new ReposCleaner(this.credentials, this.environment.region, stack);
-      console.log(`Cleaning repositories in stack ${stack.StackName}`);
+      const reposCleaner = new ReposCleaner(this.credentials, this.environment.region, stack, this.logger);
+      this.logger.log(`Cleaning repositories in stack ${stack.StackName}`);
       await reposCleaner.clean();
       if (stack.ParentId) {
         return { name: stack.StackName };
       }
       if (stack.StackStatus !== "DELETE_IN_PROGRESS") {
-        this.log(`Disabling termination protection of stack ${stack.StackName}`);
+        this.logger.log(`Disabling termination protection of stack ${stack.StackName}`);
         await this.cfn.send(new import_client_cloudformation3.UpdateTerminationProtectionCommand({
           StackName: stack.StackName,
           EnableTerminationProtection: false
         }));
-        this.log(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
+        this.logger.log(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
         await this.cfn.send(new import_client_cloudformation3.DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
       }
       const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1e3;
-      this.log(`Stack ${stack.StackName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
+      this.logger.log(`Stack ${stack.StackName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
       await (0, import_client_cloudformation3.waitUntilStackDeleteComplete)(
         { client: this.cfn, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
         { StackName: stack.StackName }
       );
-      this.log(`Stack ${stack.StackName} deleted.`);
+      this.logger.log(`Stack ${stack.StackName} deleted.`);
       return { name: stack.StackName };
     } catch (e) {
       return { name: stack.StackName, error: e };
     }
-  }
-  log(message) {
-    console.log(`${(/* @__PURE__ */ new Date()).toISOString()} | aws://${this.environment.account}/${this.environment.region} | ${message}`);
   }
 };
 
 // src/cleanup/cleanup.task.ts
 var clients2 = RuntimeClients.getOrCreate();
 async function handler3(req) {
-  log(`Fetching allocation '${req.allocationId}'`);
+  const logger = RuntimeLoggers.forAllocation(req.allocationId, "cleanup");
+  logger.log("Fetching allocation");
   const allocation = await clients2.allocations.get(req.allocationId);
   const env3 = `aws://${allocation.account}/${allocation.region}`;
-  log(`Fetching environment '${env3}'`);
+  logger.log(`Fetching environment '${env3}'`);
   const environment = await clients2.configuration.getEnvironment(allocation.account, allocation.region);
-  const cleaner = new Cleaner(environment);
+  const cleaner = new Cleaner(environment, logger);
   try {
-    log(`Starting cleanup of '${env3}'`);
+    logger.log(`Starting cleanup of '${env3}'`);
     await cleaner.clean(req.timeoutSeconds);
-    log(`Successfully cleaned '${env3}'`);
-    log(`Releasing environment '${env3}'`);
+    logger.log(`Successfully cleaned '${env3}'`);
+    logger.log(`Releasing environment '${env3}'`);
     await clients2.environments.release(req.allocationId, environment.account, environment.region);
-    log(`Successfully released environment '${env3}'`);
-    log("Done!");
+    logger.log(`Successfully released environment '${env3}'`);
+    logger.log("Done!");
   } catch (e) {
     if (e instanceof EnvironmentAlreadyDirtyError) {
-      console.log(`Environment ${env3} was cleaned successfully, but it took too long to complete.`);
+      logger.log(`Environment ${env3} was cleaned successfully, but it took too long to complete.`);
       return;
     }
-    log(`Unable to clean '${env3}': ${e.message}`);
-    log(`Marking environment '${env3}' as 'dirty'`);
+    logger.log(`Unable to clean '${env3}': ${e.message}`);
+    logger.log(`Marking environment '${env3}' as 'dirty'`);
     await clients2.environments.dirty(req.allocationId, environment.account, environment.region);
-    log(`Successfully marked environment '${env3}' as 'dirty'`);
+    logger.log(`Successfully marked environment '${env3}' as 'dirty'`);
     if (e instanceof CleanerError) {
-      console.log();
-      console.log(">> Failed stacks errors report <<");
+      logger.log();
+      logger.log(">> Failed stacks errors report <<");
       for (const f of e.failedStacks) {
-        console.log("");
-        console.log(`----- Stack: ${f.name} -----`);
-        console.log("");
-        console.log(f.error);
+        logger.log("");
+        logger.log(`----- Stack: ${f.name} -----`);
+        logger.log("");
+        logger.error(f.error);
       }
       return;
     }
     throw e;
   }
-}
-function log(message) {
-  console.log(`${(/* @__PURE__ */ new Date()).toISOString()} | ${message}`);
 }
 if (require.main !== module) {
 } else {
@@ -11870,23 +11889,25 @@ async function handler4(event) {
   const account = event.account;
   const region = event.region;
   const allocationId = event.allocationId;
+  const logger = RuntimeLoggers.forAllocation(allocationId, "cleanup-timeout");
   try {
-    console.log(`Marking environment 'aws://${account}/${region}' as dirty`);
+    logger.log(`Marking environment 'aws://${account}/${region}' as dirty`);
     await clients3.environments.dirty(allocationId, account, region);
-    console.log("Done");
+    logger.log("Done");
   } catch (e) {
     if (e instanceof EnvironmentAlreadyReleasedError) {
-      console.log(e.message);
+      logger.log(e.message);
       return;
     }
     if (e instanceof EnvironmentAlreadyDirtyError) {
-      console.log(e.message);
+      logger.log(e.message);
       return;
     }
     if (e instanceof EnvironmentAlreadyReallocated) {
-      console.log(e.message);
+      logger.log(e.message);
       return;
     }
+    logger.error(e);
     throw e;
   }
 }
@@ -11903,24 +11924,24 @@ var ProxyError2 = class extends Error {
 var clients4 = RuntimeClients.getOrCreate();
 async function handler5(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
+  const id = (event.pathParameters ?? {}).id;
+  if (!id) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Missing 'id' path parameter" })
+    };
+  }
+  const logger = RuntimeLoggers.forAllocation(id, "deallocate");
   try {
-    const id = (event.pathParameters ?? {}).id;
-    if (!id) {
-      throw new ProxyError2(400, "Missing 'id' path parameter");
-    }
-    console.log(`Extracted allocation id from path: ${id}`);
-    console.log("Parsing request body");
     const request = parseRequestBody2(event.body);
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
     if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
       throw new ProxyError2(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
     }
     const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
-    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    logger.log(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
-    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
-    await clients4.environments.cleaning(id, allocation.account, allocation.region);
-    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    logger.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
     await clients4.scheduler.scheduleCleanupTimeout({
       allocationId: allocation.id,
       account: allocation.account,
@@ -11928,16 +11949,17 @@ async function handler5(event) {
       timeoutDate: cleanupTimeoutDate,
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
-    console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
+    logger.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
+    await clients4.environments.cleaning(id, allocation.account, allocation.region);
     const taskInstanceArn = await clients4.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
-    console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
+    logger.log(`Successfully started cleanup task: ${taskInstanceArn}`);
     return success({ cleanupDurationSeconds });
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
-      console.log(`Returning success because: ${e.message}`);
+      logger.log(`Returning success because: ${e.message}`);
       return success({ cleanupDurationSeconds: -1 });
     }
-    console.error(e);
+    logger.error(e);
     return {
       statusCode: e instanceof ProxyError2 ? e.statusCode : 500,
       body: JSON.stringify({ message: e.message })

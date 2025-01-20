@@ -642,6 +642,26 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
+// src/loggers.ts
+var AllocationLogger = class {
+  constructor(component, allocationId) {
+    this.component = component;
+    this.allocationId = allocationId;
+    this.prefix = `[${this.component}] [aloc:${this.allocationId}]`;
+  }
+  log(message = "") {
+    console.log(`${this.prefix} ${message}`);
+  }
+  error(error) {
+    console.error(`${this.prefix} ${error.message}`);
+  }
+};
+var RuntimeLoggers = class {
+  static forAllocation(allocationId, component) {
+    return new AllocationLogger(component, allocationId);
+  }
+};
+
 // src/cleanup-timeout/cleanup-timeout.lambda.ts
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
@@ -649,23 +669,25 @@ async function handler(event) {
   const account = event.account;
   const region = event.region;
   const allocationId = event.allocationId;
+  const logger = RuntimeLoggers.forAllocation(allocationId, "cleanup-timeout");
   try {
-    console.log(`Marking environment 'aws://${account}/${region}' as dirty`);
+    logger.log(`Marking environment 'aws://${account}/${region}' as dirty`);
     await clients.environments.dirty(allocationId, account, region);
-    console.log("Done");
+    logger.log("Done");
   } catch (e) {
     if (e instanceof EnvironmentAlreadyReleasedError) {
-      console.log(e.message);
+      logger.log(e.message);
       return;
     }
     if (e instanceof EnvironmentAlreadyDirtyError) {
-      console.log(e.message);
+      logger.log(e.message);
       return;
     }
     if (e instanceof EnvironmentAlreadyReallocated) {
-      console.log(e.message);
+      logger.log(e.message);
       return;
     }
+    logger.error(e);
     throw e;
   }
 }

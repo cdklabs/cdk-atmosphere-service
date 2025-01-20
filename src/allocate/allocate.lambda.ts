@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
+import { AllocationLogger } from '../logging';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
@@ -46,11 +47,13 @@ const clients = RuntimeClients.getOrCreate();
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
+
+  const allocationId = uuidv4();
+  const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
+
   try {
 
-    console.log('Parsing request body');
     const request = parseRequestBody(event.body);
-
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
@@ -58,27 +61,26 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     const timeoutDate = new Date(Date.now() + 1000 * durationSeconds);
 
-    const allocationId = uuidv4();
-
-    console.log(`Acquiring environment from pool '${request.pool}'`);
+    log.info(`Acquiring environment from pool '${request.pool}'`);
     const environment = await acquireEnvironment(allocationId, request.pool);
 
-    console.log(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
+    log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
     await startAllocation(allocationId, environment, request.requester);
 
-    console.log(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
+    log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
     const credentials = await grabCredentials(allocationId, environment);
 
-    console.log(`Allocation '${allocationId}' started successfully`);
+    log.info('Allocation started successfully');
 
     const response: AllocateResponse = { id: allocationId, environment, credentials, durationSeconds };
 
-    console.log(`Scheduling timeout for allocation '${allocationId}' to ${timeoutDate}`);
+    log.info(`Scheduling allocation timeout to ${timeoutDate}`);
     await clients.scheduler.scheduleAllocationTimeout({
       allocationId,
       timeoutDate,
       functionArn: envars.Envars.required(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
     });
+    log.info('Done');
 
     return {
       statusCode: 200,
@@ -86,7 +88,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     };
 
   } catch (e: any) {
-    console.error(e);
+    log.error(e);
     return {
       statusCode: e instanceof ProxyError ? e.statusCode : 500,
       body: JSON.stringify({ message: e.message }),

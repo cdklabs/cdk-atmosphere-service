@@ -74,12 +74,13 @@ yarn integ:force
 Each integration test defines its own set of projen tasks that allow you to operate on a single test.
 
 ```console
-projen integ:test/allocate             Deploy -> Update Snapshot -> Destroy
-projen integ:test/allocate:assert      Run the assertion locally
-projen integ:test/allocate:force       Force Deploy -> Update Snapshot -> Destroy
-projen integ:test/allocate:deploy      Force Deploy -> Update Snapshot -> Dont Destroy
-projen integ:test/allocate:snapshot    Dont Deploy -> Update snapshot (discoureged)
-projen integ:test/allocate:update      Deploy -> Update Snapshot (if needed)
+projen integ:test/allocate                     Deploy -> Update Snapshot -> Destroy
+projen integ:test/allocate:assert              Run the assertion locally
+projen integ:test/allocate:deploy              Deploy -> Update Snapshot -> Dont Destroy
+projen integ:test/allocate:force               Force Deploy -> Update Snapshot -> Destroy
+projen integ:test/allocate:force-deploy        Force Deploy -> Update Snapshot -> Dont Destroy
+projen integ:test/allocate:snapshot            Dont Deploy -> Update snapshot
+projen integ:test/allocate:update              Deploy -> Update Snapshot
 ```
 
 ### Adding
