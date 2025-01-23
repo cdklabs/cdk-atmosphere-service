@@ -390,13 +390,13 @@
     },
     "integ:test/allocate:deploy": {
       "name": "integ:test/allocate:deploy",
-      "description": "Deploy -> Update Snapshot -> Dont Destroy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
       "steps": [
         {
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --force --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -412,21 +412,9 @@
         }
       ]
     },
-    "integ:test/allocate:force-deploy": {
-      "name": "integ:test/allocate:force-deploy",
-      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --force --disable-update-workflow --no-clean"
-        }
-      ]
-    },
     "integ:test/allocate:snapshot": {
       "name": "integ:test/allocate:snapshot",
-      "description": "Dont Deploy -> Update snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
       "steps": [
         {
           "spawn": "bundle"
@@ -438,7 +426,7 @@
     },
     "integ:test/allocate:update": {
       "name": "integ:test/allocate:update",
-      "description": "Deploy -> Update Snapshot",
+      "description": "Deploy -> Update Snapshot (if needed)",
       "steps": [
         {
           "spawn": "bundle"
@@ -471,13 +459,13 @@
     },
     "integ:test/allocation-timeout:deploy": {
       "name": "integ:test/allocation-timeout:deploy",
-      "description": "Deploy -> Update Snapshot -> Dont Destroy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
       "steps": [
         {
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --force --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -493,21 +481,9 @@
         }
       ]
     },
-    "integ:test/allocation-timeout:force-deploy": {
-      "name": "integ:test/allocation-timeout:force-deploy",
-      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --force --disable-update-workflow --no-clean"
-        }
-      ]
-    },
     "integ:test/allocation-timeout:snapshot": {
       "name": "integ:test/allocation-timeout:snapshot",
-      "description": "Dont Deploy -> Update snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
       "steps": [
         {
           "spawn": "bundle"
@@ -519,7 +495,7 @@
     },
     "integ:test/allocation-timeout:update": {
       "name": "integ:test/allocation-timeout:update",
-      "description": "Deploy -> Update Snapshot",
+      "description": "Deploy -> Update Snapshot (if needed)",
       "steps": [
         {
           "spawn": "bundle"
@@ -564,13 +540,13 @@
     },
     "integ:test/cleanup-timeout:deploy": {
       "name": "integ:test/cleanup-timeout:deploy",
-      "description": "Deploy -> Update Snapshot -> Dont Destroy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
       "steps": [
         {
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --force --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -586,21 +562,9 @@
         }
       ]
     },
-    "integ:test/cleanup-timeout:force-deploy": {
-      "name": "integ:test/cleanup-timeout:force-deploy",
-      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --force --disable-update-workflow --no-clean"
-        }
-      ]
-    },
     "integ:test/cleanup-timeout:snapshot": {
       "name": "integ:test/cleanup-timeout:snapshot",
-      "description": "Dont Deploy -> Update snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
       "steps": [
         {
           "spawn": "bundle"
@@ -612,7 +576,7 @@
     },
     "integ:test/cleanup-timeout:update": {
       "name": "integ:test/cleanup-timeout:update",
-      "description": "Deploy -> Update Snapshot",
+      "description": "Deploy -> Update Snapshot (if needed)",
       "steps": [
         {
           "spawn": "bundle"
@@ -633,13 +597,13 @@
     },
     "integ:test/cleanup:deploy": {
       "name": "integ:test/cleanup:deploy",
-      "description": "Deploy -> Update Snapshot -> Dont Destroy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
       "steps": [
         {
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --force --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -655,21 +619,9 @@
         }
       ]
     },
-    "integ:test/cleanup:force-deploy": {
-      "name": "integ:test/cleanup:force-deploy",
-      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --force --disable-update-workflow --no-clean"
-        }
-      ]
-    },
     "integ:test/cleanup:snapshot": {
       "name": "integ:test/cleanup:snapshot",
-      "description": "Dont Deploy -> Update snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
       "steps": [
         {
           "spawn": "bundle"
@@ -681,7 +633,7 @@
     },
     "integ:test/cleanup:update": {
       "name": "integ:test/cleanup:update",
-      "description": "Deploy -> Update Snapshot",
+      "description": "Deploy -> Update Snapshot (if needed)",
       "steps": [
         {
           "spawn": "bundle"
@@ -714,13 +666,13 @@
     },
     "integ:test/deallocate:deploy": {
       "name": "integ:test/deallocate:deploy",
-      "description": "Deploy -> Update Snapshot -> Dont Destroy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
       "steps": [
         {
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --force --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -736,21 +688,9 @@
         }
       ]
     },
-    "integ:test/deallocate:force-deploy": {
-      "name": "integ:test/deallocate:force-deploy",
-      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --force --disable-update-workflow --no-clean"
-        }
-      ]
-    },
     "integ:test/deallocate:snapshot": {
       "name": "integ:test/deallocate:snapshot",
-      "description": "Dont Deploy -> Update snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
       "steps": [
         {
           "spawn": "bundle"
@@ -762,7 +702,7 @@
     },
     "integ:test/deallocate:update": {
       "name": "integ:test/deallocate:update",
-      "description": "Deploy -> Update Snapshot",
+      "description": "Deploy -> Update Snapshot (if needed)",
       "steps": [
         {
           "spawn": "bundle"
@@ -795,13 +735,13 @@
     },
     "integ:test/dev:deploy": {
       "name": "integ:test/dev:deploy",
-      "description": "Deploy -> Update Snapshot -> Dont Destroy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
       "steps": [
         {
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --force --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -817,21 +757,9 @@
         }
       ]
     },
-    "integ:test/dev:force-deploy": {
-      "name": "integ:test/dev:force-deploy",
-      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
-      "steps": [
-        {
-          "spawn": "bundle"
-        },
-        {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --force --disable-update-workflow --no-clean"
-        }
-      ]
-    },
     "integ:test/dev:snapshot": {
       "name": "integ:test/dev:snapshot",
-      "description": "Dont Deploy -> Update snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
       "steps": [
         {
           "spawn": "bundle"
@@ -843,7 +771,7 @@
     },
     "integ:test/dev:update": {
       "name": "integ:test/dev:update",
-      "description": "Deploy -> Update Snapshot",
+      "description": "Deploy -> Update Snapshot (if needed)",
       "steps": [
         {
           "spawn": "bundle"
