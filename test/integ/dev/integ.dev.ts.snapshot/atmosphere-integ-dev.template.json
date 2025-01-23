@@ -49,14 +49,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereLoggingLogGroup73DE4B1F": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 180
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "AtmosphereConfigurationBucket70B4698A": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -483,6 +475,14 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereCleanupLogGroup72856C89": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereCleanupSecurityGroupFA8836F2": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -663,13 +663,13 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:27aafb94d686cf50df86597e04afab1639a075167a1a24eca624c0b00c727384"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c302dd6b410e4c8e7c1fce78e90a584cdf3cb3baa7947c59c3bb58d8577c453b"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "AtmosphereLoggingLogGroup73DE4B1F"
+         "Ref": "AtmosphereCleanupLogGroup72856C89"
         },
         "awslogs-stream-prefix": "cleanup",
         "awslogs-region": {
@@ -775,7 +775,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "AtmosphereLoggingLogGroup73DE4B1F",
+         "AtmosphereCleanupLogGroup72856C89",
          "Arn"
         ]
        }
@@ -994,7 +994,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b1710a518e3d961c41ba929bfc0fb8bdbbd84d21988d0ef18ad441b3930704f5.zip"
+     "S3Key": "d1cddf309560e6fd9d86f67758ead300f98a4c4f8c316bbefe4b51a9c9983bf6.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1014,11 +1014,6 @@
      }
     },
     "Handler": "index.handler",
-    "LoggingConfig": {
-     "LogGroup": {
-      "Ref": "AtmosphereLoggingLogGroup73DE4B1F"
-     }
-    },
     "Role": {
      "Fn::GetAtt": [
       "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0",
@@ -1163,7 +1158,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "624951526c98a7e18aebbc4b0d10c62cfc2c49129e4a1e0e33bccd40ba79be3b.zip"
+     "S3Key": "bf534ff959a8e8e82513b77fa5b0f1f66dea56d8d807716b3b950dfeed4e4770.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1183,11 +1178,6 @@
      }
     },
     "Handler": "index.handler",
-    "LoggingConfig": {
-     "LogGroup": {
-      "Ref": "AtmosphereLoggingLogGroup73DE4B1F"
-     }
-    },
     "Role": {
      "Fn::GetAtt": [
       "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404",
@@ -1351,7 +1341,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "271233e94edb6edaa8caa217d51fdc38c4ede6f3dec4c7c28f5ec154ec275b4e.zip"
+     "S3Key": "7ea718124514a21c5e2991dc0449009d5a2cee875c6fa4dd29e86246a1ae1741.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -1394,11 +1384,6 @@
      }
     },
     "Handler": "index.handler",
-    "LoggingConfig": {
-     "LogGroup": {
-      "Ref": "AtmosphereLoggingLogGroup73DE4B1F"
-     }
-    },
     "Role": {
      "Fn::GetAtt": [
       "AtmosphereAllocateFunctionServiceRole64EB08B6",
@@ -1552,7 +1537,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4ec6577659907e5ed3eaeecdcfcc028f09788345cfe6f76f2a0333b376570f88.zip"
+     "S3Key": "e81934f52e339ce1fcbd1b64c51a5277942e7325827430cb2cc79f85e0c2b500.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -1604,11 +1589,6 @@
      }
     },
     "Handler": "index.handler",
-    "LoggingConfig": {
-     "LogGroup": {
-      "Ref": "AtmosphereLoggingLogGroup73DE4B1F"
-     }
-    },
     "Role": {
      "Fn::GetAtt": [
       "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8",

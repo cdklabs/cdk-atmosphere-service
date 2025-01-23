@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47c49108aa9dc67250bcaa5dec08b3c3c68aa742b1e619086edd589b72d4a759.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3532c2ff27f1169205fa85a0899a468cf20fdfde8f93e988ee9abfef1078baf0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,12 +38,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AdminC75D2A91"
-          }
-        ],
-        "/atmosphere-integ-dev/Atmosphere/Logging/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereLoggingLogGroup73DE4B1F"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Configuration/Bucket/Resource": [
@@ -158,6 +152,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereCleanupVpcRestrictDefaultSecurityGroupCustomResourceBCD653E5"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Cleanup/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereCleanupLogGroup72856C89"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Cleanup/SecurityGroup/Resource": [
@@ -544,6 +544,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "AtmosphereLoggingLogGroup73DE4B1F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereLoggingLogGroup73DE4B1F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "atmosphere-integ-dev"
@@ -565,7 +574,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a0bd138c503135ce500ed91e222ff61e24fadb846a60528650daab495f872e8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9423de9a8ef10c9d1c1ed6f46a4378f7ae6b6c2b627fcf33ef93d3019060582a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
