@@ -47,10 +47,7 @@ export interface AllocateResponse {
 }
 
 export const METRICS_NAMESPACE = RuntimeMetrics.namespace('Allocate');
-
-export function metricName(pool: string, statusCode: number) {
-  return `${pool}.${statusCode}`;
-}
+export const METRICS_DIMENSION_POOL = 'Pool';
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -74,15 +71,15 @@ export async function handler(event: APIGatewayProxyEvent) {
       return { statusCode: 400, body: JSON.stringify({ message: '\'requester\' must be provided in the request body' }) };
     }
 
-    metrics.setDimensions({});
+    metrics.setDimensions({ [METRICS_DIMENSION_POOL]: request.pool });
 
     try {
       const result = await doHandler(request);
-      metrics.putMetric(metricName(request.pool, result.statusCode), 1, Unit.Count);
+      metrics.putMetric(`${result.statusCode}`, 1, Unit.Count);
       return result;
     } catch (e: any) {
       const statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      metrics.putMetric(metricName(request.pool, statusCode), 1, Unit.Count);
+      metrics.putMetric(`${statusCode}`, 1, Unit.Count);
       return { statusCode, body: JSON.stringify({ message: e.message }) };
     }
 

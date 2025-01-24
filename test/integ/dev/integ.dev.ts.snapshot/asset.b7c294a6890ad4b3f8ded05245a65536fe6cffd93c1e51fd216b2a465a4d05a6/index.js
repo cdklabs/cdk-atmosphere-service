@@ -14090,9 +14090,7 @@ var ProxyError = class extends Error {
   }
 };
 var METRICS_NAMESPACE = RuntimeMetrics.namespace("Allocate");
-function metricName(pool, statusCode) {
-  return `${pool}.${statusCode}`;
-}
+var METRICS_DIMENSION_POOL = "Pool";
 var clients = RuntimeClients.getOrCreate();
 import_aws_embedded_metrics2.Configuration.namespace = METRICS_NAMESPACE;
 async function handler(event) {
@@ -14108,14 +14106,14 @@ async function handler(event) {
     if (!request.requester) {
       return { statusCode: 400, body: JSON.stringify({ message: "'requester' must be provided in the request body" }) };
     }
-    metrics.setDimensions({});
+    metrics.setDimensions({ [METRICS_DIMENSION_POOL]: request.pool });
     try {
       const result = await doHandler(request);
-      metrics.putMetric(metricName(request.pool, result.statusCode), 1, import_aws_embedded_metrics2.Unit.Count);
+      metrics.putMetric(`${result.statusCode}`, 1, import_aws_embedded_metrics2.Unit.Count);
       return result;
     } catch (e) {
       const statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      metrics.putMetric(metricName(request.pool, statusCode), 1, import_aws_embedded_metrics2.Unit.Count);
+      metrics.putMetric(`${statusCode}`, 1, import_aws_embedded_metrics2.Unit.Count);
       return { statusCode, body: JSON.stringify({ message: e.message }) };
     }
   })();
