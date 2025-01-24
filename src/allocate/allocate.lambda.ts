@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { STS } from '@aws-sdk/client-sts';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Configuration, Unit } from 'aws-embedded-metrics';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
@@ -7,6 +9,7 @@ import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
+import { RuntimeMetrics } from '../metrics';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
@@ -43,17 +46,57 @@ export interface AllocateResponse {
   readonly durationSeconds: number;
 }
 
+export const METRICS_NAMESPACE = RuntimeMetrics.namespace('Allocate');
+
+export function metricName(pool: string, statusCode: number) {
+  return `${pool}.${statusCode}`;
+}
+
 const clients = RuntimeClients.getOrCreate();
 
-export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  console.log('Event:', JSON.stringify(event, null, 2));
+Configuration.namespace = METRICS_NAMESPACE;
+
+export async function handler(event: APIGatewayProxyEvent) {
+
+  return RuntimeMetrics.scope((metrics) => async () => {
+
+    console.log('Event:', JSON.stringify(event, null, 2));
+
+    if (!event.body) {
+      return { statusCode: 400, body: JSON.stringify({ message: 'Request body not found' }) };
+    }
+
+    const request = JSON.parse(event.body);
+    if (!request.pool) {
+      return { statusCode: 400, body: JSON.stringify({ message: '\'pool\' must be provided in the request body' }) };
+    }
+    if (!request.requester) {
+      return { statusCode: 400, body: JSON.stringify({ message: '\'requester\' must be provided in the request body' }) };
+    }
+
+    metrics.setDimensions({});
+
+    try {
+      const result = await doHandler(request);
+      metrics.putMetric(metricName(request.pool, result.statusCode), 1, Unit.Count);
+      return result;
+    } catch (e: any) {
+      const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+      metrics.putMetric(metricName(request.pool, statusCode), 1, Unit.Count);
+      return { statusCode, body: JSON.stringify({ message: e.message }) };
+    }
+
+  })();
+
+};
+
+async function doHandler(request: AllocateRequest): Promise<APIGatewayProxyResult> {
 
   const allocationId = uuidv4();
   const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
 
   try {
 
-    const request = parseRequestBody(event.body);
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
@@ -89,28 +132,8 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   } catch (e: any) {
     log.error(e);
-    return {
-      statusCode: e instanceof ProxyError ? e.statusCode : 500,
-      body: JSON.stringify({ message: e.message }),
-    };
+    throw e;
   }
-}
-
-function parseRequestBody(body: string | null): AllocateRequest {
-
-  if (!body) {
-    throw new ProxyError(400, 'Request body not found');
-  }
-
-  const parsed = JSON.parse(body);
-  if (!parsed.pool) {
-    throw new ProxyError(400, '\'pool\' must be provided in the request body');
-  }
-  if (!parsed.requester) {
-    throw new ProxyError(400, '\'requester\' must be provided in the request body');
-  }
-
-  return parsed;
 }
 
 async function acquireEnvironment(allocaionId: string, pool: string): Promise<Environment> {

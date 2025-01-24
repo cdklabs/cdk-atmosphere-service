@@ -1296,9 +1296,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2157,7 +2157,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7ea718124514a21c5e2991dc0449009d5a2cee875c6fa4dd29e86246a1ae1741.zip"
+                              "s3Key": "ccfc09ea9513c18bfcf45958bebf91992d7d5847dd031b44829a4cfe78ec0f8c.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -2221,9 +2221,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3035,6 +3035,63 @@
                   "fqn": "constructs.Construct",
                   "version": "10.0.5"
                 }
+              },
+              "Dashboard": {
+                "id": "Dashboard",
+                "path": "atmosphere-integ-dev/Atmosphere/Dashboard",
+                "children": {
+                  "Dashboard": {
+                    "id": "Dashboard",
+                    "path": "atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                          "aws:cdk:cloudformation:props": {
+                            "dashboardBody": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# Allocate Status Codes (Pool: release)\"}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"200 OK | release\",\"region\":\"",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"release.200\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":7,\"properties\":{\"view\":\"timeSeries\",\"title\":\"423 Locked | release\",\"region\":\"",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"release.423\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":13,\"properties\":{\"view\":\"timeSeries\",\"title\":\"400 Bad Request | release\",\"region\":\"",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"release.400\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":19,\"properties\":{\"view\":\"timeSeries\",\"title\":\"500 Error | release\",\"region\":\"",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"release.500\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnDashboard",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Dashboard",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
               }
             },
             "constructInfo": {
@@ -3626,7 +3683,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "43d1252cc73b948a3f966f228f7206cbd8e8ff51a8c5f2a7fcbea207e1c97807.zip"
+                      "s3Key": "56290b06a84824b98e7496244a68b2b447d13ddf3a06a658f23e7ef6620cbda2.zip"
                     },
                     "description": "test/integ/dev/assert.lambda.ts",
                     "environment": {

@@ -6,3 +6,4 @@ export * from './deallocate';
 export * from './api';
 export * from './scheduler';
 export * from './cleanup';
+export * from './dashboard';

@@ -9,6 +9,7 @@ import { EnvironmentAlreadyAcquiredError } from '../../../src/storage/environmen
 import * as _with from '../../with';
 import { RuntimeClientsMock } from '../clients.mock';
 import 'aws-sdk-client-mock-jest';
+import { MetricsMock } from '../metrics.mock';
 
 // this grabs the same instance the handler uses
 // so we can easily mock it.
@@ -17,6 +18,7 @@ const clients = RuntimeClients.getOrCreate();
 describe('handler', () => {
 
   const stsMock = mockClient(STSClient);
+  const mockMetrics = MetricsMock.mock();
 
   beforeEach(() => {
     stsMock.reset();
@@ -150,6 +152,7 @@ describe('handler', () => {
       RoleArn: 'arn:aws:iam::1111:role/Admin',
       RoleSessionName: `atmosphere.allocation.${body.id}`,
     });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('release.200', 1, 'Count');
 
   });
 
@@ -215,7 +218,7 @@ describe('handler', () => {
     jest.spyOn(clients.allocations, 'start').mockImplementation(jest.fn());
     jest.spyOn(clients.scheduler, 'scheduleAllocationTimeout').mockImplementation(jest.fn());
 
-    const response = await _with.env({ [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, () => handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent));
+    const response = await _with.env({ [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, async () => handler({ body: JSON.stringify({ pool: 'release', requester: 'user1' }) } as APIGatewayProxyEvent));
     const body = JSON.parse(response.body);
 
     expect(clients.environments.acquire).toHaveBeenCalledTimes(2);
@@ -259,6 +262,7 @@ describe('handler', () => {
 
     expect(response.statusCode).toEqual(423);
     expect(body.message).toEqual('No environments available in pool \'release\'');
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('release.423', 1, 'Count');
 
   });
 

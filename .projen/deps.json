@@ -85,6 +85,10 @@
       "type": "build"
     },
     {
+      "name": "aws-embedded-metrics",
+      "type": "build"
+    },
+    {
       "name": "aws-sdk-client-mock",
       "type": "build"
     },
