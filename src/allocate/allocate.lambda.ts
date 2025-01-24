@@ -9,7 +9,7 @@ import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
-import { RuntimeMetrics } from '../metrics';
+import { RuntimeMetrics, METRICS_DIMENSION_POOL, METRIC_DIMENSION_VALUE } from '../metrics';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
@@ -47,40 +47,40 @@ export interface AllocateResponse {
 }
 
 export const METRICS_NAMESPACE = RuntimeMetrics.namespace('Allocate');
-export const METRICS_DIMENSION_POOL = 'Pool';
+export const METRIC_NAME_STATUS_CODE = 'statusCode';
 
 const clients = RuntimeClients.getOrCreate();
 
 Configuration.namespace = METRICS_NAMESPACE;
 
-export async function handler(event: APIGatewayProxyEvent) {
+export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+  console.log('Event:', JSON.stringify(event, null, 2));
 
   return RuntimeMetrics.scope((metrics) => async () => {
 
-    console.log('Event:', JSON.stringify(event, null, 2));
-
     if (!event.body) {
-      return { statusCode: 400, body: JSON.stringify({ message: 'Request body not found' }) };
+      return failure(400, 'Request body not found');
     }
 
     const request = JSON.parse(event.body);
     if (!request.pool) {
-      return { statusCode: 400, body: JSON.stringify({ message: '\'pool\' must be provided in the request body' }) };
+      return failure(400, '\'pool\' must be provided in the request body');
     }
     if (!request.requester) {
-      return { statusCode: 400, body: JSON.stringify({ message: '\'requester\' must be provided in the request body' }) };
+      return failure(400, '\'requester\' must be provided in the request body');
     }
 
-    metrics.setDimensions({ [METRICS_DIMENSION_POOL]: request.pool });
-
+    let statusCode;
     try {
       const result = await doHandler(request);
-      metrics.putMetric(`${result.statusCode}`, 1, Unit.Count);
+      statusCode = result.statusCode;
       return result;
     } catch (e: any) {
-      const statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      metrics.putMetric(`${statusCode}`, 1, Unit.Count);
-      return { statusCode, body: JSON.stringify({ message: e.message }) };
+      statusCode = e instanceof ProxyError ? e.statusCode : 500;
+      return failure(statusCode, e.message);
+    } finally {
+      metrics.setDimensions(metricDimensionsStatusCode(request.pool, statusCode!));
+      metrics.putMetric(METRIC_NAME_STATUS_CODE, 1, Unit.Count);
     }
 
   })();
@@ -122,15 +122,27 @@ async function doHandler(request: AllocateRequest): Promise<APIGatewayProxyResul
     });
     log.info('Done');
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response),
-    };
+    return success(200, response);
 
   } catch (e: any) {
     log.error(e);
     throw e;
   }
+}
+
+export function metricDimensionsStatusCode(pool: string, statusCode: number) {
+  return {
+    [METRICS_DIMENSION_POOL]: pool,
+    [METRIC_DIMENSION_VALUE]: `${statusCode}`,
+  };
+}
+
+function success(statusCode: number, body: any) {
+  return { statusCode: statusCode, body: JSON.stringify(body) };
+}
+
+function failure(statusCode: number, message: string) {
+  return { statusCode: statusCode, body: JSON.stringify({ message }) };
 }
 
 async function acquireEnvironment(allocaionId: string, pool: string): Promise<Environment> {

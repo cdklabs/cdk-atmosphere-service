@@ -7364,10 +7364,10 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler7, type, success2, fail2) {
+      Promise2.prototype._passThrough = function(handler7, type, success3, fail2) {
         if (typeof handler7 !== "function") return this.then();
         return this._then(
-          success2,
+          success3,
           fail2,
           void 0,
           new PassThroughHandlerContext(this, type, handler7),
@@ -10883,8 +10883,8 @@ var require_Configuration = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var EnvironmentConfigurationProvider_1 = require_EnvironmentConfigurationProvider();
-    var Configuration2 = new EnvironmentConfigurationProvider_1.EnvironmentConfigurationProvider().getConfiguration();
-    exports2.default = Configuration2;
+    var Configuration3 = new EnvironmentConfigurationProvider_1.EnvironmentConfigurationProvider().getConfiguration();
+    exports2.default = Configuration3;
   }
 });
 
@@ -10913,36 +10913,36 @@ var require_Unit = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Unit = void 0;
-    var Unit2;
-    (function(Unit3) {
-      Unit3["Seconds"] = "Seconds";
-      Unit3["Microseconds"] = "Microseconds";
-      Unit3["Milliseconds"] = "Milliseconds";
-      Unit3["Bytes"] = "Bytes";
-      Unit3["Kilobytes"] = "Kilobytes";
-      Unit3["Megabytes"] = "Megabytes";
-      Unit3["Gigabytes"] = "Gigabytes";
-      Unit3["Terabytes"] = "Terabytes";
-      Unit3["Bits"] = "Bits";
-      Unit3["Kilobits"] = "Kilobits";
-      Unit3["Megabits"] = "Megabits";
-      Unit3["Gigabits"] = "Gigabits";
-      Unit3["Terabits"] = "Terabits";
-      Unit3["Percent"] = "Percent";
-      Unit3["Count"] = "Count";
-      Unit3["BytesPerSecond"] = "Bytes/Second";
-      Unit3["KilobytesPerSecond"] = "Kilobytes/Second";
-      Unit3["MegabytesPerSecond"] = "Megabytes/Second";
-      Unit3["GigabytesPerSecond"] = "Gigabytes/Second";
-      Unit3["TerabytesPerSecond"] = "Terabytes/Second";
-      Unit3["BitsPerSecond"] = "Bits/Second";
-      Unit3["KilobitsPerSecond"] = "Kilobits/Second";
-      Unit3["MegabitsPerSecond"] = "Megabits/Second";
-      Unit3["GigabitsPerSecond"] = "Gigabits/Second";
-      Unit3["TerabitsPerSecond"] = "Terabits/Second";
-      Unit3["CountPerSecond"] = "Count/Second";
-      Unit3["None"] = "None";
-    })(Unit2 = exports2.Unit || (exports2.Unit = {}));
+    var Unit3;
+    (function(Unit4) {
+      Unit4["Seconds"] = "Seconds";
+      Unit4["Microseconds"] = "Microseconds";
+      Unit4["Milliseconds"] = "Milliseconds";
+      Unit4["Bytes"] = "Bytes";
+      Unit4["Kilobytes"] = "Kilobytes";
+      Unit4["Megabytes"] = "Megabytes";
+      Unit4["Gigabytes"] = "Gigabytes";
+      Unit4["Terabytes"] = "Terabytes";
+      Unit4["Bits"] = "Bits";
+      Unit4["Kilobits"] = "Kilobits";
+      Unit4["Megabits"] = "Megabits";
+      Unit4["Gigabits"] = "Gigabits";
+      Unit4["Terabits"] = "Terabits";
+      Unit4["Percent"] = "Percent";
+      Unit4["Count"] = "Count";
+      Unit4["BytesPerSecond"] = "Bytes/Second";
+      Unit4["KilobytesPerSecond"] = "Kilobytes/Second";
+      Unit4["MegabytesPerSecond"] = "Megabytes/Second";
+      Unit4["GigabytesPerSecond"] = "Gigabytes/Second";
+      Unit4["TerabytesPerSecond"] = "Terabytes/Second";
+      Unit4["BitsPerSecond"] = "Bits/Second";
+      Unit4["KilobitsPerSecond"] = "Kilobits/Second";
+      Unit4["MegabitsPerSecond"] = "Megabits/Second";
+      Unit4["GigabitsPerSecond"] = "Gigabits/Second";
+      Unit4["TerabitsPerSecond"] = "Terabits/Second";
+      Unit4["CountPerSecond"] = "Count/Second";
+      Unit4["None"] = "None";
+    })(Unit3 = exports2.Unit || (exports2.Unit = {}));
   }
 });
 
@@ -11358,7 +11358,7 @@ var require_MetricsLogger = __commonJS({
     exports2.MetricsLogger = void 0;
     var Configuration_1 = __importDefault(require_Configuration());
     var MetricsContext_1 = require_MetricsContext();
-    var MetricsLogger2 = class _MetricsLogger {
+    var MetricsLogger3 = class _MetricsLogger {
       constructor(resolveEnvironment, context) {
         this.configureContextForEnvironment = (context2, environment) => {
           const defaultDimensions = {
@@ -11476,7 +11476,7 @@ var require_MetricsLogger = __commonJS({
         return new _MetricsLogger(this.resolveEnvironment, this.context.createCopyWithContext());
       }
     };
-    exports2.MetricsLogger = MetricsLogger2;
+    exports2.MetricsLogger = MetricsLogger3;
   }
 });
 
@@ -14071,6 +14071,8 @@ var AllocationLogger = class {
 // src/metrics.ts
 var import_aws_embedded_metrics = __toESM(require_lib2());
 var NAMESPACE = "Atmosphere";
+var METRICS_DIMENSION_POOL = "pool";
+var METRIC_DIMENSION_VALUE = "value";
 var RuntimeMetrics = class {
   static namespace(component) {
     return `${NAMESPACE}/${component}`;
@@ -14090,31 +14092,33 @@ var ProxyError = class extends Error {
   }
 };
 var METRICS_NAMESPACE = RuntimeMetrics.namespace("Allocate");
-var METRICS_DIMENSION_POOL = "Pool";
+var METRIC_NAME_STATUS_CODE = "statusCode";
 var clients = RuntimeClients.getOrCreate();
 import_aws_embedded_metrics2.Configuration.namespace = METRICS_NAMESPACE;
 async function handler(event) {
+  console.log("Event:", JSON.stringify(event, null, 2));
   return RuntimeMetrics.scope((metrics) => async () => {
-    console.log("Event:", JSON.stringify(event, null, 2));
     if (!event.body) {
-      return { statusCode: 400, body: JSON.stringify({ message: "Request body not found" }) };
+      return failure(400, "Request body not found");
     }
     const request = JSON.parse(event.body);
     if (!request.pool) {
-      return { statusCode: 400, body: JSON.stringify({ message: "'pool' must be provided in the request body" }) };
+      return failure(400, "'pool' must be provided in the request body");
     }
     if (!request.requester) {
-      return { statusCode: 400, body: JSON.stringify({ message: "'requester' must be provided in the request body" }) };
+      return failure(400, "'requester' must be provided in the request body");
     }
-    metrics.setDimensions({ [METRICS_DIMENSION_POOL]: request.pool });
+    let statusCode;
     try {
       const result = await doHandler(request);
-      metrics.putMetric(`${result.statusCode}`, 1, import_aws_embedded_metrics2.Unit.Count);
+      statusCode = result.statusCode;
       return result;
     } catch (e) {
-      const statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      metrics.putMetric(`${statusCode}`, 1, import_aws_embedded_metrics2.Unit.Count);
-      return { statusCode, body: JSON.stringify({ message: e.message }) };
+      statusCode = e instanceof ProxyError ? e.statusCode : 500;
+      return failure(statusCode, e.message);
+    } finally {
+      metrics.setDimensions(metricDimensionsStatusCode(request.pool, statusCode));
+      metrics.putMetric(METRIC_NAME_STATUS_CODE, 1, import_aws_embedded_metrics2.Unit.Count);
     }
   })();
 }
@@ -14142,14 +14146,23 @@ async function doHandler(request) {
       functionArn: Envars.required(ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV)
     });
     log.info("Done");
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response)
-    };
+    return success(200, response);
   } catch (e) {
     log.error(e);
     throw e;
   }
+}
+function metricDimensionsStatusCode(pool, statusCode) {
+  return {
+    [METRICS_DIMENSION_POOL]: pool,
+    [METRIC_DIMENSION_VALUE]: `${statusCode}`
+  };
+}
+function success(statusCode, body) {
+  return { statusCode, body: JSON.stringify(body) };
+}
+function failure(statusCode, message) {
+  return { statusCode, body: JSON.stringify({ message }) };
 }
 async function acquireEnvironment(allocaionId, pool) {
   const candidates = await clients.configuration.listEnvironments({ pool });
@@ -14528,6 +14541,7 @@ async function handler4(event) {
 }
 
 // src/deallocate/deallocate.lambda.ts
+var import_aws_embedded_metrics3 = __toESM(require_lib2());
 var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError2 = class extends Error {
   constructor(statusCode, message) {
@@ -14536,26 +14550,44 @@ var ProxyError2 = class extends Error {
     this.message = message;
   }
 };
+var METRICS_NAMESPACE2 = RuntimeMetrics.namespace("Deallocate");
+var METRIC_NAME_OUTCOME = "outcome";
 var clients4 = RuntimeClients.getOrCreate();
+import_aws_embedded_metrics3.Configuration.namespace = METRICS_NAMESPACE2;
 async function handler5(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const id = (event.pathParameters ?? {}).id;
-  if (!id) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Missing 'id' path parameter" })
-    };
-  }
-  const log = new AllocationLogger({ id, component: "deallocate" });
+  return RuntimeMetrics.scope((metrics) => async () => {
+    const id = event.pathParameters?.id;
+    if (!id) {
+      return failure2(400, "Missing 'id' path parameter");
+    }
+    if (!event.body) {
+      return failure2(400, "Request body not found");
+    }
+    const request = JSON.parse(event.body);
+    if (!request.outcome) {
+      return failure2(400, "'outcome' must be provided in the request body");
+    }
+    try {
+      return await doHandler2(id, request, metrics);
+    } catch (e) {
+      const statusCode = e instanceof ProxyError2 ? e.statusCode : 500;
+      return failure2(statusCode, e.message);
+    }
+  })();
+}
+async function doHandler2(allocationId, request, metrics) {
+  const log = new AllocationLogger({ id: allocationId, component: "deallocate" });
   try {
-    const request = parseRequestBody(event.body);
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
     if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
       throw new ProxyError2(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
     }
     const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
-    const allocation = await endAllocation(id, request.outcome);
+    const allocation = await endAllocation(allocationId, request.outcome);
+    metrics.setDimensions(metricDimensionsOutcome(allocation.pool, request.outcome));
+    metrics.putMetric(METRIC_NAME_OUTCOME, 1, import_aws_embedded_metrics3.Unit.Count);
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
     await clients4.scheduler.scheduleCleanupTimeout({
       allocationId: allocation.id,
@@ -14565,31 +14597,30 @@ async function handler5(event) {
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await clients4.environments.cleaning(id, allocation.account, allocation.region);
+    await clients4.environments.cleaning(allocationId, allocation.account, allocation.region);
     const taskInstanceArn = await clients4.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
-    return success({ cleanupDurationSeconds });
+    return success2(200, { cleanupDurationSeconds });
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       log.info(`Returning success because: ${e.message}`);
-      return success({ cleanupDurationSeconds: -1 });
+      return success2(200, { cleanupDurationSeconds: -1 });
     }
     log.error(e);
-    return {
-      statusCode: e instanceof ProxyError2 ? e.statusCode : 500,
-      body: JSON.stringify({ message: e.message })
-    };
+    throw e;
   }
 }
-function parseRequestBody(body) {
-  if (!body) {
-    throw new ProxyError2(400, "Request body not found");
-  }
-  const parsed = JSON.parse(body);
-  if (!parsed.outcome) {
-    throw new ProxyError2(400, "'outcome' must be provided in the request body");
-  }
-  return parsed;
+function metricDimensionsOutcome(pool, outcome) {
+  return {
+    [METRICS_DIMENSION_POOL]: pool,
+    [METRIC_DIMENSION_VALUE]: outcome
+  };
+}
+function success2(statusCode, body) {
+  return { statusCode, body: JSON.stringify(body) };
+}
+function failure2(statusCode, message) {
+  return { statusCode, body: JSON.stringify({ message }) };
 }
 async function endAllocation(id, outcome) {
   try {
@@ -14600,12 +14631,6 @@ async function endAllocation(id, outcome) {
     }
     throw e;
   }
-}
-function success(response) {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(response)
-  };
 }
 
 // test/integ/atmosphere.runtime.ts

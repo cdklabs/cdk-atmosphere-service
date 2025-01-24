@@ -2618,9 +2618,10 @@ var require_lib = __commonJS({
 // src/allocate/allocate.lambda.ts
 var allocate_lambda_exports = {};
 __export(allocate_lambda_exports, {
-  METRICS_DIMENSION_POOL: () => METRICS_DIMENSION_POOL,
   METRICS_NAMESPACE: () => METRICS_NAMESPACE,
-  handler: () => handler
+  METRIC_NAME_STATUS_CODE: () => METRIC_NAME_STATUS_CODE,
+  handler: () => handler,
+  metricDimensionsStatusCode: () => metricDimensionsStatusCode
 });
 module.exports = __toCommonJS(allocate_lambda_exports);
 var import_client_sts = require("@aws-sdk/client-sts");
@@ -3301,6 +3302,8 @@ var AllocationLogger = class {
 // src/metrics.ts
 var import_aws_embedded_metrics = __toESM(require_lib());
 var NAMESPACE = "Atmosphere";
+var METRICS_DIMENSION_POOL = "pool";
+var METRIC_DIMENSION_VALUE = "value";
 var RuntimeMetrics = class {
   static namespace(component) {
     return `${NAMESPACE}/${component}`;
@@ -3320,31 +3323,33 @@ var ProxyError = class extends Error {
   }
 };
 var METRICS_NAMESPACE = RuntimeMetrics.namespace("Allocate");
-var METRICS_DIMENSION_POOL = "Pool";
+var METRIC_NAME_STATUS_CODE = "statusCode";
 var clients = RuntimeClients.getOrCreate();
 import_aws_embedded_metrics2.Configuration.namespace = METRICS_NAMESPACE;
 async function handler(event) {
+  console.log("Event:", JSON.stringify(event, null, 2));
   return RuntimeMetrics.scope((metrics) => async () => {
-    console.log("Event:", JSON.stringify(event, null, 2));
     if (!event.body) {
-      return { statusCode: 400, body: JSON.stringify({ message: "Request body not found" }) };
+      return failure(400, "Request body not found");
     }
     const request = JSON.parse(event.body);
     if (!request.pool) {
-      return { statusCode: 400, body: JSON.stringify({ message: "'pool' must be provided in the request body" }) };
+      return failure(400, "'pool' must be provided in the request body");
     }
     if (!request.requester) {
-      return { statusCode: 400, body: JSON.stringify({ message: "'requester' must be provided in the request body" }) };
+      return failure(400, "'requester' must be provided in the request body");
     }
-    metrics.setDimensions({ [METRICS_DIMENSION_POOL]: request.pool });
+    let statusCode;
     try {
       const result = await doHandler(request);
-      metrics.putMetric(`${result.statusCode}`, 1, import_aws_embedded_metrics2.Unit.Count);
+      statusCode = result.statusCode;
       return result;
     } catch (e) {
-      const statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      metrics.putMetric(`${statusCode}`, 1, import_aws_embedded_metrics2.Unit.Count);
-      return { statusCode, body: JSON.stringify({ message: e.message }) };
+      statusCode = e instanceof ProxyError ? e.statusCode : 500;
+      return failure(statusCode, e.message);
+    } finally {
+      metrics.setDimensions(metricDimensionsStatusCode(request.pool, statusCode));
+      metrics.putMetric(METRIC_NAME_STATUS_CODE, 1, import_aws_embedded_metrics2.Unit.Count);
     }
   })();
 }
@@ -3372,14 +3377,23 @@ async function doHandler(request) {
       functionArn: Envars.required(ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV)
     });
     log.info("Done");
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response)
-    };
+    return success(200, response);
   } catch (e) {
     log.error(e);
     throw e;
   }
+}
+function metricDimensionsStatusCode(pool, statusCode) {
+  return {
+    [METRICS_DIMENSION_POOL]: pool,
+    [METRIC_DIMENSION_VALUE]: `${statusCode}`
+  };
+}
+function success(statusCode, body) {
+  return { statusCode, body: JSON.stringify(body) };
+}
+function failure(statusCode, message) {
+  return { statusCode, body: JSON.stringify({ message }) };
 }
 async function acquireEnvironment(allocaionId, pool) {
   const candidates = await clients.configuration.listEnvironments({ pool });
@@ -3441,9 +3455,10 @@ async function grabCredentials(id, environment) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  METRICS_DIMENSION_POOL,
   METRICS_NAMESPACE,
-  handler
+  METRIC_NAME_STATUS_CODE,
+  handler,
+  metricDimensionsStatusCode
 });
 /*! Bundled license information:
 

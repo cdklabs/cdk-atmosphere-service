@@ -121,6 +121,7 @@ export class AtmosphereService extends Construct {
       name: Stack.of(this).stackName,
       config: this.config,
       allocate: this.allocate,
+      deallocate: this.deallocate,
     });
 
   }
