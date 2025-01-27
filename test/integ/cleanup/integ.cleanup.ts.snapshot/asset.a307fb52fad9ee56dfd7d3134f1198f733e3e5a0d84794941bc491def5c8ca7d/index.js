@@ -7316,7 +7316,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail(reason) {
+      function fail2(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -7347,7 +7347,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail,
+                fail2,
                 void 0,
                 this,
                 void 0
@@ -7364,11 +7364,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler7, type, success2, fail2) {
+      Promise2.prototype._passThrough = function(handler7, type, success2, fail3) {
         if (typeof handler7 !== "function") return this.then();
         return this._then(
           success2,
-          fail2,
+          fail3,
           void 0,
           new PassThroughHandlerContext(this, type, handler7),
           void 0
@@ -10774,13 +10774,14 @@ var require_unzip2 = __commonJS({
   }
 });
 
-// test/integ/allocation-timeout/assert.lambda.ts
+// test/integ/cleanup/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
 });
 module.exports = __toCommonJS(assert_lambda_exports);
 var assert2 = __toESM(require("assert"));
+var import_client_s33 = require("@aws-sdk/client-s3");
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -11447,7 +11448,7 @@ var ProxyError = class extends Error {
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const allocationId = uuid();
+  const allocationId = crypto.randomUUID();
   const log = new AllocationLogger({ id: allocationId, component: "allocate" });
   try {
     const request = parseRequestBody(event.body);
@@ -11553,9 +11554,6 @@ async function grabCredentials(id, environment) {
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken
   };
-}
-function uuid() {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16))).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 // src/allocation-timeout/allocation-timeout.lambda.ts
@@ -12281,23 +12279,80 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/allocation-timeout/assert.lambda.ts
+// test/integ/cleanup/assert.lambda.ts
 var clients6 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("ends-allocation-if-active", async (session) => {
+  await Runner.assert("deletes-stack-and-releases-environment", async (session) => {
     const response = await session.runtime.allocate({ pool: "release", requester: "test" });
     const body = JSON.parse(response.body);
-    await session.runtime.allocationTimeout({ allocationId: body.id });
-    const allocation = await clients6.allocations.get(body.id);
-    assert2.ok(allocation.end);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName] = await session.deployStack({ templatePath: "cleanup/stacks/simple.yaml", region });
+    await clients6.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    try {
+      await clients6.environments.get(account, region);
+      assert2.fail("expected environment to be deleted");
+    } catch (err) {
+      assert2.strictEqual(err.constructor.name, "EnvironmentNotFound");
+    }
+    const stack = await session.fetchStack(stackName, region);
+    assert2.ok(!stack);
   });
-  await Runner.assert("no-ops-if-allocation-has-ended", async (session) => {
-    const response = await session.runtime.allocate({ pool: "release", requester: "test", durationSeconds: 30 });
+  await Runner.assert("empties-and-deletes-buckets", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
     const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName, resources] = await session.deployStack({ templatePath: "cleanup/stacks/versioned-bucket.yaml", region });
+    const bucketName = resources.filter((r) => r.ResourceType === "AWS::S3::Bucket").map((r) => r.PhysicalResourceId)[0];
+    const s33 = new import_client_s33.S3({ region });
+    await s33.putObject({ Bucket: bucketName, Key: "one.txt", Body: "one" });
+    await s33.putObject({ Bucket: bucketName, Key: "two.txt", Body: "two" });
+    await s33.deleteObject({ Bucket: bucketName, Key: "two.txt" });
+    await clients6.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 60 });
+    const stack = await session.fetchStack(stackName, region);
+    assert2.ok(!stack);
+    try {
+      await s33.headBucket({ Bucket: bucketName });
+    } catch (err) {
+      assert2.strictEqual(err.name, "NotFound");
+    }
+  });
+  await Runner.assert("disables-termination-protection", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName] = await session.deployStack({ templatePath: "cleanup/stacks/simple.yaml", region, terminationProtection: true });
+    await clients6.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    const stack = await session.fetchStack(stackName, region);
+    assert2.ok(!stack);
+  });
+  await Runner.assert("doesnt-release-a-dirty-environment", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
     await clients6.allocations.end({ id: body.id, outcome: "success" });
-    await session.runtime.allocationTimeout({ allocationId: body.id });
-    const allocation = await clients6.allocations.get(body.id);
-    assert2.strictEqual(allocation.outcome, "success");
+    await clients6.environments.dirty(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    const environment = await clients6.environments.get(account, region);
+    assert2.strictEqual(environment.status, "dirty");
+  });
+  await Runner.assert("marks-environment-dirty-if-fail", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName] = await session.deployStack({ templatePath: "cleanup/stacks/cannot-delete.yaml", region });
+    await clients6.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    const environment = await clients6.environments.get(account, region);
+    assert2.strictEqual(environment.status, "dirty");
+    await session.destroyStack({ stackName, region });
   });
   return SUCCESS_PAYLOAD;
 }

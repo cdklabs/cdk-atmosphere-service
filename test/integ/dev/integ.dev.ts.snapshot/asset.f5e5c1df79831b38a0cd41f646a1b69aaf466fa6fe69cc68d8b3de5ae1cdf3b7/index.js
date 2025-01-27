@@ -10774,16 +10774,22 @@ var require_unzip2 = __commonJS({
   }
 });
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/dev/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
 });
 module.exports = __toCommonJS(assert_lambda_exports);
-var assert2 = __toESM(require("assert"));
 
-// src/cleanup/cleanup.client.ts
-var import_client_ecs = require("@aws-sdk/client-ecs");
+// test/integ/atmosphere.runner.ts
+var assert = __toESM(require("assert"));
+var fs = __toESM(require("fs"));
+var path = __toESM(require("path"));
+var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
+var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
+var import_client_s32 = require("@aws-sdk/client-s3");
+var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
+var unzipper = __toESM(require_unzip2());
 
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
@@ -10819,7 +10825,30 @@ var Envars = class _Envars {
   }
 };
 
+// test/with.ts
+async function env2(envVars, fn) {
+  const originalEnv = { ...process.env };
+  try {
+    Object.entries(envVars).forEach(([key, value]) => {
+      process.env[key] = value;
+    });
+    return await fn();
+  } finally {
+    process.env = originalEnv;
+  }
+}
+
+// test/integ/atmosphere.runtime.ts
+var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
+var import_client_ecs2 = require("@aws-sdk/client-ecs");
+var import_client_lambda2 = require("@aws-sdk/client-lambda");
+
+// src/allocate/allocate.lambda.ts
+var crypto = __toESM(require("crypto"));
+var import_client_sts = require("@aws-sdk/client-sts");
+
 // src/cleanup/cleanup.client.ts
+var import_client_ecs = require("@aws-sdk/client-ecs");
 var CleanupClient = class {
   constructor(props) {
     this.props = props;
@@ -11390,38 +11419,6 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
-// test/integ/atmosphere.runner.ts
-var assert = __toESM(require("assert"));
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
-var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
-var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
-var import_client_s32 = require("@aws-sdk/client-s3");
-var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
-var unzipper = __toESM(require_unzip2());
-
-// test/with.ts
-async function env2(envVars, fn) {
-  const originalEnv = { ...process.env };
-  try {
-    Object.entries(envVars).forEach(([key, value]) => {
-      process.env[key] = value;
-    });
-    return await fn();
-  } finally {
-    process.env = originalEnv;
-  }
-}
-
-// test/integ/atmosphere.runtime.ts
-var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
-var import_client_ecs2 = require("@aws-sdk/client-ecs");
-var import_client_lambda2 = require("@aws-sdk/client-lambda");
-
-// src/allocate/allocate.lambda.ts
-var crypto = __toESM(require("crypto"));
-var import_client_sts = require("@aws-sdk/client-sts");
-
 // src/logging.ts
 var AllocationLogger = class {
   constructor(props) {
@@ -11447,7 +11444,7 @@ var ProxyError = class extends Error {
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const allocationId = uuid();
+  const allocationId = crypto.randomUUID();
   const log = new AllocationLogger({ id: allocationId, component: "allocate" });
   try {
     const request = parseRequestBody(event.body);
@@ -11553,9 +11550,6 @@ async function grabCredentials(id, environment) {
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken
   };
-}
-function uuid() {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16))).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 // src/allocation-timeout/allocation-timeout.lambda.ts
@@ -12281,31 +12275,11 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/deallocate/assert.lambda.ts
-var clients6 = RuntimeClients.getOrCreate();
+// test/integ/dev/assert.lambda.ts
 async function handler6(_) {
-  await Runner.assert("creates-right-resources", async (session) => {
-    const allocateResponse = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    const account = allocationResponseBody.environment.account;
-    const region = allocationResponseBody.environment.region;
-    const deallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(deallocateResponse.status, 200);
-    const environment = await clients6.environments.get(account, region);
-    assert2.strictEqual(environment.status, "cleaning");
-    const allocation = await clients6.allocations.get(allocationResponseBody.id);
-    assert2.ok(allocation.end);
-    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
-    assert2.ok(cleanupTimeoutSchedule);
+  return Runner.assert("default", async () => {
+    return;
   });
-  await Runner.assert("is-idempotent", async (session) => {
-    const allocateResponse = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
-    const secondDeallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(secondDeallocateResponse.status, 200);
-  });
-  return SUCCESS_PAYLOAD;
 }
 if (Runner.isLocal()) {
   void handler6({});

@@ -7316,7 +7316,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail2(reason) {
+      function fail(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -7347,7 +7347,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail2,
+                fail,
                 void 0,
                 this,
                 void 0
@@ -7364,11 +7364,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler7, type, success2, fail3) {
+      Promise2.prototype._passThrough = function(handler7, type, success2, fail2) {
         if (typeof handler7 !== "function") return this.then();
         return this._then(
           success2,
-          fail3,
+          fail2,
           void 0,
           new PassThroughHandlerContext(this, type, handler7),
           void 0
@@ -10774,7 +10774,7 @@ var require_unzip2 = __commonJS({
   }
 });
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
@@ -11447,7 +11447,7 @@ var ProxyError = class extends Error {
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const allocationId = uuid();
+  const allocationId = crypto.randomUUID();
   const log = new AllocationLogger({ id: allocationId, component: "allocate" });
   try {
     const request = parseRequestBody(event.body);
@@ -11553,9 +11553,6 @@ async function grabCredentials(id, environment) {
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken
   };
-}
-function uuid() {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16))).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 // src/allocation-timeout/allocation-timeout.lambda.ts
@@ -12281,48 +12278,26 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var clients6 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("marks-dirty-when-environment-is-still-cleaning", async (session) => {
+  await Runner.assert("creates-the-right-resources", async (session) => {
     const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 200);
     const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    await clients6.environments.cleaning(body.id, account, region);
-    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
-    const environment = await clients6.environments.get(account, region);
-    assert2.strictEqual(environment.status, "dirty");
-  });
-  await Runner.assert("no-ops-when-environment-is-already-released", async (session) => {
-    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    await clients6.environments.cleaning(body.id, account, region);
-    await clients6.environments.release(body.id, account, region);
-    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
-    try {
-      await clients6.environments.get(account, region);
-      assert2.fail("expected environment to be deleted");
-    } catch (err) {
-      assert2.strictEqual(err.constructor.name, "EnvironmentNotFound");
-    }
-  });
-  await Runner.assert("no-ops-when-environment-has-been-reallocated", async (session) => {
-    const allocateResponse1 = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(allocateResponse1.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const allocationId = body.id;
-    await clients6.environments.cleaning(allocationId, account, region);
-    await clients6.environments.release(allocationId, account, region);
-    const allocateResponse2 = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const allocateResponseBody2 = JSON.parse(allocateResponse2.body);
-    await session.runtime.cleanupTimeout({ allocationId, account, region });
-    const environment = await clients6.environments.get(account, region);
+    const environment = await clients6.environments.get(body.environment.account, body.environment.region);
     assert2.strictEqual(environment.status, "in-use");
-    assert2.strictEqual(environment.allocation, allocateResponseBody2.id);
+    assert2.strictEqual(environment.allocation, body.id);
+    const allocation = await clients6.allocations.get(environment.allocation);
+    assert2.strictEqual(allocation.account, body.environment.account);
+    assert2.strictEqual(allocation.region, body.environment.region);
+    const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
+    assert2.ok(timeoutSchedule);
+  });
+  await Runner.assert("responds-with-locked-when-no-environments-are-available", async (session) => {
+    await session.runtime.allocate({ pool: "release", requester: "test" });
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 423);
   });
   return SUCCESS_PAYLOAD;
 }

@@ -669,7 +669,7 @@ var ProxyError = class extends Error {
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const allocationId = uuid();
+  const allocationId = crypto.randomUUID();
   const log = new AllocationLogger({ id: allocationId, component: "allocate" });
   try {
     const request = parseRequestBody(event.body);
@@ -775,9 +775,6 @@ async function grabCredentials(id, environment) {
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken
   };
-}
-function uuid() {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16))).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
