@@ -7,7 +7,8 @@ import { Cleanup } from '../cleanup';
 import * as envars from '../envars';
 import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
-import { METRIC_NAME_OUTCOME, metricDimensionsOutcome, METRICS_NAMESPACE } from './deallocate.lambda';
+import { METRIC_DIMENSION_OUTCOME, METRIC_DIMENSION_STATUS_CODE, METRIC_NAME } from './deallocate.lambda';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
 
 /**
  * Properties for `Deallocate`.
@@ -75,8 +76,24 @@ export class Deallocate extends Construct {
 
   public metricOutcome(pool: string, outcome: string) {
     return new cloudwatch.Metric({
-      metricName: METRIC_NAME_OUTCOME,
-      dimensionsMap: metricDimensionsOutcome(pool, outcome),
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_OUTCOME]: outcome,
+      },
+      namespace: METRICS_NAMESPACE,
+      statistic: 'sum',
+      period: Duration.minutes(5),
+    });
+  }
+
+  public metricStatusCode(pool: string, statusCode: number) {
+    return new cloudwatch.Metric({
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_STATUS_CODE]: `${statusCode}`,
+      },
       namespace: METRICS_NAMESPACE,
       statistic: 'sum',
       period: Duration.minutes(5),

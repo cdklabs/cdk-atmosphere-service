@@ -858,7 +858,14 @@
                         "path": "atmosphere-integ-dev/Atmosphere/Cleanup/Cluster/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
-                          "aws:cdk:cloudformation:props": {}
+                          "aws:cdk:cloudformation:props": {
+                            "clusterSettings": [
+                              {
+                                "name": "containerInsights",
+                                "value": "enabled"
+                              }
+                            ]
+                          }
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
@@ -1057,7 +1064,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c302dd6b410e4c8e7c1fce78e90a584cdf3cb3baa7947c59c3bb58d8577c453b"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:ecc5b10eb740e6cd26a5621581c88c4cbeee8b1f54407f8b16cdcaa68187bb3d"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1094,6 +1101,10 @@
                                   {
                                     "name": "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY",
                                     "value": "configuration.json"
+                                  },
+                                  {
+                                    "name": "AWS_EMF_ENVIRONMENT",
+                                    "value": "Local"
                                   }
                                 ]
                               }
@@ -1296,9 +1307,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2157,7 +2168,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "0fb41da88806002f4b084bc1803379f598c9bd00204306d7593514845e5fa2f1.zip"
+                              "s3Key": "34c6892b9d3e6b040c563088330fdaeb92e6f5bd409b79e964559909641e67b7.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -2221,9 +2232,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2449,7 +2460,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c558a156b0539be11deeb108f93dce87f1f6c3f04f09aaddcf6a5d2e340da36f.zip"
+                              "s3Key": "0e7ca2b80efee91dea2893135a6dba0f9929dff5405486a2bd7b28ce5bf40c71.zip"
                             },
                             "description": "src/deallocate/deallocate.lambda.ts",
                             "environment": {
@@ -3054,31 +3065,27 @@
                               "Fn::Join": [
                                 "",
                                 [
-                                  "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# Allocate <> Status Code | Pool: release\\n\\nTracks the rate of environment allocation requests from the 'release' pool.\\nEach series represents different requested capabilities.\"}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":2,\"properties\":{\"view\":\"timeSeries\",\"title\":\"200 OK | release\",\"region\":\"",
+                                  "{\"widgets\":[{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Allocate Response\",\"region\":\"",
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"statusCode\",\"pool\",\"release\",\"value\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"any\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":8,\"properties\":{\"view\":\"timeSeries\",\"title\":\"423 Locked | release\",\"region\":\"",
+                                  "\",\"metrics\":[[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"200 OK\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"423\",{\"color\":\"#FFA500\",\"label\":\"423 Locked\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"400\",{\"color\":\"#FFD700\",\"label\":\"400 Bad Request\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"500\",{\"color\":\"#FF0000\",\"label\":\"500 Error\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Deallocate Response\",\"region\":\"",
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"statusCode\",\"pool\",\"release\",\"value\",\"423\",{\"color\":\"#FFA500\",\"label\":\"any\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":14,\"properties\":{\"view\":\"timeSeries\",\"title\":\"400 Bad Request | release\",\"region\":\"",
+                                  "\",\"metrics\":[[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"200 OK\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"400\",{\"color\":\"#FFD700\",\"label\":\"400 Bad Request\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"500\",{\"color\":\"#FF0000\",\"label\":\"500 Error\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Allocation Outcome\",\"region\":\"",
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"statusCode\",\"pool\",\"release\",\"value\",\"400\",{\"color\":\"#FFD700\",\"label\":\"any\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":20,\"properties\":{\"view\":\"timeSeries\",\"title\":\"500 Error | release\",\"region\":\"",
+                                  "\",\"metrics\":[[\"Atmosphere\",\"allocate\",\"outcome\",\"success\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"success\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"outcome\",\"failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"allocate\",\"outcome\",\"timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":18,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cleanup Exit Code\",\"region\":\"",
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\",\"metrics\":[[\"Atmosphere/Allocate\",\"statusCode\",\"pool\",\"release\",\"value\",\"500\",{\"color\":\"#FF0000\",\"label\":\"any\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0}}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":26,\"properties\":{\"markdown\":\"# Deallocate <> Outcome | Pool: release\"}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":27,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Success | release\",\"region\":\"",
+                                  "\",\"metrics\":[[\"Atmosphere\",\"cleanup\",\"exitCode\",\"0\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"0\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"cleanup\",\"exitCode\",\"1\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"1\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":24,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cleanup Outcome\",\"region\":\"",
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\",\"metrics\":[[\"Atmosphere/Deallocate\",\"outcome\",\"pool\",\"release\",\"value\",\"success\",{\"color\":\"#4CAF50\",\"label\":\"any\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":33,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Failure | release\",\"region\":\"",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  "\",\"metrics\":[[\"Atmosphere/Deallocate\",\"outcome\",\"pool\",\"release\",\"value\",\"failure\",{\"color\":\"#4CAF50\",\"label\":\"any\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0}}}}]}"
+                                  "\",\"metrics\":[[\"Atmosphere\",\"cleanup\",\"outcome\",\"clean\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"clean\",\"stat\":\"Sum\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"dirty\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"dirty\",\"stat\":\"Sum\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"}]}]}"
                                 ]
                               ]
                             }
@@ -3691,7 +3698,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "87c2d9f99c624f0da266f8d08d493142869c4dded49008ab629506c6bc350a7c.zip"
+                      "s3Key": "3cbd488a8bb0cbe5032e08fdf08fa56857743ff561f78d04068a181410ad636a.zip"
                     },
                     "description": "test/integ/dev/assert.lambda.ts",
                     "environment": {

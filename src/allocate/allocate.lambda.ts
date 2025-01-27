@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { STS } from '@aws-sdk/client-sts';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Configuration, Unit } from 'aws-embedded-metrics';
+import { Unit } from 'aws-embedded-metrics';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,7 @@ import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
-import { RuntimeMetrics, METRICS_DIMENSION_POOL, METRIC_DIMENSION_VALUE } from '../metrics';
+import { RuntimeMetrics, AccumulatingDimensionMetricsLogger } from '../metrics';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
@@ -46,53 +46,44 @@ export interface AllocateResponse {
   readonly durationSeconds: number;
 }
 
-export const METRICS_NAMESPACE = RuntimeMetrics.namespace('Allocate');
-export const METRIC_NAME_STATUS_CODE = 'statusCode';
+export const METRIC_NAME = 'allocate';
+export const METRIC_DIMENSION_STATUS_CODE = 'statusCode';
 
 const clients = RuntimeClients.getOrCreate();
 
-Configuration.namespace = METRICS_NAMESPACE;
-
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  console.log('Event:', JSON.stringify(event, null, 2));
 
-  return RuntimeMetrics.scope((metrics) => async () => {
-
-    if (!event.body) {
-      return failure(400, 'Request body not found');
-    }
-
-    const request = JSON.parse(event.body);
-    if (!request.pool) {
-      return failure(400, '\'pool\' must be provided in the request body');
-    }
-    if (!request.requester) {
-      return failure(400, '\'requester\' must be provided in the request body');
-    }
+  return RuntimeMetrics.scoped(async (metrics) => {
 
     let statusCode;
     try {
-      const result = await doHandler(request);
+      const result = await doHandler(event, metrics);
       statusCode = result.statusCode;
       return result;
     } catch (e: any) {
       statusCode = e instanceof ProxyError ? e.statusCode : 500;
       return failure(statusCode, e.message);
     } finally {
-      metrics.setDimensions(metricDimensionsStatusCode(request.pool, statusCode!));
-      metrics.putMetric(METRIC_NAME_STATUS_CODE, 1, Unit.Count);
+      metrics.addDimension(METRIC_DIMENSION_STATUS_CODE, `${statusCode}`);
+      metrics.putMetric(METRIC_NAME, 1, Unit.Count);
     }
 
-  })();
+  });
 
 };
 
-async function doHandler(request: AllocateRequest): Promise<APIGatewayProxyResult> {
+async function doHandler(event: APIGatewayProxyEvent, metrics: AccumulatingDimensionMetricsLogger): Promise<APIGatewayProxyResult> {
+  console.log('Event:', JSON.stringify(event, null, 2));
 
   const allocationId = uuidv4();
   const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
 
   try {
+
+    console.log('Parsing request body');
+    const request = parseRequestBody(event.body);
+
+    metrics.setPool(request.pool);
 
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
@@ -130,19 +121,29 @@ async function doHandler(request: AllocateRequest): Promise<APIGatewayProxyResul
   }
 }
 
-export function metricDimensionsStatusCode(pool: string, statusCode: number) {
-  return {
-    [METRICS_DIMENSION_POOL]: pool,
-    [METRIC_DIMENSION_VALUE]: `${statusCode}`,
-  };
-}
-
 function success(statusCode: number, body: any) {
   return { statusCode: statusCode, body: JSON.stringify(body) };
 }
 
 function failure(statusCode: number, message: string) {
   return { statusCode: statusCode, body: JSON.stringify({ message }) };
+}
+
+function parseRequestBody(body: string | null): AllocateRequest {
+
+  if (!body) {
+    throw new ProxyError(400, 'Request body not found');
+  }
+
+  const parsed = JSON.parse(body);
+  if (!parsed.pool) {
+    throw new ProxyError(400, '\'pool\' must be provided in the request body');
+  }
+  if (!parsed.requester) {
+    throw new ProxyError(400, '\'requester\' must be provided in the request body');
+  }
+
+  return parsed;
 }
 
 async function acquireEnvironment(allocaionId: string, pool: string): Promise<Environment> {

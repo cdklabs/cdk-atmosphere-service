@@ -5,8 +5,9 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { AllocateFunction } from './allocate-function';
 import { Configuration } from '../config';
-import { METRIC_NAME_STATUS_CODE, metricDimensionsStatusCode, METRICS_NAMESPACE } from './allocate.lambda';
+import { METRIC_DIMENSION_STATUS_CODE, METRIC_NAME } from './allocate.lambda';
 import * as envars from '../envars';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
 import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
 
@@ -78,8 +79,11 @@ export class Allocate extends Construct {
 
   public metricStatusCode(pool: string, statusCode: number) {
     return new cloudwatch.Metric({
-      metricName: METRIC_NAME_STATUS_CODE,
-      dimensionsMap: metricDimensionsStatusCode(pool, statusCode),
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_STATUS_CODE]: `${statusCode}`,
+      },
       namespace: METRICS_NAMESPACE,
       statistic: 'sum',
       period: Duration.minutes(5),

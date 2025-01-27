@@ -139,8 +139,8 @@ var require_Configuration = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var EnvironmentConfigurationProvider_1 = require_EnvironmentConfigurationProvider();
-    var Configuration2 = new EnvironmentConfigurationProvider_1.EnvironmentConfigurationProvider().getConfiguration();
-    exports2.default = Configuration2;
+    var Configuration = new EnvironmentConfigurationProvider_1.EnvironmentConfigurationProvider().getConfiguration();
+    exports2.default = Configuration;
   }
 });
 
@@ -169,36 +169,36 @@ var require_Unit = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Unit = void 0;
-    var Unit2;
-    (function(Unit3) {
-      Unit3["Seconds"] = "Seconds";
-      Unit3["Microseconds"] = "Microseconds";
-      Unit3["Milliseconds"] = "Milliseconds";
-      Unit3["Bytes"] = "Bytes";
-      Unit3["Kilobytes"] = "Kilobytes";
-      Unit3["Megabytes"] = "Megabytes";
-      Unit3["Gigabytes"] = "Gigabytes";
-      Unit3["Terabytes"] = "Terabytes";
-      Unit3["Bits"] = "Bits";
-      Unit3["Kilobits"] = "Kilobits";
-      Unit3["Megabits"] = "Megabits";
-      Unit3["Gigabits"] = "Gigabits";
-      Unit3["Terabits"] = "Terabits";
-      Unit3["Percent"] = "Percent";
-      Unit3["Count"] = "Count";
-      Unit3["BytesPerSecond"] = "Bytes/Second";
-      Unit3["KilobytesPerSecond"] = "Kilobytes/Second";
-      Unit3["MegabytesPerSecond"] = "Megabytes/Second";
-      Unit3["GigabytesPerSecond"] = "Gigabytes/Second";
-      Unit3["TerabytesPerSecond"] = "Terabytes/Second";
-      Unit3["BitsPerSecond"] = "Bits/Second";
-      Unit3["KilobitsPerSecond"] = "Kilobits/Second";
-      Unit3["MegabitsPerSecond"] = "Megabits/Second";
-      Unit3["GigabitsPerSecond"] = "Gigabits/Second";
-      Unit3["TerabitsPerSecond"] = "Terabits/Second";
-      Unit3["CountPerSecond"] = "Count/Second";
-      Unit3["None"] = "None";
-    })(Unit2 = exports2.Unit || (exports2.Unit = {}));
+    var Unit3;
+    (function(Unit4) {
+      Unit4["Seconds"] = "Seconds";
+      Unit4["Microseconds"] = "Microseconds";
+      Unit4["Milliseconds"] = "Milliseconds";
+      Unit4["Bytes"] = "Bytes";
+      Unit4["Kilobytes"] = "Kilobytes";
+      Unit4["Megabytes"] = "Megabytes";
+      Unit4["Gigabytes"] = "Gigabytes";
+      Unit4["Terabytes"] = "Terabytes";
+      Unit4["Bits"] = "Bits";
+      Unit4["Kilobits"] = "Kilobits";
+      Unit4["Megabits"] = "Megabits";
+      Unit4["Gigabits"] = "Gigabits";
+      Unit4["Terabits"] = "Terabits";
+      Unit4["Percent"] = "Percent";
+      Unit4["Count"] = "Count";
+      Unit4["BytesPerSecond"] = "Bytes/Second";
+      Unit4["KilobytesPerSecond"] = "Kilobytes/Second";
+      Unit4["MegabytesPerSecond"] = "Megabytes/Second";
+      Unit4["GigabytesPerSecond"] = "Gigabytes/Second";
+      Unit4["TerabytesPerSecond"] = "Terabytes/Second";
+      Unit4["BitsPerSecond"] = "Bits/Second";
+      Unit4["KilobitsPerSecond"] = "Kilobits/Second";
+      Unit4["MegabitsPerSecond"] = "Megabits/Second";
+      Unit4["GigabitsPerSecond"] = "Gigabits/Second";
+      Unit4["TerabitsPerSecond"] = "Terabits/Second";
+      Unit4["CountPerSecond"] = "Count/Second";
+      Unit4["None"] = "None";
+    })(Unit3 = exports2.Unit || (exports2.Unit = {}));
   }
 });
 
@@ -614,7 +614,7 @@ var require_MetricsLogger = __commonJS({
     exports2.MetricsLogger = void 0;
     var Configuration_1 = __importDefault(require_Configuration());
     var MetricsContext_1 = require_MetricsContext();
-    var MetricsLogger3 = class _MetricsLogger {
+    var MetricsLogger2 = class _MetricsLogger {
       constructor(resolveEnvironment, context) {
         this.configureContextForEnvironment = (context2, environment) => {
           const defaultDimensions = {
@@ -732,7 +732,7 @@ var require_MetricsLogger = __commonJS({
         return new _MetricsLogger(this.resolveEnvironment, this.context.createCopyWithContext());
       }
     };
-    exports2.MetricsLogger = MetricsLogger3;
+    exports2.MetricsLogger = MetricsLogger2;
   }
 });
 
@@ -2511,11 +2511,11 @@ var require_MetricsLoggerFactory = __commonJS({
     var __1 = require_lib();
     var EnvironmentDetector_1 = require_EnvironmentDetector();
     var MetricsContext_1 = require_MetricsContext();
-    var createMetricsLogger = () => {
+    var createMetricsLogger2 = () => {
       const context = MetricsContext_1.MetricsContext.empty();
       return new __1.MetricsLogger(EnvironmentDetector_1.resolveEnvironment, context);
     };
-    exports2.createMetricsLogger = createMetricsLogger;
+    exports2.createMetricsLogger = createMetricsLogger2;
   }
 });
 
@@ -2554,7 +2554,7 @@ var require_MetricScope = __commonJS({
     exports2.metricScope = void 0;
     var Logger_1 = require_Logger();
     var MetricsLoggerFactory_1 = require_MetricsLoggerFactory();
-    var metricScope2 = (handler2) => {
+    var metricScope = (handler2) => {
       const wrappedHandler = (...args) => __awaiter(void 0, void 0, void 0, function* () {
         const metrics = (0, MetricsLoggerFactory_1.createMetricsLogger)();
         try {
@@ -2569,7 +2569,7 @@ var require_MetricScope = __commonJS({
       });
       return wrappedHandler;
     };
-    exports2.metricScope = metricScope2;
+    exports2.metricScope = metricScope;
   }
 });
 
@@ -2618,11 +2618,11 @@ var require_lib = __commonJS({
 // src/deallocate/deallocate.lambda.ts
 var deallocate_lambda_exports = {};
 __export(deallocate_lambda_exports, {
-  METRICS_NAMESPACE: () => METRICS_NAMESPACE,
-  METRIC_NAME_OUTCOME: () => METRIC_NAME_OUTCOME,
+  METRIC_DIMENSION_OUTCOME: () => METRIC_DIMENSION_OUTCOME,
+  METRIC_DIMENSION_STATUS_CODE: () => METRIC_DIMENSION_STATUS_CODE,
+  METRIC_NAME: () => METRIC_NAME,
   doHandler: () => doHandler,
-  handler: () => handler,
-  metricDimensionsOutcome: () => metricDimensionsOutcome
+  handler: () => handler
 });
 module.exports = __toCommonJS(deallocate_lambda_exports);
 var import_aws_embedded_metrics2 = __toESM(require_lib());
@@ -3250,15 +3250,38 @@ var AllocationLogger = class {
 
 // src/metrics.ts
 var import_aws_embedded_metrics = __toESM(require_lib());
-var NAMESPACE = "Atmosphere";
-var METRICS_DIMENSION_POOL = "pool";
-var METRIC_DIMENSION_VALUE = "value";
+var METRICS_NAMESPACE = "Atmosphere";
+var METRIC_DIMENSION_POOL = "pool";
 var RuntimeMetrics = class {
-  static namespace(component) {
-    return `${NAMESPACE}/${component}`;
+  static async scoped(handler2) {
+    const metrics = new AccumulatingDimensionMetricsLogger((0, import_aws_embedded_metrics.createMetricsLogger)());
+    metrics.addDimension(METRIC_DIMENSION_POOL, "UNKNOWN");
+    try {
+      return await handler2(metrics);
+    } finally {
+      await metrics.flush();
+    }
   }
-  static scope(handler2) {
-    return (0, import_aws_embedded_metrics.metricScope)(handler2);
+};
+var AccumulatingDimensionMetricsLogger = class {
+  constructor(metrics) {
+    this.metrics = metrics;
+    this.dimensions = {};
+    metrics.setNamespace(METRICS_NAMESPACE);
+    metrics.setDimensions({});
+  }
+  putMetric(key, value, unit) {
+    this.metrics.setDimensions(this.dimensions);
+    this.metrics.putMetric(key, value, unit);
+  }
+  setPool(pool) {
+    this.addDimension(METRIC_DIMENSION_POOL, pool);
+  }
+  addDimension(key, value) {
+    this.dimensions[key] = value;
+  }
+  async flush() {
+    await this.metrics.flush();
   }
 };
 
@@ -3271,44 +3294,45 @@ var ProxyError = class extends Error {
     this.message = message;
   }
 };
-var METRICS_NAMESPACE = RuntimeMetrics.namespace("Deallocate");
-var METRIC_NAME_OUTCOME = "outcome";
+var METRIC_NAME = "allocate";
+var METRIC_DIMENSION_STATUS_CODE = "statusCode";
+var METRIC_DIMENSION_OUTCOME = "outcome";
 var clients = RuntimeClients.getOrCreate();
-import_aws_embedded_metrics2.Configuration.namespace = METRICS_NAMESPACE;
 async function handler(event) {
-  console.log("Event:", JSON.stringify(event, null, 2));
-  return RuntimeMetrics.scope((metrics) => async () => {
-    const id = event.pathParameters?.id;
-    if (!id) {
-      return failure(400, "Missing 'id' path parameter");
-    }
-    if (!event.body) {
-      return failure(400, "Request body not found");
-    }
-    const request = JSON.parse(event.body);
-    if (!request.outcome) {
-      return failure(400, "'outcome' must be provided in the request body");
-    }
+  return RuntimeMetrics.scoped(async (metrics) => {
+    let statusCode;
     try {
-      return await doHandler(id, request, metrics);
+      const result = await doHandler(event, metrics);
+      statusCode = result.statusCode;
+      return result;
     } catch (e) {
-      const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+      statusCode = e instanceof ProxyError ? e.statusCode : 500;
       return failure(statusCode, e.message);
+    } finally {
+      metrics.addDimension(METRIC_DIMENSION_STATUS_CODE, `${statusCode}`);
+      metrics.putMetric(METRIC_NAME, 1, import_aws_embedded_metrics2.Unit.Count);
     }
-  })();
+  });
 }
-async function doHandler(allocationId, request, metrics) {
-  const log = new AllocationLogger({ id: allocationId, component: "deallocate" });
+async function doHandler(event, metrics) {
+  console.log("Event:", JSON.stringify(event, null, 2));
+  const id = (event.pathParameters ?? {}).id;
+  if (!id) {
+    throw new ProxyError(400, "Missing 'id' path parameter");
+  }
+  const log = new AllocationLogger({ id, component: "deallocate" });
   try {
+    console.log("Parsing request body");
+    const request = parseRequestBody(event.body);
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
     if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
       throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
     }
     const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
-    const allocation = await endAllocation(allocationId, request.outcome);
-    metrics.setDimensions(metricDimensionsOutcome(allocation.pool, request.outcome));
-    metrics.putMetric(METRIC_NAME_OUTCOME, 1, import_aws_embedded_metrics2.Unit.Count);
+    const allocation = await endAllocation(id, request.outcome);
+    metrics.setPool(allocation.pool);
+    metrics.addDimension(METRIC_DIMENSION_OUTCOME, request.outcome);
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
     await clients.scheduler.scheduleCleanupTimeout({
       allocationId: allocation.id,
@@ -3318,7 +3342,7 @@ async function doHandler(allocationId, request, metrics) {
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await clients.environments.cleaning(allocationId, allocation.account, allocation.region);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
     const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
     return success(200, { cleanupDurationSeconds });
@@ -3331,17 +3355,21 @@ async function doHandler(allocationId, request, metrics) {
     throw e;
   }
 }
-function metricDimensionsOutcome(pool, outcome) {
-  return {
-    [METRICS_DIMENSION_POOL]: pool,
-    [METRIC_DIMENSION_VALUE]: outcome
-  };
-}
 function success(statusCode, body) {
   return { statusCode, body: JSON.stringify(body) };
 }
 function failure(statusCode, message) {
   return { statusCode, body: JSON.stringify({ message }) };
+}
+function parseRequestBody(body) {
+  if (!body) {
+    throw new ProxyError(400, "Request body not found");
+  }
+  const parsed = JSON.parse(body);
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
+  }
+  return parsed;
 }
 async function endAllocation(id, outcome) {
   try {
@@ -3355,11 +3383,11 @@ async function endAllocation(id, outcome) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  METRICS_NAMESPACE,
-  METRIC_NAME_OUTCOME,
+  METRIC_DIMENSION_OUTCOME,
+  METRIC_DIMENSION_STATUS_CODE,
+  METRIC_NAME,
   doHandler,
-  handler,
-  metricDimensionsOutcome
+  handler
 });
 /*! Bundled license information:
 

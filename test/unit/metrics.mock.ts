@@ -1,24 +1,24 @@
 import { MetricsLogger } from 'aws-embedded-metrics';
-import { RuntimeMetrics } from '../../src/metrics';
+import { AccumulatingDimensionMetricsLogger, RuntimeMetrics } from '../../src/metrics';
 
 export class MetricsMock {
 
   public static mock(): MetricsLogger {
 
-    const mock = {
+    const mock = new AccumulatingDimensionMetricsLogger({
       putMetric: jest.fn(),
       putDimensions: jest.fn(),
       setDimensions: jest.fn(),
       setProperty: jest.fn(),
+      setNamespace: jest.fn(),
       flush: jest.fn(),
-    };
+    } as any);
 
-    function scope<T, U extends readonly unknown[]>(handler: (m: MetricsLogger) => (...args: U) => T | Promise<T>):
-    (...args: U) => T | Promise<T> {
-      return handler(mock as unknown as MetricsLogger);
+    async function scoped<T>(handler: (m: AccumulatingDimensionMetricsLogger) => Promise<T>) {
+      return handler(mock);
     }
 
-    jest.spyOn(RuntimeMetrics, 'scope').mockImplementation(scope);
+    jest.spyOn(RuntimeMetrics, 'scoped').mockImplementation(scoped);
 
     return mock as any;
   }

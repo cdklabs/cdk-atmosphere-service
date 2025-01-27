@@ -139,8 +139,8 @@ var require_Configuration = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var EnvironmentConfigurationProvider_1 = require_EnvironmentConfigurationProvider();
-    var Configuration2 = new EnvironmentConfigurationProvider_1.EnvironmentConfigurationProvider().getConfiguration();
-    exports2.default = Configuration2;
+    var Configuration = new EnvironmentConfigurationProvider_1.EnvironmentConfigurationProvider().getConfiguration();
+    exports2.default = Configuration;
   }
 });
 
@@ -169,36 +169,36 @@ var require_Unit = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Unit = void 0;
-    var Unit2;
-    (function(Unit3) {
-      Unit3["Seconds"] = "Seconds";
-      Unit3["Microseconds"] = "Microseconds";
-      Unit3["Milliseconds"] = "Milliseconds";
-      Unit3["Bytes"] = "Bytes";
-      Unit3["Kilobytes"] = "Kilobytes";
-      Unit3["Megabytes"] = "Megabytes";
-      Unit3["Gigabytes"] = "Gigabytes";
-      Unit3["Terabytes"] = "Terabytes";
-      Unit3["Bits"] = "Bits";
-      Unit3["Kilobits"] = "Kilobits";
-      Unit3["Megabits"] = "Megabits";
-      Unit3["Gigabits"] = "Gigabits";
-      Unit3["Terabits"] = "Terabits";
-      Unit3["Percent"] = "Percent";
-      Unit3["Count"] = "Count";
-      Unit3["BytesPerSecond"] = "Bytes/Second";
-      Unit3["KilobytesPerSecond"] = "Kilobytes/Second";
-      Unit3["MegabytesPerSecond"] = "Megabytes/Second";
-      Unit3["GigabytesPerSecond"] = "Gigabytes/Second";
-      Unit3["TerabytesPerSecond"] = "Terabytes/Second";
-      Unit3["BitsPerSecond"] = "Bits/Second";
-      Unit3["KilobitsPerSecond"] = "Kilobits/Second";
-      Unit3["MegabitsPerSecond"] = "Megabits/Second";
-      Unit3["GigabitsPerSecond"] = "Gigabits/Second";
-      Unit3["TerabitsPerSecond"] = "Terabits/Second";
-      Unit3["CountPerSecond"] = "Count/Second";
-      Unit3["None"] = "None";
-    })(Unit2 = exports2.Unit || (exports2.Unit = {}));
+    var Unit3;
+    (function(Unit4) {
+      Unit4["Seconds"] = "Seconds";
+      Unit4["Microseconds"] = "Microseconds";
+      Unit4["Milliseconds"] = "Milliseconds";
+      Unit4["Bytes"] = "Bytes";
+      Unit4["Kilobytes"] = "Kilobytes";
+      Unit4["Megabytes"] = "Megabytes";
+      Unit4["Gigabytes"] = "Gigabytes";
+      Unit4["Terabytes"] = "Terabytes";
+      Unit4["Bits"] = "Bits";
+      Unit4["Kilobits"] = "Kilobits";
+      Unit4["Megabits"] = "Megabits";
+      Unit4["Gigabits"] = "Gigabits";
+      Unit4["Terabits"] = "Terabits";
+      Unit4["Percent"] = "Percent";
+      Unit4["Count"] = "Count";
+      Unit4["BytesPerSecond"] = "Bytes/Second";
+      Unit4["KilobytesPerSecond"] = "Kilobytes/Second";
+      Unit4["MegabytesPerSecond"] = "Megabytes/Second";
+      Unit4["GigabytesPerSecond"] = "Gigabytes/Second";
+      Unit4["TerabytesPerSecond"] = "Terabytes/Second";
+      Unit4["BitsPerSecond"] = "Bits/Second";
+      Unit4["KilobitsPerSecond"] = "Kilobits/Second";
+      Unit4["MegabitsPerSecond"] = "Megabits/Second";
+      Unit4["GigabitsPerSecond"] = "Gigabits/Second";
+      Unit4["TerabitsPerSecond"] = "Terabits/Second";
+      Unit4["CountPerSecond"] = "Count/Second";
+      Unit4["None"] = "None";
+    })(Unit3 = exports2.Unit || (exports2.Unit = {}));
   }
 });
 
@@ -2511,11 +2511,11 @@ var require_MetricsLoggerFactory = __commonJS({
     var __1 = require_lib();
     var EnvironmentDetector_1 = require_EnvironmentDetector();
     var MetricsContext_1 = require_MetricsContext();
-    var createMetricsLogger = () => {
+    var createMetricsLogger2 = () => {
       const context = MetricsContext_1.MetricsContext.empty();
       return new __1.MetricsLogger(EnvironmentDetector_1.resolveEnvironment, context);
     };
-    exports2.createMetricsLogger = createMetricsLogger;
+    exports2.createMetricsLogger = createMetricsLogger2;
   }
 });
 
@@ -2554,7 +2554,7 @@ var require_MetricScope = __commonJS({
     exports2.metricScope = void 0;
     var Logger_1 = require_Logger();
     var MetricsLoggerFactory_1 = require_MetricsLoggerFactory();
-    var metricScope2 = (handler2) => {
+    var metricScope = (handler2) => {
       const wrappedHandler = (...args) => __awaiter(void 0, void 0, void 0, function* () {
         const metrics = (0, MetricsLoggerFactory_1.createMetricsLogger)();
         try {
@@ -2569,7 +2569,7 @@ var require_MetricScope = __commonJS({
       });
       return wrappedHandler;
     };
-    exports2.metricScope = metricScope2;
+    exports2.metricScope = metricScope;
   }
 });
 
@@ -2618,10 +2618,9 @@ var require_lib = __commonJS({
 // src/allocate/allocate.lambda.ts
 var allocate_lambda_exports = {};
 __export(allocate_lambda_exports, {
-  METRICS_NAMESPACE: () => METRICS_NAMESPACE,
-  METRIC_NAME_STATUS_CODE: () => METRIC_NAME_STATUS_CODE,
-  handler: () => handler,
-  metricDimensionsStatusCode: () => metricDimensionsStatusCode
+  METRIC_DIMENSION_STATUS_CODE: () => METRIC_DIMENSION_STATUS_CODE,
+  METRIC_NAME: () => METRIC_NAME,
+  handler: () => handler
 });
 module.exports = __toCommonJS(allocate_lambda_exports);
 var import_client_sts = require("@aws-sdk/client-sts");
@@ -3301,15 +3300,38 @@ var AllocationLogger = class {
 
 // src/metrics.ts
 var import_aws_embedded_metrics = __toESM(require_lib());
-var NAMESPACE = "Atmosphere";
-var METRICS_DIMENSION_POOL = "pool";
-var METRIC_DIMENSION_VALUE = "value";
+var METRICS_NAMESPACE = "Atmosphere";
+var METRIC_DIMENSION_POOL = "pool";
 var RuntimeMetrics = class {
-  static namespace(component) {
-    return `${NAMESPACE}/${component}`;
+  static async scoped(handler2) {
+    const metrics = new AccumulatingDimensionMetricsLogger((0, import_aws_embedded_metrics.createMetricsLogger)());
+    metrics.addDimension(METRIC_DIMENSION_POOL, "UNKNOWN");
+    try {
+      return await handler2(metrics);
+    } finally {
+      await metrics.flush();
+    }
   }
-  static scope(handler2) {
-    return (0, import_aws_embedded_metrics.metricScope)(handler2);
+};
+var AccumulatingDimensionMetricsLogger = class {
+  constructor(metrics) {
+    this.metrics = metrics;
+    this.dimensions = {};
+    metrics.setNamespace(METRICS_NAMESPACE);
+    metrics.setDimensions({});
+  }
+  putMetric(key, value, unit) {
+    this.metrics.setDimensions(this.dimensions);
+    this.metrics.putMetric(key, value, unit);
+  }
+  setPool(pool) {
+    this.addDimension(METRIC_DIMENSION_POOL, pool);
+  }
+  addDimension(key, value) {
+    this.dimensions[key] = value;
+  }
+  async flush() {
+    await this.metrics.flush();
   }
 };
 
@@ -3322,41 +3344,33 @@ var ProxyError = class extends Error {
     this.message = message;
   }
 };
-var METRICS_NAMESPACE = RuntimeMetrics.namespace("Allocate");
-var METRIC_NAME_STATUS_CODE = "statusCode";
+var METRIC_NAME = "allocate";
+var METRIC_DIMENSION_STATUS_CODE = "statusCode";
 var clients = RuntimeClients.getOrCreate();
-import_aws_embedded_metrics2.Configuration.namespace = METRICS_NAMESPACE;
 async function handler(event) {
-  console.log("Event:", JSON.stringify(event, null, 2));
-  return RuntimeMetrics.scope((metrics) => async () => {
-    if (!event.body) {
-      return failure(400, "Request body not found");
-    }
-    const request = JSON.parse(event.body);
-    if (!request.pool) {
-      return failure(400, "'pool' must be provided in the request body");
-    }
-    if (!request.requester) {
-      return failure(400, "'requester' must be provided in the request body");
-    }
+  return RuntimeMetrics.scoped(async (metrics) => {
     let statusCode;
     try {
-      const result = await doHandler(request);
+      const result = await doHandler(event, metrics);
       statusCode = result.statusCode;
       return result;
     } catch (e) {
       statusCode = e instanceof ProxyError ? e.statusCode : 500;
       return failure(statusCode, e.message);
     } finally {
-      metrics.setDimensions(metricDimensionsStatusCode(request.pool, statusCode));
-      metrics.putMetric(METRIC_NAME_STATUS_CODE, 1, import_aws_embedded_metrics2.Unit.Count);
+      metrics.addDimension(METRIC_DIMENSION_STATUS_CODE, `${statusCode}`);
+      metrics.putMetric(METRIC_NAME, 1, import_aws_embedded_metrics2.Unit.Count);
     }
-  })();
+  });
 }
-async function doHandler(request) {
+async function doHandler(event, metrics) {
+  console.log("Event:", JSON.stringify(event, null, 2));
   const allocationId = v4_default();
   const log = new AllocationLogger({ id: allocationId, component: "allocate" });
   try {
+    console.log("Parsing request body");
+    const request = parseRequestBody(event.body);
+    metrics.setPool(request.pool);
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
@@ -3383,17 +3397,24 @@ async function doHandler(request) {
     throw e;
   }
 }
-function metricDimensionsStatusCode(pool, statusCode) {
-  return {
-    [METRICS_DIMENSION_POOL]: pool,
-    [METRIC_DIMENSION_VALUE]: `${statusCode}`
-  };
-}
 function success(statusCode, body) {
   return { statusCode, body: JSON.stringify(body) };
 }
 function failure(statusCode, message) {
   return { statusCode, body: JSON.stringify({ message }) };
+}
+function parseRequestBody(body) {
+  if (!body) {
+    throw new ProxyError(400, "Request body not found");
+  }
+  const parsed = JSON.parse(body);
+  if (!parsed.pool) {
+    throw new ProxyError(400, "'pool' must be provided in the request body");
+  }
+  if (!parsed.requester) {
+    throw new ProxyError(400, "'requester' must be provided in the request body");
+  }
+  return parsed;
 }
 async function acquireEnvironment(allocaionId, pool) {
   const candidates = await clients.configuration.listEnvironments({ pool });
@@ -3455,10 +3476,9 @@ async function grabCredentials(id, environment) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  METRICS_NAMESPACE,
-  METRIC_NAME_STATUS_CODE,
-  handler,
-  metricDimensionsStatusCode
+  METRIC_DIMENSION_STATUS_CODE,
+  METRIC_NAME,
+  handler
 });
 /*! Bundled license information:
 

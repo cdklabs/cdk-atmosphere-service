@@ -1,7 +1,10 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Unit } from 'aws-embedded-metrics';
 import { RuntimeClients } from '../clients';
 import { Cleaner, CleanerError } from './cleaner';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
+import { RuntimeMetrics, AccumulatingDimensionMetricsLogger } from '../metrics';
 import type { Allocation } from '../storage/allocations.client';
 import { EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
@@ -12,12 +15,35 @@ export interface CleanupRequest {
   readonly timeoutSeconds: number;
 }
 
+export const METRIC_NAME = 'cleanup';
+export const METRIC_DIMENSION_EXIT_CODE = 'exitCode';
+export const METRIC_DIMENSION_OUTCOME = 'outcome';
+
 export async function handler(req: CleanupRequest) {
+  await RuntimeMetrics.scoped(async (metrics) => {
+    let exitCode = 0;
+    try {
+      await doHandler(req, metrics);
+    } catch (e: any) {
+      exitCode = 1;
+      throw e;
+    } finally {
+      metrics.addDimension(METRIC_DIMENSION_EXIT_CODE, `${exitCode}`);
+      metrics.putMetric(METRIC_NAME, 1, Unit.Count);
+    }
+  });
+
+}
+
+export async function doHandler(req: CleanupRequest, metrics: AccumulatingDimensionMetricsLogger) {
+  console.log('Event:', JSON.stringify(req, null, 2));
 
   const log = new AllocationLogger({ id: req.allocationId, component: 'cleanup' });
 
   log.info('Fetching allocation');
   const allocation = await fetchAllocation(req.allocationId, log);
+
+  metrics.setPool(allocation.pool);
 
   const env = `aws://${allocation.account}/${allocation.region}`;
 
@@ -33,10 +59,13 @@ export async function handler(req: CleanupRequest) {
     log.info(`Successfully cleaned '${env}'`);
 
     log.info(`Releasing environment '${env}'`);
-    await clients.environments.release(req.allocationId, environment.account, environment.region);
+    await clients.environments.release(allocation.id, environment.account, environment.region);
     log.info(`Successfully released environment '${env}'`);
 
     log.info('Done!');
+
+    metrics.addDimension(METRIC_DIMENSION_OUTCOME, 'clean');
+
   } catch (e: any) {
 
     if (e instanceof EnvironmentAlreadyDirtyError) {
@@ -47,10 +76,12 @@ export async function handler(req: CleanupRequest) {
       return;
     }
 
+    metrics.addDimension(METRIC_DIMENSION_OUTCOME, 'dirty');
+
     log.error(e);
 
     log.info(`Marking environment '${env}' as 'dirty'`);
-    await clients.environments.dirty(req.allocationId, allocation.account, allocation.region);
+    await clients.environments.dirty(allocation.id, allocation.account, allocation.region);
     log.info(`Successfully marked environment '${env}' as 'dirty'`);
 
     if (e instanceof CleanerError) {
