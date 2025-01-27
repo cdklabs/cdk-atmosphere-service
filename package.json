@@ -138,8 +138,7 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
-    "unzipper": "^0.12.3",
-    "uuid": "^11.0.5"
+    "unzipper": "^0.12.3"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.173.1",

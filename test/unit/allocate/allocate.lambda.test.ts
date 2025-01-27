@@ -118,7 +118,7 @@ describe('handler', () => {
 
     expect(response.statusCode).toEqual(200);
     expect(body.durationSeconds).toEqual(3600);
-    expect(body.id.length).toEqual(36);
+    expect(body.id.length).toEqual(32);
     expect(body.environment).toEqual({
       account: '1111',
       region: 'us-east-1',
@@ -220,7 +220,7 @@ describe('handler', () => {
 
     expect(clients.environments.acquire).toHaveBeenCalledTimes(2);
     expect(response.statusCode).toEqual(200);
-    expect(body.id.length).toEqual(36);
+    expect(body.id.length).toEqual(32);
 
   });
 

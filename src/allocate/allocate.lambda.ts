@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import * as crypto from 'crypto';
 import { STS } from '@aws-sdk/client-sts';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { v4 as uuidv4 } from 'uuid';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
@@ -48,7 +48,7 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const allocationId = uuidv4();
+  const allocationId = uuid();
   const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
 
   try {
@@ -179,4 +179,13 @@ async function grabCredentials(id: string, environment: Environment): Promise<Cr
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken,
   };
+}
+
+function uuid(): string {
+
+  // Generate 32 random hexadecimal characters
+  return Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+
 }
