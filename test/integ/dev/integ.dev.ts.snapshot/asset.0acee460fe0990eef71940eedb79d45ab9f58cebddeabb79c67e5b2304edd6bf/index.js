@@ -70625,7 +70625,7 @@ async function handler(req) {
       }
       return;
     }
-    throw new Error(`Failed cleaning '${env}'`);
+    throw e5;
   }
 }
 async function fetchAllocation(id, log) {

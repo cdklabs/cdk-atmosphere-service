@@ -11871,7 +11871,7 @@ async function handler3(req) {
       }
       return;
     }
-    throw new Error(`Failed cleaning '${env3}'`);
+    throw e;
   }
 }
 async function fetchAllocation(id, log) {

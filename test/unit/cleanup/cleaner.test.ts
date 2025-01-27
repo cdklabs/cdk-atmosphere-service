@@ -6,6 +6,7 @@ import { Cleaner, CleanerError } from '../../../src/cleanup/cleaner';
 import 'aws-sdk-client-mock-jest';
 import { BucketsCleaner } from '../../../src/cleanup/cleaner.buckets';
 import { ReposCleaner } from '../../../src/cleanup/cleaner.repos';
+import { AllocationLogger } from '../../../src/logging';
 
 
 describe('Cleaner', () => {
@@ -27,7 +28,7 @@ describe('Cleaner', () => {
     test('does nothing if there are no stacks', async () => {
 
       cfnMock.on(DescribeStacksCommand).resolves({ Stacks: [] });
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
     });
@@ -35,7 +36,7 @@ describe('Cleaner', () => {
     test('does nothing if stacks is not returned', async () => {
 
       cfnMock.on(DescribeStacksCommand).resolves({});
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
     });
@@ -59,7 +60,7 @@ describe('Cleaner', () => {
 
       jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(mockBucketsClean);
 
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
       expect(mockBucketsClean).toHaveBeenCalledWith({ timeoutDate: new Date(Date.now() + 10000) });
@@ -85,7 +86,7 @@ describe('Cleaner', () => {
 
       jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(mockReposClean);
 
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
       expect(mockReposClean).toHaveBeenCalledWith();
@@ -101,7 +102,7 @@ describe('Cleaner', () => {
       jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
       jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
       expect(cfnMock).toHaveReceivedCommandWith(UpdateTerminationProtectionCommand, {
@@ -124,7 +125,7 @@ describe('Cleaner', () => {
       jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
       jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
       expect(cfnMock).toHaveReceivedCommandTimes(DeleteStackCommand, 0);
@@ -139,7 +140,7 @@ describe('Cleaner', () => {
       jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
       jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       await cleaner.clean(10);
 
       expect(cfnMock).toHaveReceivedCommandTimes(DeleteStackCommand, 0);
@@ -157,7 +158,7 @@ describe('Cleaner', () => {
       jest.spyOn(BucketsCleaner.prototype, 'clean').mockImplementation(jest.fn());
       jest.spyOn(ReposCleaner.prototype, 'clean').mockImplementation(jest.fn());
 
-      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' });
+      const cleaner = new Cleaner({ account: '1111', region: 'us-east-1', adminRoleArn: 'adminRole', pool: 'release' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
       try {
         await cleaner.clean(10);
       } catch (e: any) {

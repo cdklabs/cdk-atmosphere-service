@@ -1057,7 +1057,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c302dd6b410e4c8e7c1fce78e90a584cdf3cb3baa7947c59c3bb58d8577c453b"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0acee460fe0990eef71940eedb79d45ab9f58cebddeabb79c67e5b2304edd6bf"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1296,9 +1296,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.1]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.1]}eu-central-1",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                    "path": "atmosphere-integ-allocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2221,9 +2221,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.1]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.1]}eu-central-1",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                    "path": "atmosphere-integ-allocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3626,7 +3626,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "ea4de202446bba01b490f72b0914a13d4a4154992bfdc94a6799d91f0775729f.zip"
+                      "s3Key": "224db88f220ff164bbabefc2b31425adbd26a9826f3718a760e72138240bbcf1.zip"
                     },
                     "description": "test/integ/allocate/assert.lambda.ts",
                     "environment": {

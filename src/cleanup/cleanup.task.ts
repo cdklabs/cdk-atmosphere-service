@@ -63,12 +63,11 @@ export async function handler(req: CleanupRequest) {
         log.error(f.error!);
       }
 
-      // we don't fail the task here because
       return;
 
     }
 
-    throw new Error(`Failed cleaning '${env}'`);
+    throw e;
   }
 
 }
