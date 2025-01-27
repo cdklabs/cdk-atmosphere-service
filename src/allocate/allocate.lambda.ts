@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import * as crypto from 'crypto';
 import { STS } from '@aws-sdk/client-sts';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { v4 as uuidv4 } from 'uuid';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
@@ -48,7 +48,7 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const allocationId = uuidv4();
+  const allocationId = crypto.randomUUID();
   const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
 
   try {

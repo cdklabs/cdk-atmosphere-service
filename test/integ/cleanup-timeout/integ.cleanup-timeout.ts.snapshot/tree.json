@@ -1057,7 +1057,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0acee460fe0990eef71940eedb79d45ab9f58cebddeabb79c67e5b2304edd6bf"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c7134e5ec9386521add4a7944d21a27110a49b9303db586d82b9b1ef82f4ce8a"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1296,9 +1296,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.1]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.1]}eu-central-1",
-                    "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                    "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2157,7 +2157,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "7ea718124514a21c5e2991dc0449009d5a2cee875c6fa4dd29e86246a1ae1741.zip"
+                              "s3Key": "3fe4f8d036045d40550bd76ad7830ecde42ecbd953086b99154b15ab1dedfd6d.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -2221,9 +2221,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.1]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.1]}eu-central-1",
-                    "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                    "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3701,7 +3701,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "d38e24533fa7b27f8dcc2d2860485f97cd6d50ec5bdf529e899066f0f923cb74.zip"
+                      "s3Key": "c52c1708f3b63f858f52388e226d682eea76d38adf36b950ed83e41b009eb0a5.zip"
                     },
                     "description": "test/integ/cleanup-timeout/assert.lambda.ts",
                     "environment": {

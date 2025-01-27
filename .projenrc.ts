@@ -23,7 +23,6 @@ const project = new CdklabsConstructLibrary({
     '@aws-sdk/client-ecs',
     '@aws-sdk/client-ecr',
     '@aws-sdk/credential-providers',
-    'uuid',
     'unzipper',
     '@smithy/util-stream',
     '@smithy/types',
