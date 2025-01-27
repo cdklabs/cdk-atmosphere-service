@@ -96,6 +96,7 @@ export class AtmosphereService extends Construct {
       environments: this.environments,
       scheduler: this.scheduler,
     });
+
     this.deallocate = new Deallocate(this, 'Deallocate', {
       environments: this.environments,
       allocations: this.allocations,

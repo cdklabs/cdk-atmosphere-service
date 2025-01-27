@@ -4,6 +4,7 @@ import { CloudFormation, Stack } from '@aws-sdk/client-cloudformation';
 import { DeleteObjectsCommand, ListObjectVersionsCommandOutput, NoSuchBucket, S3, waitUntilBucketNotExists } from '@aws-sdk/client-s3';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
+import { AllocationLogger } from '../logging';
 
 /**
  * Options for `clean`.
@@ -23,7 +24,8 @@ export class BucketsCleaner {
   public constructor(
     credentials: AwsCredentialIdentityProvider,
     region: string,
-    private readonly stack: Stack) {
+    private readonly stack: Stack,
+    private readonly log: AllocationLogger) {
     this.cfn = new CloudFormation({ credentials: credentials, region });
     this.s3 = new S3({ credentials: credentials, region });
   }
@@ -44,7 +46,7 @@ export class BucketsCleaner {
   }
 
   private async listBuckets(): Promise<string[]> {
-    console.log(`Collecting buckets in stack ${this.stack.StackName}`);
+    this.log.info(`Collecting buckets in stack ${this.stack.StackName}`);
     const resources = await this.cfn.describeStackResources({ StackName: this.stack.StackName });
     return (resources.StackResources ?? [])
       .filter(r => r.ResourceType === 'AWS::S3::Bucket').map(r => r.PhysicalResourceId!);
@@ -64,7 +66,7 @@ export class BucketsCleaner {
         }
       };
 
-      console.log(`Starting to clean bucket: ${bucketName}`);
+      this.log.info(`Starting to clean bucket: ${bucketName}`);
 
       while (isTruncated) {
 
@@ -91,7 +93,7 @@ export class BucketsCleaner {
         ];
 
         if (objectsToDelete.length === 0) {
-          console.log('Bucket is already empty.');
+          this.log.info('Bucket is already empty.');
           break;
         }
 
@@ -103,7 +105,7 @@ export class BucketsCleaner {
               Quiet: true,
             },
           }));
-          console.log(`Deleted ${objectsToDelete.length} objects.`);
+          this.log.info(`Deleted ${objectsToDelete.length} objects.`);
         }
 
         isTruncated = response.IsTruncated ?? false;
@@ -111,12 +113,12 @@ export class BucketsCleaner {
         versionIdMarker = response.NextVersionIdMarker;
       }
 
-      console.log(`Bucket ${bucketName} has been emptied.`);
+      this.log.info(`Bucket ${bucketName} has been emptied.`);
 
     } catch (e: any) {
       if (e instanceof NoSuchBucket) {
         // can happen because cleanup may execute when the stack is already deleting
-        console.log(`Bucket ${bucketName} does not exist. Skipping.`);
+        this.log.info(`Bucket ${bucketName} does not exist. Skipping.`);
         return;
       }
       throw e;
@@ -126,13 +128,13 @@ export class BucketsCleaner {
 
   private async deleteBucket(bucketName: string, timeoutDate: Date) {
 
-    console.log(`Deleting bucket: ${bucketName}`);
+    this.log.info(`Deleting bucket: ${bucketName}`);
 
     try {
       await this.s3.deleteBucket({ Bucket: bucketName });
     } catch (e: any) {
       if (e instanceof NoSuchBucket) {
-        console.log(`Bucket ${bucketName} does not exist. Skipping.`);
+        this.log.info(`Bucket ${bucketName} does not exist. Skipping.`);
         return;
       }
       throw e;
@@ -140,7 +142,7 @@ export class BucketsCleaner {
 
     const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1000;
 
-    console.log(`Bucket ${bucketName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
+    this.log.info(`Bucket ${bucketName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);
     await waitUntilBucketNotExists(
       { client: this.s3, maxWaitTime: maxWaitSeconds, minDelay: 5, maxDelay: 5 },
       { Bucket: bucketName },

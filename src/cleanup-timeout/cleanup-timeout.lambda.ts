@@ -1,4 +1,5 @@
 import { RuntimeClients } from '../clients';
+import { AllocationLogger } from '../logging';
 import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
 export interface CleanupTimeoutEvent {
@@ -36,27 +37,31 @@ export async function handler(event: CleanupTimeoutEvent) {
   const region = event.region;
   const allocationId = event.allocationId;
 
+  const log = new AllocationLogger({ id: allocationId, component: 'cleanup-timeout' });
+
   try {
-    console.log(`Marking environment 'aws://${account}/${region}' as dirty`);
+    log.info(`Marking environment 'aws://${account}/${region}' as dirty`);
     await clients.environments.dirty(allocationId, account, region);
-    console.log('Done');
+    log.info('Done');
   } catch (e: any) {
     if (e instanceof EnvironmentAlreadyReleasedError) {
       // happy path - the cleanup task succeeded and released the environment
-      console.log(e.message);
+      log.info(e.message);
       return;
     }
     if (e instanceof EnvironmentAlreadyDirtyError) {
       // happy path - the cleanup task already marked it as dirty
-      console.log(e.message);
+      log.info(e.message);
       return;
     }
     if (e instanceof EnvironmentAlreadyReallocated) {
       // semi happy path - the environment has already been reallocated by the time
       // this event got triggered. that's fine - it means it was already cleaned.
-      console.log(e.message);
+      log.info(e.message);
       return;
     }
+
+    log.error(e);
 
     // unhappy path
     throw e;

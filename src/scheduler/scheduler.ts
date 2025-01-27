@@ -49,8 +49,7 @@ export class Scheduler extends Construct {
     this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout', {
       deadLetterQueue: this.dlq,
       timeout: Duration.minutes(1),
-    },
-    );
+    });
 
     props.environments.grantReadWrite(this.cleanupTimeoutFunction);
     props.allocations.grantReadWrite(this.allocationTimeoutFunction);

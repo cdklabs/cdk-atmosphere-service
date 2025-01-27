@@ -4,6 +4,7 @@ import { CloudFormation, Stack } from '@aws-sdk/client-cloudformation';
 import { ECR, RepositoryNotFoundException } from '@aws-sdk/client-ecr';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
+import { AllocationLogger } from '../logging';
 
 
 export class ReposCleaner {
@@ -14,7 +15,8 @@ export class ReposCleaner {
   public constructor(
     credentials: AwsCredentialIdentityProvider,
     region: string,
-    private readonly stack: Stack) {
+    private readonly stack: Stack,
+    private readonly log: AllocationLogger) {
     this.cfn = new CloudFormation({ credentials: credentials, region });
     this.ecr = new ECR({ credentials: credentials, region });
   }
@@ -32,19 +34,19 @@ export class ReposCleaner {
   }
 
   private async listRepos(): Promise<string[]> {
-    console.log(`Collecting ECR repositories in stack ${this.stack.StackName}`);
+    this.log.info(`Collecting ECR repositories in stack ${this.stack.StackName}`);
     return ((await this.cfn.describeStackResources({ StackName: this.stack.StackName })).StackResources ?? [])
       .filter(r => r.ResourceType === 'AWS::ECR::Repository').map(r => r.PhysicalResourceId!);
   }
 
   private async deleteRepo(repositoryName: string) {
-    console.log(`Deleting repository: ${repositoryName}`);
+    this.log.info(`Deleting repository: ${repositoryName}`);
 
     try {
       await this.ecr.deleteRepository({ repositoryName: repositoryName, force: true });
     } catch (e: any) {
       if (e instanceof RepositoryNotFoundException) {
-        console.log(`Repository ${repositoryName} does not exist. Skipping.`);
+        this.log.info(`Repository ${repositoryName} does not exist. Skipping.`);
         return;
       }
       throw e;

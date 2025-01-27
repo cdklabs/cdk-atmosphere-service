@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import * as envars from '../envars';
+import { AllocationLogger } from '../logging';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
 
 // an hour should plenty to clean one environment
@@ -33,15 +34,19 @@ const clients = RuntimeClients.getOrCreate();
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
+
+  const id = (event.pathParameters ?? {}).id;
+  if (!id) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Missing \'id\' path parameter' }),
+    };
+  }
+
+  const log = new AllocationLogger({ id, component: 'deallocate' });
+
   try {
 
-    const id = (event.pathParameters ?? {}).id;
-    if (!id) {
-      throw new ProxyError(400, 'Missing \'id\' path parameter');
-    }
-    console.log(`Extracted allocation id from path: ${id}`);
-
-    console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
@@ -51,13 +56,10 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupDurationSeconds);
 
-    console.log(`Ending allocation '${id}' with outcome: ${request.outcome}`);
+    log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
 
-    console.log(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}' for allocation '${id}'`);
-    await clients.environments.cleaning(id, allocation.account, allocation.region);
-
-    console.log(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
     await clients.scheduler.scheduleCleanupTimeout({
       allocationId: allocation.id,
       account: allocation.account,
@@ -66,9 +68,11 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       functionArn: envars.Envars.required(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV),
     });
 
-    console.log(`Starting cleanup task for environment 'aws://${allocation.account}/${allocation.region}`);
+    log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
     const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
-    console.log(`Successfully started cleanup task: ${taskInstanceArn}`);
+
+    log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
 
     return success({ cleanupDurationSeconds });
   } catch (e: any) {
@@ -76,11 +80,11 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (e instanceof AllocationAlreadyEndedError) {
       // expected because deallocation can be requested either
       // by the timeout event or explicitly by the user.
-      console.log(`Returning success because: ${e.message}`);
+      log.info(`Returning success because: ${e.message}`);
       return success({ cleanupDurationSeconds: -1 });
     }
 
-    console.error(e);
+    log.error(e);
 
     return {
       statusCode: e instanceof ProxyError ? e.statusCode : 500,

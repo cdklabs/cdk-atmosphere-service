@@ -4,6 +4,7 @@ import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { mockClient } from 'aws-sdk-client-mock';
 import { ReposCleaner } from '../../../src/cleanup/cleaner.repos';
 import 'aws-sdk-client-mock-jest';
+import { AllocationLogger } from '../../../src/logging';
 
 describe('ReposCleaner', () => {
 
@@ -24,7 +25,7 @@ describe('ReposCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' });
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
         StackResources: [{
@@ -52,7 +53,7 @@ describe('ReposCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' });
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
         StackResources: [{
@@ -77,7 +78,7 @@ describe('ReposCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' });
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
         StackResources: [{
