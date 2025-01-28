@@ -1,4 +1,4 @@
-import { CdklabsConstructLibrary } from 'cdklabs-projen-project-types';
+import { CdklabsConstructLibrary, JsiiLanguage } from 'cdklabs-projen-project-types';
 import { JsonPatch } from 'projen';
 import { JestReporter } from 'projen/lib/javascript';
 import { IntegTests } from './projenrc/integ-tests';
@@ -34,7 +34,11 @@ const project = new CdklabsConstructLibrary({
   ],
   name: '@cdklabs/cdk-atmosphere-service',
   projenrcTs: true,
-  release: false,
+  release: true,
+  private: false,
+  enablePRAutoMerge: true,
+  cdklabsPublishingDefaults: true,
+  jsiiTargetLanguages: [JsiiLanguage.PYTHON],
   jestOptions: {
     jestConfig: {
       coverageThreshold: {

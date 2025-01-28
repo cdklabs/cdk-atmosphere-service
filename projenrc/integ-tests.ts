@@ -120,7 +120,7 @@ class IntegTest extends Component {
       description: 'Force Deploy -> Update Snapshot -> Dont Destroy',
     });
     integDeployTask.prependSpawn(bundleAll);
-    integDeployTask.exec(`${integCommand} --force --update-on-failed --disable-update-workflow --no-clean`);
+    integDeployTask.exec(`${integCommand} --update-on-failed --disable-update-workflow --no-clean`);
 
     // task to update the snapshot
     const integSnapshotTask = this.project.tasks.addTask(`${integName}:snapshot`, {

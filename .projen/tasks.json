@@ -24,6 +24,25 @@
         }
       ]
     },
+    "bump": {
+      "name": "bump",
+      "description": "Bumps version based on latest git tag and generates a changelog entry",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "dist/changelog.md",
+        "BUMPFILE": "dist/version.txt",
+        "RELEASETAG": "dist/releasetag.txt",
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12",
+        "RELEASABLE_COMMITS": "git log --no-merges --oneline $LATEST_TAG..HEAD -E --grep \"^(feat|fix){1}(\\([^()[:space:]]+\\))?(!)?:[[:blank:]]+.+\""
+      },
+      "steps": [
+        {
+          "builtin": "release/bump-version"
+        }
+      ],
+      "condition": "git log --oneline -1 | grep -qv \"chore(release):\""
+    },
     "bundle": {
       "name": "bundle",
       "description": "Prepare assets",
@@ -396,7 +415,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --force --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -465,7 +484,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --force --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -546,7 +565,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --force --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -603,7 +622,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --force --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -672,7 +691,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --force --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -741,7 +760,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --force --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -815,43 +834,7 @@
           "spawn": "package:js"
         },
         {
-          "spawn": "package:java"
-        },
-        {
           "spawn": "package:python"
-        },
-        {
-          "spawn": "package:dotnet"
-        },
-        {
-          "spawn": "package:go"
-        }
-      ]
-    },
-    "package:dotnet": {
-      "name": "package:dotnet",
-      "description": "Create dotnet language bindings",
-      "steps": [
-        {
-          "exec": "jsii-pacmak -v --target dotnet"
-        }
-      ]
-    },
-    "package:go": {
-      "name": "package:go",
-      "description": "Create go language bindings",
-      "steps": [
-        {
-          "exec": "jsii-pacmak -v --target go"
-        }
-      ]
-    },
-    "package:java": {
-      "name": "package:java",
-      "description": "Create java language bindings",
-      "steps": [
-        {
-          "exec": "jsii-pacmak -v --target java"
         }
       ]
     },
@@ -898,6 +881,30 @@
         }
       ]
     },
+    "release": {
+      "name": "release",
+      "description": "Prepare a release from \"main\" branch",
+      "env": {
+        "RELEASE": "true"
+      },
+      "steps": [
+        {
+          "exec": "rm -fr dist"
+        },
+        {
+          "spawn": "bump"
+        },
+        {
+          "spawn": "build"
+        },
+        {
+          "spawn": "unbump"
+        },
+        {
+          "exec": "git diff --ignore-space-at-eol --exit-code"
+        }
+      ]
+    },
     "rosetta:extract": {
       "name": "rosetta:extract",
       "description": "Test rosetta extract",
@@ -929,6 +936,24 @@
       "steps": [
         {
           "exec": "jest --watch"
+        }
+      ]
+    },
+    "unbump": {
+      "name": "unbump",
+      "description": "Restores version to 0.0.0",
+      "env": {
+        "OUTFILE": "package.json",
+        "CHANGELOG": "dist/changelog.md",
+        "BUMPFILE": "dist/version.txt",
+        "RELEASETAG": "dist/releasetag.txt",
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12",
+        "RELEASABLE_COMMITS": "git log --no-merges --oneline $LATEST_TAG..HEAD -E --grep \"^(feat|fix){1}(\\([^()[:space:]]+\\))?(!)?:[[:blank:]]+.+\""
+      },
+      "steps": [
+        {
+          "builtin": "release/reset-version"
         }
       ]
     },
@@ -982,7 +1007,7 @@
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecr @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-embedded-metrics aws-sdk-client-mock aws-sdk-client-mock-jest esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecr @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-embedded-metrics aws-sdk-client-mock aws-sdk-client-mock-jest commit-and-tag-version esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"
