@@ -104,7 +104,7 @@ async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareMetricsL
     });
     log.info('Done');
 
-    return success(200, response);
+    return success(response);
 
   } catch (e: any) {
     log.error(e);
@@ -113,8 +113,8 @@ async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareMetricsL
   }
 }
 
-function success(statusCode: number, body: any) {
-  return { statusCode: statusCode, body: JSON.stringify(body) };
+function success(body: any) {
+  return { statusCode: 200, body: JSON.stringify(body) };
 }
 
 function failure(statusCode: number, message: string) {

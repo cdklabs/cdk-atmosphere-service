@@ -96,7 +96,6 @@ export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLo
         log.error(f.error!);
       }
 
-      // we don't fail the task here because
       return;
 
     }

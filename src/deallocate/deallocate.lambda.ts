@@ -66,7 +66,6 @@ export async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareM
 
   try {
 
-    console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
@@ -97,13 +96,13 @@ export async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareM
 
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
 
-    return success(200, { cleanupDurationSeconds });
+    return success({ cleanupDurationSeconds });
   } catch (e: any) {
     if (e instanceof AllocationAlreadyEndedError) {
       // expected because deallocation can be requested either
       // by the timeout event or explicitly by the user.
       log.info(`Returning success because: ${e.message}`);
-      return success(200, { cleanupDurationSeconds: -1 });
+      return success({ cleanupDurationSeconds: -1 });
     }
     log.error(e);
     const statusCode = e instanceof ProxyError ? e.statusCode : 500;
@@ -111,8 +110,8 @@ export async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareM
   }
 }
 
-function success(statusCode: number, body: any) {
-  return { statusCode: statusCode, body: JSON.stringify(body) };
+function success(body: any) {
+  return { statusCode: 200, body: JSON.stringify(body) };
 }
 
 function failure(statusCode: number, message: string) {

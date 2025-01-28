@@ -83,6 +83,11 @@ export class Cleanup extends Construct {
         [envars.ALLOCATIONS_TABLE_NAME_ENV]: props.allocations.table.tableName,
         [envars.CONFIGURATION_BUCKET_ENV]: props.configuration.bucket.bucketName,
         [envars.CONFIGURATION_KEY_ENV]: props.configuration.key,
+
+        // we must set it because the default value is 'Lambda', which won't or ECS.
+        // For some reasons setting this to 'ECS' also doesn't work.
+        // 'Local' however, which means metrics are sent over stdout, does work.
+        // (this is also how its done in construct hub)
         AWS_EMF_ENVIRONMENT: 'Local',
       },
     });
