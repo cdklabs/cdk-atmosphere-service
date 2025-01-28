@@ -1,23 +1,19 @@
-import { PoolAwareMetricsLogger, RuntimeMetrics } from '../../src/metrics';
+import * as aem from 'aws-embedded-metrics';
 
 export class MetricsMock {
 
-  public static mock(): PoolAwareMetricsLogger {
+  public static mock(): aem.MetricsLogger {
 
-    const mock = new PoolAwareMetricsLogger({
+    const mock = {
       putMetric: jest.fn(),
       putDimensions: jest.fn(),
       setDimensions: jest.fn(),
       setProperty: jest.fn(),
       setNamespace: jest.fn(),
       flush: jest.fn(),
-    } as any);
+    } as any;
 
-    async function scoped<T>(handler: (m: PoolAwareMetricsLogger) => Promise<T>) {
-      return handler(mock);
-    }
-
-    jest.spyOn(RuntimeMetrics, 'scoped').mockImplementation(scoped);
+    jest.spyOn(aem, 'createMetricsLogger').mockReturnValue(mock);
 
     return mock;
   }

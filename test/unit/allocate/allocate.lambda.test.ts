@@ -152,8 +152,8 @@ describe('handler', () => {
       RoleArn: 'arn:aws:iam::1111:role/Admin',
       RoleSessionName: `atmosphere.allocation.${body.id}`,
     });
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenCalledWith({ pool: 'release', statusCode: '200' });
-    expect(mockMetrics.delegate.putMetric).toHaveBeenCalledWith('allocate', 1, 'Count');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledWith({ pool: 'release', statusCode: '200' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('allocate', 1, 'Count');
   });
 
   test('respects duration seconds', async () => {
@@ -262,8 +262,8 @@ describe('handler', () => {
 
     expect(response.statusCode).toEqual(423);
     expect(body.message).toEqual('No environments available in pool \'release\'');
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenCalledWith({ pool: 'release', statusCode: '423' });
-    expect(mockMetrics.delegate.putMetric).toHaveBeenCalledWith('allocate', 1, 'Count');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledWith({ pool: 'release', statusCode: '423' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('allocate', 1, 'Count');
 
   });
 

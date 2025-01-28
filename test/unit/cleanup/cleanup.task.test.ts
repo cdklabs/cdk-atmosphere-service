@@ -30,10 +30,10 @@ describe('handler', () => {
 
     expect(mockClean).toHaveBeenCalledWith(10);
     expect(clients.environments.release).toHaveBeenCalledWith('id', '1111', 'us-east-1');
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenCalledTimes(2);
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'clean' });
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '0' });
-    expect(mockMetrics.delegate.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledTimes(2);
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'clean' });
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '0' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
 
   });
 
@@ -48,10 +48,10 @@ describe('handler', () => {
     await handler({ allocationId: 'id', timeoutSeconds: 10 });
 
     expect(clients.environments.dirty).toHaveBeenCalledWith('id', '1111', 'us-east-1');
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenCalledTimes(2);
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'dirty' });
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '0' });
-    expect(mockMetrics.delegate.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledTimes(2);
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'dirty' });
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '0' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
 
   });
 
@@ -77,10 +77,10 @@ describe('handler', () => {
     jest.spyOn(Cleaner.prototype, 'clean').mockRejectedValue(new Error('unexpected'));
 
     await expect(handler({ allocationId: 'id', timeoutSeconds: 10 })).rejects.toThrow('unexpected');
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenCalledTimes(2);
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'dirty' });
-    expect(mockMetrics.delegate.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '1' });
-    expect(mockMetrics.delegate.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledTimes(2);
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'dirty' });
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '1' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
 
   });
 
