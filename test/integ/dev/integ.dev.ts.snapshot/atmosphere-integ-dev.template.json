@@ -675,7 +675,11 @@
       ],
       "Essential": true,
       "Image": {
+<<<<<<< HEAD
        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:ecc5b10eb740e6cd26a5621581c88c4cbeee8b1f54407f8b16cdcaa68187bb3d"
+=======
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c7134e5ec9386521add4a7944d21a27110a49b9303db586d82b9b1ef82f4ce8a"
+>>>>>>> main
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1353,7 +1357,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
+<<<<<<< HEAD
      "S3Key": "34c6892b9d3e6b040c563088330fdaeb92e6f5bd409b79e964559909641e67b7.zip"
+=======
+     "S3Key": "3fe4f8d036045d40550bd76ad7830ecde42ecbd953086b99154b15ab1dedfd6d.zip"
+>>>>>>> main
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -1549,7 +1557,11 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
+<<<<<<< HEAD
      "S3Key": "0e7ca2b80efee91dea2893135a6dba0f9929dff5405486a2bd7b28ce5bf40c71.zip"
+=======
+     "S3Key": "e81934f52e339ce1fcbd1b64c51a5277942e7325827430cb2cc79f85e0c2b500.zip"
+>>>>>>> main
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {

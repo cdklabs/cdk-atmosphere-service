@@ -169,10 +169,6 @@
       "type": "build"
     },
     {
-      "name": "uuid",
-      "type": "build"
-    },
-    {
       "name": "@aws-cdk/integ-runner",
       "version": "latest",
       "type": "devenv"

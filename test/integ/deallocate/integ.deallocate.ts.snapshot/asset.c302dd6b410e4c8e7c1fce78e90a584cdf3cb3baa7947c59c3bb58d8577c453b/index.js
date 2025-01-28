@@ -4165,8 +4165,8 @@ var init_emitWarningIfUnsupportedVersion = __esm({
     state = {
       warningEmitted: false
     };
-    emitWarningIfUnsupportedVersion = (version6) => {
-      if (version6 && !state.warningEmitted && parseInt(version6.substring(1, version6.indexOf("."))) < 18) {
+    emitWarningIfUnsupportedVersion = (version2) => {
+      if (version2 && !state.warningEmitted && parseInt(version2.substring(1, version2.indexOf("."))) < 18) {
         state.warningEmitted = true;
         process.emitWarning(`NodeDeprecationWarning: The AWS SDK for JavaScript (v3) will
 no longer support Node.js 16.x on January 6, 2025.
@@ -6499,8 +6499,8 @@ var require_dist_cjs24 = __commonJS({
       }
     }, "loadConfigsForDefaultMode");
     var warningEmitted = false;
-    var emitWarningIfUnsupportedVersion6 = /* @__PURE__ */ __name((version6) => {
-      if (version6 && !warningEmitted && parseInt(version6.substring(1, version6.indexOf("."))) < 16) {
+    var emitWarningIfUnsupportedVersion6 = /* @__PURE__ */ __name((version2) => {
+      if (version2 && !warningEmitted && parseInt(version2.substring(1, version2.indexOf("."))) < 16) {
         warningEmitted = true;
       }
     }, "emitWarningIfUnsupportedVersion");
@@ -8836,14 +8836,14 @@ var require_dist_cjs25 = __commonJS({
     }, "userAgentMiddleware");
     var escapeUserAgent = /* @__PURE__ */ __name((userAgentPair) => {
       const name = userAgentPair[0].split(UA_NAME_SEPARATOR).map((part) => part.replace(UA_NAME_ESCAPE_REGEX, UA_ESCAPE_CHAR)).join(UA_NAME_SEPARATOR);
-      const version6 = userAgentPair[1]?.replace(UA_VALUE_ESCAPE_REGEX, UA_ESCAPE_CHAR);
+      const version2 = userAgentPair[1]?.replace(UA_VALUE_ESCAPE_REGEX, UA_ESCAPE_CHAR);
       const prefixSeparatorIndex = name.indexOf(UA_NAME_SEPARATOR);
       const prefix = name.substring(0, prefixSeparatorIndex);
       let uaName = name.substring(prefixSeparatorIndex + 1);
       if (prefix === "api") {
         uaName = uaName.toLowerCase();
       }
-      return [prefix, uaName, version6].filter((item) => item && item.length > 0).reduce((acc, item, index) => {
+      return [prefix, uaName, version2].filter((item) => item && item.length > 0).reduce((acc, item, index) => {
         switch (index) {
           case 0:
             return item;
@@ -9925,7 +9925,7 @@ var require_dist_cjs33 = __commonJS({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/rng.js
+// node_modules/uuid/dist/esm-node/rng.js
 function rng() {
   if (poolPtr > rnds8Pool.length - 16) {
     import_crypto.default.randomFillSync(rnds8Pool);
@@ -9935,7 +9935,7 @@ function rng() {
 }
 var import_crypto, rnds8Pool, poolPtr;
 var init_rng = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/rng.js"() {
+  "node_modules/uuid/dist/esm-node/rng.js"() {
     "use strict";
     import_crypto = __toESM(require("crypto"));
     rnds8Pool = new Uint8Array(256);
@@ -9943,29 +9943,29 @@ var init_rng = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/regex.js
+// node_modules/uuid/dist/esm-node/regex.js
 var regex_default;
 var init_regex = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/regex.js"() {
+  "node_modules/uuid/dist/esm-node/regex.js"() {
     "use strict";
     regex_default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/validate.js
+// node_modules/uuid/dist/esm-node/validate.js
 function validate(uuid) {
   return typeof uuid === "string" && regex_default.test(uuid);
 }
 var validate_default;
 var init_validate = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/validate.js"() {
+  "node_modules/uuid/dist/esm-node/validate.js"() {
     "use strict";
     init_regex();
     validate_default = validate;
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/stringify.js
+// node_modules/uuid/dist/esm-node/stringify.js
 function unsafeStringify(arr, offset = 0) {
   return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
 }
@@ -9978,7 +9978,7 @@ function stringify(arr, offset = 0) {
 }
 var byteToHex, stringify_default;
 var init_stringify = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/stringify.js"() {
+  "node_modules/uuid/dist/esm-node/stringify.js"() {
     "use strict";
     init_validate();
     byteToHex = [];
@@ -9989,7 +9989,7 @@ var init_stringify = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v1.js
+// node_modules/uuid/dist/esm-node/v1.js
 function v1(options, buf, offset) {
   let i5 = buf && offset || 0;
   const b5 = buf || new Array(16);
@@ -10040,7 +10040,7 @@ function v1(options, buf, offset) {
 }
 var _nodeId, _clockseq, _lastMSecs, _lastNSecs, v1_default;
 var init_v1 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v1.js"() {
+  "node_modules/uuid/dist/esm-node/v1.js"() {
     "use strict";
     init_rng();
     init_stringify();
@@ -10050,7 +10050,7 @@ var init_v1 = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/parse.js
+// node_modules/uuid/dist/esm-node/parse.js
 function parse(uuid) {
   if (!validate_default(uuid)) {
     throw TypeError("Invalid UUID");
@@ -10077,14 +10077,14 @@ function parse(uuid) {
 }
 var parse_default;
 var init_parse = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/parse.js"() {
+  "node_modules/uuid/dist/esm-node/parse.js"() {
     "use strict";
     init_validate();
     parse_default = parse;
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v35.js
+// node_modules/uuid/dist/esm-node/v35.js
 function stringToBytes(str) {
   str = unescape(encodeURIComponent(str));
   const bytes = [];
@@ -10093,7 +10093,7 @@ function stringToBytes(str) {
   }
   return bytes;
 }
-function v35(name, version6, hashfunc) {
+function v35(name, version2, hashfunc) {
   function generateUUID(value, namespace, buf, offset) {
     var _namespace;
     if (typeof value === "string") {
@@ -10109,7 +10109,7 @@ function v35(name, version6, hashfunc) {
     bytes.set(namespace);
     bytes.set(value, namespace.length);
     bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version6;
+    bytes[6] = bytes[6] & 15 | version2;
     bytes[8] = bytes[8] & 63 | 128;
     if (buf) {
       offset = offset || 0;
@@ -10130,7 +10130,7 @@ function v35(name, version6, hashfunc) {
 }
 var DNS, URL2;
 var init_v35 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v35.js"() {
+  "node_modules/uuid/dist/esm-node/v35.js"() {
     "use strict";
     init_stringify();
     init_parse();
@@ -10139,7 +10139,7 @@ var init_v35 = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/md5.js
+// node_modules/uuid/dist/esm-node/md5.js
 function md5(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
@@ -10150,17 +10150,17 @@ function md5(bytes) {
 }
 var import_crypto2, md5_default;
 var init_md5 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/md5.js"() {
+  "node_modules/uuid/dist/esm-node/md5.js"() {
     "use strict";
     import_crypto2 = __toESM(require("crypto"));
     md5_default = md5;
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v3.js
+// node_modules/uuid/dist/esm-node/v3.js
 var v3, v3_default;
 var init_v3 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v3.js"() {
+  "node_modules/uuid/dist/esm-node/v3.js"() {
     "use strict";
     init_v35();
     init_md5();
@@ -10169,10 +10169,10 @@ var init_v3 = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/native.js
+// node_modules/uuid/dist/esm-node/native.js
 var import_crypto3, native_default;
 var init_native = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/native.js"() {
+  "node_modules/uuid/dist/esm-node/native.js"() {
     "use strict";
     import_crypto3 = __toESM(require("crypto"));
     native_default = {
@@ -10181,7 +10181,7 @@ var init_native = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v4.js
+// node_modules/uuid/dist/esm-node/v4.js
 function v4(options, buf, offset) {
   if (native_default.randomUUID && !buf && !options) {
     return native_default.randomUUID();
@@ -10201,7 +10201,7 @@ function v4(options, buf, offset) {
 }
 var v4_default;
 var init_v4 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v4.js"() {
+  "node_modules/uuid/dist/esm-node/v4.js"() {
     "use strict";
     init_native();
     init_rng();
@@ -10210,7 +10210,7 @@ var init_v4 = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/sha1.js
+// node_modules/uuid/dist/esm-node/sha1.js
 function sha1(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
@@ -10221,17 +10221,17 @@ function sha1(bytes) {
 }
 var import_crypto4, sha1_default;
 var init_sha1 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/sha1.js"() {
+  "node_modules/uuid/dist/esm-node/sha1.js"() {
     "use strict";
     import_crypto4 = __toESM(require("crypto"));
     sha1_default = sha1;
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v5.js
+// node_modules/uuid/dist/esm-node/v5.js
 var v5, v5_default;
 var init_v5 = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v5.js"() {
+  "node_modules/uuid/dist/esm-node/v5.js"() {
     "use strict";
     init_v35();
     init_sha1();
@@ -10240,16 +10240,16 @@ var init_v5 = __esm({
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/nil.js
+// node_modules/uuid/dist/esm-node/nil.js
 var nil_default;
 var init_nil = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/nil.js"() {
+  "node_modules/uuid/dist/esm-node/nil.js"() {
     "use strict";
     nil_default = "00000000-0000-0000-0000-000000000000";
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/version.js
+// node_modules/uuid/dist/esm-node/version.js
 function version(uuid) {
   if (!validate_default(uuid)) {
     throw TypeError("Invalid UUID");
@@ -10258,14 +10258,14 @@ function version(uuid) {
 }
 var version_default;
 var init_version = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/version.js"() {
+  "node_modules/uuid/dist/esm-node/version.js"() {
     "use strict";
     init_validate();
     version_default = version;
   }
 });
 
-// node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/index.js
+// node_modules/uuid/dist/esm-node/index.js
 var esm_node_exports = {};
 __export(esm_node_exports, {
   NIL: () => nil_default,
@@ -10279,7 +10279,7 @@ __export(esm_node_exports, {
   version: () => version_default
 });
 var init_esm_node = __esm({
-  "node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/index.js"() {
+  "node_modules/uuid/dist/esm-node/index.js"() {
     "use strict";
     init_v1();
     init_v3();
@@ -13256,7 +13256,7 @@ var require_dist_cjs42 = __commonJS({
     var import_util_buffer_from = require_dist_cjs9();
     var import_util_utf85 = require_dist_cjs10();
     var import_buffer = require("buffer");
-    var import_crypto21 = require("crypto");
+    var import_crypto5 = require("crypto");
     var Hash5 = class {
       static {
         __name(this, "Hash");
@@ -13273,7 +13273,7 @@ var require_dist_cjs42 = __commonJS({
         return Promise.resolve(this.hash.digest());
       }
       reset() {
-        this.hash = this.secret ? (0, import_crypto21.createHmac)(this.algorithmIdentifier, castSourceData(this.secret)) : (0, import_crypto21.createHash)(this.algorithmIdentifier);
+        this.hash = this.secret ? (0, import_crypto5.createHmac)(this.algorithmIdentifier, castSourceData(this.secret)) : (0, import_crypto5.createHash)(this.algorithmIdentifier);
       }
     };
     function castSourceData(toCast, encoding) {
@@ -17994,374 +17994,6 @@ var require_runtimeConfig2 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/rng.js
-function rng2() {
-  if (poolPtr2 > rnds8Pool2.length - 16) {
-    import_crypto5.default.randomFillSync(rnds8Pool2);
-    poolPtr2 = 0;
-  }
-  return rnds8Pool2.slice(poolPtr2, poolPtr2 += 16);
-}
-var import_crypto5, rnds8Pool2, poolPtr2;
-var init_rng2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/rng.js"() {
-    "use strict";
-    import_crypto5 = __toESM(require("crypto"));
-    rnds8Pool2 = new Uint8Array(256);
-    poolPtr2 = rnds8Pool2.length;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/regex.js
-var regex_default2;
-var init_regex2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/regex.js"() {
-    "use strict";
-    regex_default2 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/validate.js
-function validate2(uuid) {
-  return typeof uuid === "string" && regex_default2.test(uuid);
-}
-var validate_default2;
-var init_validate2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/validate.js"() {
-    "use strict";
-    init_regex2();
-    validate_default2 = validate2;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/stringify.js
-function unsafeStringify2(arr, offset = 0) {
-  return byteToHex2[arr[offset + 0]] + byteToHex2[arr[offset + 1]] + byteToHex2[arr[offset + 2]] + byteToHex2[arr[offset + 3]] + "-" + byteToHex2[arr[offset + 4]] + byteToHex2[arr[offset + 5]] + "-" + byteToHex2[arr[offset + 6]] + byteToHex2[arr[offset + 7]] + "-" + byteToHex2[arr[offset + 8]] + byteToHex2[arr[offset + 9]] + "-" + byteToHex2[arr[offset + 10]] + byteToHex2[arr[offset + 11]] + byteToHex2[arr[offset + 12]] + byteToHex2[arr[offset + 13]] + byteToHex2[arr[offset + 14]] + byteToHex2[arr[offset + 15]];
-}
-function stringify2(arr, offset = 0) {
-  const uuid = unsafeStringify2(arr, offset);
-  if (!validate_default2(uuid)) {
-    throw TypeError("Stringified UUID is invalid");
-  }
-  return uuid;
-}
-var byteToHex2, stringify_default2;
-var init_stringify2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/stringify.js"() {
-    "use strict";
-    init_validate2();
-    byteToHex2 = [];
-    for (let i5 = 0; i5 < 256; ++i5) {
-      byteToHex2.push((i5 + 256).toString(16).slice(1));
-    }
-    stringify_default2 = stringify2;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v1.js
-function v12(options, buf, offset) {
-  let i5 = buf && offset || 0;
-  const b5 = buf || new Array(16);
-  options = options || {};
-  let node = options.node || _nodeId2;
-  let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq2;
-  if (node == null || clockseq == null) {
-    const seedBytes = options.random || (options.rng || rng2)();
-    if (node == null) {
-      node = _nodeId2 = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-    }
-    if (clockseq == null) {
-      clockseq = _clockseq2 = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-    }
-  }
-  let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-  let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs2 + 1;
-  const dt = msecs - _lastMSecs2 + (nsecs - _lastNSecs2) / 1e4;
-  if (dt < 0 && options.clockseq === void 0) {
-    clockseq = clockseq + 1 & 16383;
-  }
-  if ((dt < 0 || msecs > _lastMSecs2) && options.nsecs === void 0) {
-    nsecs = 0;
-  }
-  if (nsecs >= 1e4) {
-    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-  }
-  _lastMSecs2 = msecs;
-  _lastNSecs2 = nsecs;
-  _clockseq2 = clockseq;
-  msecs += 122192928e5;
-  const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-  b5[i5++] = tl >>> 24 & 255;
-  b5[i5++] = tl >>> 16 & 255;
-  b5[i5++] = tl >>> 8 & 255;
-  b5[i5++] = tl & 255;
-  const tmh = msecs / 4294967296 * 1e4 & 268435455;
-  b5[i5++] = tmh >>> 8 & 255;
-  b5[i5++] = tmh & 255;
-  b5[i5++] = tmh >>> 24 & 15 | 16;
-  b5[i5++] = tmh >>> 16 & 255;
-  b5[i5++] = clockseq >>> 8 | 128;
-  b5[i5++] = clockseq & 255;
-  for (let n5 = 0; n5 < 6; ++n5) {
-    b5[i5 + n5] = node[n5];
-  }
-  return buf || unsafeStringify2(b5);
-}
-var _nodeId2, _clockseq2, _lastMSecs2, _lastNSecs2, v1_default2;
-var init_v12 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v1.js"() {
-    "use strict";
-    init_rng2();
-    init_stringify2();
-    _lastMSecs2 = 0;
-    _lastNSecs2 = 0;
-    v1_default2 = v12;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/parse.js
-function parse2(uuid) {
-  if (!validate_default2(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  let v8;
-  const arr = new Uint8Array(16);
-  arr[0] = (v8 = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-  arr[1] = v8 >>> 16 & 255;
-  arr[2] = v8 >>> 8 & 255;
-  arr[3] = v8 & 255;
-  arr[4] = (v8 = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-  arr[5] = v8 & 255;
-  arr[6] = (v8 = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-  arr[7] = v8 & 255;
-  arr[8] = (v8 = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-  arr[9] = v8 & 255;
-  arr[10] = (v8 = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-  arr[11] = v8 / 4294967296 & 255;
-  arr[12] = v8 >>> 24 & 255;
-  arr[13] = v8 >>> 16 & 255;
-  arr[14] = v8 >>> 8 & 255;
-  arr[15] = v8 & 255;
-  return arr;
-}
-var parse_default2;
-var init_parse2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/parse.js"() {
-    "use strict";
-    init_validate2();
-    parse_default2 = parse2;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v35.js
-function stringToBytes2(str) {
-  str = unescape(encodeURIComponent(str));
-  const bytes = [];
-  for (let i5 = 0; i5 < str.length; ++i5) {
-    bytes.push(str.charCodeAt(i5));
-  }
-  return bytes;
-}
-function v352(name, version6, hashfunc) {
-  function generateUUID(value, namespace, buf, offset) {
-    var _namespace;
-    if (typeof value === "string") {
-      value = stringToBytes2(value);
-    }
-    if (typeof namespace === "string") {
-      namespace = parse_default2(namespace);
-    }
-    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
-      throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-    }
-    let bytes = new Uint8Array(16 + value.length);
-    bytes.set(namespace);
-    bytes.set(value, namespace.length);
-    bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version6;
-    bytes[8] = bytes[8] & 63 | 128;
-    if (buf) {
-      offset = offset || 0;
-      for (let i5 = 0; i5 < 16; ++i5) {
-        buf[offset + i5] = bytes[i5];
-      }
-      return buf;
-    }
-    return unsafeStringify2(bytes);
-  }
-  try {
-    generateUUID.name = name;
-  } catch (err2) {
-  }
-  generateUUID.DNS = DNS2;
-  generateUUID.URL = URL3;
-  return generateUUID;
-}
-var DNS2, URL3;
-var init_v352 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v35.js"() {
-    "use strict";
-    init_stringify2();
-    init_parse2();
-    DNS2 = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    URL3 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/md5.js
-function md52(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto6.default.createHash("md5").update(bytes).digest();
-}
-var import_crypto6, md5_default2;
-var init_md52 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/md5.js"() {
-    "use strict";
-    import_crypto6 = __toESM(require("crypto"));
-    md5_default2 = md52;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v3.js
-var v32, v3_default2;
-var init_v32 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v3.js"() {
-    "use strict";
-    init_v352();
-    init_md52();
-    v32 = v352("v3", 48, md5_default2);
-    v3_default2 = v32;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/native.js
-var import_crypto7, native_default2;
-var init_native2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/native.js"() {
-    "use strict";
-    import_crypto7 = __toESM(require("crypto"));
-    native_default2 = {
-      randomUUID: import_crypto7.default.randomUUID
-    };
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v4.js
-function v42(options, buf, offset) {
-  if (native_default2.randomUUID && !buf && !options) {
-    return native_default2.randomUUID();
-  }
-  options = options || {};
-  const rnds = options.random || (options.rng || rng2)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i5 = 0; i5 < 16; ++i5) {
-      buf[offset + i5] = rnds[i5];
-    }
-    return buf;
-  }
-  return unsafeStringify2(rnds);
-}
-var v4_default2;
-var init_v42 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v4.js"() {
-    "use strict";
-    init_native2();
-    init_rng2();
-    init_stringify2();
-    v4_default2 = v42;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/sha1.js
-function sha12(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto8.default.createHash("sha1").update(bytes).digest();
-}
-var import_crypto8, sha1_default2;
-var init_sha12 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/sha1.js"() {
-    "use strict";
-    import_crypto8 = __toESM(require("crypto"));
-    sha1_default2 = sha12;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v5.js
-var v52, v5_default2;
-var init_v52 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/v5.js"() {
-    "use strict";
-    init_v352();
-    init_sha12();
-    v52 = v352("v5", 80, sha1_default2);
-    v5_default2 = v52;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/nil.js
-var nil_default2;
-var init_nil2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/nil.js"() {
-    "use strict";
-    nil_default2 = "00000000-0000-0000-0000-000000000000";
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/version.js
-function version2(uuid) {
-  if (!validate_default2(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  return parseInt(uuid.slice(14, 15), 16);
-}
-var version_default2;
-var init_version2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/version.js"() {
-    "use strict";
-    init_validate2();
-    version_default2 = version2;
-  }
-});
-
-// node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/index.js
-var esm_node_exports2 = {};
-__export(esm_node_exports2, {
-  NIL: () => nil_default2,
-  parse: () => parse_default2,
-  stringify: () => stringify_default2,
-  v1: () => v1_default2,
-  v3: () => v3_default2,
-  v4: () => v4_default2,
-  v5: () => v5_default2,
-  validate: () => validate_default2,
-  version: () => version_default2
-});
-var init_esm_node2 = __esm({
-  "node_modules/@aws-sdk/client-ecs/node_modules/uuid/dist/esm-node/index.js"() {
-    "use strict";
-    init_v12();
-    init_v32();
-    init_v42();
-    init_v52();
-    init_nil2();
-    init_version2();
-    init_validate2();
-    init_stringify2();
-    init_parse2();
-  }
-});
-
 // node_modules/@smithy/util-waiter/dist-cjs/index.js
 var require_dist_cjs53 = __commonJS({
   "node_modules/@smithy/util-waiter/dist-cjs/index.js"(exports2, module2) {
@@ -18865,7 +18497,7 @@ var require_dist_cjs54 = __commonJS({
     };
     var import_middleware_serde8 = require_dist_cjs7();
     var import_core210 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var import_uuid = (init_esm_node2(), __toCommonJS(esm_node_exports2));
+    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
     var ECSServiceException = class _ECSServiceException extends import_smithy_client46.ServiceException {
       static {
         __name(this, "ECSServiceException");
@@ -25346,12 +24978,12 @@ var require_dist_cjs62 = __commonJS({
     var src_exports = {};
     __export2(src_exports, {
       build: () => build,
-      parse: () => parse6,
-      validate: () => validate6
+      parse: () => parse2,
+      validate: () => validate2
     });
     module2.exports = __toCommonJS2(src_exports);
-    var validate6 = /* @__PURE__ */ __name((str) => typeof str === "string" && str.indexOf("arn:") === 0 && str.split(":").length >= 6, "validate");
-    var parse6 = /* @__PURE__ */ __name((arn) => {
+    var validate2 = /* @__PURE__ */ __name((str) => typeof str === "string" && str.indexOf("arn:") === 0 && str.split(":").length >= 6, "validate");
+    var parse2 = /* @__PURE__ */ __name((arn) => {
       const segments = arn.split(":");
       if (segments.length < 6 || segments[0] !== "arn")
         throw new Error("Malformed ARN");
@@ -43282,374 +42914,6 @@ var require_runtimeConfig4 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/rng.js
-function rng3() {
-  if (poolPtr3 > rnds8Pool3.length - 16) {
-    import_crypto9.default.randomFillSync(rnds8Pool3);
-    poolPtr3 = 0;
-  }
-  return rnds8Pool3.slice(poolPtr3, poolPtr3 += 16);
-}
-var import_crypto9, rnds8Pool3, poolPtr3;
-var init_rng3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/rng.js"() {
-    "use strict";
-    import_crypto9 = __toESM(require("crypto"));
-    rnds8Pool3 = new Uint8Array(256);
-    poolPtr3 = rnds8Pool3.length;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/regex.js
-var regex_default3;
-var init_regex3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/regex.js"() {
-    "use strict";
-    regex_default3 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/validate.js
-function validate3(uuid) {
-  return typeof uuid === "string" && regex_default3.test(uuid);
-}
-var validate_default3;
-var init_validate3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/validate.js"() {
-    "use strict";
-    init_regex3();
-    validate_default3 = validate3;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/stringify.js
-function unsafeStringify3(arr, offset = 0) {
-  return byteToHex3[arr[offset + 0]] + byteToHex3[arr[offset + 1]] + byteToHex3[arr[offset + 2]] + byteToHex3[arr[offset + 3]] + "-" + byteToHex3[arr[offset + 4]] + byteToHex3[arr[offset + 5]] + "-" + byteToHex3[arr[offset + 6]] + byteToHex3[arr[offset + 7]] + "-" + byteToHex3[arr[offset + 8]] + byteToHex3[arr[offset + 9]] + "-" + byteToHex3[arr[offset + 10]] + byteToHex3[arr[offset + 11]] + byteToHex3[arr[offset + 12]] + byteToHex3[arr[offset + 13]] + byteToHex3[arr[offset + 14]] + byteToHex3[arr[offset + 15]];
-}
-function stringify3(arr, offset = 0) {
-  const uuid = unsafeStringify3(arr, offset);
-  if (!validate_default3(uuid)) {
-    throw TypeError("Stringified UUID is invalid");
-  }
-  return uuid;
-}
-var byteToHex3, stringify_default3;
-var init_stringify3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/stringify.js"() {
-    "use strict";
-    init_validate3();
-    byteToHex3 = [];
-    for (let i5 = 0; i5 < 256; ++i5) {
-      byteToHex3.push((i5 + 256).toString(16).slice(1));
-    }
-    stringify_default3 = stringify3;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v1.js
-function v13(options, buf, offset) {
-  let i5 = buf && offset || 0;
-  const b5 = buf || new Array(16);
-  options = options || {};
-  let node = options.node || _nodeId3;
-  let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq3;
-  if (node == null || clockseq == null) {
-    const seedBytes = options.random || (options.rng || rng3)();
-    if (node == null) {
-      node = _nodeId3 = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-    }
-    if (clockseq == null) {
-      clockseq = _clockseq3 = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-    }
-  }
-  let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-  let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs3 + 1;
-  const dt = msecs - _lastMSecs3 + (nsecs - _lastNSecs3) / 1e4;
-  if (dt < 0 && options.clockseq === void 0) {
-    clockseq = clockseq + 1 & 16383;
-  }
-  if ((dt < 0 || msecs > _lastMSecs3) && options.nsecs === void 0) {
-    nsecs = 0;
-  }
-  if (nsecs >= 1e4) {
-    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-  }
-  _lastMSecs3 = msecs;
-  _lastNSecs3 = nsecs;
-  _clockseq3 = clockseq;
-  msecs += 122192928e5;
-  const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-  b5[i5++] = tl >>> 24 & 255;
-  b5[i5++] = tl >>> 16 & 255;
-  b5[i5++] = tl >>> 8 & 255;
-  b5[i5++] = tl & 255;
-  const tmh = msecs / 4294967296 * 1e4 & 268435455;
-  b5[i5++] = tmh >>> 8 & 255;
-  b5[i5++] = tmh & 255;
-  b5[i5++] = tmh >>> 24 & 15 | 16;
-  b5[i5++] = tmh >>> 16 & 255;
-  b5[i5++] = clockseq >>> 8 | 128;
-  b5[i5++] = clockseq & 255;
-  for (let n5 = 0; n5 < 6; ++n5) {
-    b5[i5 + n5] = node[n5];
-  }
-  return buf || unsafeStringify3(b5);
-}
-var _nodeId3, _clockseq3, _lastMSecs3, _lastNSecs3, v1_default3;
-var init_v13 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v1.js"() {
-    "use strict";
-    init_rng3();
-    init_stringify3();
-    _lastMSecs3 = 0;
-    _lastNSecs3 = 0;
-    v1_default3 = v13;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/parse.js
-function parse3(uuid) {
-  if (!validate_default3(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  let v8;
-  const arr = new Uint8Array(16);
-  arr[0] = (v8 = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-  arr[1] = v8 >>> 16 & 255;
-  arr[2] = v8 >>> 8 & 255;
-  arr[3] = v8 & 255;
-  arr[4] = (v8 = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-  arr[5] = v8 & 255;
-  arr[6] = (v8 = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-  arr[7] = v8 & 255;
-  arr[8] = (v8 = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-  arr[9] = v8 & 255;
-  arr[10] = (v8 = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-  arr[11] = v8 / 4294967296 & 255;
-  arr[12] = v8 >>> 24 & 255;
-  arr[13] = v8 >>> 16 & 255;
-  arr[14] = v8 >>> 8 & 255;
-  arr[15] = v8 & 255;
-  return arr;
-}
-var parse_default3;
-var init_parse3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/parse.js"() {
-    "use strict";
-    init_validate3();
-    parse_default3 = parse3;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v35.js
-function stringToBytes3(str) {
-  str = unescape(encodeURIComponent(str));
-  const bytes = [];
-  for (let i5 = 0; i5 < str.length; ++i5) {
-    bytes.push(str.charCodeAt(i5));
-  }
-  return bytes;
-}
-function v353(name, version6, hashfunc) {
-  function generateUUID(value, namespace, buf, offset) {
-    var _namespace;
-    if (typeof value === "string") {
-      value = stringToBytes3(value);
-    }
-    if (typeof namespace === "string") {
-      namespace = parse_default3(namespace);
-    }
-    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
-      throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-    }
-    let bytes = new Uint8Array(16 + value.length);
-    bytes.set(namespace);
-    bytes.set(value, namespace.length);
-    bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version6;
-    bytes[8] = bytes[8] & 63 | 128;
-    if (buf) {
-      offset = offset || 0;
-      for (let i5 = 0; i5 < 16; ++i5) {
-        buf[offset + i5] = bytes[i5];
-      }
-      return buf;
-    }
-    return unsafeStringify3(bytes);
-  }
-  try {
-    generateUUID.name = name;
-  } catch (err2) {
-  }
-  generateUUID.DNS = DNS3;
-  generateUUID.URL = URL4;
-  return generateUUID;
-}
-var DNS3, URL4;
-var init_v353 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v35.js"() {
-    "use strict";
-    init_stringify3();
-    init_parse3();
-    DNS3 = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    URL4 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/md5.js
-function md53(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto10.default.createHash("md5").update(bytes).digest();
-}
-var import_crypto10, md5_default3;
-var init_md53 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/md5.js"() {
-    "use strict";
-    import_crypto10 = __toESM(require("crypto"));
-    md5_default3 = md53;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v3.js
-var v33, v3_default3;
-var init_v33 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v3.js"() {
-    "use strict";
-    init_v353();
-    init_md53();
-    v33 = v353("v3", 48, md5_default3);
-    v3_default3 = v33;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/native.js
-var import_crypto11, native_default3;
-var init_native3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/native.js"() {
-    "use strict";
-    import_crypto11 = __toESM(require("crypto"));
-    native_default3 = {
-      randomUUID: import_crypto11.default.randomUUID
-    };
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v4.js
-function v43(options, buf, offset) {
-  if (native_default3.randomUUID && !buf && !options) {
-    return native_default3.randomUUID();
-  }
-  options = options || {};
-  const rnds = options.random || (options.rng || rng3)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i5 = 0; i5 < 16; ++i5) {
-      buf[offset + i5] = rnds[i5];
-    }
-    return buf;
-  }
-  return unsafeStringify3(rnds);
-}
-var v4_default3;
-var init_v43 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v4.js"() {
-    "use strict";
-    init_native3();
-    init_rng3();
-    init_stringify3();
-    v4_default3 = v43;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/sha1.js
-function sha13(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto12.default.createHash("sha1").update(bytes).digest();
-}
-var import_crypto12, sha1_default3;
-var init_sha13 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/sha1.js"() {
-    "use strict";
-    import_crypto12 = __toESM(require("crypto"));
-    sha1_default3 = sha13;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v5.js
-var v53, v5_default3;
-var init_v53 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/v5.js"() {
-    "use strict";
-    init_v353();
-    init_sha13();
-    v53 = v353("v5", 80, sha1_default3);
-    v5_default3 = v53;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/nil.js
-var nil_default3;
-var init_nil3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/nil.js"() {
-    "use strict";
-    nil_default3 = "00000000-0000-0000-0000-000000000000";
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/version.js
-function version3(uuid) {
-  if (!validate_default3(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  return parseInt(uuid.slice(14, 15), 16);
-}
-var version_default3;
-var init_version3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/version.js"() {
-    "use strict";
-    init_validate3();
-    version_default3 = version3;
-  }
-});
-
-// node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/index.js
-var esm_node_exports3 = {};
-__export(esm_node_exports3, {
-  NIL: () => nil_default3,
-  parse: () => parse_default3,
-  stringify: () => stringify_default3,
-  v1: () => v1_default3,
-  v3: () => v3_default3,
-  v4: () => v4_default3,
-  v5: () => v5_default3,
-  validate: () => validate_default3,
-  version: () => version_default3
-});
-var init_esm_node3 = __esm({
-  "node_modules/@aws-sdk/client-scheduler/node_modules/uuid/dist/esm-node/index.js"() {
-    "use strict";
-    init_v13();
-    init_v33();
-    init_v43();
-    init_v53();
-    init_nil3();
-    init_version3();
-    init_validate3();
-    init_stringify3();
-    init_parse3();
-  }
-});
-
 // node_modules/@aws-sdk/client-scheduler/dist-cjs/index.js
 var require_dist_cjs81 = __commonJS({
   "node_modules/@aws-sdk/client-scheduler/dist-cjs/index.js"(exports2, module2) {
@@ -43838,7 +43102,7 @@ var require_dist_cjs81 = __commonJS({
     };
     var import_middleware_serde8 = require_dist_cjs7();
     var import_core210 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var import_uuid = (init_esm_node3(), __toCommonJS(esm_node_exports3));
+    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
     var SchedulerServiceException = class _SchedulerServiceException extends import_smithy_client46.ServiceException {
       static {
         __name(this, "SchedulerServiceException");
@@ -45630,374 +44894,6 @@ var require_httpAuthSchemeProvider5 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/rng.js
-function rng4() {
-  if (poolPtr4 > rnds8Pool4.length - 16) {
-    import_crypto13.default.randomFillSync(rnds8Pool4);
-    poolPtr4 = 0;
-  }
-  return rnds8Pool4.slice(poolPtr4, poolPtr4 += 16);
-}
-var import_crypto13, rnds8Pool4, poolPtr4;
-var init_rng4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/rng.js"() {
-    "use strict";
-    import_crypto13 = __toESM(require("crypto"));
-    rnds8Pool4 = new Uint8Array(256);
-    poolPtr4 = rnds8Pool4.length;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/regex.js
-var regex_default4;
-var init_regex4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/regex.js"() {
-    "use strict";
-    regex_default4 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/validate.js
-function validate4(uuid) {
-  return typeof uuid === "string" && regex_default4.test(uuid);
-}
-var validate_default4;
-var init_validate4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/validate.js"() {
-    "use strict";
-    init_regex4();
-    validate_default4 = validate4;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/stringify.js
-function unsafeStringify4(arr, offset = 0) {
-  return byteToHex4[arr[offset + 0]] + byteToHex4[arr[offset + 1]] + byteToHex4[arr[offset + 2]] + byteToHex4[arr[offset + 3]] + "-" + byteToHex4[arr[offset + 4]] + byteToHex4[arr[offset + 5]] + "-" + byteToHex4[arr[offset + 6]] + byteToHex4[arr[offset + 7]] + "-" + byteToHex4[arr[offset + 8]] + byteToHex4[arr[offset + 9]] + "-" + byteToHex4[arr[offset + 10]] + byteToHex4[arr[offset + 11]] + byteToHex4[arr[offset + 12]] + byteToHex4[arr[offset + 13]] + byteToHex4[arr[offset + 14]] + byteToHex4[arr[offset + 15]];
-}
-function stringify4(arr, offset = 0) {
-  const uuid = unsafeStringify4(arr, offset);
-  if (!validate_default4(uuid)) {
-    throw TypeError("Stringified UUID is invalid");
-  }
-  return uuid;
-}
-var byteToHex4, stringify_default4;
-var init_stringify4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/stringify.js"() {
-    "use strict";
-    init_validate4();
-    byteToHex4 = [];
-    for (let i5 = 0; i5 < 256; ++i5) {
-      byteToHex4.push((i5 + 256).toString(16).slice(1));
-    }
-    stringify_default4 = stringify4;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v1.js
-function v14(options, buf, offset) {
-  let i5 = buf && offset || 0;
-  const b5 = buf || new Array(16);
-  options = options || {};
-  let node = options.node || _nodeId4;
-  let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq4;
-  if (node == null || clockseq == null) {
-    const seedBytes = options.random || (options.rng || rng4)();
-    if (node == null) {
-      node = _nodeId4 = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-    }
-    if (clockseq == null) {
-      clockseq = _clockseq4 = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-    }
-  }
-  let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-  let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs4 + 1;
-  const dt = msecs - _lastMSecs4 + (nsecs - _lastNSecs4) / 1e4;
-  if (dt < 0 && options.clockseq === void 0) {
-    clockseq = clockseq + 1 & 16383;
-  }
-  if ((dt < 0 || msecs > _lastMSecs4) && options.nsecs === void 0) {
-    nsecs = 0;
-  }
-  if (nsecs >= 1e4) {
-    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-  }
-  _lastMSecs4 = msecs;
-  _lastNSecs4 = nsecs;
-  _clockseq4 = clockseq;
-  msecs += 122192928e5;
-  const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-  b5[i5++] = tl >>> 24 & 255;
-  b5[i5++] = tl >>> 16 & 255;
-  b5[i5++] = tl >>> 8 & 255;
-  b5[i5++] = tl & 255;
-  const tmh = msecs / 4294967296 * 1e4 & 268435455;
-  b5[i5++] = tmh >>> 8 & 255;
-  b5[i5++] = tmh & 255;
-  b5[i5++] = tmh >>> 24 & 15 | 16;
-  b5[i5++] = tmh >>> 16 & 255;
-  b5[i5++] = clockseq >>> 8 | 128;
-  b5[i5++] = clockseq & 255;
-  for (let n5 = 0; n5 < 6; ++n5) {
-    b5[i5 + n5] = node[n5];
-  }
-  return buf || unsafeStringify4(b5);
-}
-var _nodeId4, _clockseq4, _lastMSecs4, _lastNSecs4, v1_default4;
-var init_v14 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v1.js"() {
-    "use strict";
-    init_rng4();
-    init_stringify4();
-    _lastMSecs4 = 0;
-    _lastNSecs4 = 0;
-    v1_default4 = v14;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/parse.js
-function parse4(uuid) {
-  if (!validate_default4(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  let v8;
-  const arr = new Uint8Array(16);
-  arr[0] = (v8 = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-  arr[1] = v8 >>> 16 & 255;
-  arr[2] = v8 >>> 8 & 255;
-  arr[3] = v8 & 255;
-  arr[4] = (v8 = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-  arr[5] = v8 & 255;
-  arr[6] = (v8 = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-  arr[7] = v8 & 255;
-  arr[8] = (v8 = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-  arr[9] = v8 & 255;
-  arr[10] = (v8 = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-  arr[11] = v8 / 4294967296 & 255;
-  arr[12] = v8 >>> 24 & 255;
-  arr[13] = v8 >>> 16 & 255;
-  arr[14] = v8 >>> 8 & 255;
-  arr[15] = v8 & 255;
-  return arr;
-}
-var parse_default4;
-var init_parse4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/parse.js"() {
-    "use strict";
-    init_validate4();
-    parse_default4 = parse4;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v35.js
-function stringToBytes4(str) {
-  str = unescape(encodeURIComponent(str));
-  const bytes = [];
-  for (let i5 = 0; i5 < str.length; ++i5) {
-    bytes.push(str.charCodeAt(i5));
-  }
-  return bytes;
-}
-function v354(name, version6, hashfunc) {
-  function generateUUID(value, namespace, buf, offset) {
-    var _namespace;
-    if (typeof value === "string") {
-      value = stringToBytes4(value);
-    }
-    if (typeof namespace === "string") {
-      namespace = parse_default4(namespace);
-    }
-    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
-      throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-    }
-    let bytes = new Uint8Array(16 + value.length);
-    bytes.set(namespace);
-    bytes.set(value, namespace.length);
-    bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version6;
-    bytes[8] = bytes[8] & 63 | 128;
-    if (buf) {
-      offset = offset || 0;
-      for (let i5 = 0; i5 < 16; ++i5) {
-        buf[offset + i5] = bytes[i5];
-      }
-      return buf;
-    }
-    return unsafeStringify4(bytes);
-  }
-  try {
-    generateUUID.name = name;
-  } catch (err2) {
-  }
-  generateUUID.DNS = DNS4;
-  generateUUID.URL = URL5;
-  return generateUUID;
-}
-var DNS4, URL5;
-var init_v354 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v35.js"() {
-    "use strict";
-    init_stringify4();
-    init_parse4();
-    DNS4 = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    URL5 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/md5.js
-function md54(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto14.default.createHash("md5").update(bytes).digest();
-}
-var import_crypto14, md5_default4;
-var init_md54 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/md5.js"() {
-    "use strict";
-    import_crypto14 = __toESM(require("crypto"));
-    md5_default4 = md54;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v3.js
-var v34, v3_default4;
-var init_v34 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v3.js"() {
-    "use strict";
-    init_v354();
-    init_md54();
-    v34 = v354("v3", 48, md5_default4);
-    v3_default4 = v34;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/native.js
-var import_crypto15, native_default4;
-var init_native4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/native.js"() {
-    "use strict";
-    import_crypto15 = __toESM(require("crypto"));
-    native_default4 = {
-      randomUUID: import_crypto15.default.randomUUID
-    };
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v4.js
-function v44(options, buf, offset) {
-  if (native_default4.randomUUID && !buf && !options) {
-    return native_default4.randomUUID();
-  }
-  options = options || {};
-  const rnds = options.random || (options.rng || rng4)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i5 = 0; i5 < 16; ++i5) {
-      buf[offset + i5] = rnds[i5];
-    }
-    return buf;
-  }
-  return unsafeStringify4(rnds);
-}
-var v4_default4;
-var init_v44 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v4.js"() {
-    "use strict";
-    init_native4();
-    init_rng4();
-    init_stringify4();
-    v4_default4 = v44;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/sha1.js
-function sha14(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto16.default.createHash("sha1").update(bytes).digest();
-}
-var import_crypto16, sha1_default4;
-var init_sha14 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/sha1.js"() {
-    "use strict";
-    import_crypto16 = __toESM(require("crypto"));
-    sha1_default4 = sha14;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v5.js
-var v54, v5_default4;
-var init_v54 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/v5.js"() {
-    "use strict";
-    init_v354();
-    init_sha14();
-    v54 = v354("v5", 80, sha1_default4);
-    v5_default4 = v54;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/nil.js
-var nil_default4;
-var init_nil4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/nil.js"() {
-    "use strict";
-    nil_default4 = "00000000-0000-0000-0000-000000000000";
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/version.js
-function version4(uuid) {
-  if (!validate_default4(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  return parseInt(uuid.slice(14, 15), 16);
-}
-var version_default4;
-var init_version4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/version.js"() {
-    "use strict";
-    init_validate4();
-    version_default4 = version4;
-  }
-});
-
-// node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/index.js
-var esm_node_exports4 = {};
-__export(esm_node_exports4, {
-  NIL: () => nil_default4,
-  parse: () => parse_default4,
-  stringify: () => stringify_default4,
-  v1: () => v1_default4,
-  v3: () => v3_default4,
-  v4: () => v4_default4,
-  v5: () => v5_default4,
-  validate: () => validate_default4,
-  version: () => version_default4
-});
-var init_esm_node4 = __esm({
-  "node_modules/@aws-sdk/client-dynamodb/node_modules/uuid/dist/esm-node/index.js"() {
-    "use strict";
-    init_v14();
-    init_v34();
-    init_v44();
-    init_v54();
-    init_nil4();
-    init_version4();
-    init_validate4();
-    init_stringify4();
-    init_parse4();
-  }
-});
-
 // node_modules/@aws-sdk/client-dynamodb/package.json
 var require_package5 = __commonJS({
   "node_modules/@aws-sdk/client-dynamodb/package.json"(exports2, module2) {
@@ -46485,7 +45381,7 @@ var require_dist_cjs84 = __commonJS({
     };
     var import_core31 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
     var import_protocol_http14 = require_dist_cjs2();
-    var import_uuid = (init_esm_node4(), __toCommonJS(esm_node_exports4));
+    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
     var import_smithy_client46 = require_dist_cjs24();
     var DynamoDBServiceException = class _DynamoDBServiceException extends import_smithy_client46.ServiceException {
       static {
@@ -51526,374 +50422,6 @@ var require_runtimeConfig6 = __commonJS({
   }
 });
 
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/rng.js
-function rng5() {
-  if (poolPtr5 > rnds8Pool5.length - 16) {
-    import_crypto17.default.randomFillSync(rnds8Pool5);
-    poolPtr5 = 0;
-  }
-  return rnds8Pool5.slice(poolPtr5, poolPtr5 += 16);
-}
-var import_crypto17, rnds8Pool5, poolPtr5;
-var init_rng5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/rng.js"() {
-    "use strict";
-    import_crypto17 = __toESM(require("crypto"));
-    rnds8Pool5 = new Uint8Array(256);
-    poolPtr5 = rnds8Pool5.length;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/regex.js
-var regex_default5;
-var init_regex5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/regex.js"() {
-    "use strict";
-    regex_default5 = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/validate.js
-function validate5(uuid) {
-  return typeof uuid === "string" && regex_default5.test(uuid);
-}
-var validate_default5;
-var init_validate5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/validate.js"() {
-    "use strict";
-    init_regex5();
-    validate_default5 = validate5;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/stringify.js
-function unsafeStringify5(arr, offset = 0) {
-  return byteToHex5[arr[offset + 0]] + byteToHex5[arr[offset + 1]] + byteToHex5[arr[offset + 2]] + byteToHex5[arr[offset + 3]] + "-" + byteToHex5[arr[offset + 4]] + byteToHex5[arr[offset + 5]] + "-" + byteToHex5[arr[offset + 6]] + byteToHex5[arr[offset + 7]] + "-" + byteToHex5[arr[offset + 8]] + byteToHex5[arr[offset + 9]] + "-" + byteToHex5[arr[offset + 10]] + byteToHex5[arr[offset + 11]] + byteToHex5[arr[offset + 12]] + byteToHex5[arr[offset + 13]] + byteToHex5[arr[offset + 14]] + byteToHex5[arr[offset + 15]];
-}
-function stringify5(arr, offset = 0) {
-  const uuid = unsafeStringify5(arr, offset);
-  if (!validate_default5(uuid)) {
-    throw TypeError("Stringified UUID is invalid");
-  }
-  return uuid;
-}
-var byteToHex5, stringify_default5;
-var init_stringify5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/stringify.js"() {
-    "use strict";
-    init_validate5();
-    byteToHex5 = [];
-    for (let i5 = 0; i5 < 256; ++i5) {
-      byteToHex5.push((i5 + 256).toString(16).slice(1));
-    }
-    stringify_default5 = stringify5;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v1.js
-function v15(options, buf, offset) {
-  let i5 = buf && offset || 0;
-  const b5 = buf || new Array(16);
-  options = options || {};
-  let node = options.node || _nodeId5;
-  let clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq5;
-  if (node == null || clockseq == null) {
-    const seedBytes = options.random || (options.rng || rng5)();
-    if (node == null) {
-      node = _nodeId5 = [seedBytes[0] | 1, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-    }
-    if (clockseq == null) {
-      clockseq = _clockseq5 = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
-    }
-  }
-  let msecs = options.msecs !== void 0 ? options.msecs : Date.now();
-  let nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs5 + 1;
-  const dt = msecs - _lastMSecs5 + (nsecs - _lastNSecs5) / 1e4;
-  if (dt < 0 && options.clockseq === void 0) {
-    clockseq = clockseq + 1 & 16383;
-  }
-  if ((dt < 0 || msecs > _lastMSecs5) && options.nsecs === void 0) {
-    nsecs = 0;
-  }
-  if (nsecs >= 1e4) {
-    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-  }
-  _lastMSecs5 = msecs;
-  _lastNSecs5 = nsecs;
-  _clockseq5 = clockseq;
-  msecs += 122192928e5;
-  const tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
-  b5[i5++] = tl >>> 24 & 255;
-  b5[i5++] = tl >>> 16 & 255;
-  b5[i5++] = tl >>> 8 & 255;
-  b5[i5++] = tl & 255;
-  const tmh = msecs / 4294967296 * 1e4 & 268435455;
-  b5[i5++] = tmh >>> 8 & 255;
-  b5[i5++] = tmh & 255;
-  b5[i5++] = tmh >>> 24 & 15 | 16;
-  b5[i5++] = tmh >>> 16 & 255;
-  b5[i5++] = clockseq >>> 8 | 128;
-  b5[i5++] = clockseq & 255;
-  for (let n5 = 0; n5 < 6; ++n5) {
-    b5[i5 + n5] = node[n5];
-  }
-  return buf || unsafeStringify5(b5);
-}
-var _nodeId5, _clockseq5, _lastMSecs5, _lastNSecs5, v1_default5;
-var init_v15 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v1.js"() {
-    "use strict";
-    init_rng5();
-    init_stringify5();
-    _lastMSecs5 = 0;
-    _lastNSecs5 = 0;
-    v1_default5 = v15;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/parse.js
-function parse5(uuid) {
-  if (!validate_default5(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  let v8;
-  const arr = new Uint8Array(16);
-  arr[0] = (v8 = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-  arr[1] = v8 >>> 16 & 255;
-  arr[2] = v8 >>> 8 & 255;
-  arr[3] = v8 & 255;
-  arr[4] = (v8 = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-  arr[5] = v8 & 255;
-  arr[6] = (v8 = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-  arr[7] = v8 & 255;
-  arr[8] = (v8 = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-  arr[9] = v8 & 255;
-  arr[10] = (v8 = parseInt(uuid.slice(24, 36), 16)) / 1099511627776 & 255;
-  arr[11] = v8 / 4294967296 & 255;
-  arr[12] = v8 >>> 24 & 255;
-  arr[13] = v8 >>> 16 & 255;
-  arr[14] = v8 >>> 8 & 255;
-  arr[15] = v8 & 255;
-  return arr;
-}
-var parse_default5;
-var init_parse5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/parse.js"() {
-    "use strict";
-    init_validate5();
-    parse_default5 = parse5;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v35.js
-function stringToBytes5(str) {
-  str = unescape(encodeURIComponent(str));
-  const bytes = [];
-  for (let i5 = 0; i5 < str.length; ++i5) {
-    bytes.push(str.charCodeAt(i5));
-  }
-  return bytes;
-}
-function v355(name, version6, hashfunc) {
-  function generateUUID(value, namespace, buf, offset) {
-    var _namespace;
-    if (typeof value === "string") {
-      value = stringToBytes5(value);
-    }
-    if (typeof namespace === "string") {
-      namespace = parse_default5(namespace);
-    }
-    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
-      throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
-    }
-    let bytes = new Uint8Array(16 + value.length);
-    bytes.set(namespace);
-    bytes.set(value, namespace.length);
-    bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 15 | version6;
-    bytes[8] = bytes[8] & 63 | 128;
-    if (buf) {
-      offset = offset || 0;
-      for (let i5 = 0; i5 < 16; ++i5) {
-        buf[offset + i5] = bytes[i5];
-      }
-      return buf;
-    }
-    return unsafeStringify5(bytes);
-  }
-  try {
-    generateUUID.name = name;
-  } catch (err2) {
-  }
-  generateUUID.DNS = DNS5;
-  generateUUID.URL = URL6;
-  return generateUUID;
-}
-var DNS5, URL6;
-var init_v355 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v35.js"() {
-    "use strict";
-    init_stringify5();
-    init_parse5();
-    DNS5 = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-    URL6 = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/md5.js
-function md55(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto18.default.createHash("md5").update(bytes).digest();
-}
-var import_crypto18, md5_default5;
-var init_md55 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/md5.js"() {
-    "use strict";
-    import_crypto18 = __toESM(require("crypto"));
-    md5_default5 = md55;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v3.js
-var v36, v3_default5;
-var init_v36 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v3.js"() {
-    "use strict";
-    init_v355();
-    init_md55();
-    v36 = v355("v3", 48, md5_default5);
-    v3_default5 = v36;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/native.js
-var import_crypto19, native_default5;
-var init_native5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/native.js"() {
-    "use strict";
-    import_crypto19 = __toESM(require("crypto"));
-    native_default5 = {
-      randomUUID: import_crypto19.default.randomUUID
-    };
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v4.js
-function v45(options, buf, offset) {
-  if (native_default5.randomUUID && !buf && !options) {
-    return native_default5.randomUUID();
-  }
-  options = options || {};
-  const rnds = options.random || (options.rng || rng5)();
-  rnds[6] = rnds[6] & 15 | 64;
-  rnds[8] = rnds[8] & 63 | 128;
-  if (buf) {
-    offset = offset || 0;
-    for (let i5 = 0; i5 < 16; ++i5) {
-      buf[offset + i5] = rnds[i5];
-    }
-    return buf;
-  }
-  return unsafeStringify5(rnds);
-}
-var v4_default5;
-var init_v45 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v4.js"() {
-    "use strict";
-    init_native5();
-    init_rng5();
-    init_stringify5();
-    v4_default5 = v45;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/sha1.js
-function sha15(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === "string") {
-    bytes = Buffer.from(bytes, "utf8");
-  }
-  return import_crypto20.default.createHash("sha1").update(bytes).digest();
-}
-var import_crypto20, sha1_default5;
-var init_sha15 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/sha1.js"() {
-    "use strict";
-    import_crypto20 = __toESM(require("crypto"));
-    sha1_default5 = sha15;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v5.js
-var v55, v5_default5;
-var init_v55 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/v5.js"() {
-    "use strict";
-    init_v355();
-    init_sha15();
-    v55 = v355("v5", 80, sha1_default5);
-    v5_default5 = v55;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/nil.js
-var nil_default5;
-var init_nil5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/nil.js"() {
-    "use strict";
-    nil_default5 = "00000000-0000-0000-0000-000000000000";
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/version.js
-function version5(uuid) {
-  if (!validate_default5(uuid)) {
-    throw TypeError("Invalid UUID");
-  }
-  return parseInt(uuid.slice(14, 15), 16);
-}
-var version_default5;
-var init_version5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/version.js"() {
-    "use strict";
-    init_validate5();
-    version_default5 = version5;
-  }
-});
-
-// node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/index.js
-var esm_node_exports5 = {};
-__export(esm_node_exports5, {
-  NIL: () => nil_default5,
-  parse: () => parse_default5,
-  stringify: () => stringify_default5,
-  v1: () => v1_default5,
-  v3: () => v3_default5,
-  v4: () => v4_default5,
-  v5: () => v5_default5,
-  validate: () => validate_default5,
-  version: () => version_default5
-});
-var init_esm_node5 = __esm({
-  "node_modules/@aws-sdk/client-cloudformation/node_modules/uuid/dist/esm-node/index.js"() {
-    "use strict";
-    init_v15();
-    init_v36();
-    init_v45();
-    init_v55();
-    init_nil5();
-    init_version5();
-    init_validate5();
-    init_stringify5();
-    init_parse5();
-  }
-});
-
 // node_modules/@aws-sdk/client-cloudformation/dist-cjs/index.js
 var require_dist_cjs85 = __commonJS({
   "node_modules/@aws-sdk/client-cloudformation/dist-cjs/index.js"(exports2, module2) {
@@ -52268,7 +50796,7 @@ var require_dist_cjs85 = __commonJS({
     };
     var import_middleware_serde8 = require_dist_cjs7();
     var import_core210 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var import_uuid = (init_esm_node5(), __toCommonJS(esm_node_exports5));
+    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
     var CloudFormationServiceException = class _CloudFormationServiceException extends import_smithy_client46.ServiceException {
       static {
         __name(this, "CloudFormationServiceException");
@@ -70413,9 +68941,9 @@ var BucketsCleaner = class {
         const versions = response.Versions ?? [];
         const deleteMarkers = response.DeleteMarkers ?? [];
         const objectsToDelete = [
-          ...versions.map((version6) => ({
-            Key: version6.Key,
-            VersionId: version6.VersionId
+          ...versions.map((version2) => ({
+            Key: version2.Key,
+            VersionId: version2.VersionId
           })),
           ...deleteMarkers.map((marker) => ({
             Key: marker.Key,

@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import * as crypto from 'crypto';
 import { STS } from '@aws-sdk/client-sts';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Unit } from 'aws-embedded-metrics';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { v4 as uuidv4 } from 'uuid';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
@@ -75,12 +75,11 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 async function doHandler(event: APIGatewayProxyEvent, metrics: AccumulatingDimensionMetricsLogger): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const allocationId = uuidv4();
+  const allocationId = crypto.randomUUID();
   const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
 
   try {
 
-    console.log('Parsing request body');
     const request = parseRequestBody(event.body);
 
     metrics.setPool(request.pool);
