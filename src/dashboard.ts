@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
 import { Allocate } from './allocate';
@@ -23,7 +24,7 @@ export class Dashboard extends Construct {
   constructor(scope: Construct, id: string, props: DashboardProps) {
     super(scope, id);
 
-    const dashboard = new cloudwatch.Dashboard(this, 'Dashboard');
+    const dashboard = new cloudwatch.Dashboard(this, 'Dashboard', { dashboardName: props.name });
 
     const pools = Array.from(new Set(props.config.data.environments.map(e => e.pool)));
 
@@ -48,7 +49,7 @@ export class Dashboard extends Construct {
         props.allocate.metricStatusCode('$pool', 423).with({ color: ORANGE, label: '423 Locked' }),
         props.allocate.metricStatusCode('$pool', 400).with({ color: YELLOW, label: '400 Bad Request' }),
         props.allocate.metricStatusCode('$pool', 500).with({ color: RED, label: '500 Error' }),
-      ],
+      ].map(this.fillZero),
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
@@ -60,7 +61,7 @@ export class Dashboard extends Construct {
         props.deallocate.metricStatusCode('$pool', 200).with({ color: GREEN, label: '200 OK' }),
         props.deallocate.metricStatusCode('$pool', 400).with({ color: YELLOW, label: '400 Bad Request' }),
         props.deallocate.metricStatusCode('$pool', 500).with({ color: RED, label: '500 Error' }),
-      ],
+      ].map(this.fillZero),
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
@@ -72,7 +73,7 @@ export class Dashboard extends Construct {
         props.deallocate.metricOutcome('$pool', 'success').with({ color: GREEN, label: 'success' }),
         props.deallocate.metricOutcome('$pool', 'failure').with({ color: RED, label: 'failure' }),
         props.deallocate.metricOutcome('$pool', 'timeout').with({ color: YELLOW, label: 'timeout' }),
-      ],
+      ].map(this.fillZero),
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
@@ -83,7 +84,7 @@ export class Dashboard extends Construct {
       left: [
         props.cleanup.metricExitCode('$pool', 0).with({ color: GREEN, label: '0' }),
         props.cleanup.metricExitCode('$pool', 1).with({ color: RED, label: '1' }),
-      ],
+      ].map(this.fillZero),
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
@@ -94,12 +95,33 @@ export class Dashboard extends Construct {
       left: [
         props.cleanup.metricOutcome('$pool', 'clean').with({ color: GREEN, label: 'clean' }),
         props.cleanup.metricOutcome('$pool', 'dirty').with({ color: RED, label: 'dirty' }),
-      ],
+      ].map(this.fillZero),
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
     }));
 
+  }
+
+  private fillZero(metric: cloudwatch.Metric): cloudwatch.MathExpression {
+
+    const h = createHash('sha256')
+      .update(metric.namespace)
+      .update('\0')
+      .update(metric.metricName);
+
+    for (const [dk, dv] of Object.entries(metric.dimensions ?? {})) {
+      h.update('\0').update(`${dk}:${dv}`);
+    }
+
+    const metricName = `m${h.digest('hex')}`;
+
+    return new cloudwatch.MathExpression({
+      expression: `FILL(${metricName}, 0)`,
+      label: metric.label,
+      color: metric.color,
+      usingMetrics: { [metricName]: metric },
+    });
   }
 
 }

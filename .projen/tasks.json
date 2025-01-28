@@ -396,7 +396,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocate --force --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -465,7 +465,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --force --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -546,7 +546,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup-timeout --force --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -603,7 +603,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/cleanup --force --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -672,7 +672,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/deallocate --force --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
@@ -741,7 +741,7 @@
           "spawn": "bundle"
         },
         {
-          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --update-on-failed --disable-update-workflow --no-clean"
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --force --update-on-failed --disable-update-workflow --no-clean"
         }
       ]
     },
