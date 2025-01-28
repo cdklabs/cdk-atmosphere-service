@@ -4,7 +4,7 @@ import { RuntimeClients } from '../clients';
 import { Cleaner, CleanerError } from './cleaner';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
-import { RuntimeMetrics, AccumulatingDimensionMetricsLogger } from '../metrics';
+import { RuntimeMetrics, PoolAwareMetricsLogger } from '../metrics';
 import type { Allocation } from '../storage/allocations.client';
 import { EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
@@ -20,7 +20,9 @@ export const METRIC_DIMENSION_EXIT_CODE = 'exitCode';
 export const METRIC_DIMENSION_OUTCOME = 'outcome';
 
 export async function handler(req: CleanupRequest) {
+
   await RuntimeMetrics.scoped(async (metrics) => {
+
     let exitCode = 0;
     try {
       await doHandler(req, metrics);
@@ -28,14 +30,14 @@ export async function handler(req: CleanupRequest) {
       exitCode = 1;
       throw e;
     } finally {
-      metrics.addDimension(METRIC_DIMENSION_EXIT_CODE, `${exitCode}`);
-      metrics.putMetric(METRIC_NAME, 1, Unit.Count);
+      metrics.putDimensions({ [METRIC_DIMENSION_EXIT_CODE]: exitCode.toString() });
+      metrics.delegate.putMetric(METRIC_NAME, 1, Unit.Count);
     }
   });
 
 }
 
-export async function doHandler(req: CleanupRequest, metrics: AccumulatingDimensionMetricsLogger) {
+export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLogger) {
   console.log('Event:', JSON.stringify(req, null, 2));
 
   const log = new AllocationLogger({ id: req.allocationId, component: 'cleanup' });
@@ -59,12 +61,12 @@ export async function doHandler(req: CleanupRequest, metrics: AccumulatingDimens
     log.info(`Successfully cleaned '${env}'`);
 
     log.info(`Releasing environment '${env}'`);
-    await clients.environments.release(allocation.id, environment.account, environment.region);
+    await clients.environments.release(req.allocationId, environment.account, environment.region);
     log.info(`Successfully released environment '${env}'`);
 
     log.info('Done!');
 
-    metrics.addDimension(METRIC_DIMENSION_OUTCOME, 'clean');
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: 'clean' });
 
   } catch (e: any) {
 
@@ -76,12 +78,12 @@ export async function doHandler(req: CleanupRequest, metrics: AccumulatingDimens
       return;
     }
 
-    metrics.addDimension(METRIC_DIMENSION_OUTCOME, 'dirty');
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: 'dirty' });
 
     log.error(e);
 
     log.info(`Marking environment '${env}' as 'dirty'`);
-    await clients.environments.dirty(allocation.id, allocation.account, allocation.region);
+    await clients.environments.dirty(req.allocationId, allocation.account, allocation.region);
     log.info(`Successfully marked environment '${env}' as 'dirty'`);
 
     if (e instanceof CleanerError) {
@@ -99,7 +101,7 @@ export async function doHandler(req: CleanupRequest, metrics: AccumulatingDimens
 
     }
 
-    throw new Error(`Failed cleaning '${env}'`);
+    throw e;
   }
 
 }

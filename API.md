@@ -45,6 +45,7 @@ new Allocate(scope: Construct, id: string, props: AllocateProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate.metricStatusCode">metricStatusCode</a></code> | *No description.* |
 
 ---
 
@@ -55,6 +56,24 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `metricStatusCode` <a name="metricStatusCode" id="@cdklabs/cdk-atmosphere-service.Allocate.metricStatusCode"></a>
+
+```typescript
+public metricStatusCode(pool: string, statusCode: number): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Allocate.metricStatusCode.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+###### `statusCode`<sup>Required</sup> <a name="statusCode" id="@cdklabs/cdk-atmosphere-service.Allocate.metricStatusCode.parameter.statusCode"></a>
+
+- *Type:* number
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -321,6 +340,7 @@ Any object.
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | Provides access to the allocations table. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.cleanup">cleanup</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a></code> | Provides access to the cleanup task. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | Provides access to the service configuration file. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.dashboard">dashboard</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard">Dashboard</a></code> | Provides access to the operational dashboard. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Provides access to the deaclloce function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.endpoint">endpoint</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint">Endpoint</a></code> | Provides access to the API gateway endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Provides access to the environments table. |
@@ -385,6 +405,18 @@ public readonly config: Configuration;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
 
 Provides access to the service configuration file.
+
+---
+
+##### `dashboard`<sup>Required</sup> <a name="dashboard" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.dashboard"></a>
+
+```typescript
+public readonly dashboard: Dashboard;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Dashboard">Dashboard</a>
+
+Provides access to the operational dashboard.
 
 ---
 
@@ -481,6 +513,8 @@ new Cleanup(scope: Construct, id: string, props: CleanupProps)
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.toString">toString</a></code> | Returns a string representation of this construct. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.grantRun">grantRun</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.metricExitCode">metricExitCode</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup.metricOutcome">metricOutcome</a></code> | *No description.* |
 
 ---
 
@@ -501,6 +535,42 @@ public grantRun(grantee: IGrantable): void
 ###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-atmosphere-service.Cleanup.grantRun.parameter.grantee"></a>
 
 - *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+##### `metricExitCode` <a name="metricExitCode" id="@cdklabs/cdk-atmosphere-service.Cleanup.metricExitCode"></a>
+
+```typescript
+public metricExitCode(pool: string, exitCode: number): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Cleanup.metricExitCode.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+###### `exitCode`<sup>Required</sup> <a name="exitCode" id="@cdklabs/cdk-atmosphere-service.Cleanup.metricExitCode.parameter.exitCode"></a>
+
+- *Type:* number
+
+---
+
+##### `metricOutcome` <a name="metricOutcome" id="@cdklabs/cdk-atmosphere-service.Cleanup.metricOutcome"></a>
+
+```typescript
+public metricOutcome(pool: string, outcome: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Cleanup.metricOutcome.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+###### `outcome`<sup>Required</sup> <a name="outcome" id="@cdklabs/cdk-atmosphere-service.Cleanup.metricOutcome.parameter.outcome"></a>
+
+- *Type:* string
 
 ---
 
@@ -765,6 +835,105 @@ S3 Object key of configuration file.
 ---
 
 
+### Dashboard <a name="Dashboard" id="@cdklabs/cdk-atmosphere-service.Dashboard"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.Dashboard.Initializer"></a>
+
+```typescript
+import { Dashboard } from '@cdklabs/cdk-atmosphere-service'
+
+new Dashboard(scope: Construct, id: string, props: DashboardProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps">DashboardProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.Dashboard.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.Dashboard.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.Dashboard.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.DashboardProps">DashboardProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.Dashboard.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.Dashboard.isConstruct"></a>
+
+```typescript
+import { Dashboard } from '@cdklabs/cdk-atmosphere-service'
+
+Dashboard.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.Dashboard.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Dashboard.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.Dashboard.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+
 ### Deallocate <a name="Deallocate" id="@cdklabs/cdk-atmosphere-service.Deallocate"></a>
 
 Deallocate function.
@@ -808,6 +977,8 @@ new Deallocate(scope: Construct, id: string, props: DeallocateProps)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate.metricOutcome">metricOutcome</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate.metricStatusCode">metricStatusCode</a></code> | *No description.* |
 
 ---
 
@@ -818,6 +989,42 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `metricOutcome` <a name="metricOutcome" id="@cdklabs/cdk-atmosphere-service.Deallocate.metricOutcome"></a>
+
+```typescript
+public metricOutcome(pool: string, outcome: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Deallocate.metricOutcome.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+###### `outcome`<sup>Required</sup> <a name="outcome" id="@cdklabs/cdk-atmosphere-service.Deallocate.metricOutcome.parameter.outcome"></a>
+
+- *Type:* string
+
+---
+
+##### `metricStatusCode` <a name="metricStatusCode" id="@cdklabs/cdk-atmosphere-service.Deallocate.metricStatusCode"></a>
+
+```typescript
+public metricStatusCode(pool: string, statusCode: number): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Deallocate.metricStatusCode.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+###### `statusCode`<sup>Required</sup> <a name="statusCode" id="@cdklabs/cdk-atmosphere-service.Deallocate.metricStatusCode.parameter.statusCode"></a>
+
+- *Type:* number
+
+---
 
 #### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
@@ -1528,6 +1735,78 @@ public readonly data: ConfigurationData;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData">ConfigurationData</a>
 
 Data of the configuration file.
+
+---
+
+### DashboardProps <a name="DashboardProps" id="@cdklabs/cdk-atmosphere-service.DashboardProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.DashboardProps.Initializer"></a>
+
+```typescript
+import { DashboardProps } from '@cdklabs/cdk-atmosphere-service'
+
+const dashboardProps: DashboardProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.allocate">allocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate">Allocate</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.cleanup">cleanup</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.name">name</a></code> | <code>string</code> | *No description.* |
+
+---
+
+##### `allocate`<sup>Required</sup> <a name="allocate" id="@cdklabs/cdk-atmosphere-service.DashboardProps.property.allocate"></a>
+
+```typescript
+public readonly allocate: Allocate;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocate">Allocate</a>
+
+---
+
+##### `cleanup`<sup>Required</sup> <a name="cleanup" id="@cdklabs/cdk-atmosphere-service.DashboardProps.property.cleanup"></a>
+
+```typescript
+public readonly cleanup: Cleanup;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a>
+
+---
+
+##### `config`<sup>Required</sup> <a name="config" id="@cdklabs/cdk-atmosphere-service.DashboardProps.property.config"></a>
+
+```typescript
+public readonly config: Configuration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
+
+---
+
+##### `deallocate`<sup>Required</sup> <a name="deallocate" id="@cdklabs/cdk-atmosphere-service.DashboardProps.property.deallocate"></a>
+
+```typescript
+public readonly deallocate: Deallocate;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a>
+
+---
+
+##### `name`<sup>Required</sup> <a name="name" id="@cdklabs/cdk-atmosphere-service.DashboardProps.property.name"></a>
+
+```typescript
+public readonly name: string;
+```
+
+- *Type:* string
 
 ---
 

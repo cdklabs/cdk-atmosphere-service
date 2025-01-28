@@ -4,6 +4,7 @@ import { Allocate } from './allocate';
 import { Cleanup } from './cleanup';
 import { Configuration } from './config';
 import { Deallocate } from './deallocate';
+import { UNKNOWN_POOL } from './metrics';
 
 const RED = '#FF0000';
 const GREEN = '#4CAF50';
@@ -25,6 +26,10 @@ export class Dashboard extends Construct {
     const dashboard = new cloudwatch.Dashboard(this, 'Dashboard');
 
     const pools = Array.from(new Set(props.config.data.environments.map(e => e.pool)));
+
+    // we also want to see operations that were unable to determine
+    // which pool they belong to.
+    pools.push(UNKNOWN_POOL);
 
     dashboard.addVariable(new cloudwatch.DashboardVariable({
       id: 'pool',

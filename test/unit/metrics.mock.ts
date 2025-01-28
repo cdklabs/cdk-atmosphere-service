@@ -1,11 +1,10 @@
-import { MetricsLogger } from 'aws-embedded-metrics';
-import { AccumulatingDimensionMetricsLogger, RuntimeMetrics } from '../../src/metrics';
+import { PoolAwareMetricsLogger, RuntimeMetrics } from '../../src/metrics';
 
 export class MetricsMock {
 
-  public static mock(): MetricsLogger {
+  public static mock(): PoolAwareMetricsLogger {
 
-    const mock = new AccumulatingDimensionMetricsLogger({
+    const mock = new PoolAwareMetricsLogger({
       putMetric: jest.fn(),
       putDimensions: jest.fn(),
       setDimensions: jest.fn(),
@@ -14,12 +13,12 @@ export class MetricsMock {
       flush: jest.fn(),
     } as any);
 
-    async function scoped<T>(handler: (m: AccumulatingDimensionMetricsLogger) => Promise<T>) {
+    async function scoped<T>(handler: (m: PoolAwareMetricsLogger) => Promise<T>) {
       return handler(mock);
     }
 
     jest.spyOn(RuntimeMetrics, 'scoped').mockImplementation(scoped);
 
-    return mock as any;
+    return mock;
   }
 }

@@ -3,7 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
-import { AccumulatingDimensionMetricsLogger, RuntimeMetrics } from '../metrics';
+import { PoolAwareMetricsLogger, RuntimeMetrics } from '../metrics';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
 
 // an hour should plenty to clean one environment
@@ -32,7 +32,7 @@ export interface DeallocateResponse {
   readonly cleanupDurationSeconds: number;
 }
 
-export const METRIC_NAME = 'allocate';
+export const METRIC_NAME = 'deallocate';
 export const METRIC_DIMENSION_STATUS_CODE = 'statusCode';
 export const METRIC_DIMENSION_OUTCOME = 'outcome';
 
@@ -42,29 +42,24 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   return RuntimeMetrics.scoped(async (metrics) => {
 
-    let statusCode;
     try {
-      const result = await doHandler(event, metrics);
-      statusCode = result.statusCode;
-      return result;
-    } catch (e: any) {
-      statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      return failure(statusCode, e.message);
+      const response = await doHandler(event, metrics);
+      metrics.putDimensions({ [METRIC_DIMENSION_STATUS_CODE]: response.statusCode.toString() });
+      return response;
     } finally {
-      metrics.addDimension(METRIC_DIMENSION_STATUS_CODE, `${statusCode}`);
-      metrics.putMetric(METRIC_NAME, 1, Unit.Count);
+      metrics.delegate.putMetric(METRIC_NAME, 1, Unit.Count);
     }
 
   });
 
 }
 
-export async function doHandler(event: APIGatewayProxyEvent, metrics: AccumulatingDimensionMetricsLogger): Promise<APIGatewayProxyResult> {
+export async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareMetricsLogger): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
   const id = (event.pathParameters ?? {}).id;
   if (!id) {
-    throw new ProxyError(400, 'Missing \'id\' path parameter');
+    return failure(400, 'Missing \'id\' path parameter');
   }
 
   const log = new AllocationLogger({ id, component: 'deallocate' });
@@ -85,7 +80,7 @@ export async function doHandler(event: APIGatewayProxyEvent, metrics: Accumulati
     const allocation = await endAllocation(id, request.outcome);
 
     metrics.setPool(allocation.pool);
-    metrics.addDimension(METRIC_DIMENSION_OUTCOME, request.outcome);
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: request.outcome });
 
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
     await clients.scheduler.scheduleCleanupTimeout({
@@ -111,7 +106,8 @@ export async function doHandler(event: APIGatewayProxyEvent, metrics: Accumulati
       return success(200, { cleanupDurationSeconds: -1 });
     }
     log.error(e);
-    throw e;
+    const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+    return failure(statusCode, e.message);
   }
 }
 

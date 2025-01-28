@@ -1,53 +1,55 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MetricsLogger, Unit, createMetricsLogger } from 'aws-embedded-metrics';
+import { MetricsLogger, createMetricsLogger } from 'aws-embedded-metrics';
 
 export const METRICS_NAMESPACE = 'Atmosphere';
 export const METRIC_DIMENSION_POOL = 'pool';
+export const UNKNOWN_POOL = 'UNKNOWN';
 
 export class RuntimeMetrics {
 
-  public static async scoped<T>(handler: (m: AccumulatingDimensionMetricsLogger) => Promise<T>) {
+  public static async scoped<T>(handler: (m: PoolAwareMetricsLogger) => Promise<T>) {
 
-    const metrics = new AccumulatingDimensionMetricsLogger(createMetricsLogger());
+    const metrics = new PoolAwareMetricsLogger(createMetricsLogger());
 
-    // we can't always know the pool an operation belongs to.
-    // so we start with 'UNKNOWN' and let downstream handlers override
-    // it once the pool is discovered.
-    metrics.addDimension(METRIC_DIMENSION_POOL, 'UNKNOWN');
+    metrics.delegate.setNamespace(METRICS_NAMESPACE);
+    metrics.delegate.setDimensions({});
 
     try {
       return await handler(metrics);
     } finally {
-      await metrics.flush();
+      await metrics.delegate.flush();
     }
   }
 
 }
 
-export class AccumulatingDimensionMetricsLogger {
+/**
+ * Wrapper logger that ensures each dimension set associated
+ * with a metric includes a pool diemnsion. It allows operations
+ * to configure a pool once, and then continously add dimension sets as
+ * more dimensions become available.
+ */
+export class PoolAwareMetricsLogger {
 
-  private readonly dimensions: Record<string, string> = {};
+  private pool: string;
 
-  public constructor(private readonly metrics: MetricsLogger) {
-    metrics.setNamespace(METRICS_NAMESPACE);
-    metrics.setDimensions({});
-  }
-
-  public putMetric(key: string, value: number, unit: Unit) {
-    this.metrics.setDimensions(this.dimensions);
-    this.metrics.putMetric(key, value, unit);
+  public constructor(public readonly delegate: MetricsLogger) {
+    // we can't always know the pool an operation belongs to because
+    // it may fail before discovering it. so we start with 'UNKNOWN' and let
+    // downstream handlers override once they can.
+    this.pool = UNKNOWN_POOL;
   }
 
   public setPool(pool: string) {
-    this.addDimension(METRIC_DIMENSION_POOL, pool);
+    this.pool = pool;
   }
 
-  public addDimension(key: string, value: string) {
-    this.dimensions[key] = value;
+  public putDimensions(dimensions: Record<string, string>) {
+    this.delegate.putDimensions({
+      ...dimensions,
+      [METRIC_DIMENSION_POOL]: this.pool,
+    });
   }
 
-  public async flush() {
-    await this.metrics.flush();
-  }
 }
 

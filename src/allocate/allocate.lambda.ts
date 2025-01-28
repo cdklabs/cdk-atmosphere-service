@@ -9,7 +9,7 @@ import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
-import { RuntimeMetrics, AccumulatingDimensionMetricsLogger } from '../metrics';
+import { RuntimeMetrics, PoolAwareMetricsLogger } from '../metrics';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
@@ -55,24 +55,19 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
   return RuntimeMetrics.scoped(async (metrics) => {
 
-    let statusCode;
     try {
-      const result = await doHandler(event, metrics);
-      statusCode = result.statusCode;
-      return result;
-    } catch (e: any) {
-      statusCode = e instanceof ProxyError ? e.statusCode : 500;
-      return failure(statusCode, e.message);
+      const response = await doHandler(event, metrics);
+      metrics.putDimensions({ [METRIC_DIMENSION_STATUS_CODE]: response.statusCode.toString() });
+      return response;
     } finally {
-      metrics.addDimension(METRIC_DIMENSION_STATUS_CODE, `${statusCode}`);
-      metrics.putMetric(METRIC_NAME, 1, Unit.Count);
+      metrics.delegate.putMetric(METRIC_NAME, 1, Unit.Count);
     }
 
   });
 
 };
 
-async function doHandler(event: APIGatewayProxyEvent, metrics: AccumulatingDimensionMetricsLogger): Promise<APIGatewayProxyResult> {
+async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareMetricsLogger): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
   const allocationId = crypto.randomUUID();
@@ -80,10 +75,7 @@ async function doHandler(event: APIGatewayProxyEvent, metrics: AccumulatingDimen
 
   try {
 
-    const request = parseRequestBody(event.body);
-
-    metrics.setPool(request.pool);
-
+    const request = parseRequestBody(event.body, metrics);
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
@@ -116,7 +108,8 @@ async function doHandler(event: APIGatewayProxyEvent, metrics: AccumulatingDimen
 
   } catch (e: any) {
     log.error(e);
-    throw e;
+    const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+    return failure(statusCode, e.message);
   }
 }
 
@@ -128,7 +121,7 @@ function failure(statusCode: number, message: string) {
   return { statusCode: statusCode, body: JSON.stringify({ message }) };
 }
 
-function parseRequestBody(body: string | null): AllocateRequest {
+function parseRequestBody(body: string | null, metrics: PoolAwareMetricsLogger): AllocateRequest {
 
   if (!body) {
     throw new ProxyError(400, 'Request body not found');
@@ -138,6 +131,9 @@ function parseRequestBody(body: string | null): AllocateRequest {
   if (!parsed.pool) {
     throw new ProxyError(400, '\'pool\' must be provided in the request body');
   }
+
+  metrics.setPool(parsed.pool);
+
   if (!parsed.requester) {
     throw new ProxyError(400, '\'requester\' must be provided in the request body');
   }

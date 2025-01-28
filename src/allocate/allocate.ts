@@ -82,7 +82,7 @@ export class Allocate extends Construct {
       metricName: METRIC_NAME,
       dimensionsMap: {
         [METRIC_DIMENSION_POOL]: pool,
-        [METRIC_DIMENSION_STATUS_CODE]: `${statusCode}`,
+        [METRIC_DIMENSION_STATUS_CODE]: statusCode.toString(),
       },
       namespace: METRICS_NAMESPACE,
       statistic: 'sum',

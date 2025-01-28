@@ -128,8 +128,8 @@ describe('handler', () => {
       functionArn: 'arn',
       timeoutDate: new Date(now.getTime() + 60 * 60 * 1000),
     });
-    expect(mockMetrics.putMetric).toHaveBeenCalledWith('release.200', 1, 'Count');
-
+    expect(mockMetrics.delegate.putDimensions).toHaveBeenCalledWith({ pool: 'release', statusCode: '200' });
+    expect(mockMetrics.delegate.putMetric).toHaveBeenCalledWith('deallocate', 1, 'Count');
   });
 
   test('respects cleanup timeout', async () => {
