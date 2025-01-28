@@ -33,7 +33,7 @@ const project = new CdklabsConstructLibrary({
   ],
   name: '@cdklabs/cdk-atmosphere-service',
   projenrcTs: true,
-  release: false,
+  release: true,
   jestOptions: {
     jestConfig: {
       coverageThreshold: {
