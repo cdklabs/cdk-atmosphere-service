@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c4a4e5a17b963d0dc06c0b6bc836bb1a764242975ec5b866115b74f16f64d87.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7207901b9afb1d94fe11eab73bc88db27ceff2b0951cf4d6fd323af1b310a642.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -193,7 +193,10 @@
         "/atmosphere-integ-allocation-timeout/Atmosphere/Cleanup/TaskDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereCleanupTaskDefinition211D8C31"
+            "data": "AtmosphereCleanupTaskDefinition211D8C31",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/atmosphere-integ-allocation-timeout/Atmosphere/Cleanup/TaskDefinition/ExecutionRole/Resource": [
@@ -368,6 +371,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereEndpointApiallocationsidDELETE40B2AB4B"
+          }
+        ],
+        "/atmosphere-integ-allocation-timeout/Atmosphere/Monitor/Environments/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
+          }
+        ],
+        "/atmosphere-integ-allocation-timeout/Atmosphere/Monitor/Environments/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641"
+          }
+        ],
+        "/atmosphere-integ-allocation-timeout/Atmosphere/Monitor/Environments/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsFunction0200F617"
+          }
+        ],
+        "/atmosphere-integ-allocation-timeout/Atmosphere/Monitor/Environments/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsSchedule396DBD98"
+          }
+        ],
+        "/atmosphere-integ-allocation-timeout/Atmosphere/Monitor/Environments/Schedule/AllowEventRuleatmosphereintegallocationtimeoutAtmosphereMonitorEnvironmentsFunctionA1CD9361": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsScheduleAllowEventRuleatmosphereintegallocationtimeoutAtmosphereMonitorEnvironmentsFunctionA1CD9361F25C6906"
           }
         ],
         "/atmosphere-integ-allocation-timeout/Atmosphere/Dashboard/Dashboard/Resource": [
@@ -568,7 +601,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66242c66dac1b9a297dcbdce89c56d7b6f9ef3ea5e95bece2eae390f52b8068d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4277d07a812b49db9e18e0b7ce1885221e431231fd1735ff70f5948cfcc17f61.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

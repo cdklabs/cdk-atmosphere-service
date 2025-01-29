@@ -344,6 +344,7 @@ Any object.
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Provides access to the deaclloce function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.endpoint">endpoint</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Endpoint">Endpoint</a></code> | Provides access to the API gateway endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | Provides access to the environments table. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.monitor">monitor</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor">Monitor</a></code> | Provides access to the monitor functions. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AtmosphereService.property.scheduler">scheduler</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a></code> | Provides access to the scheduler. |
 
 ---
@@ -453,6 +454,18 @@ public readonly environments: Environments;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 Provides access to the environments table.
+
+---
+
+##### `monitor`<sup>Required</sup> <a name="monitor" id="@cdklabs/cdk-atmosphere-service.AtmosphereService.property.monitor"></a>
+
+```typescript
+public readonly monitor: Monitor;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Monitor">Monitor</a>
+
+Provides access to the monitor functions.
 
 ---
 
@@ -1258,6 +1271,7 @@ new Environments(scope: Construct, id: string)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.grantRead">grantRead</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite">grantReadWrite</a></code> | *No description.* |
 
 ---
@@ -1269,6 +1283,18 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `grantRead` <a name="grantRead" id="@cdklabs/cdk-atmosphere-service.Environments.grantRead"></a>
+
+```typescript
+public grantRead(identity: IGrantable): void
+```
+
+###### `identity`<sup>Required</sup> <a name="identity" id="@cdklabs/cdk-atmosphere-service.Environments.grantRead.parameter.identity"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
 
 ##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-atmosphere-service.Environments.grantReadWrite"></a>
 
@@ -1336,6 +1362,280 @@ public readonly table: Table;
 ```
 
 - *Type:* aws-cdk-lib.aws_dynamodb.Table
+
+---
+
+
+### EnvironmentsMonitor <a name="EnvironmentsMonitor" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer"></a>
+
+```typescript
+import { EnvironmentsMonitor } from '@cdklabs/cdk-atmosphere-service'
+
+new EnvironmentsMonitor(scope: Construct, id: string, props: EnvironmentsMonitorProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps">EnvironmentsMonitorProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps">EnvironmentsMonitorProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricCleaning">metricCleaning</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricDirty">metricDirty</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricFree">metricFree</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricInUse">metricInUse</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricRegistered">metricRegistered</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `metricCleaning` <a name="metricCleaning" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricCleaning"></a>
+
+```typescript
+public metricCleaning(pool: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricCleaning.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+##### `metricDirty` <a name="metricDirty" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricDirty"></a>
+
+```typescript
+public metricDirty(pool: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricDirty.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+##### `metricFree` <a name="metricFree" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricFree"></a>
+
+```typescript
+public metricFree(pool: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricFree.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+##### `metricInUse` <a name="metricInUse" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricInUse"></a>
+
+```typescript
+public metricInUse(pool: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricInUse.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+##### `metricRegistered` <a name="metricRegistered" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricRegistered"></a>
+
+```typescript
+public metricRegistered(pool: string): Metric
+```
+
+###### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.metricRegistered.parameter.pool"></a>
+
+- *Type:* string
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.isConstruct"></a>
+
+```typescript
+import { EnvironmentsMonitor } from '@cdklabs/cdk-atmosphere-service'
+
+EnvironmentsMonitor.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+
+### Monitor <a name="Monitor" id="@cdklabs/cdk-atmosphere-service.Monitor"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.Monitor.Initializer"></a>
+
+```typescript
+import { Monitor } from '@cdklabs/cdk-atmosphere-service'
+
+new Monitor(scope: Construct, id: string, props: MonitorProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.MonitorProps">MonitorProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.Monitor.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.Monitor.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.Monitor.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.MonitorProps">MonitorProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.toString">toString</a></code> | Returns a string representation of this construct. |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.Monitor.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.Monitor.isConstruct"></a>
+
+```typescript
+import { Monitor } from '@cdklabs/cdk-atmosphere-service'
+
+Monitor.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.Monitor.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor">EnvironmentsMonitor</a></code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.Monitor.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.Monitor.property.environments"></a>
+
+```typescript
+public readonly environments: EnvironmentsMonitor;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitor">EnvironmentsMonitor</a>
 
 ---
 
@@ -1756,6 +2056,7 @@ const dashboardProps: DashboardProps = { ... }
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.cleanup">cleanup</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Cleanup">Cleanup</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.config">config</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.monitor">monitor</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Monitor">Monitor</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.DashboardProps.property.name">name</a></code> | <code>string</code> | *No description.* |
 
 ---
@@ -1797,6 +2098,16 @@ public readonly deallocate: Deallocate;
 ```
 
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a>
+
+---
+
+##### `monitor`<sup>Required</sup> <a name="monitor" id="@cdklabs/cdk-atmosphere-service.DashboardProps.property.monitor"></a>
+
+```typescript
+public readonly monitor: Monitor;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Monitor">Monitor</a>
 
 ---
 
@@ -2044,6 +2355,84 @@ public readonly region: string;
 - *Type:* string
 
 Region.
+
+---
+
+### EnvironmentsMonitorProps <a name="EnvironmentsMonitorProps" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps.Initializer"></a>
+
+```typescript
+import { EnvironmentsMonitorProps } from '@cdklabs/cdk-atmosphere-service'
+
+const environmentsMonitorProps: EnvironmentsMonitorProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps.property.configuration">configuration</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | *No description.* |
+
+---
+
+##### `configuration`<sup>Required</sup> <a name="configuration" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps.property.configuration"></a>
+
+```typescript
+public readonly configuration: Configuration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.EnvironmentsMonitorProps.property.environments"></a>
+
+```typescript
+public readonly environments: Environments;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
+
+---
+
+### MonitorProps <a name="MonitorProps" id="@cdklabs/cdk-atmosphere-service.MonitorProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.MonitorProps.Initializer"></a>
+
+```typescript
+import { MonitorProps } from '@cdklabs/cdk-atmosphere-service'
+
+const monitorProps: MonitorProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.MonitorProps.property.configuration">configuration</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.MonitorProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | *No description.* |
+
+---
+
+##### `configuration`<sup>Required</sup> <a name="configuration" id="@cdklabs/cdk-atmosphere-service.MonitorProps.property.configuration"></a>
+
+```typescript
+public readonly configuration: Configuration;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Configuration">Configuration</a>
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.MonitorProps.property.environments"></a>
+
+```typescript
+public readonly environments: Environments;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 ---
 
