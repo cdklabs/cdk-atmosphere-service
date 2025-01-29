@@ -3450,6 +3450,7 @@ var require_fs = __commonJS({
       "chown",
       "close",
       "copyFile",
+      "cp",
       "fchmod",
       "fchown",
       "fdatasync",
@@ -3457,8 +3458,10 @@ var require_fs = __commonJS({
       "fsync",
       "ftruncate",
       "futimes",
+      "glob",
       "lchmod",
       "lchown",
+      "lutimes",
       "link",
       "lstat",
       "mkdir",
@@ -3473,6 +3476,7 @@ var require_fs = __commonJS({
       "rm",
       "rmdir",
       "stat",
+      "statfs",
       "symlink",
       "truncate",
       "unlink",
@@ -3875,15 +3879,21 @@ var require_copy = __commonJS({
       if (!destStat) {
         await fs2.mkdir(dest);
       }
-      const items = await fs2.readdir(src);
-      await Promise.all(items.map(async (item) => {
-        const srcItem = path2.join(src, item);
-        const destItem = path2.join(dest, item);
-        const include = await runFilter(srcItem, destItem, opts);
-        if (!include) return;
-        const { destStat: destStat2 } = await stat.checkPaths(srcItem, destItem, "copy", opts);
-        return getStatsAndPerformCopy(destStat2, srcItem, destItem, opts);
-      }));
+      const promises = [];
+      for await (const item of await fs2.opendir(src)) {
+        const srcItem = path2.join(src, item.name);
+        const destItem = path2.join(dest, item.name);
+        promises.push(
+          runFilter(srcItem, destItem, opts).then((include) => {
+            if (include) {
+              return stat.checkPaths(srcItem, destItem, "copy", opts).then(({ destStat: destStat2 }) => {
+                return getStatsAndPerformCopy(destStat2, srcItem, destItem, opts);
+              });
+            }
+          })
+        );
+      }
+      await Promise.all(promises);
       if (!destStat) {
         await fs2.chmod(dest, srcStat.mode);
       }
@@ -4003,7 +4013,15 @@ var require_copy_sync = __commonJS({
       return setDestMode(dest, srcMode);
     }
     function copyDir(src, dest, opts) {
-      fs2.readdirSync(src).forEach((item) => copyDirItem(item, src, dest, opts));
+      const dir = fs2.opendirSync(src);
+      try {
+        let dirent;
+        while ((dirent = dir.readSync()) !== null) {
+          copyDirItem(dirent.name, src, dest, opts);
+        }
+      } finally {
+        dir.closeSync();
+      }
     }
     function copyDirItem(item, src, dest, opts) {
       const srcItem = path2.join(src, item);

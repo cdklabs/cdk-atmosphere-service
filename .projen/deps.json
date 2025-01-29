@@ -2,42 +2,52 @@
   "dependencies": [
     {
       "name": "@aws-sdk/client-api-gateway",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-cloudformation",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-dynamodb",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-ecr",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-ecs",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-lambda",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-s3",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-scheduler",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/client-sts",
+      "version": "3.734.0",
       "type": "build"
     },
     {
       "name": "@aws-sdk/credential-providers",
+      "version": "3.734.0",
       "type": "build"
     },
     {
