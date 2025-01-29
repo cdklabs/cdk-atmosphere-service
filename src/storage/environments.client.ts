@@ -277,6 +277,35 @@ export class EnvironmentsClient {
     }
   }
 
+  /**
+   * Perform a table scan and return all items.
+   */
+  public async scan(): Promise<ActiveEnvironment[]> {
+
+    const items: ActiveEnvironment[] = [];
+    let lastEvaluatedKey = undefined;
+
+    do {
+      const response: ddb.ScanCommandOutput = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+      });
+
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue('account', item),
+          region: requiredValue('region', item),
+          status: requiredValue('status', item),
+          allocation: requiredValue('allocation', item),
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+
+    } while (lastEvaluatedKey);
+
+    return items;
+  }
+
   private async setStatus(allocationId: string, account: string, region: string, status: EnvironmentStatus) {
     try {
       await this.ddbClient.updateItem({

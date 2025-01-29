@@ -5,6 +5,7 @@ import * as envars from '../../../src/envars';
 import { AllocationAlreadyEndedError, InvalidInputError } from '../../../src/storage/allocations.client';
 import * as _with from '../../with';
 import { RuntimeClientsMock } from '../clients.mock';
+import { MetricsMock } from '../metrics.mock';
 
 // this grabs the same instance the handler uses
 // so we can easily mock it.
@@ -13,6 +14,8 @@ const clients = RuntimeClients.getOrCreate();
 describe('handler', () => {
 
   jest.useFakeTimers();
+
+  const mockMetrics = MetricsMock.mock();
 
   beforeEach(() => {
     RuntimeClientsMock.mock();
@@ -125,7 +128,8 @@ describe('handler', () => {
       functionArn: 'arn',
       timeoutDate: new Date(now.getTime() + 60 * 60 * 1000),
     });
-
+    expect(mockMetrics.putDimensions).toHaveBeenCalledWith({ pool: 'release', statusCode: '200' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('deallocate', 1, 'Count');
   });
 
   test('respects cleanup timeout', async () => {

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82135108615c2e3c315be0f2d74d460a7d62314b4c6178881ba965d66d3a1caa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c540ce3cd4e85513df02b75d467be7795825a47037b155fbd1841311e412e6fe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -193,7 +193,10 @@
         "/atmosphere-integ-deallocate/Atmosphere/Cleanup/TaskDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereCleanupTaskDefinition211D8C31"
+            "data": "AtmosphereCleanupTaskDefinition211D8C31",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/atmosphere-integ-deallocate/Atmosphere/Cleanup/TaskDefinition/ExecutionRole/Resource": [
@@ -368,6 +371,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereEndpointApiallocationsidDELETE40B2AB4B"
+          }
+        ],
+        "/atmosphere-integ-deallocate/Atmosphere/Monitor/Environments/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
+          }
+        ],
+        "/atmosphere-integ-deallocate/Atmosphere/Monitor/Environments/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641"
+          }
+        ],
+        "/atmosphere-integ-deallocate/Atmosphere/Monitor/Environments/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsFunction0200F617"
+          }
+        ],
+        "/atmosphere-integ-deallocate/Atmosphere/Monitor/Environments/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsSchedule396DBD98"
+          }
+        ],
+        "/atmosphere-integ-deallocate/Atmosphere/Monitor/Environments/Schedule/AllowEventRuleatmosphereintegdeallocateAtmosphereMonitorEnvironmentsFunctionE3F1C9E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereMonitorEnvironmentsScheduleAllowEventRuleatmosphereintegdeallocateAtmosphereMonitorEnvironmentsFunctionE3F1C9E9B487E3D4"
+          }
+        ],
+        "/atmosphere-integ-deallocate/Atmosphere/Dashboard/Dashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereDashboardAF315303"
           }
         ],
         "/atmosphere-integ-deallocate/LatestNodeRuntimeMap": [
@@ -562,7 +601,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2c2473afe9b39493f6b5cf1038f776d9b7839ff256eaa535ae3bb275bf3148ca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da19d0332b7e7822b43a02d035baa55c2177703ea5c3d7cdb08072085b611ac2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -1,4 +1,5 @@
 import { Duration } from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
@@ -6,6 +7,8 @@ import { Cleanup } from '../cleanup';
 import * as envars from '../envars';
 import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
+import { METRIC_DIMENSION_OUTCOME, METRIC_DIMENSION_STATUS_CODE, METRIC_NAME } from './deallocate.lambda';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
 
 /**
  * Properties for `Deallocate`.
@@ -70,4 +73,31 @@ export class Deallocate extends Construct {
     this.function.addEnvironment(envars.CLEANUP_TASK_CONTAINER_NAME_ENV, props.cleanup.containerName);
 
   }
+
+  public metricOutcome(pool: string, outcome: string) {
+    return new cloudwatch.Metric({
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_OUTCOME]: outcome,
+      },
+      namespace: METRICS_NAMESPACE,
+      statistic: 'sum',
+      period: Duration.minutes(5),
+    });
+  }
+
+  public metricStatusCode(pool: string, statusCode: number) {
+    return new cloudwatch.Metric({
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_STATUS_CODE]: statusCode.toString(),
+      },
+      namespace: METRICS_NAMESPACE,
+      statistic: 'sum',
+      period: Duration.minutes(5),
+    });
+  }
+
 }

@@ -3,6 +3,7 @@ import { handler } from '../../../src/cleanup/cleanup.task';
 import { RuntimeClients } from '../../../src/clients';
 import { EnvironmentAlreadyDirtyError } from '../../../src/storage/environments.client';
 import { RuntimeClientsMock } from '../clients.mock';
+import { MetricsMock } from '../metrics.mock';
 
 // this grabs the same instance the handler uses
 // so we can easily mock it.
@@ -10,13 +11,15 @@ const clients = RuntimeClients.getOrCreate();
 
 describe('handler', () => {
 
+  const mockMetrics = MetricsMock.mock();
+
   beforeEach(() => {
     RuntimeClientsMock.mock();
   });
 
   test('cleans stacks', async () => {
 
-    jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1' } as any);
+    jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1', pool: 'release' } as any);
     jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'release').mockImplementation(jest.fn());
 
@@ -27,12 +30,16 @@ describe('handler', () => {
 
     expect(mockClean).toHaveBeenCalledWith(10);
     expect(clients.environments.release).toHaveBeenCalledWith('id', '1111', 'us-east-1');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledTimes(2);
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'clean' });
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '0' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
 
   });
 
   test('marks an environment as dirty if cleaner fails', async () => {
 
-    jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1' } as any);
+    jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1', pool: 'release' } as any);
     jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
@@ -41,6 +48,10 @@ describe('handler', () => {
     await handler({ allocationId: 'id', timeoutSeconds: 10 });
 
     expect(clients.environments.dirty).toHaveBeenCalledWith('id', '1111', 'us-east-1');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledTimes(2);
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'dirty' });
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '0' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
 
   });
 
@@ -59,13 +70,17 @@ describe('handler', () => {
 
   test('rethrows on unexpected cleaner error', async () => {
 
-    jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1' } as any);
+    jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1', pool: 'release' } as any);
     jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
     jest.spyOn(Cleaner.prototype, 'clean').mockRejectedValue(new Error('unexpected'));
 
     await expect(handler({ allocationId: 'id', timeoutSeconds: 10 })).rejects.toThrow('unexpected');
+    expect(mockMetrics.putDimensions).toHaveBeenCalledTimes(2);
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(1, { pool: 'release', outcome: 'dirty' });
+    expect(mockMetrics.putDimensions).toHaveBeenNthCalledWith(2, { pool: 'release', exitCode: '1' });
+    expect(mockMetrics.putMetric).toHaveBeenCalledWith('cleanup', 1, 'Count');
 
   });
 

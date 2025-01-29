@@ -1,7 +1,10 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Unit } from 'aws-embedded-metrics';
 import { RuntimeClients } from '../clients';
 import { Cleaner, CleanerError } from './cleaner';
 import * as envars from '../envars';
 import { AllocationLogger } from '../logging';
+import { RuntimeMetrics, PoolAwareMetricsLogger } from '../metrics';
 import type { Allocation } from '../storage/allocations.client';
 import { EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
@@ -12,12 +15,37 @@ export interface CleanupRequest {
   readonly timeoutSeconds: number;
 }
 
+export const METRIC_NAME = 'cleanup';
+export const METRIC_DIMENSION_EXIT_CODE = 'exitCode';
+export const METRIC_DIMENSION_OUTCOME = 'outcome';
+
 export async function handler(req: CleanupRequest) {
+
+  await RuntimeMetrics.scoped(async (metrics) => {
+
+    let exitCode = 0;
+    try {
+      await doHandler(req, metrics);
+    } catch (e: any) {
+      exitCode = 1;
+      throw e;
+    } finally {
+      metrics.putDimensions({ [METRIC_DIMENSION_EXIT_CODE]: exitCode.toString() });
+      metrics.delegate.putMetric(METRIC_NAME, 1, Unit.Count);
+    }
+  });
+
+}
+
+export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLogger) {
+  console.log('Event:', JSON.stringify(req, null, 2));
 
   const log = new AllocationLogger({ id: req.allocationId, component: 'cleanup' });
 
   log.info('Fetching allocation');
   const allocation = await fetchAllocation(req.allocationId, log);
+
+  metrics.setPool(allocation.pool);
 
   const env = `aws://${allocation.account}/${allocation.region}`;
 
@@ -37,6 +65,9 @@ export async function handler(req: CleanupRequest) {
     log.info(`Successfully released environment '${env}'`);
 
     log.info('Done!');
+
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: 'clean' });
+
   } catch (e: any) {
 
     if (e instanceof EnvironmentAlreadyDirtyError) {
@@ -46,6 +77,8 @@ export async function handler(req: CleanupRequest) {
       log.info(`Environment ${env} was cleaned successfully, but it took too long to complete.`);
       return;
     }
+
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: 'dirty' });
 
     log.error(e);
 

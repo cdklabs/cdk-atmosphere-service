@@ -1545,6 +1545,11 @@
   resolved "https://registry.yarnpkg.com/@csstools/css-tokenizer/-/css-tokenizer-3.0.3.tgz#a5502c8539265fecbd873c1e395a890339f119c2"
   integrity sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==
 
+"@datastructures-js/heap@^4.0.2":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@datastructures-js/heap/-/heap-4.3.3.tgz#824c10f092ab03180702f0dea8ce96227ffe50a8"
+  integrity sha512-UcUu/DLh/aM4W3C8zZfwxxm6/6FIZUlm3mcAXuNOCa6Aj4iizNvNXQyb8DjZQH2jKSQbMRyNlngP6TPimuGjpQ==
+
 "@esbuild/aix-ppc64@0.24.2":
   version "0.24.2"
   resolved "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.24.2.tgz#38848d3e25afe842a7943643cbcd387cc6e13461"
@@ -3290,6 +3295,13 @@ aws-cdk@2.176.0, aws-cdk@^2.176.0:
   integrity sha512-yRjIXzK2ddznwuSjasWAViYBtBSQbEu6GHlylaC3GHsIUPhrK3KguqIuhdlxjMeiQ1Fvok8REDLCReZJdrSLLg==
   optionalDependencies:
     fsevents "2.3.2"
+
+aws-embedded-metrics@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/aws-embedded-metrics/-/aws-embedded-metrics-4.2.0.tgz#6a2ccd5ff22573be8a790d68d482ab2757dc6f59"
+  integrity sha512-IFZTPulj5OEgl2BuGMWyHPo6fF5wVAojGr2V23ilI+znCJ7WcMHPi0X0Q98lkdXJtVDE2ASID58vGub22oBZtg==
+  dependencies:
+    "@datastructures-js/heap" "^4.0.2"
 
 aws-sdk-client-mock-jest@^4.1.0:
   version "4.1.0"

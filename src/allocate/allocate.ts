@@ -1,10 +1,13 @@
 import { Duration } from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { AllocateFunction } from './allocate-function';
 import { Configuration } from '../config';
+import { METRIC_DIMENSION_STATUS_CODE, METRIC_NAME } from './allocate.lambda';
 import * as envars from '../envars';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
 import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
 
@@ -73,4 +76,18 @@ export class Allocate extends Construct {
     }
 
   }
+
+  public metricStatusCode(pool: string, statusCode: number) {
+    return new cloudwatch.Metric({
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_STATUS_CODE]: statusCode.toString(),
+      },
+      namespace: METRICS_NAMESPACE,
+      statistic: 'sum',
+      period: Duration.minutes(5),
+    });
+  }
+
 }

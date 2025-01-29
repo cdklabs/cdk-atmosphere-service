@@ -1,9 +1,12 @@
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Allocate } from './allocate';
 import { Endpoint, EndpointOptions } from './api';
 import { Cleanup } from './cleanup';
 import { Configuration, ConfigurationData } from './config/configuration';
+import { Dashboard } from './dashboard';
 import { Deallocate } from './deallocate';
+import { Monitor } from './monitor';
 import { Scheduler } from './scheduler';
 import { Allocations, Environments } from './storage';
 
@@ -69,6 +72,16 @@ export class AtmosphereService extends Construct {
    */
   public readonly cleanup: Cleanup;
 
+  /**
+   * Provides access to the operational dashboard.
+   */
+  public readonly dashboard: Dashboard;
+
+  /**
+   * Provides access to the monitor functions.
+   */
+  public readonly monitor: Monitor;
+
   constructor(scope: Construct, id: string, props: AtmosphereServiceProps) {
     super(scope, id);
 
@@ -108,6 +121,20 @@ export class AtmosphereService extends Construct {
       allocate: this.allocate,
       deallocate: this.deallocate,
       ...props.endpoint,
+    });
+
+    this.monitor = new Monitor(this, 'Monitor', {
+      configuration: this.config,
+      environments: this.environments,
+    });
+
+    this.dashboard = new Dashboard(this, 'Dashboard', {
+      name: Stack.of(this).stackName,
+      config: this.config,
+      allocate: this.allocate,
+      deallocate: this.deallocate,
+      cleanup: this.cleanup,
+      monitor: this.monitor,
     });
 
   }

@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { Duration } from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Platform } from 'aws-cdk-lib/aws-ecr-assets';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -8,6 +10,8 @@ import { Construct } from 'constructs';
 import { Configuration } from '../config';
 import * as envars from '../envars';
 import { Allocations, Environments } from '../storage';
+import { METRIC_DIMENSION_EXIT_CODE, METRIC_DIMENSION_OUTCOME, METRIC_NAME } from './cleanup.task';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
 
 /**
  * Properties for `Cleanup`.
@@ -52,6 +56,7 @@ export class Cleanup extends Construct {
     const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc, allowAllOutbound: true });
 
     this.cluster = new ecs.Cluster(this, 'Cluster', {
+      containerInsights: true,
       enableFargateCapacityProviders: true,
       vpc,
     });
@@ -78,6 +83,12 @@ export class Cleanup extends Construct {
         [envars.ALLOCATIONS_TABLE_NAME_ENV]: props.allocations.table.tableName,
         [envars.CONFIGURATION_BUCKET_ENV]: props.configuration.bucket.bucketName,
         [envars.CONFIGURATION_KEY_ENV]: props.configuration.key,
+
+        // we must set it because the default value is 'Lambda', which won't or ECS.
+        // For some reasons setting this to 'ECS' also doesn't work.
+        // 'Local' however, which means metrics are sent over stdout, does work.
+        // (this is also how its done in construct hub)
+        AWS_EMF_ENVIRONMENT: 'Local',
       },
     });
 
@@ -97,4 +108,31 @@ export class Cleanup extends Construct {
   public grantRun(grantee: iam.IGrantable) {
     this.task.grantRun(grantee);
   }
+
+  public metricExitCode(pool: string, exitCode: number) {
+    return new cloudwatch.Metric({
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_EXIT_CODE]: exitCode.toString(),
+      },
+      namespace: METRICS_NAMESPACE,
+      statistic: 'sum',
+      period: Duration.minutes(5),
+    });
+  }
+
+  public metricOutcome(pool: string, outcome: string) {
+    return new cloudwatch.Metric({
+      metricName: METRIC_NAME,
+      dimensionsMap: {
+        [METRIC_DIMENSION_POOL]: pool,
+        [METRIC_DIMENSION_OUTCOME]: outcome,
+      },
+      namespace: METRICS_NAMESPACE,
+      statistic: 'sum',
+      period: Duration.minutes(5),
+    });
+  }
+
 }

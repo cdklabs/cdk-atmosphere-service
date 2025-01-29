@@ -107,7 +107,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c52c1708f3b63f858f52388e226d682eea76d38adf36b950ed83e41b009eb0a5.zip"
+     "S3Key": "5e70330d7d9a43d261abf118505da6da4ce004d6328568c3659c43aa78978fb4.zip"
     },
     "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
     "Environment": {
@@ -209,7 +209,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1737977577635"
+    "salt": "1738147484354"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
