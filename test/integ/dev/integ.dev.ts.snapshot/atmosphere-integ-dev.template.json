@@ -675,7 +675,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:25ea71c455a60275a8da0bfc491f501a291af7263aed1614c506c7831b49e25a"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8788312dc4150c8a250ede6146a92847b68c59fc766d0a4ed068c602a9d6b0e5"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1006,7 +1006,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d1cddf309560e6fd9d86f67758ead300f98a4c4f8c316bbefe4b51a9c9983bf6.zip"
+     "S3Key": "9273715f64fbc4164823bf97d916ff565716a5e1e90e74dc6adb26a36b0a645e.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1353,7 +1353,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfbe6498627e749d943c078bf27037cc2e7a2b9f64f2e1101e12c9e4f7fcef7e.zip"
+     "S3Key": "eeb3b606f037180af5e3e67beec23a8ade60ccbb9a12cd155111cf237ec1e306.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -1549,7 +1549,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b1a68e726834745610da5c5983de1c92ac4f67162833270bd2ef3a8c59cf318.zip"
+     "S3Key": "a607ec920f65d3f230a80b84c2cfe488344823d2bc59c84e20dd70391174a7f4.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -1967,6 +1967,193 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereConfigurationBucket70B4698A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereConfigurationBucket70B4698A",
+             "Arn"
+            ]
+           },
+           "/configuration.json"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereEnvironmentsTable430B8CE1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641",
+    "Roles": [
+     {
+      "Ref": "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereMonitorEnvironmentsFunction0200F617": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "13ddc1592dc714dba19058bc7eb2dd9559d47923bc9fb4595f5a710015965be8.zip"
+    },
+    "Description": "Emits metrics about environments status for every pool",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+       "Ref": "AtmosphereConfigurationBucket70B4698A"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641",
+    "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereMonitorEnvironmentsSchedule396DBD98": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Periodically runs the environments monitor function (atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function)",
+    "ScheduleExpression": "rate(5 minutes)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AtmosphereMonitorEnvironmentsFunction0200F617",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereMonitorEnvironmentsScheduleAllowEventRuleatmosphereintegdevAtmosphereMonitorEnvironmentsFunctionD85638C6101071D3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereMonitorEnvironmentsFunction0200F617",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "AtmosphereMonitorEnvironmentsSchedule396DBD98",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereDashboardAF315303": {
    "Type": "AWS::CloudWatch::Dashboard",
    "Properties": {
@@ -1994,7 +2181,11 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"clean\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"clean\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"clean\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2\"}],[{\"label\":\"dirty\",\"color\":\"#FF0000\",\"expression\":\"FILL(mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"dirty\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"dirty\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"},{\"value\":\"UNKNOWN\"}]}]}"
+       "\",\"metrics\":[[{\"label\":\"clean\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"clean\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"clean\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2\"}],[{\"label\":\"dirty\",\"color\":\"#FF0000\",\"expression\":\"FILL(mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"dirty\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"dirty\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Environments Status\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"free\",\"color\":\"#4CAF50\",\"expression\":\"FILL(md52e38d050748ee9f32e0310a10bdb9e08bed693ae396b080e880eac875593c9, REPEAT)\"}],[\"Atmosphere\",\"environments-free\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"free\",\"visible\":false,\"id\":\"md52e38d050748ee9f32e0310a10bdb9e08bed693ae396b080e880eac875593c9\"}],[{\"label\":\"registered\",\"color\":\"#5D4037\",\"expression\":\"FILL(m289317ae16e5ed21c843d46d749242cb74970d1d72c4d45a03ad01ac7d1abf3d, REPEAT)\"}],[\"Atmosphere\",\"environments-registered\",\"pool\",\"$pool\",{\"color\":\"#5D4037\",\"label\":\"registered\",\"visible\":false,\"id\":\"m289317ae16e5ed21c843d46d749242cb74970d1d72c4d45a03ad01ac7d1abf3d\"}],[{\"label\":\"cleaning\",\"color\":\"#FFD700\",\"expression\":\"FILL(m69a51337d9b580465102e3f60819263bb67fc25d7cbd5d39f5f76891a10aa247, REPEAT)\"}],[\"Atmosphere\",\"environments-cleaning\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"cleaning\",\"visible\":false,\"id\":\"m69a51337d9b580465102e3f60819263bb67fc25d7cbd5d39f5f76891a10aa247\"}],[{\"label\":\"in-use\",\"color\":\"#FFA500\",\"expression\":\"FILL(m5ae77504f9ded8f0d3e4e2d6b7fd81a352141060e2c1237db147d85e27bc07a4, REPEAT)\"}],[\"Atmosphere\",\"environments-in-use\",\"pool\",\"$pool\",{\"color\":\"#FFA500\",\"label\":\"in-use\",\"visible\":false,\"id\":\"m5ae77504f9ded8f0d3e4e2d6b7fd81a352141060e2c1237db147d85e27bc07a4\"}],[{\"label\":\"dirty\",\"color\":\"#FF0000\",\"expression\":\"FILL(m2e28969e281316b10aa523454b0cc48236682c6bea60c8f1ed85b433af37986e, REPEAT)\"}],[\"Atmosphere\",\"environments-dirty\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"dirty\",\"visible\":false,\"id\":\"m2e28969e281316b10aa523454b0cc48236682c6bea60c8f1ed85b433af37986e\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"},{\"value\":\"UNKNOWN\"}]}]}"
       ]
      ]
     },

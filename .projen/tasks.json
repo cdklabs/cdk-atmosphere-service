@@ -60,6 +60,9 @@
           "spawn": "bundle:deallocate/deallocate.lambda"
         },
         {
+          "spawn": "bundle:monitor/environments.monitor.lambda"
+        },
+        {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
         },
         {
@@ -159,6 +162,24 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:monitor/environments.monitor.lambda": {
+      "name": "bundle:monitor/environments.monitor.lambda",
+      "description": "Create a JavaScript bundle from src/monitor/environments.monitor.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/monitor/environments.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/monitor/environments.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:monitor/environments.monitor.lambda:watch": {
+      "name": "bundle:monitor/environments.monitor.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/monitor/environments.monitor.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/monitor/environments.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/monitor/environments.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
