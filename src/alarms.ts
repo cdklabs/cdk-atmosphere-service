@@ -54,6 +54,18 @@ export class Alarms extends Construct {
           }),
       );
 
+      this.alarms.push(
+        props.cleanup
+          .metricExitCode(pool, 1)
+          .createAlarm(this, `Cleanup/${pool}/ExitCode/1`, {
+            alarmName: `${scope.node.path}/Cleanup/${pool}/ExitCode/1`,
+            threshold: 1,
+            evaluationPeriods: 1,
+            treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+            comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+            alarmDescription: `${RUNBOOK_URL}#atmosphereallocatepoolstatuscode500`,
+          }));
+
     }
 
   }
