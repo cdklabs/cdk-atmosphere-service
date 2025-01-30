@@ -13,7 +13,7 @@ const sdkVersion = '3.734.0';
 const project = new CdklabsConstructLibrary({
   author: 'AWS',
   authorAddress: 'aws-cdk-dev@amazon.com',
-  cdkVersion: '2.173.1',
+  cdkVersion: '2.177.0',
   defaultReleaseBranch: 'main',
   devDeps: [
     'cdklabs-projen-project-types',
