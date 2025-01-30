@@ -17,6 +17,8 @@
     "bundle:cleanup-timeout/cleanup-timeout.lambda:watch": "npx projen bundle:cleanup-timeout/cleanup-timeout.lambda:watch",
     "bundle:deallocate/deallocate.lambda": "npx projen bundle:deallocate/deallocate.lambda",
     "bundle:deallocate/deallocate.lambda:watch": "npx projen bundle:deallocate/deallocate.lambda:watch",
+    "bundle:monitor/environments.monitor.lambda": "npx projen bundle:monitor/environments.monitor.lambda",
+    "bundle:monitor/environments.monitor.lambda:watch": "npx projen bundle:monitor/environments.monitor.lambda:watch",
     "bundle:test/integ/allocate/assert.lambda.ts": "npx projen bundle:test/integ/allocate/assert.lambda.ts",
     "bundle:test/integ/allocation-timeout/assert.lambda.ts": "npx projen bundle:test/integ/allocation-timeout/assert.lambda.ts",
     "bundle:test/integ/cleanup-timeout/assert.lambda.ts": "npx projen bundle:test/integ/cleanup-timeout/assert.lambda.ts",

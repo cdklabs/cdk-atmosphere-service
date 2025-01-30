@@ -1,4 +1,4 @@
-import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException, GetItemCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, UpdateItemCommand, PutItemCommand, DeleteItemCommand, ConditionalCheckFailedException, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 import { EnvironmentAlreadyAcquiredError, EnvironmentAlreadyCleaningError, EnvironmentAlreadyDirtyError, EnvironmentAlreadyInUseError, EnvironmentAlreadyReallocated, EnvironmentAlreadyReleasedError, EnvironmentNotFound, EnvironmentsClient } from '../../../src/storage/environments.client';
 import 'aws-sdk-client-mock-jest';
@@ -9,6 +9,42 @@ describe('EnvironmentsClient', () => {
 
   beforeEach(() => {
     ddbMock.reset();
+  });
+
+  describe('scan', () => {
+
+    test('retrives all items', async () => {
+
+      const client = new EnvironmentsClient('table');
+
+      ddbMock.on(ScanCommand)
+        .resolvesOnce({
+          Items: [
+            {
+              account: { S: '1111' },
+              region: { S: 'us-east-1' },
+              status: { S: 'in-use' },
+              allocation: { S: 'id' },
+            },
+          ],
+          LastEvaluatedKey: { account: { S: '1111' }, region: { S: 'us-east-1' } },
+        })
+        .resolvesOnce({
+          Items: [
+            {
+              account: { S: '2222' },
+              region: { S: 'us-east-1' },
+              status: { S: 'in-use' },
+              allocation: { S: 'id' },
+            },
+          ],
+        });
+
+      const envs = await client.scan();
+      expect(ddbMock).toHaveReceivedCommandTimes(ScanCommand, 2);
+      expect(envs).toHaveLength(2);
+
+    });
   });
 
   describe('get', () => {

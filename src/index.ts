@@ -8,3 +8,4 @@ export * from './scheduler';
 export * from './cleanup';
 export * from './dashboard';
 export * from './alarms';
+export * from './monitor';
