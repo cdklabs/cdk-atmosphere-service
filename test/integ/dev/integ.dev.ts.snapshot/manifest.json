@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88d24b4ace820a5bc66ab8c64b3ccdd2135628a4e82aaa15cdbfa8c1ccd19450.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dddc739a1260c69017b0c7d1b7def69422855833bea950faf1be9bbde6be9887.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -370,24 +370,6 @@
             "data": "AtmosphereEndpointApiallocationsidDELETE40B2AB4B"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereAlarmsAllocatereleaseStatusCode500317683A2"
-          }
-        ],
-        "/atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereAlarmsAllocateUNKNOWNStatusCode50019890929"
-          }
-        ],
-        "/atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereAllocateUnexpectedFailure9DF85E27"
-          }
-        ],
         "/atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -416,6 +398,66 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereMonitorEnvironmentsScheduleAllowEventRuleatmosphereintegdevAtmosphereMonitorEnvironmentsFunctionD85638C6101071D3"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsAllocatereleaseStatusCode500317683A2"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Deallocate--release--StatusCode--500/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsDeallocatereleaseStatusCode5009DCFA319"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Cleanup--release--ExitCode--1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsCleanupreleaseExitCode107A86517"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Environments--release--Dirty/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsEnvironmentsreleaseDirty7A932087"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsAllocateUNKNOWNStatusCode50019890929"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Deallocate--UNKNOWN--StatusCode--500/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsDeallocateUNKNOWNStatusCode50010C2475D"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Cleanup--UNKNOWN--ExitCode--1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsCleanupUNKNOWNExitCode156A00342"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Environments--UNKNOWN--Dirty/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsEnvironmentsUNKNOWNDirty2402A3C4"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateUnexpectedFailure9DF85E27"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Deallocate--UnexpectedFailure/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereDeallocateUnexpectedFailure9B684CB1"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard/Resource": [
@@ -616,7 +658,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a95ff44a3a852b6604bd28f71111a15188c4bca86227eced06e2ef0fb00fff6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a3bb5050a8b2c72f5a6e664cde55741d34c280c1c245330f0c79351865f7403.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

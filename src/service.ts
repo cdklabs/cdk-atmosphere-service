@@ -129,15 +129,17 @@ export class AtmosphereService extends Construct {
       ...props.endpoint,
     });
 
-    this.alarms = new Alarms(this, 'Alarms', {
-      configuration: this.config,
-      allocate: this.allocate,
-      cleanup: this.cleanup,
-    });
-
     this.monitor = new Monitor(this, 'Monitor', {
       configuration: this.config,
       environments: this.environments,
+    });
+
+    this.alarms = new Alarms(this, 'Alarms', {
+      configuration: this.config,
+      allocate: this.allocate,
+      deallocate: this.deallocate,
+      cleanup: this.cleanup,
+      monitor: this.monitor,
     });
 
     this.dashboard = new Dashboard(this, 'Dashboard', {
