@@ -9,9 +9,10 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { Configuration } from '../config';
 import * as envars from '../envars';
+import { anchor as runBookAnchor } from '../runbook';
 import { Allocations, Environments } from '../storage';
 import { METRIC_DIMENSION_EXIT_CODE, METRIC_DIMENSION_OUTCOME, METRIC_NAME } from './cleanup.task';
-import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE, UNKNOWN_POOL } from '../metrics';
 
 /**
  * Properties for `Cleanup`.
@@ -102,6 +103,21 @@ export class Cleanup extends Construct {
     props.configuration.grantRead(this.task.taskRole);
     props.allocations.grantReadWrite(this.task.taskRole);
     props.environments.grantReadWrite(this.task.taskRole);
+
+    const pools = new Set(props.configuration.data.environments.map(e => e.pool));
+    pools.add(UNKNOWN_POOL);
+
+    for (const pool of pools) {
+      this.metricExitCode(pool, 1).createAlarm(this, `Pool/${pool}/ExitCode/1`, {
+        alarmName: `${this.node.path}/Pool/${pool}/ExitCode/1`,
+        threshold: 1,
+        evaluationPeriods: 1,
+        treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+        alarmDescription: runBookAnchor('TODO'),
+      });
+    }
+
 
   }
 

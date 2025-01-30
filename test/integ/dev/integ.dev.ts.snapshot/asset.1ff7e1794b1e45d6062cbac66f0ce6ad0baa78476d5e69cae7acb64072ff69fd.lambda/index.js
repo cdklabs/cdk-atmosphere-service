@@ -2615,7 +2615,7 @@ var require_lib = __commonJS({
   }
 });
 
-// src/monitor/environments.monitor.lambda.ts
+// src/storage/environments.monitor.lambda.ts
 var environments_monitor_lambda_exports = {};
 __export(environments_monitor_lambda_exports, {
   METRIC_NAME_ENVIRONMENTS_CLEANING: () => METRIC_NAME_ENVIRONMENTS_CLEANING,
@@ -3292,7 +3292,7 @@ var PoolAwareMetricsLogger = class {
   }
 };
 
-// src/monitor/environments.monitor.lambda.ts
+// src/storage/environments.monitor.lambda.ts
 var METRIC_NAME_ENVIRONMENTS_REGISTERED = "environments-registered";
 var METRIC_NAME_ENVIRONMENTS_FREE = "environments-free";
 var METRIC_NAME_ENVIRONMENTS_IN_USE = "environments-in-use";

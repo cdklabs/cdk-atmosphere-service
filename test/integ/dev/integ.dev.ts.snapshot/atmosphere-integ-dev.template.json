@@ -223,6 +223,239 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereEnvironmentsMonitorFunctionServiceRole864F509C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsMonitorFunctionServiceRoleDefaultPolicy96B7E89A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereConfigurationBucket70B4698A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereConfigurationBucket70B4698A",
+             "Arn"
+            ]
+           },
+           "/configuration.json"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereEnvironmentsTable430B8CE1",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmosphereEnvironmentsMonitorFunctionServiceRoleDefaultPolicy96B7E89A",
+    "Roles": [
+     {
+      "Ref": "AtmosphereEnvironmentsMonitorFunctionServiceRole864F509C"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsMonitorFunction1A71FD5C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1ff7e1794b1e45d6062cbac66f0ce6ad0baa78476d5e69cae7acb64072ff69fd.zip"
+    },
+    "Description": "Emits metrics about environments status for every pool",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+       "Ref": "AtmosphereConfigurationBucket70B4698A"
+      },
+      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+       "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereEnvironmentsMonitorFunctionServiceRole864F509C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "AtmosphereEnvironmentsMonitorFunctionServiceRoleDefaultPolicy96B7E89A",
+    "AtmosphereEnvironmentsMonitorFunctionServiceRole864F509C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsMonitorSchedule7354EB6A": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Periodically runs the environments monitor function (atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function)",
+    "ScheduleExpression": "rate(5 minutes)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AtmosphereEnvironmentsMonitorFunction1A71FD5C",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsMonitorScheduleAllowEventRuleatmosphereintegdevAtmosphereEnvironmentsMonitorFunction71BC16790E1F5745": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereEnvironmentsMonitorFunction1A71FD5C",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "AtmosphereEnvironmentsMonitorSchedule7354EB6A",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsPoolreleaseStatusDirty48BACD76": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Environments/Pool/release/Status/Dirty",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "pool",
+      "Value": "release"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "environments-dirty",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereEnvironmentsPoolUNKNOWNStatusDirtyA431A800": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Environments/Pool/UNKNOWN/Status/Dirty",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "pool",
+      "Value": "UNKNOWN"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "environments-dirty",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereAllocationsTable4ECEFD7B": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
@@ -805,6 +1038,60 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereCleanupPoolreleaseExitCode173616A1B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool/release/ExitCode/1",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "exitCode",
+      "Value": "1"
+     },
+     {
+      "Name": "pool",
+      "Value": "release"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "cleanup",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereCleanupPoolUNKNOWNExitCode11FEC29EF": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool/UNKNOWN/ExitCode/1",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "exitCode",
+      "Value": "1"
+     },
+     {
+      "Name": "pool",
+      "Value": "UNKNOWN"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "cleanup",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereSchedulerRole0116FB56": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1206,6 +1493,71 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereSchedulerDLQNotEmpty0DE96CB3": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Scheduler/DLQ/NotEmpty",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": "mVisible + mHidden",
+      "Id": "expr_1"
+     },
+     {
+      "Id": "mVisible",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "QueueName",
+          "Value": {
+           "Fn::GetAtt": [
+            "AtmosphereSchedulerDLQCF6976A3",
+            "QueueName"
+           ]
+          }
+         }
+        ],
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS"
+       },
+       "Period": 300,
+       "Stat": "Maximum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "mHidden",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "QueueName",
+          "Value": {
+           "Fn::GetAtt": [
+            "AtmosphereSchedulerDLQCF6976A3",
+            "QueueName"
+           ]
+          }
+         }
+        ],
+        "MetricName": "ApproximateNumberOfMessagesNotVisible",
+        "Namespace": "AWS/SQS"
+       },
+       "Period": 300,
+       "Stat": "Maximum"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereAllocateFunctionServiceRole64EB08B6": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1412,6 +1764,85 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereAllocateErrors0FB0237A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Allocate/Errors",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "AtmosphereAllocateFunctionDFA4621D"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAllocatePoolreleaseStatusCode5004D88B4D9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Allocate/Pool/release/StatusCode/500",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "pool",
+      "Value": "release"
+     },
+     {
+      "Name": "statusCode",
+      "Value": "500"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "allocate",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAllocatePoolUNKNOWNStatusCode50063F9A31E": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Allocate/Pool/UNKNOWN/StatusCode/500",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "pool",
+      "Value": "UNKNOWN"
+     },
+     {
+      "Name": "statusCode",
+      "Value": "500"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "allocate",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1614,6 +2045,85 @@
     "AtmosphereDeallocateFunctionServiceRoleDefaultPolicyE4D8C221",
     "AtmosphereDeallocateFunctionServiceRoleC0B2F6A8"
    ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereDeallocateErrors76E83F2E": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/Errors",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereDeallocatePoolreleaseStatusCode500B13E3505": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool/release/StatusCode/500",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "pool",
+      "Value": "release"
+     },
+     {
+      "Name": "statusCode",
+      "Value": "500"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "deallocate",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereDeallocatePoolUNKNOWNStatusCode500153A4BD6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool/UNKNOWN/StatusCode/500",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "pool",
+      "Value": "UNKNOWN"
+     },
+     {
+      "Name": "statusCode",
+      "Value": "500"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "deallocate",
+    "Namespace": "Atmosphere",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -1963,451 +2473,6 @@
     "RestApiId": {
      "Ref": "AtmosphereEndpointApi64E91738"
     }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereConfigurationBucket70B4698A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AtmosphereConfigurationBucket70B4698A",
-             "Arn"
-            ]
-           },
-           "/configuration.json"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:Query",
-        "dynamodb:Scan"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereEnvironmentsTable430B8CE1",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641",
-    "Roles": [
-     {
-      "Ref": "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereMonitorEnvironmentsFunction0200F617": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "13ddc1592dc714dba19058bc7eb2dd9559d47923bc9fb4595f5a710015965be8.zip"
-    },
-    "Description": "Emits metrics about environments status for every pool",
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
-       "Ref": "AtmosphereConfigurationBucket70B4698A"
-      },
-      "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-      "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-       "Ref": "AtmosphereEnvironmentsTable430B8CE1"
-      }
-     }
-    },
-    "Handler": "index.handler",
-    "ReservedConcurrentExecutions": 1,
-    "Role": {
-     "Fn::GetAtt": [
-      "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs18.x",
-    "Timeout": 300
-   },
-   "DependsOn": [
-    "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641",
-    "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereMonitorEnvironmentsSchedule396DBD98": {
-   "Type": "AWS::Events::Rule",
-   "Properties": {
-    "Description": "Periodically runs the environments monitor function (atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function)",
-    "ScheduleExpression": "rate(5 minutes)",
-    "State": "ENABLED",
-    "Targets": [
-     {
-      "Arn": {
-       "Fn::GetAtt": [
-        "AtmosphereMonitorEnvironmentsFunction0200F617",
-        "Arn"
-       ]
-      },
-      "Id": "Target0"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereMonitorEnvironmentsScheduleAllowEventRuleatmosphereintegdevAtmosphereMonitorEnvironmentsFunctionD85638C6101071D3": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "AtmosphereMonitorEnvironmentsFunction0200F617",
-      "Arn"
-     ]
-    },
-    "Principal": "events.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "AtmosphereMonitorEnvironmentsSchedule396DBD98",
-      "Arn"
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsAllocatereleaseStatusCode500317683A2": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocatepoolstatuscode500",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Allocate/release/StatusCode/500",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "release"
-     },
-     {
-      "Name": "statusCode",
-      "Value": "500"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "allocate",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsDeallocatereleaseStatusCode5009DCFA319": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospheredeallocatepoolstatuscode500",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/release/StatusCode/500",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "release"
-     },
-     {
-      "Name": "statusCode",
-      "Value": "500"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "deallocate",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsCleanupreleaseExitCode107A86517": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospherecleanuppoolexitcode1",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/release/ExitCode/1",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "exitCode",
-      "Value": "1"
-     },
-     {
-      "Name": "pool",
-      "Value": "release"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "cleanup",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsEnvironmentsreleaseDirty7A932087": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereenvironmentspooldirty",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Environments/release/Dirty",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "release"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "environments-dirty",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsAllocateUNKNOWNStatusCode50019890929": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocatepoolstatuscode500",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Allocate/UNKNOWN/StatusCode/500",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "UNKNOWN"
-     },
-     {
-      "Name": "statusCode",
-      "Value": "500"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "allocate",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsDeallocateUNKNOWNStatusCode50010C2475D": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospheredeallocatepoolstatuscode500",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/UNKNOWN/StatusCode/500",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "UNKNOWN"
-     },
-     {
-      "Name": "statusCode",
-      "Value": "500"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "deallocate",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsCleanupUNKNOWNExitCode156A00342": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospherecleanuppoolexitcode1",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/UNKNOWN/ExitCode/1",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "exitCode",
-      "Value": "1"
-     },
-     {
-      "Name": "pool",
-      "Value": "UNKNOWN"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "cleanup",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAlarmsEnvironmentsUNKNOWNDirty2402A3C4": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereenvironmentspooldirty",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Environments/UNKNOWN/Dirty",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "UNKNOWN"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "environments-dirty",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereAllocateUnexpectedFailure9DF85E27": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocateunexpectedfailure",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Allocate/UnexpectedFailure",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "FunctionName",
-      "Value": {
-       "Ref": "AtmosphereAllocateFunctionDFA4621D"
-      }
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "Errors",
-    "Namespace": "AWS/Lambda",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AtmosphereDeallocateUnexpectedFailure9B684CB1": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospheredeallocateunexpectedfailure",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/UnexpectedFailure",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "FunctionName",
-      "Value": {
-       "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
-      }
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "Errors",
-    "Namespace": "AWS/Lambda",
-    "Period": 300,
-    "Statistic": "Sum",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -392,6 +392,381 @@
                       "fqn": "aws-cdk-lib.aws_dynamodb.Table",
                       "version": "2.173.1"
                     }
+                  },
+                  "Monitor": {
+                    "id": "Monitor",
+                    "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor",
+                    "children": {
+                      "Function": {
+                        "id": "Function",
+                        "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function",
+                        "children": {
+                          "ServiceRole": {
+                            "id": "ServiceRole",
+                            "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/ServiceRole",
+                            "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/ServiceRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "lambda.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "managedPolicyArns": [
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/ServiceRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "s3:GetBucket*",
+                                                "s3:GetObject*",
+                                                "s3:List*"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereConfigurationBucket70B4698A",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "AtmosphereConfigurationBucket70B4698A",
+                                                          "Arn"
+                                                        ]
+                                                      },
+                                                      "/configuration.json"
+                                                    ]
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Action": [
+                                                "dynamodb:BatchGetItem",
+                                                "dynamodb:ConditionCheckItem",
+                                                "dynamodb:DescribeTable",
+                                                "dynamodb:GetItem",
+                                                "dynamodb:GetRecords",
+                                                "dynamodb:GetShardIterator",
+                                                "dynamodb:Query",
+                                                "dynamodb:Scan"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereEnvironmentsTable430B8CE1",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Ref": "AWS::NoValue"
+                                                }
+                                              ]
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "AtmosphereEnvironmentsMonitorFunctionServiceRoleDefaultPolicy96B7E89A",
+                                        "roles": [
+                                          {
+                                            "Ref": "AtmosphereEnvironmentsMonitorFunctionServiceRole864F509C"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Code": {
+                            "id": "Code",
+                            "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/Code",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/Code/Stage",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/Code/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                              "aws:cdk:cloudformation:props": {
+                                "code": {
+                                  "s3Bucket": {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  },
+                                  "s3Key": "1ff7e1794b1e45d6062cbac66f0ce6ad0baa78476d5e69cae7acb64072ff69fd.zip"
+                                },
+                                "description": "Emits metrics about environments status for every pool",
+                                "environment": {
+                                  "variables": {
+                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                    "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
+                                      "Ref": "AtmosphereConfigurationBucket70B4698A"
+                                    },
+                                    "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
+                                    "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
+                                      "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+                                    }
+                                  }
+                                },
+                                "handler": "index.handler",
+                                "reservedConcurrentExecutions": 1,
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "AtmosphereEnvironmentsMonitorFunctionServiceRole864F509C",
+                                    "Arn"
+                                  ]
+                                },
+                                "runtime": "nodejs18.x",
+                                "timeout": 300
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "Schedule": {
+                        "id": "Schedule",
+                        "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Schedule",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Schedule/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                              "aws:cdk:cloudformation:props": {
+                                "description": "Periodically runs the environments monitor function (atmosphere-integ-dev/Atmosphere/Environments/Monitor/Function)",
+                                "scheduleExpression": "rate(5 minutes)",
+                                "state": "ENABLED",
+                                "targets": [
+                                  {
+                                    "id": "Target0",
+                                    "arn": {
+                                      "Fn::GetAtt": [
+                                        "AtmosphereEnvironmentsMonitorFunction1A71FD5C",
+                                        "Arn"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "AllowEventRuleatmosphereintegdevAtmosphereEnvironmentsMonitorFunction71BC1679": {
+                            "id": "AllowEventRuleatmosphereintegdevAtmosphereEnvironmentsMonitorFunction71BC1679",
+                            "path": "atmosphere-integ-dev/Atmosphere/Environments/Monitor/Schedule/AllowEventRuleatmosphereintegdevAtmosphereEnvironmentsMonitorFunction71BC1679",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "AtmosphereEnvironmentsMonitorFunction1A71FD5C",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "events.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::GetAtt": [
+                                    "AtmosphereEnvironmentsMonitorSchedule7354EB6A",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_events.Rule",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  },
+                  "Pool--release--Status--Dirty": {
+                    "id": "Pool--release--Status--Dirty",
+                    "path": "atmosphere-integ-dev/Atmosphere/Environments/Pool--release--Status--Dirty",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Environments/Pool--release--Status--Dirty/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Environments/Pool/release/Status/Dirty",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "release"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "environments-dirty",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Average",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Pool--UNKNOWN--Status--Dirty": {
+                    "id": "Pool--UNKNOWN--Status--Dirty",
+                    "path": "atmosphere-integ-dev/Atmosphere/Environments/Pool--UNKNOWN--Status--Dirty",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Environments/Pool--UNKNOWN--Status--Dirty/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Environments/Pool/UNKNOWN/Status/Dirty",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "UNKNOWN"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "environments-dirty",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Average",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1314,6 +1689,92 @@
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
                     }
+                  },
+                  "Pool--release--ExitCode--1": {
+                    "id": "Pool--release--ExitCode--1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool--release--ExitCode--1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool--release--ExitCode--1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool/release/ExitCode/1",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "exitCode",
+                                "value": "1"
+                              },
+                              {
+                                "name": "pool",
+                                "value": "release"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "cleanup",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Pool--UNKNOWN--ExitCode--1": {
+                    "id": "Pool--UNKNOWN--ExitCode--1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool--UNKNOWN--ExitCode--1",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool--UNKNOWN--ExitCode--1/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/Pool/UNKNOWN/ExitCode/1",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "exitCode",
+                                "value": "1"
+                              },
+                              {
+                                "name": "pool",
+                                "value": "UNKNOWN"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "cleanup",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1937,6 +2398,87 @@
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
                       "version": "2.173.1"
                     }
+                  },
+                  "DLQ--NotEmpty": {
+                    "id": "DLQ--NotEmpty",
+                    "path": "atmosphere-integ-dev/Atmosphere/Scheduler/DLQ--NotEmpty",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Scheduler/DLQ--NotEmpty/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Scheduler/DLQ/NotEmpty",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "evaluationPeriods": 1,
+                            "metrics": [
+                              {
+                                "expression": "mVisible + mHidden",
+                                "id": "expr_1"
+                              },
+                              {
+                                "metricStat": {
+                                  "metric": {
+                                    "metricName": "ApproximateNumberOfMessagesVisible",
+                                    "namespace": "AWS/SQS",
+                                    "dimensions": [
+                                      {
+                                        "name": "QueueName",
+                                        "value": {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereSchedulerDLQCF6976A3",
+                                            "QueueName"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "period": 300,
+                                  "stat": "Maximum"
+                                },
+                                "id": "mVisible",
+                                "returnData": false
+                              },
+                              {
+                                "metricStat": {
+                                  "metric": {
+                                    "metricName": "ApproximateNumberOfMessagesNotVisible",
+                                    "namespace": "AWS/SQS",
+                                    "dimensions": [
+                                      {
+                                        "name": "QueueName",
+                                        "value": {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereSchedulerDLQCF6976A3",
+                                            "QueueName"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "period": 300,
+                                  "stat": "Maximum"
+                                },
+                                "id": "mHidden",
+                                "returnData": false
+                              }
+                            ],
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -2239,6 +2781,133 @@
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
                     }
+                  },
+                  "Errors": {
+                    "id": "Errors",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/Errors",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Allocate/Errors/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/Errors",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "FunctionName",
+                                "value": {
+                                  "Ref": "AtmosphereAllocateFunctionDFA4621D"
+                                }
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "Errors",
+                            "namespace": "AWS/Lambda",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Pool--release--StatusCode--500": {
+                    "id": "Pool--release--StatusCode--500",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/Pool--release--StatusCode--500",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Allocate/Pool--release--StatusCode--500/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/Pool/release/StatusCode/500",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "release"
+                              },
+                              {
+                                "name": "statusCode",
+                                "value": "500"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "allocate",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Pool--UNKNOWN--StatusCode--500": {
+                    "id": "Pool--UNKNOWN--StatusCode--500",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/Pool--UNKNOWN--StatusCode--500",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Allocate/Pool--UNKNOWN--StatusCode--500/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/Pool/UNKNOWN/StatusCode/500",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "UNKNOWN"
+                              },
+                              {
+                                "name": "statusCode",
+                                "value": "500"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "allocate",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -2530,6 +3199,133 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Errors": {
+                    "id": "Errors",
+                    "path": "atmosphere-integ-dev/Atmosphere/Deallocate/Errors",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Deallocate/Errors/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/Errors",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "FunctionName",
+                                "value": {
+                                  "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
+                                }
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "Errors",
+                            "namespace": "AWS/Lambda",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Pool--release--StatusCode--500": {
+                    "id": "Pool--release--StatusCode--500",
+                    "path": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool--release--StatusCode--500",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool--release--StatusCode--500/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool/release/StatusCode/500",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "release"
+                              },
+                              {
+                                "name": "statusCode",
+                                "value": "500"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "deallocate",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Pool--UNKNOWN--StatusCode--500": {
+                    "id": "Pool--UNKNOWN--StatusCode--500",
+                    "path": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool--UNKNOWN--StatusCode--500",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool--UNKNOWN--StatusCode--500/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/Pool/UNKNOWN/StatusCode/500",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "UNKNOWN"
+                              },
+                              {
+                                "name": "statusCode",
+                                "value": "500"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "deallocate",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
                       "version": "2.173.1"
                     }
                   }
@@ -3045,741 +3841,6 @@
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.0.5"
-                }
-              },
-              "Monitor": {
-                "id": "Monitor",
-                "path": "atmosphere-integ-dev/Atmosphere/Monitor",
-                "children": {
-                  "Environments": {
-                    "id": "Environments",
-                    "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments",
-                    "children": {
-                      "Function": {
-                        "id": "Function",
-                        "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function",
-                        "children": {
-                          "ServiceRole": {
-                            "id": "ServiceRole",
-                            "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/ServiceRole",
-                            "children": {
-                              "ImportServiceRole": {
-                                "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/ServiceRole/ImportServiceRole",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/ServiceRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "Service": "lambda.amazonaws.com"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "managedPolicyArns": [
-                                      {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                          ]
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "DefaultPolicy": {
-                                "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/ServiceRole/DefaultPolicy",
-                                "children": {
-                                  "Resource": {
-                                    "id": "Resource",
-                                    "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/ServiceRole/DefaultPolicy/Resource",
-                                    "attributes": {
-                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                      "aws:cdk:cloudformation:props": {
-                                        "policyDocument": {
-                                          "Statement": [
-                                            {
-                                              "Action": [
-                                                "s3:GetBucket*",
-                                                "s3:GetObject*",
-                                                "s3:List*"
-                                              ],
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "AtmosphereConfigurationBucket70B4698A",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Fn::Join": [
-                                                    "",
-                                                    [
-                                                      {
-                                                        "Fn::GetAtt": [
-                                                          "AtmosphereConfigurationBucket70B4698A",
-                                                          "Arn"
-                                                        ]
-                                                      },
-                                                      "/configuration.json"
-                                                    ]
-                                                  ]
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "Action": [
-                                                "dynamodb:BatchGetItem",
-                                                "dynamodb:ConditionCheckItem",
-                                                "dynamodb:DescribeTable",
-                                                "dynamodb:GetItem",
-                                                "dynamodb:GetRecords",
-                                                "dynamodb:GetShardIterator",
-                                                "dynamodb:Query",
-                                                "dynamodb:Scan"
-                                              ],
-                                              "Effect": "Allow",
-                                              "Resource": [
-                                                {
-                                                  "Fn::GetAtt": [
-                                                    "AtmosphereEnvironmentsTable430B8CE1",
-                                                    "Arn"
-                                                  ]
-                                                },
-                                                {
-                                                  "Ref": "AWS::NoValue"
-                                                }
-                                              ]
-                                            }
-                                          ],
-                                          "Version": "2012-10-17"
-                                        },
-                                        "policyName": "AtmosphereMonitorEnvironmentsFunctionServiceRoleDefaultPolicy99938641",
-                                        "roles": [
-                                          {
-                                            "Ref": "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "2.173.1"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Code": {
-                            "id": "Code",
-                            "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/Code",
-                            "children": {
-                              "Stage": {
-                                "id": "Stage",
-                                "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/Code/Stage",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.AssetStaging",
-                                  "version": "2.173.1"
-                                }
-                              },
-                              "AssetBucket": {
-                                "id": "AssetBucket",
-                                "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/Code/AssetBucket",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                                  "version": "2.173.1"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                              "aws:cdk:cloudformation:props": {
-                                "code": {
-                                  "s3Bucket": {
-                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                                  },
-                                  "s3Key": "13ddc1592dc714dba19058bc7eb2dd9559d47923bc9fb4595f5a710015965be8.zip"
-                                },
-                                "description": "Emits metrics about environments status for every pool",
-                                "environment": {
-                                  "variables": {
-                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
-                                    "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
-                                      "Ref": "AtmosphereConfigurationBucket70B4698A"
-                                    },
-                                    "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-                                    "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
-                                      "Ref": "AtmosphereEnvironmentsTable430B8CE1"
-                                    }
-                                  }
-                                },
-                                "handler": "index.handler",
-                                "reservedConcurrentExecutions": 1,
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "AtmosphereMonitorEnvironmentsFunctionServiceRole95EC2CC5",
-                                    "Arn"
-                                  ]
-                                },
-                                "runtime": "nodejs18.x",
-                                "timeout": 300
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "2.173.1"
-                        }
-                      },
-                      "Schedule": {
-                        "id": "Schedule",
-                        "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Schedule",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Schedule/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Events::Rule",
-                              "aws:cdk:cloudformation:props": {
-                                "description": "Periodically runs the environments monitor function (atmosphere-integ-dev/Atmosphere/Monitor/Environments/Function)",
-                                "scheduleExpression": "rate(5 minutes)",
-                                "state": "ENABLED",
-                                "targets": [
-                                  {
-                                    "id": "Target0",
-                                    "arn": {
-                                      "Fn::GetAtt": [
-                                        "AtmosphereMonitorEnvironmentsFunction0200F617",
-                                        "Arn"
-                                      ]
-                                    }
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_events.CfnRule",
-                              "version": "2.173.1"
-                            }
-                          },
-                          "AllowEventRuleatmosphereintegdevAtmosphereMonitorEnvironmentsFunctionD85638C6": {
-                            "id": "AllowEventRuleatmosphereintegdevAtmosphereMonitorEnvironmentsFunctionD85638C6",
-                            "path": "atmosphere-integ-dev/Atmosphere/Monitor/Environments/Schedule/AllowEventRuleatmosphereintegdevAtmosphereMonitorEnvironmentsFunctionD85638C6",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                              "aws:cdk:cloudformation:props": {
-                                "action": "lambda:InvokeFunction",
-                                "functionName": {
-                                  "Fn::GetAtt": [
-                                    "AtmosphereMonitorEnvironmentsFunction0200F617",
-                                    "Arn"
-                                  ]
-                                },
-                                "principal": "events.amazonaws.com",
-                                "sourceArn": {
-                                  "Fn::GetAtt": [
-                                    "AtmosphereMonitorEnvironmentsSchedule396DBD98",
-                                    "Arn"
-                                  ]
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                              "version": "2.173.1"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_events.Rule",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.0.5"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.5"
-                }
-              },
-              "Alarms": {
-                "id": "Alarms",
-                "path": "atmosphere-integ-dev/Atmosphere/Alarms",
-                "children": {
-                  "Allocate--release--StatusCode--500": {
-                    "id": "Allocate--release--StatusCode--500",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocatepoolstatuscode500",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/release/StatusCode/500",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "release"
-                              },
-                              {
-                                "name": "statusCode",
-                                "value": "500"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "allocate",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Sum",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Deallocate--release--StatusCode--500": {
-                    "id": "Deallocate--release--StatusCode--500",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Deallocate--release--StatusCode--500",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Deallocate--release--StatusCode--500/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospheredeallocatepoolstatuscode500",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/release/StatusCode/500",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "release"
-                              },
-                              {
-                                "name": "statusCode",
-                                "value": "500"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "deallocate",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Sum",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Cleanup--release--ExitCode--1": {
-                    "id": "Cleanup--release--ExitCode--1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Cleanup--release--ExitCode--1",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Cleanup--release--ExitCode--1/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospherecleanuppoolexitcode1",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/release/ExitCode/1",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "exitCode",
-                                "value": "1"
-                              },
-                              {
-                                "name": "pool",
-                                "value": "release"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "cleanup",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Sum",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Environments--release--Dirty": {
-                    "id": "Environments--release--Dirty",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Environments--release--Dirty",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Environments--release--Dirty/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereenvironmentspooldirty",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Environments/release/Dirty",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "release"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "environments-dirty",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Average",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Allocate--UNKNOWN--StatusCode--500": {
-                    "id": "Allocate--UNKNOWN--StatusCode--500",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocatepoolstatuscode500",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/UNKNOWN/StatusCode/500",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "UNKNOWN"
-                              },
-                              {
-                                "name": "statusCode",
-                                "value": "500"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "allocate",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Sum",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Deallocate--UNKNOWN--StatusCode--500": {
-                    "id": "Deallocate--UNKNOWN--StatusCode--500",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Deallocate--UNKNOWN--StatusCode--500",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Deallocate--UNKNOWN--StatusCode--500/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospheredeallocatepoolstatuscode500",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/UNKNOWN/StatusCode/500",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "UNKNOWN"
-                              },
-                              {
-                                "name": "statusCode",
-                                "value": "500"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "deallocate",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Sum",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Cleanup--UNKNOWN--ExitCode--1": {
-                    "id": "Cleanup--UNKNOWN--ExitCode--1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Cleanup--UNKNOWN--ExitCode--1",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Cleanup--UNKNOWN--ExitCode--1/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospherecleanuppoolexitcode1",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Cleanup/UNKNOWN/ExitCode/1",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "exitCode",
-                                "value": "1"
-                              },
-                              {
-                                "name": "pool",
-                                "value": "UNKNOWN"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "cleanup",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Sum",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  },
-                  "Environments--UNKNOWN--Dirty": {
-                    "id": "Environments--UNKNOWN--Dirty",
-                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Environments--UNKNOWN--Dirty",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Environments--UNKNOWN--Dirty/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereenvironmentspooldirty",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Environments/UNKNOWN/Dirty",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "UNKNOWN"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "environments-dirty",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Average",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.0.5"
-                }
-              },
-              "Allocate--UnexpectedFailure": {
-                "id": "Allocate--UnexpectedFailure",
-                "path": "atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                      "aws:cdk:cloudformation:props": {
-                        "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocateunexpectedfailure",
-                        "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/UnexpectedFailure",
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "FunctionName",
-                            "value": {
-                              "Ref": "AtmosphereAllocateFunctionDFA4621D"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 1,
-                        "metricName": "Errors",
-                        "namespace": "AWS/Lambda",
-                        "period": 300,
-                        "statistic": "Sum",
-                        "threshold": 1,
-                        "treatMissingData": "notBreaching"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                      "version": "2.173.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                  "version": "2.173.1"
-                }
-              },
-              "Deallocate--UnexpectedFailure": {
-                "id": "Deallocate--UnexpectedFailure",
-                "path": "atmosphere-integ-dev/Atmosphere/Deallocate--UnexpectedFailure",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "atmosphere-integ-dev/Atmosphere/Deallocate--UnexpectedFailure/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                      "aws:cdk:cloudformation:props": {
-                        "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmospheredeallocateunexpectedfailure",
-                        "alarmName": "atmosphere-integ-dev/Atmosphere/Deallocate/UnexpectedFailure",
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "FunctionName",
-                            "value": {
-                              "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 1,
-                        "metricName": "Errors",
-                        "namespace": "AWS/Lambda",
-                        "period": 300,
-                        "statistic": "Sum",
-                        "threshold": 1,
-                        "treatMissingData": "notBreaching"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                      "version": "2.173.1"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                  "version": "2.173.1"
                 }
               },
               "Dashboard": {

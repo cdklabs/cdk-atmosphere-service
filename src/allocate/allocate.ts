@@ -7,7 +7,8 @@ import { AllocateFunction } from './allocate-function';
 import { Configuration } from '../config';
 import { METRIC_DIMENSION_STATUS_CODE, METRIC_NAME } from './allocate.lambda';
 import * as envars from '../envars';
-import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE, UNKNOWN_POOL } from '../metrics';
+import { anchor as runBookAnchor } from '../runbook';
 import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
 
@@ -74,6 +75,30 @@ export class Allocate extends Construct {
       const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}${env.region}`, env.adminRoleArn);
       adminRole.grantAssumeRole(this.function.grantPrincipal);
     }
+
+    this.function.metricErrors().createAlarm(this, 'Errors', {
+      alarmName: `${this.node.path}/Errors`,
+      threshold: 1,
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      alarmDescription: runBookAnchor('TODO'),
+    });
+
+    const pools = new Set(props.configuration.data.environments.map(e => e.pool));
+    pools.add(UNKNOWN_POOL);
+
+    for (const pool of pools) {
+      this.metricStatusCode(pool, 500).createAlarm(this, `Pool/${pool}/StatusCode/500`, {
+        alarmName: `${this.node.path}/Pool/${pool}/StatusCode/500`,
+        threshold: 1,
+        evaluationPeriods: 1,
+        treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+        alarmDescription: runBookAnchor('TODO'),
+      });
+    }
+
 
   }
 

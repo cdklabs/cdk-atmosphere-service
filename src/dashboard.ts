@@ -6,7 +6,7 @@ import { Cleanup } from './cleanup';
 import { Configuration } from './config';
 import { Deallocate } from './deallocate';
 import { UNKNOWN_POOL } from './metrics';
-import { Monitor } from './monitor';
+import { Environments } from './storage';
 
 const RED = '#FF0000';
 const GREEN = '#4CAF50';
@@ -19,7 +19,7 @@ export interface DashboardProps {
   readonly allocate: Allocate;
   readonly deallocate: Deallocate;
   readonly cleanup: Cleanup;
-  readonly monitor: Monitor;
+  readonly environments: Environments;
   readonly name: string;
 }
 
@@ -107,11 +107,11 @@ export class Dashboard extends Construct {
     dashboard.addWidgets(new cloudwatch.GraphWidget({
       title: 'Environments Status',
       left: [
-        props.monitor.environments.metricFree('$pool').with({ color: GREEN, label: 'free' }),
-        props.monitor.environments.metricRegistered('$pool').with({ color: BROWN, label: 'registered' }),
-        props.monitor.environments.metricCleaning('$pool').with({ color: YELLOW, label: 'cleaning' }),
-        props.monitor.environments.metricInUse('$pool').with({ color: ORANGE, label: 'in-use' }),
-        props.monitor.environments.metricDirty('$pool').with({ color: RED, label: 'dirty' }),
+        props.environments.metricFree('$pool').with({ color: GREEN, label: 'free' }),
+        props.environments.metricRegistered('$pool').with({ color: BROWN, label: 'registered' }),
+        props.environments.metricCleaning('$pool').with({ color: YELLOW, label: 'cleaning' }),
+        props.environments.metricInUse('$pool').with({ color: ORANGE, label: 'in-use' }),
+        props.environments.metricDirty('$pool').with({ color: RED, label: 'dirty' }),
       ].map((m) => this.fill(m, 'REPEAT')),
       leftYAxis: { min: 0, showUnits: false },
       height: 6,

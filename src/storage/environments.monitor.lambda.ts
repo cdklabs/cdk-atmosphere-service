@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Unit } from 'aws-embedded-metrics';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Context, ScheduledEvent } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import { RuntimeMetrics } from '../metrics';

@@ -1,4 +1,5 @@
 import { Duration } from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -6,6 +7,7 @@ import { Construct } from 'constructs';
 import { AllocationTimeoutFunction } from '../allocation-timeout/allocation-timeout-function';
 import { CleanupTimeoutFunction } from '../cleanup-timeout/cleanup-timeout-function';
 import * as envars from '../envars';
+import { anchor as runBookAnchor } from '../runbook';
 import { Allocations, Environments } from '../storage';
 
 /**
@@ -61,6 +63,22 @@ export class Scheduler extends Construct {
     this.allocationTimeoutFunction.grantInvoke(this.role);
 
     this.dlq.grantSendMessages(this.role);
+
+    new cloudwatch.MathExpression({
+      expression: 'mVisible + mHidden',
+      usingMetrics: {
+        mVisible: this.dlq.metricApproximateNumberOfMessagesVisible({ period: Duration.minutes(1) }),
+        mHidden: this.dlq.metricApproximateNumberOfMessagesNotVisible({ period: Duration.minutes(1) }),
+      },
+    }).createAlarm(this, 'DLQ/NotEmpty', {
+      alarmName: `${this.node.path}/DLQ/NotEmpty`,
+      threshold: 1,
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      alarmDescription: runBookAnchor('TODO'),
+    });
+
 
   }
 

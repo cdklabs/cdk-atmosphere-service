@@ -4,16 +4,23 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
 import { Cleanup } from '../cleanup';
+import { Configuration } from '../config';
 import * as envars from '../envars';
+import { anchor as runBookAnchor } from '../runbook';
 import { Scheduler } from '../scheduler';
 import { Allocations, Environments } from '../storage';
 import { METRIC_DIMENSION_OUTCOME, METRIC_DIMENSION_STATUS_CODE, METRIC_NAME } from './deallocate.lambda';
-import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE, UNKNOWN_POOL } from '../metrics';
 
 /**
  * Properties for `Deallocate`.
  */
 export interface DeallocateProps {
+
+  /**
+   * Configuration.
+   */
+  readonly configuration: Configuration;
 
   /**
    * Allocations storage.
@@ -71,6 +78,29 @@ export class Deallocate extends Construct {
     this.function.addEnvironment(envars.CLEANUP_TASK_SUBNET_ID_ENV, props.cleanup.subnetId);
     this.function.addEnvironment(envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV, props.cleanup.securityGroupId);
     this.function.addEnvironment(envars.CLEANUP_TASK_CONTAINER_NAME_ENV, props.cleanup.containerName);
+
+    this.function.metricErrors().createAlarm(this, 'Errors', {
+      alarmName: `${this.node.path}/Errors`,
+      threshold: 1,
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      alarmDescription: runBookAnchor('TODO'),
+    });
+
+    const pools = new Set(props.configuration.data.environments.map(e => e.pool));
+    pools.add(UNKNOWN_POOL);
+
+    for (const pool of pools) {
+      this.metricStatusCode(pool, 500).createAlarm(this, `Pool/${pool}/StatusCode/500`, {
+        alarmName: `${this.node.path}/Pool/${pool}/StatusCode/500`,
+        threshold: 1,
+        evaluationPeriods: 1,
+        treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+        alarmDescription: runBookAnchor('TODO'),
+      });
+    }
 
   }
 

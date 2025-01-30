@@ -1,13 +1,11 @@
 import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Alarms } from './alarms';
 import { Allocate } from './allocate';
 import { Endpoint, EndpointOptions } from './api';
 import { Cleanup } from './cleanup';
 import { Configuration, ConfigurationData } from './config/configuration';
 import { Dashboard } from './dashboard';
 import { Deallocate } from './deallocate';
-import { Monitor } from './monitor';
 import { Scheduler } from './scheduler';
 import { Allocations, Environments } from './storage';
 
@@ -78,16 +76,6 @@ export class AtmosphereService extends Construct {
    */
   public readonly dashboard: Dashboard;
 
-  /**
-   * Provides access to the alarms.
-   */
-  public readonly alarms: Alarms;
-
-  /*
-   * Provides access to the monitor functions.
-   */
-  public readonly monitor: Monitor;
-
   constructor(scope: Construct, id: string, props: AtmosphereServiceProps) {
     super(scope, id);
 
@@ -95,7 +83,9 @@ export class AtmosphereService extends Construct {
       data: props.config,
     });
 
-    this.environments = new Environments(this, 'Environments');
+    this.environments = new Environments(this, 'Environments', {
+      config: this.config,
+    });
     this.allocations = new Allocations(this, 'Allocations');
 
     this.cleanup = new Cleanup(this, 'Cleanup', {
@@ -117,6 +107,7 @@ export class AtmosphereService extends Construct {
     });
 
     this.deallocate = new Deallocate(this, 'Deallocate', {
+      configuration: this.config,
       environments: this.environments,
       allocations: this.allocations,
       scheduler: this.scheduler,
@@ -129,26 +120,13 @@ export class AtmosphereService extends Construct {
       ...props.endpoint,
     });
 
-    this.monitor = new Monitor(this, 'Monitor', {
-      configuration: this.config,
-      environments: this.environments,
-    });
-
-    this.alarms = new Alarms(this, 'Alarms', {
-      configuration: this.config,
-      allocate: this.allocate,
-      deallocate: this.deallocate,
-      cleanup: this.cleanup,
-      monitor: this.monitor,
-    });
-
     this.dashboard = new Dashboard(this, 'Dashboard', {
       name: Stack.of(this).stackName,
       config: this.config,
       allocate: this.allocate,
       deallocate: this.deallocate,
       cleanup: this.cleanup,
-      monitor: this.monitor,
+      environments: this.environments,
     });
 
   }

@@ -10,16 +10,16 @@ export interface EnvironmentsMonitorFunctionProps extends lambda.FunctionOptions
 }
 
 /**
- * An AWS Lambda function which executes src/monitor/environments.monitor.
+ * An AWS Lambda function which executes src/storage/environments.monitor.
  */
 export class EnvironmentsMonitorFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props?: EnvironmentsMonitorFunctionProps) {
     super(scope, id, {
-      description: 'src/monitor/environments.monitor.lambda.ts',
+      description: 'src/storage/environments.monitor.lambda.ts',
       ...props,
       runtime: new lambda.Runtime('nodejs18.x', lambda.RuntimeFamily.NODEJS),
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../../assets/monitor/environments.monitor.lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../assets/storage/environments.monitor.lambda')),
     });
     this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
   }
