@@ -7,7 +7,7 @@ import { EnvironmentsMonitor } from './environments.monitor';
 import { Configuration } from '../config';
 import { anchor as runBookAnchor } from '../runbook';
 import { METRIC_NAME_ENVIRONMENTS_CLEANING, METRIC_NAME_ENVIRONMENTS_DIRTY, METRIC_NAME_ENVIRONMENTS_FREE, METRIC_NAME_ENVIRONMENTS_IN_USE, METRIC_NAME_ENVIRONMENTS_REGISTERED } from './environments.monitor.lambda';
-import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE, UNKNOWN_POOL } from '../metrics';
+import { METRIC_DIMENSION_POOL, METRICS_NAMESPACE } from '../metrics';
 
 export interface EnvironmentsProps {
   readonly config: Configuration;
@@ -42,7 +42,6 @@ export class Environments extends Construct {
     });
 
     const pools = new Set(props.config.data.environments.map(e => e.pool));
-    pools.add(UNKNOWN_POOL);
 
     for (const pool of pools) {
       this.metricDirty(pool).createAlarm(this, `Pool/${pool}/Status/Dirty`, {

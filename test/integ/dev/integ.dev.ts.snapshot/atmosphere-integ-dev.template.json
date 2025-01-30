@@ -433,29 +433,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereEnvironmentsPoolUNKNOWNStatusDirtyA431A800": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
-    "AlarmName": "atmosphere-integ-dev/Atmosphere/Environments/Pool/UNKNOWN/Status/Dirty",
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "pool",
-      "Value": "UNKNOWN"
-     }
-    ],
-    "EvaluationPeriods": 1,
-    "MetricName": "environments-dirty",
-    "Namespace": "Atmosphere",
-    "Period": 300,
-    "Statistic": "Average",
-    "Threshold": 1,
-    "TreatMissingData": "notBreaching"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "AtmosphereAllocationsTable4ECEFD7B": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
@@ -1329,6 +1306,31 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereSchedulerCleanupTimeoutErrors9D38C7B3": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Errors",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "AtmosphereSchedulerCleanupTimeout19EF968B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1490,6 +1492,31 @@
     "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814",
     "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404"
    ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereSchedulerAllocationTimeoutErrorsD3E9FA62": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+    "AlarmName": "atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Errors",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "AtmosphereSchedulerCleanupTimeout19EF968B"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },

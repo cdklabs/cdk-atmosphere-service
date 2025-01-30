@@ -728,45 +728,6 @@
                       "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
                       "version": "2.173.1"
                     }
-                  },
-                  "Pool--UNKNOWN--Status--Dirty": {
-                    "id": "Pool--UNKNOWN--Status--Dirty",
-                    "path": "atmosphere-integ-dev/Atmosphere/Environments/Pool--UNKNOWN--Status--Dirty",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Environments/Pool--UNKNOWN--Status--Dirty/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                          "aws:cdk:cloudformation:props": {
-                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
-                            "alarmName": "atmosphere-integ-dev/Atmosphere/Environments/Pool/UNKNOWN/Status/Dirty",
-                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                            "dimensions": [
-                              {
-                                "name": "pool",
-                                "value": "UNKNOWN"
-                              }
-                            ],
-                            "evaluationPeriods": 1,
-                            "metricName": "environments-dirty",
-                            "namespace": "Atmosphere",
-                            "period": 300,
-                            "statistic": "Average",
-                            "threshold": 1,
-                            "treatMissingData": "notBreaching"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                          "version": "2.173.1"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
-                      "version": "2.173.1"
-                    }
                   }
                 },
                 "constructInfo": {
@@ -1682,9 +1643,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.8]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.8]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.8]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2150,6 +2111,47 @@
                           "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                           "version": "2.173.1"
                         }
+                      },
+                      "Errors": {
+                        "id": "Errors",
+                        "path": "atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Errors",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Errors/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                              "aws:cdk:cloudformation:props": {
+                                "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                                "alarmName": "atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Errors",
+                                "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                                "dimensions": [
+                                  {
+                                    "name": "FunctionName",
+                                    "value": {
+                                      "Ref": "AtmosphereSchedulerCleanupTimeout19EF968B"
+                                    }
+                                  }
+                                ],
+                                "evaluationPeriods": 1,
+                                "metricName": "Errors",
+                                "namespace": "AWS/Lambda",
+                                "period": 300,
+                                "statistic": "Sum",
+                                "threshold": 1,
+                                "treatMissingData": "notBreaching"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                          "version": "2.173.1"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2390,6 +2392,47 @@
                         },
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "2.173.1"
+                        }
+                      },
+                      "Errors": {
+                        "id": "Errors",
+                        "path": "atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Errors",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Errors/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                              "aws:cdk:cloudformation:props": {
+                                "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#TODO",
+                                "alarmName": "atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Errors",
+                                "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                                "dimensions": [
+                                  {
+                                    "name": "FunctionName",
+                                    "value": {
+                                      "Ref": "AtmosphereSchedulerCleanupTimeout19EF968B"
+                                    }
+                                  }
+                                ],
+                                "evaluationPeriods": 1,
+                                "metricName": "Errors",
+                                "namespace": "AWS/Lambda",
+                                "period": 300,
+                                "statistic": "Sum",
+                                "threshold": 1,
+                                "treatMissingData": "notBreaching"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
                           "version": "2.173.1"
                         }
                       }
@@ -2774,9 +2817,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.8]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.8]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.8]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"

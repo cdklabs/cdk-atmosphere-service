@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/078c805bbf96888b398dd4f06c8264d1d45661b245b99a3cf698bf09f2cf9992.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/20925cf609b0af15775332337fbba2ad8df31ac66b939e38ae9c0f6c44f485fa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -110,12 +110,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereEnvironmentsPoolreleaseStatusDirty48BACD76"
-          }
-        ],
-        "/atmosphere-integ-dev/Atmosphere/Environments/Pool--UNKNOWN--Status--Dirty/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEnvironmentsPoolUNKNOWNStatusDirtyA431A800"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Allocations/Table/Resource": [
@@ -298,6 +292,12 @@
             "data": "AtmosphereSchedulerCleanupTimeout19EF968B"
           }
         ],
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Errors/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerCleanupTimeoutErrors9D38C7B3"
+          }
+        ],
         "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -314,6 +314,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereSchedulerAllocationTimeout5187E9EA"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Errors/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerAllocationTimeoutErrorsD3E9FA62"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Scheduler/DLQ--NotEmpty": [
@@ -649,78 +655,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "AtmosphereEnvironmentsreleaseDirty2B2ADE1F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEnvironmentsreleaseDirty2B2ADE1F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereEnvironmentsUNKNOWNDirty22203BC9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEnvironmentsUNKNOWNDirty22203BC9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereCleanupreleaseExitCode130D17C58": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereCleanupreleaseExitCode130D17C58",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereCleanupUNKNOWNExitCode1AF05609C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereCleanupUNKNOWNExitCode1AF05609C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereAllocatereleaseStatusCode500704FD468": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereAllocatereleaseStatusCode500704FD468",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereAllocateUNKNOWNStatusCode500EA4C34A6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereAllocateUNKNOWNStatusCode500EA4C34A6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereDeallocatereleaseStatusCode500E420AB2C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDeallocatereleaseStatusCode500E420AB2C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "AtmosphereDeallocateUNKNOWNStatusCode50059080AA4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDeallocateUNKNOWNStatusCode50059080AA4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "atmosphere-integ-dev"
@@ -742,7 +676,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ce710c34bfa528121b8351d9514641852ddef8423032268d8a3275d15d5758ef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e6009e4e602d668081bf9437ab095da61f2cde59e4d2342f7665f1d2a134cb0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

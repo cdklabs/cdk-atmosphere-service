@@ -48,9 +48,28 @@ export class Scheduler extends Construct {
       deadLetterQueue: this.dlq,
       timeout: Duration.minutes(1),
     });
+
+    this.cleanupTimeoutFunction.metricErrors().createAlarm(this.cleanupTimeoutFunction, 'Errors', {
+      alarmName: `${this.cleanupTimeoutFunction.node.path}/Errors`,
+      threshold: 1,
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      alarmDescription: runBookAnchor('TODO'),
+    });
+
     this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout', {
       deadLetterQueue: this.dlq,
       timeout: Duration.minutes(1),
+    });
+
+    this.cleanupTimeoutFunction.metricErrors().createAlarm(this.allocationTimeoutFunction, 'Errors', {
+      alarmName: `${this.allocationTimeoutFunction.node.path}/Errors`,
+      threshold: 1,
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      alarmDescription: runBookAnchor('TODO'),
     });
 
     props.environments.grantReadWrite(this.cleanupTimeoutFunction);

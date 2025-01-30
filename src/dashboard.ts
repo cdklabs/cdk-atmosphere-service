@@ -45,7 +45,7 @@ export class Dashboard extends Construct {
       defaultValue: cloudwatch.DefaultValue.value(pools[0]),
     }));
 
-    dashboard.addWidgets(new cloudwatch.GraphWidget({
+    dashboard.addWidgets(this.createGraphWidget({
       title: 'Allocate Response',
       left: [
         props.allocate.metricStatusCode('$pool', 200).with({ color: GREEN, label: '200 OK' }),
@@ -56,9 +56,9 @@ export class Dashboard extends Construct {
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
-    }));
+    }, { x: 0, y: 0 }));
 
-    dashboard.addWidgets(new cloudwatch.GraphWidget({
+    dashboard.addWidgets(this.createGraphWidget({
       title: 'Deallocate Response',
       left: [
         props.deallocate.metricStatusCode('$pool', 200).with({ color: GREEN, label: '200 OK' }),
@@ -68,9 +68,9 @@ export class Dashboard extends Construct {
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
-    }));
+    }, { x: 12, y: 0 }));
 
-    dashboard.addWidgets(new cloudwatch.GraphWidget({
+    dashboard.addWidgets(this.createGraphWidget({
       title: 'Allocation Outcome',
       left: [
         props.deallocate.metricOutcome('$pool', 'success').with({ color: GREEN, label: 'success' }),
@@ -80,9 +80,9 @@ export class Dashboard extends Construct {
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
-    }));
+    }, { x: 0, y: 6 }));
 
-    dashboard.addWidgets(new cloudwatch.GraphWidget({
+    dashboard.addWidgets(this.createGraphWidget({
       title: 'Cleanup Exit Code',
       left: [
         props.cleanup.metricExitCode('$pool', 0).with({ color: GREEN, label: '0' }),
@@ -91,9 +91,9 @@ export class Dashboard extends Construct {
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
-    }));
+    }, { x: 6, y: 6 }));
 
-    dashboard.addWidgets(new cloudwatch.GraphWidget({
+    dashboard.addWidgets(this.createGraphWidget({
       title: 'Cleanup Outcome',
       left: [
         props.cleanup.metricOutcome('$pool', 'clean').with({ color: GREEN, label: 'clean' }),
@@ -102,9 +102,9 @@ export class Dashboard extends Construct {
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
-    }));
+    }, { x: 0, y: 12 }));
 
-    dashboard.addWidgets(new cloudwatch.GraphWidget({
+    dashboard.addWidgets(this.createGraphWidget({
       title: 'Environments Status',
       left: [
         props.environments.metricFree('$pool').with({ color: GREEN, label: 'free' }),
@@ -116,8 +116,14 @@ export class Dashboard extends Construct {
       leftYAxis: { min: 0, showUnits: false },
       height: 6,
       width: 12,
-    }));
+    }, { x: 12, y: 12 }));
 
+  }
+
+  private createGraphWidget(props: cloudwatch.GraphWidgetProps, position: { x: number; y: number }) {
+    const widget = new cloudwatch.GraphWidget(props);
+    widget.position(position.x, position.y);
+    return widget;
   }
 
   private fill(metric: cloudwatch.Metric, fill: string) {
