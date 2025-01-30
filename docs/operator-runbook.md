@@ -1,8 +1,8 @@
 # 🦺 Operator Runbook
 
-> This document aims at helping operators navigate a CDK Atmosphere service deployment to diagnose (and where possible, solve) problems.
-> The table of contents of this file should always allow an operator to directly jump to the relevant article.
-> As much as possible, articles should be self-contained, to reduce the need for cross-referencing documents.
+> This document aims at helping operators navigate a CDK Atmosphere service deployment
+> to diagnose (and where possible, solve) problems. As much as possible, articles should be
+> self-contained, to reduce the need for cross-referencing documents.
 
 ## 🚨 Alarms
 
@@ -19,7 +19,8 @@ error was not explicitly caught and converted to a 500 response.
 
 #### Impact
 
-Degredaded 
+Depending on the exact errors, and if they persist or not, allocating new environments may be
+impossible and integration tests will start failing.
 
 #### Investigation
 
@@ -33,13 +34,29 @@ The alarm will automatically go back to green once the Lambda function stops fai
 
 #### Description
 
+Fires when the `Allocate` Lambda function returns 500 errors. This alarm is
+sectioned by the pool passed in the allocation request.
+
+It means an exception was thrown (and caught) somewhere in the handler code.
+
+#### Impact
+
+Depending on the exact errors, and if they persist or not, allocating new environments may be
+impossible and integration tests will start failing.
+
 #### Investigation
 
+Dive into the `CloudWatch` logs of the function to see the errors.
+
 #### Resolution
+
+The alarm will automatically go back to green once the Lambda function stops failing.
 
 ### `Atmosphere/Deallocate/UnexpectedFailure`
 
 #### Description
+
+#### Impact
 
 #### Investigation
 
@@ -47,7 +64,7 @@ The alarm will automatically go back to green once the Lambda function stops fai
 
 ### `Atmosphere/Deallocate/${pool}/StatusCode/500`
 
-### `Atmosphere/Cleanup/ExitCode/1`
+### `Atmosphere/Cleanup/${pool}/ExitCode/1`
 
 ### `Atmosphere/Environments/${pool}/Dirty`
 

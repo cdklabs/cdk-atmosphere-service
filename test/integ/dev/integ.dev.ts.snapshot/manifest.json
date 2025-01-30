@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e292ab9d5f3d60bcfc72257c71c4cc926be5a58cbc1ee892a528332799c32406.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97dcd93e456ddd44dead916ca09ab35c582bfef172a0b40e31e798d1658584a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -370,6 +370,24 @@
             "data": "AtmosphereEndpointApiallocationsidDELETE40B2AB4B"
           }
         ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsAllocatereleaseStatusCode500317683A2"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAlarmsAllocateUNKNOWNStatusCode50019890929"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAllocateUnexpectedFailure9DF85E27"
+          }
+        ],
         "/atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -568,7 +586,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/048b0f9fff1e70a36fb32aff7bb80ca12fb761292eb7c2043c88d4e8d01f5bfa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d65b34bc2e90422565bc2cc14220ac55dc47614ecfad6915e39603d727be6018.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

@@ -1307,9 +1307,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2232,9 +2232,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.6]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.6]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.6]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3045,6 +3045,143 @@
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.0.5"
+                }
+              },
+              "Alarms": {
+                "id": "Alarms",
+                "path": "atmosphere-integ-dev/Atmosphere/Alarms",
+                "children": {
+                  "Allocate--release--StatusCode--500": {
+                    "id": "Allocate--release--StatusCode--500",
+                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--release--StatusCode--500/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocatepoolstatuscode500",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/release/StatusCode/500",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "release"
+                              },
+                              {
+                                "name": "statusCode",
+                                "value": "500"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "allocate",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "Allocate--UNKNOWN--StatusCode--500": {
+                    "id": "Allocate--UNKNOWN--StatusCode--500",
+                    "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/Alarms/Allocate--UNKNOWN--StatusCode--500/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocatepoolstatuscode500",
+                            "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/UNKNOWN/StatusCode/500",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "dimensions": [
+                              {
+                                "name": "pool",
+                                "value": "UNKNOWN"
+                              },
+                              {
+                                "name": "statusCode",
+                                "value": "500"
+                              }
+                            ],
+                            "evaluationPeriods": 1,
+                            "metricName": "allocate",
+                            "namespace": "Atmosphere",
+                            "period": 300,
+                            "statistic": "Sum",
+                            "threshold": 1,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
+              },
+              "Allocate--UnexpectedFailure": {
+                "id": "Allocate--UnexpectedFailure",
+                "path": "atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate--UnexpectedFailure/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                      "aws:cdk:cloudformation:props": {
+                        "alarmDescription": "https://github.com/cdklabs/cdk-atmosphere-service/blob/main/docs/operator-runbook.md#atmosphereallocateunexpectedfailure",
+                        "alarmName": "atmosphere-integ-dev/Atmosphere/Allocate/UnexpectedFailure",
+                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                        "dimensions": [
+                          {
+                            "name": "FunctionName",
+                            "value": {
+                              "Ref": "AtmosphereAllocateFunctionDFA4621D"
+                            }
+                          }
+                        ],
+                        "evaluationPeriods": 1,
+                        "metricName": "Errors",
+                        "namespace": "AWS/Lambda",
+                        "period": 300,
+                        "statistic": "Sum",
+                        "threshold": 1,
+                        "treatMissingData": "notBreaching"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                      "version": "2.173.1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "version": "2.173.1"
                 }
               },
               "Dashboard": {

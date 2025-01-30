@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { Alarms } from './alarms';
 import { Allocate } from './allocate';
 import { Endpoint, EndpointOptions } from './api';
 import { Cleanup } from './cleanup';
@@ -76,6 +77,11 @@ export class AtmosphereService extends Construct {
    */
   public readonly dashboard: Dashboard;
 
+  /**
+   * Provides access to the alarms.
+   */
+  public readonly alarms: Alarms;
+
   constructor(scope: Construct, id: string, props: AtmosphereServiceProps) {
     super(scope, id);
 
@@ -115,6 +121,12 @@ export class AtmosphereService extends Construct {
       allocate: this.allocate,
       deallocate: this.deallocate,
       ...props.endpoint,
+    });
+
+    this.alarms = new Alarms(this, 'Alarms', {
+      configuration: this.config,
+      allocate: this.allocate,
+      cleanup: this.cleanup,
     });
 
     this.dashboard = new Dashboard(this, 'Dashboard', {
