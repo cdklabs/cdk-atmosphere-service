@@ -45,6 +45,7 @@ export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLo
   log.info('Fetching allocation');
   const allocation = await fetchAllocation(req.allocationId, log);
 
+  log.setPool(allocation.pool);
   metrics.setPool(allocation.pool);
 
   const env = `aws://${allocation.account}/${allocation.region}`;

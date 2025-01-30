@@ -1,11 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Lambda } from '@aws-sdk/client-lambda';
+import { RuntimeClients } from '../clients';
 import { Envars, DEALLOCATE_FUNCTION_NAME_ENV } from '../envars';
 import { AllocationLogger } from '../logging';
 
 export interface AllocationTimeoutEvent {
   readonly allocationId: string;
 }
+
+const clients = RuntimeClients.getOrCreate();
 
 /**
  * Responsible for forcefully releasing an environment in case its allocation period has
@@ -31,6 +34,13 @@ export async function handler(event: AllocationTimeoutEvent) {
   const log = new AllocationLogger({ id: event.allocationId, component: 'allocation-timeout' });
 
   try {
+
+    log.info('Fetching allocation');
+    const allocation = await clients.allocations.get(event.allocationId);
+    log.info('Successfully fetched allocation');
+
+    log.setPool(allocation.pool);
+
     const body = JSON.stringify({ outcome: 'timeout' });
     const lambda = new Lambda();
 

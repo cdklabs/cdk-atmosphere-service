@@ -72,11 +72,18 @@ export class Scheduler extends Construct {
       alarmDescription: runBookAnchor('TODO'),
     });
 
+    // needed because the function changes environment status
     props.environments.grantReadWrite(this.cleanupTimeoutFunction);
-    props.allocations.grantReadWrite(this.allocationTimeoutFunction);
-    props.environments.grantReadWrite(this.allocationTimeoutFunction);
+
+    // needed because the function fetches the allocation from storage
+    props.allocations.grantRead(this.cleanupTimeoutFunction);
+
+    // needed because the function fetches the allocation from storage
+    props.allocations.grantRead(this.allocationTimeoutFunction);
 
     this.cleanupTimeoutFunction.addEnvironment(envars.ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
+    this.cleanupTimeoutFunction.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
+    this.allocationTimeoutFunction.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
 
     this.cleanupTimeoutFunction.grantInvoke(this.role);
     this.allocationTimeoutFunction.grantInvoke(this.role);

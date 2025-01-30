@@ -76,6 +76,8 @@ async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareMetricsL
   try {
 
     const request = parseRequestBody(event.body, metrics);
+    log.setPool(request.pool);
+
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);

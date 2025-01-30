@@ -26,7 +26,7 @@ export interface AllocationLoggerProps {
  */
 export class AllocationLogger {
 
-  private readonly prefix: string;
+  private prefix: string;
 
   public constructor(props: AllocationLoggerProps) {
     this.prefix = `[${props.component}] [aloc:${props.id}]`;
@@ -38,6 +38,10 @@ export class AllocationLogger {
 
   public error(error: Error, message: string = '') {
     console.error(`${this.prefix} ${message}`, error);
+  }
+
+  public setPool(pool: string) {
+    this.prefix = `[pool:${pool}] ${this.prefix}`;
   }
 
 }

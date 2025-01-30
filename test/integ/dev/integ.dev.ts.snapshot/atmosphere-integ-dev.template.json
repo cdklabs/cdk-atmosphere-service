@@ -885,7 +885,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8788312dc4150c8a250ede6146a92847b68c59fc766d0a4ed068c602a9d6b0e5"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:89b35256458cea0e75c4b46d1205620e5ab260b29412e8b4f50a766895b49387"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1249,6 +1249,30 @@
          "Ref": "AWS::NoValue"
         }
        ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereAllocationsTable4ECEFD7B",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -1270,7 +1294,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9273715f64fbc4164823bf97d916ff565716a5e1e90e74dc6adb26a36b0a645e.zip"
+     "S3Key": "8d239f2ca9779dcbf81256c7a78d4c9cdf7e77a113a03da84aba0f79af2b31ba.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1286,6 +1310,9 @@
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Ref": "AtmosphereEnvironmentsTable430B8CE1"
+      },
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocationsTable4ECEFD7B"
       }
      }
     },
@@ -1382,29 +1409,19 @@
       {
        "Action": [
         "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
         "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
         "dynamodb:DescribeTable",
         "dynamodb:GetItem",
         "dynamodb:GetRecords",
         "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
         "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem"
+        "dynamodb:Scan"
        ],
        "Effect": "Allow",
        "Resource": [
         {
          "Fn::GetAtt": [
           "AtmosphereAllocationsTable4ECEFD7B",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "AtmosphereEnvironmentsTable430B8CE1",
           "Arn"
          ]
         },
@@ -1459,7 +1476,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bf534ff959a8e8e82513b77fa5b0f1f66dea56d8d807716b3b950dfeed4e4770.zip"
+     "S3Key": "c07cb4de1f9c00f9319abfa20de99007d7dc9ec5ab19346c694930202e680690.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1473,6 +1490,9 @@
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocationsTable4ECEFD7B"
+      },
       "CDK_ATMOSPHERE_DEALLOCATE_FUNCTION_NAME": {
        "Ref": "AtmosphereDeallocateFunctionBAD17B7D"
       }
@@ -1732,7 +1752,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eeb3b606f037180af5e3e67beec23a8ade60ccbb9a12cd155111cf237ec1e306.zip"
+     "S3Key": "31ba723008cd73d56e57a5e8da6c0c4bd77b24cdd761ae9daac0321c2808d0d2.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -2007,7 +2027,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a607ec920f65d3f230a80b84c2cfe488344823d2bc59c84e20dd70391174a7f4.zip"
+     "S3Key": "8c2af0a986daf8727a42a261d06ac9cad2ebbd591c200c220b7f6439775a4401.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -2515,23 +2535,23 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"200 OK\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m8057bf5bfcc63bea43ef06d31c205826513e4e30f0aebc66d53537da9a219513, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"200 OK\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m8057bf5bfcc63bea43ef06d31c205826513e4e30f0aebc66d53537da9a219513\"}],[{\"label\":\"423 Locked\",\"color\":\"#FFA500\",\"expression\":\"FILL(m787f765ea5f3219f58280ef62d8bb8a537a316cd1de53234d0eccdc3b1b491ad, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"423\",{\"color\":\"#FFA500\",\"label\":\"423 Locked\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m787f765ea5f3219f58280ef62d8bb8a537a316cd1de53234d0eccdc3b1b491ad\"}],[{\"label\":\"400 Bad Request\",\"color\":\"#FFD700\",\"expression\":\"FILL(mca987f70935dc9a9b5e6ca4ddfdb62a7b825587960bf2b7c249c20efbfd25135, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"400\",{\"color\":\"#FFD700\",\"label\":\"400 Bad Request\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mca987f70935dc9a9b5e6ca4ddfdb62a7b825587960bf2b7c249c20efbfd25135\"}],[{\"label\":\"500 Error\",\"color\":\"#FF0000\",\"expression\":\"FILL(m8f05f7a1ca055b9b9ba070151ff25f83c61d5104bce42bdab43249370f7db405, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"500\",{\"color\":\"#FF0000\",\"label\":\"500 Error\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m8f05f7a1ca055b9b9ba070151ff25f83c61d5104bce42bdab43249370f7db405\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Deallocate Response\",\"region\":\"",
+       "\",\"metrics\":[[{\"label\":\"200 OK\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m8057bf5bfcc63bea43ef06d31c205826513e4e30f0aebc66d53537da9a219513, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"200 OK\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m8057bf5bfcc63bea43ef06d31c205826513e4e30f0aebc66d53537da9a219513\"}],[{\"label\":\"423 Locked\",\"color\":\"#FFA500\",\"expression\":\"FILL(m787f765ea5f3219f58280ef62d8bb8a537a316cd1de53234d0eccdc3b1b491ad, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"423\",{\"color\":\"#FFA500\",\"label\":\"423 Locked\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m787f765ea5f3219f58280ef62d8bb8a537a316cd1de53234d0eccdc3b1b491ad\"}],[{\"label\":\"400 Bad Request\",\"color\":\"#FFD700\",\"expression\":\"FILL(mca987f70935dc9a9b5e6ca4ddfdb62a7b825587960bf2b7c249c20efbfd25135, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"400\",{\"color\":\"#FFD700\",\"label\":\"400 Bad Request\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mca987f70935dc9a9b5e6ca4ddfdb62a7b825587960bf2b7c249c20efbfd25135\"}],[{\"label\":\"500 Error\",\"color\":\"#FF0000\",\"expression\":\"FILL(m8f05f7a1ca055b9b9ba070151ff25f83c61d5104bce42bdab43249370f7db405, 0)\"}],[\"Atmosphere\",\"allocate\",\"pool\",\"$pool\",\"statusCode\",\"500\",{\"color\":\"#FF0000\",\"label\":\"500 Error\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m8f05f7a1ca055b9b9ba070151ff25f83c61d5104bce42bdab43249370f7db405\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Deallocate Response\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"200 OK\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m481a7f38607ba58fe14a6f79b57d65006d85992c365af4c452c09ed78b18551f, 0)\"}],[\"Atmosphere\",\"deallocate\",\"pool\",\"$pool\",\"statusCode\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"200 OK\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m481a7f38607ba58fe14a6f79b57d65006d85992c365af4c452c09ed78b18551f\"}],[{\"label\":\"400 Bad Request\",\"color\":\"#FFD700\",\"expression\":\"FILL(ma2caef41c9254f2f7a5656d2d61876fbb6b228f2a85de14bf999d27a2602cea1, 0)\"}],[\"Atmosphere\",\"deallocate\",\"pool\",\"$pool\",\"statusCode\",\"400\",{\"color\":\"#FFD700\",\"label\":\"400 Bad Request\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"ma2caef41c9254f2f7a5656d2d61876fbb6b228f2a85de14bf999d27a2602cea1\"}],[{\"label\":\"500 Error\",\"color\":\"#FF0000\",\"expression\":\"FILL(m4605b011a333a4cebd6ef3b3c30fb2aae12ab188ab220150e6b2899c3c1150ba, 0)\"}],[\"Atmosphere\",\"deallocate\",\"pool\",\"$pool\",\"statusCode\",\"500\",{\"color\":\"#FF0000\",\"label\":\"500 Error\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m4605b011a333a4cebd6ef3b3c30fb2aae12ab188ab220150e6b2899c3c1150ba\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Allocation Outcome\",\"region\":\"",
+       "\",\"metrics\":[[{\"label\":\"200 OK\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m481a7f38607ba58fe14a6f79b57d65006d85992c365af4c452c09ed78b18551f, 0)\"}],[\"Atmosphere\",\"deallocate\",\"pool\",\"$pool\",\"statusCode\",\"200\",{\"color\":\"#4CAF50\",\"label\":\"200 OK\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m481a7f38607ba58fe14a6f79b57d65006d85992c365af4c452c09ed78b18551f\"}],[{\"label\":\"400 Bad Request\",\"color\":\"#FFD700\",\"expression\":\"FILL(ma2caef41c9254f2f7a5656d2d61876fbb6b228f2a85de14bf999d27a2602cea1, 0)\"}],[\"Atmosphere\",\"deallocate\",\"pool\",\"$pool\",\"statusCode\",\"400\",{\"color\":\"#FFD700\",\"label\":\"400 Bad Request\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"ma2caef41c9254f2f7a5656d2d61876fbb6b228f2a85de14bf999d27a2602cea1\"}],[{\"label\":\"500 Error\",\"color\":\"#FF0000\",\"expression\":\"FILL(m4605b011a333a4cebd6ef3b3c30fb2aae12ab188ab220150e6b2899c3c1150ba, 0)\"}],[\"Atmosphere\",\"deallocate\",\"pool\",\"$pool\",\"statusCode\",\"500\",{\"color\":\"#FF0000\",\"label\":\"500 Error\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m4605b011a333a4cebd6ef3b3c30fb2aae12ab188ab220150e6b2899c3c1150ba\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Allocation Outcome\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"success\",\"color\":\"#4CAF50\",\"expression\":\"FILL(mda3a95fd00a1fec3c2a23b0d797941607480578aec0e20ea053f9ce8a53cc5b9, 0)\"}],[\"Atmosphere\",\"deallocate\",\"outcome\",\"success\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"success\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mda3a95fd00a1fec3c2a23b0d797941607480578aec0e20ea053f9ce8a53cc5b9\"}],[{\"label\":\"failure\",\"color\":\"#FF0000\",\"expression\":\"FILL(mfa63917b5cdea46e6ea5a4589fd09d51fab9d4e81d1c73c2fdeb8a78d5b31fe7, 0)\"}],[\"Atmosphere\",\"deallocate\",\"outcome\",\"failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mfa63917b5cdea46e6ea5a4589fd09d51fab9d4e81d1c73c2fdeb8a78d5b31fe7\"}],[{\"label\":\"timeout\",\"color\":\"#FFD700\",\"expression\":\"FILL(mb569620349225ae1b845f07602517915b69e5a7459e1f3bc036c299482093257, 0)\"}],[\"Atmosphere\",\"deallocate\",\"outcome\",\"timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mb569620349225ae1b845f07602517915b69e5a7459e1f3bc036c299482093257\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":18,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cleanup Exit Code\",\"region\":\"",
+       "\",\"metrics\":[[{\"label\":\"success\",\"color\":\"#4CAF50\",\"expression\":\"FILL(mda3a95fd00a1fec3c2a23b0d797941607480578aec0e20ea053f9ce8a53cc5b9, 0)\"}],[\"Atmosphere\",\"deallocate\",\"outcome\",\"success\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"success\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mda3a95fd00a1fec3c2a23b0d797941607480578aec0e20ea053f9ce8a53cc5b9\"}],[{\"label\":\"failure\",\"color\":\"#FF0000\",\"expression\":\"FILL(mfa63917b5cdea46e6ea5a4589fd09d51fab9d4e81d1c73c2fdeb8a78d5b31fe7, 0)\"}],[\"Atmosphere\",\"deallocate\",\"outcome\",\"failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mfa63917b5cdea46e6ea5a4589fd09d51fab9d4e81d1c73c2fdeb8a78d5b31fe7\"}],[{\"label\":\"timeout\",\"color\":\"#FFD700\",\"expression\":\"FILL(mb569620349225ae1b845f07602517915b69e5a7459e1f3bc036c299482093257, 0)\"}],[\"Atmosphere\",\"deallocate\",\"outcome\",\"timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mb569620349225ae1b845f07602517915b69e5a7459e1f3bc036c299482093257\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cleanup Exit Code\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"0\",\"color\":\"#4CAF50\",\"expression\":\"FILL(mc148beb33f33f9ce311fbe53047ba9d0f13e55199a1e3d6682dc76f12acd3b96, 0)\"}],[\"Atmosphere\",\"cleanup\",\"exitCode\",\"0\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"0\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mc148beb33f33f9ce311fbe53047ba9d0f13e55199a1e3d6682dc76f12acd3b96\"}],[{\"label\":\"1\",\"color\":\"#FF0000\",\"expression\":\"FILL(m520a990e87eae24fe1ab62a257568037cb777b3a035210be7a1e587ce4bc174c, 0)\"}],[\"Atmosphere\",\"cleanup\",\"exitCode\",\"1\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"1\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m520a990e87eae24fe1ab62a257568037cb777b3a035210be7a1e587ce4bc174c\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":24,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cleanup Outcome\",\"region\":\"",
+       "\",\"metrics\":[[{\"label\":\"0\",\"color\":\"#4CAF50\",\"expression\":\"FILL(mc148beb33f33f9ce311fbe53047ba9d0f13e55199a1e3d6682dc76f12acd3b96, 0)\"}],[\"Atmosphere\",\"cleanup\",\"exitCode\",\"0\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"0\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mc148beb33f33f9ce311fbe53047ba9d0f13e55199a1e3d6682dc76f12acd3b96\"}],[{\"label\":\"1\",\"color\":\"#FF0000\",\"expression\":\"FILL(m520a990e87eae24fe1ab62a257568037cb777b3a035210be7a1e587ce4bc174c, 0)\"}],[\"Atmosphere\",\"cleanup\",\"exitCode\",\"1\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"1\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m520a990e87eae24fe1ab62a257568037cb777b3a035210be7a1e587ce4bc174c\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cleanup Outcome\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"clean\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"clean\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"clean\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2\"}],[{\"label\":\"dirty\",\"color\":\"#FF0000\",\"expression\":\"FILL(mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"dirty\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"dirty\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Environments Status\",\"region\":\"",
+       "\",\"metrics\":[[{\"label\":\"clean\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"clean\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"clean\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"m2e53d242d3a83efab360446b5427a95f5d17219bc7ee8ee2db496a8eba21f4d2\"}],[{\"label\":\"dirty\",\"color\":\"#FF0000\",\"expression\":\"FILL(mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300, 0)\"}],[\"Atmosphere\",\"cleanup\",\"outcome\",\"dirty\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"dirty\",\"stat\":\"Sum\",\"visible\":false,\"id\":\"mc51b3919e956bdf0726108cfce8b2dea37be944454cfd72e31fbadcb8e071300\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Environments Status\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },

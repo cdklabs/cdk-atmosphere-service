@@ -40,6 +40,13 @@ export async function handler(event: CleanupTimeoutEvent) {
   const log = new AllocationLogger({ id: allocationId, component: 'cleanup-timeout' });
 
   try {
+
+    log.info('Fetching allocation');
+    const allocation = await clients.allocations.get(event.allocationId);
+    log.info('Successfully fetched allocation');
+
+    log.setPool(allocation.pool);
+
     log.info(`Marking environment 'aws://${account}/${region}' as dirty`);
     await clients.environments.dirty(allocationId, account, region);
     log.info('Done');

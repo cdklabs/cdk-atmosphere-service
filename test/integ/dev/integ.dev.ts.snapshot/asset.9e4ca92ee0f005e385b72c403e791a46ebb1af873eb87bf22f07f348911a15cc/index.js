@@ -14039,6 +14039,9 @@ var AllocationLogger = class {
   error(error, message = "") {
     console.error(`${this.prefix} ${message}`, error);
   }
+  setPool(pool) {
+    this.prefix = `[pool:${pool}] ${this.prefix}`;
+  }
 };
 
 // src/metrics.ts
@@ -14103,6 +14106,7 @@ async function doHandler(event, metrics) {
   const log = new AllocationLogger({ id: allocationId, component: "allocate" });
   try {
     const request = parseRequestBody(event.body, metrics);
+    log.setPool(request.pool);
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
@@ -14211,10 +14215,15 @@ async function grabCredentials(id, environment) {
 
 // src/allocation-timeout/allocation-timeout.lambda.ts
 var import_client_lambda = require("@aws-sdk/client-lambda");
+var clients2 = RuntimeClients.getOrCreate();
 async function handler2(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   const log = new AllocationLogger({ id: event.allocationId, component: "allocation-timeout" });
   try {
+    log.info("Fetching allocation");
+    const allocation = await clients2.allocations.get(event.allocationId);
+    log.info("Successfully fetched allocation");
+    log.setPool(allocation.pool);
     const body = JSON.stringify({ outcome: "timeout" });
     const lambda = new import_client_lambda.Lambda();
     const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
@@ -14444,7 +14453,7 @@ var Cleaner = class {
 };
 
 // src/cleanup/cleanup.task.ts
-var clients2 = RuntimeClients.getOrCreate();
+var clients3 = RuntimeClients.getOrCreate();
 var METRIC_NAME2 = "cleanup";
 var METRIC_DIMENSION_EXIT_CODE = "exitCode";
 var METRIC_DIMENSION_OUTCOME = "outcome";
@@ -14467,17 +14476,18 @@ async function doHandler2(req, metrics) {
   const log = new AllocationLogger({ id: req.allocationId, component: "cleanup" });
   log.info("Fetching allocation");
   const allocation = await fetchAllocation(req.allocationId, log);
+  log.setPool(allocation.pool);
   metrics.setPool(allocation.pool);
   const env3 = `aws://${allocation.account}/${allocation.region}`;
   try {
     log.info(`Fetching environment '${env3}'`);
-    const environment = await clients2.configuration.getEnvironment(allocation.account, allocation.region);
+    const environment = await clients3.configuration.getEnvironment(allocation.account, allocation.region);
     const cleaner = new Cleaner(environment, log);
     log.info(`Starting cleanup of '${env3}'`);
     await cleaner.clean(req.timeoutSeconds);
     log.info(`Successfully cleaned '${env3}'`);
     log.info(`Releasing environment '${env3}'`);
-    await clients2.environments.release(req.allocationId, environment.account, environment.region);
+    await clients3.environments.release(req.allocationId, environment.account, environment.region);
     log.info(`Successfully released environment '${env3}'`);
     log.info("Done!");
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: "clean" });
@@ -14489,7 +14499,7 @@ async function doHandler2(req, metrics) {
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: "dirty" });
     log.error(e);
     log.info(`Marking environment '${env3}' as 'dirty'`);
-    await clients2.environments.dirty(req.allocationId, allocation.account, allocation.region);
+    await clients3.environments.dirty(req.allocationId, allocation.account, allocation.region);
     log.info(`Successfully marked environment '${env3}' as 'dirty'`);
     if (e instanceof CleanerError) {
       log.info();
@@ -14507,7 +14517,7 @@ async function doHandler2(req, metrics) {
 }
 async function fetchAllocation(id, log) {
   try {
-    return await clients2.allocations.get(id);
+    return await clients3.allocations.get(id);
   } catch (e) {
     log.error(e);
     throw new Error("Failed fetching allocation from database");
@@ -14521,7 +14531,7 @@ if (require.main !== module) {
 }
 
 // src/cleanup-timeout/cleanup-timeout.lambda.ts
-var clients3 = RuntimeClients.getOrCreate();
+var clients4 = RuntimeClients.getOrCreate();
 async function handler4(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
   const account = event.account;
@@ -14529,8 +14539,12 @@ async function handler4(event) {
   const allocationId = event.allocationId;
   const log = new AllocationLogger({ id: allocationId, component: "cleanup-timeout" });
   try {
+    log.info("Fetching allocation");
+    const allocation = await clients4.allocations.get(event.allocationId);
+    log.info("Successfully fetched allocation");
+    log.setPool(allocation.pool);
     log.info(`Marking environment 'aws://${account}/${region}' as dirty`);
-    await clients3.environments.dirty(allocationId, account, region);
+    await clients4.environments.dirty(allocationId, account, region);
     log.info("Done");
   } catch (e) {
     if (e instanceof EnvironmentAlreadyReleasedError) {
@@ -14563,7 +14577,7 @@ var ProxyError2 = class extends Error {
 var METRIC_NAME3 = "deallocate";
 var METRIC_DIMENSION_STATUS_CODE2 = "statusCode";
 var METRIC_DIMENSION_OUTCOME2 = "outcome";
-var clients4 = RuntimeClients.getOrCreate();
+var clients5 = RuntimeClients.getOrCreate();
 async function handler5(event) {
   return RuntimeMetrics.scoped(async (metrics) => {
     try {
@@ -14591,10 +14605,11 @@ async function doHandler3(event, metrics) {
     const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
+    log.setPool(allocation.pool);
     metrics.setPool(allocation.pool);
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME2]: request.outcome });
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
-    await clients4.scheduler.scheduleCleanupTimeout({
+    await clients5.scheduler.scheduleCleanupTimeout({
       allocationId: allocation.id,
       account: allocation.account,
       region: allocation.region,
@@ -14602,8 +14617,8 @@ async function doHandler3(event, metrics) {
       functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await clients4.environments.cleaning(id, allocation.account, allocation.region);
-    const taskInstanceArn = await clients4.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    await clients5.environments.cleaning(id, allocation.account, allocation.region);
+    const taskInstanceArn = await clients5.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
     return success2({ cleanupDurationSeconds });
   } catch (e) {
@@ -14634,7 +14649,7 @@ function parseRequestBody2(body) {
 }
 async function endAllocation(id, outcome) {
   try {
-    return await clients4.allocations.end({ id, outcome });
+    return await clients5.allocations.end({ id, outcome });
   } catch (e) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError2(400, e.message);
@@ -14645,7 +14660,7 @@ async function endAllocation(id, outcome) {
 
 // test/integ/atmosphere.runtime.ts
 var CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME_ENV = "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME";
-var clients5 = RuntimeClients.getOrCreate();
+var clients6 = RuntimeClients.getOrCreate();
 var Runtime = class _Runtime {
   constructor(vars) {
     this.vars = vars;
@@ -14721,8 +14736,8 @@ var Runtime = class _Runtime {
   }
   async cleanupRemote(req) {
     this.log(`Starting ECS cleanup task with body: ${JSON.stringify(req)}`);
-    const allocation = await clients5.allocations.get(req.allocationId);
-    const taskInstanceArn = await clients5.cleanup.start({
+    const allocation = await clients6.allocations.get(req.allocationId);
+    const taskInstanceArn = await clients6.cleanup.start({
       allocation,
       timeoutSeconds: req.timeoutSeconds
     });

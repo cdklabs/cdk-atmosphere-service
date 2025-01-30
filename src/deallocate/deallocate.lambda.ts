@@ -78,6 +78,7 @@ export async function doHandler(event: APIGatewayProxyEvent, metrics: PoolAwareM
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(id, request.outcome);
 
+    log.setPool(allocation.pool);
     metrics.setPool(allocation.pool);
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: request.outcome });
 

@@ -71726,6 +71726,9 @@ var AllocationLogger = class {
   error(error, message = "") {
     console.error(`${this.prefix} ${message}`, error);
   }
+  setPool(pool) {
+    this.prefix = `[pool:${pool}] ${this.prefix}`;
+  }
 };
 
 // src/metrics.ts
@@ -71785,6 +71788,7 @@ async function doHandler(req, metrics) {
   const log = new AllocationLogger({ id: req.allocationId, component: "cleanup" });
   log.info("Fetching allocation");
   const allocation = await fetchAllocation(req.allocationId, log);
+  log.setPool(allocation.pool);
   metrics.setPool(allocation.pool);
   const env = `aws://${allocation.account}/${allocation.region}`;
   try {

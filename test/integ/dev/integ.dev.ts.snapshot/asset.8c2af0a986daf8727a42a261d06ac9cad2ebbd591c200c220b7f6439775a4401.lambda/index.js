@@ -2615,16 +2615,16 @@ var require_lib = __commonJS({
   }
 });
 
-// src/allocate/allocate.lambda.ts
-var allocate_lambda_exports = {};
-__export(allocate_lambda_exports, {
+// src/deallocate/deallocate.lambda.ts
+var deallocate_lambda_exports = {};
+__export(deallocate_lambda_exports, {
+  METRIC_DIMENSION_OUTCOME: () => METRIC_DIMENSION_OUTCOME,
   METRIC_DIMENSION_STATUS_CODE: () => METRIC_DIMENSION_STATUS_CODE,
   METRIC_NAME: () => METRIC_NAME,
+  doHandler: () => doHandler,
   handler: () => handler
 });
-module.exports = __toCommonJS(allocate_lambda_exports);
-var crypto = __toESM(require("crypto"));
-var import_client_sts = require("@aws-sdk/client-sts");
+module.exports = __toCommonJS(deallocate_lambda_exports);
 var import_aws_embedded_metrics2 = __toESM(require_lib());
 
 // src/cleanup/cleanup.client.ts
@@ -3269,6 +3269,9 @@ var AllocationLogger = class {
   error(error, message = "") {
     console.error(`${this.prefix} ${message}`, error);
   }
+  setPool(pool) {
+    this.prefix = `[pool:${pool}] ${this.prefix}`;
+  }
 };
 
 // src/metrics.ts
@@ -3304,8 +3307,8 @@ var PoolAwareMetricsLogger = class {
   }
 };
 
-// src/allocate/allocate.lambda.ts
-var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
+// src/deallocate/deallocate.lambda.ts
+var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -3313,8 +3316,9 @@ var ProxyError = class extends Error {
     this.message = message;
   }
 };
-var METRIC_NAME = "allocate";
+var METRIC_NAME = "deallocate";
 var METRIC_DIMENSION_STATUS_CODE = "statusCode";
+var METRIC_DIMENSION_OUTCOME = "outcome";
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   return RuntimeMetrics.scoped(async (metrics) => {
@@ -3329,32 +3333,41 @@ async function handler(event) {
 }
 async function doHandler(event, metrics) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const allocationId = crypto.randomUUID();
-  const log = new AllocationLogger({ id: allocationId, component: "allocate" });
+  const id = (event.pathParameters ?? {}).id;
+  if (!id) {
+    return failure(400, "Missing 'id' path parameter");
+  }
+  const log = new AllocationLogger({ id, component: "deallocate" });
   try {
-    const request = parseRequestBody(event.body, metrics);
-    const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-    if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-      throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
+    const request = parseRequestBody(event.body);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
     }
-    const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
-    log.info(`Acquiring environment from pool '${request.pool}'`);
-    const environment = await acquireEnvironment(allocationId, request.pool);
-    log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
-    await startAllocation(allocationId, environment, request.requester);
-    log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(allocationId, environment);
-    log.info("Allocation started successfully");
-    const response = { id: allocationId, environment, credentials, durationSeconds };
-    log.info(`Scheduling allocation timeout to ${timeoutDate}`);
-    await clients.scheduler.scheduleAllocationTimeout({
-      allocationId,
-      timeoutDate,
-      functionArn: Envars.required(ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV)
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    log.info(`Ending allocation with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    log.setPool(allocation.pool);
+    metrics.setPool(allocation.pool);
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: request.outcome });
+    log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
-    log.info("Done");
-    return success(response);
+    log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
+    return success({ cleanupDurationSeconds });
   } catch (e) {
+    if (e instanceof AllocationAlreadyEndedError) {
+      log.info(`Returning success because: ${e.message}`);
+      return success({ cleanupDurationSeconds: -1 });
+    }
     log.error(e);
     const statusCode = e instanceof ProxyError ? e.statusCode : 500;
     return failure(statusCode, e.message);
@@ -3366,47 +3379,19 @@ function success(body) {
 function failure(statusCode, message) {
   return { statusCode, body: JSON.stringify({ message }) };
 }
-function parseRequestBody(body, metrics) {
+function parseRequestBody(body) {
   if (!body) {
     throw new ProxyError(400, "Request body not found");
   }
   const parsed = JSON.parse(body);
-  if (!parsed.pool) {
-    throw new ProxyError(400, "'pool' must be provided in the request body");
-  }
-  metrics.setPool(parsed.pool);
-  if (!parsed.requester) {
-    throw new ProxyError(400, "'requester' must be provided in the request body");
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
   }
   return parsed;
 }
-async function acquireEnvironment(allocaionId, pool) {
-  const candidates = await clients.configuration.listEnvironments({ pool });
-  console.log(`Found ${candidates.length} environments in pool '${pool}'`);
-  for (const canditate of candidates) {
-    try {
-      console.log(`Acquiring environment 'aws://${canditate.account}/${canditate.region}'...`);
-      await clients.environments.acquire(allocaionId, canditate.account, canditate.region);
-      return canditate;
-    } catch (e) {
-      if (e instanceof EnvironmentAlreadyAcquiredError) {
-        console.log(`Environment 'aws://${canditate.account}/${canditate.region}' already acquired. Trying the next one.`);
-        continue;
-      }
-      throw e;
-    }
-  }
-  throw new ProxyError(423, `No environments available in pool '${pool}'`);
-}
-async function startAllocation(id, environment, requester) {
+async function endAllocation(id, outcome) {
   try {
-    await clients.allocations.start({
-      id,
-      account: environment.account,
-      region: environment.region,
-      pool: environment.pool,
-      requester
-    });
+    return await clients.allocations.end({ id, outcome });
   } catch (e) {
     if (e instanceof InvalidInputError) {
       throw new ProxyError(400, e.message);
@@ -3414,34 +3399,12 @@ async function startAllocation(id, environment, requester) {
     throw e;
   }
 }
-async function grabCredentials(id, environment) {
-  const sts = new import_client_sts.STS();
-  const assumed = await sts.assumeRole({
-    RoleArn: environment.adminRoleArn,
-    RoleSessionName: `atmosphere.allocation.${id}`
-  });
-  if (!assumed.Credentials) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
-  }
-  if (!assumed.Credentials.AccessKeyId) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
-  }
-  if (!assumed.Credentials.SecretAccessKey) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
-  }
-  if (!assumed.Credentials.SessionToken) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
-  }
-  return {
-    accessKeyId: assumed.Credentials.AccessKeyId,
-    secretAccessKey: assumed.Credentials.SecretAccessKey,
-    sessionToken: assumed.Credentials.SessionToken
-  };
-}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  METRIC_DIMENSION_OUTCOME,
   METRIC_DIMENSION_STATUS_CODE,
   METRIC_NAME,
+  doHandler,
   handler
 });
 /*! Bundled license information:
