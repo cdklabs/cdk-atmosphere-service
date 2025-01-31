@@ -132,6 +132,12 @@ class IntegTest extends Component {
     // task to run the assertion handler
     const integAssertTask = this.project.tasks.addTask(`${integName}:assert`, {
       description: 'Run the assertion locally',
+      env: {
+        // prevents aws-embedded-metrics from sending
+        // metrics over TCP, which won't work when assertions are executed
+        // locally.
+        AWS_EMF_ENVIRONMENT: 'Local',
+      },
     });
     integAssertTask.exec(`ts-node ${handlerPath}`);
     assertAll.spawn(integAssertTask);

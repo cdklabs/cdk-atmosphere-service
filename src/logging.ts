@@ -26,10 +26,13 @@ export interface AllocationLoggerProps {
  */
 export class AllocationLogger {
 
-  private prefix: string;
+  private component: string;
+  private allocationId: string;
+  private pool: string | undefined;
 
   public constructor(props: AllocationLoggerProps) {
-    this.prefix = `[${props.component}] [aloc:${props.id}]`;
+    this.component = props.component;
+    this.allocationId = props.id;
   }
 
   public info(message?: any) {
@@ -41,7 +44,18 @@ export class AllocationLogger {
   }
 
   public setPool(pool: string) {
-    this.prefix = `${this.prefix} [pool:${pool}]`;
+    this.pool = pool;
+  }
+
+  private get prefix() {
+    const parts = [
+      `[${this.component}]`,
+    ];
+    if (this.pool) {
+      parts.push(`[pool:${this.pool}]`);
+    }
+    parts.push(`[aloc:${this.allocationId}]`);
+    return parts.join(' ');
   }
 
 }

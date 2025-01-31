@@ -127,6 +127,7 @@ export class AtmosphereService extends Construct {
       deallocate: this.deallocate,
       cleanup: this.cleanup,
       environments: this.environments,
+      allocations: this.allocations,
     });
 
   }

@@ -27,13 +27,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/allocation-timeout/allocation-timeout.lambda.ts
-var allocation_timeout_lambda_exports = {};
-__export(allocation_timeout_lambda_exports, {
+// src/dirty-environments.widget.lambda.ts
+var dirty_environments_widget_lambda_exports = {};
+__export(dirty_environments_widget_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(allocation_timeout_lambda_exports);
-var import_client_lambda = require("@aws-sdk/client-lambda");
+module.exports = __toCommonJS(dirty_environments_widget_lambda_exports);
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -53,6 +52,7 @@ var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
 var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
 var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
 var CLEANUP_CLUSTER_ARN_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_ARN`;
+var CLEANUP_CLUSTER_NAME_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_NAME`;
 var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`;
 var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
 var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
@@ -487,14 +487,13 @@ var EnvironmentsClient = class {
         },
         ExpressionAttributeValues: {
           ":allocation_value": { S: allocationId },
-          // we only expect to release an environment that is currenly being cleaned.
-          // 'in-use' environments should not be released until they cleaned
-          // 'dirty' environments should not be released because they trigger human intervention.
-          ":expected_status_value": { S: "cleaning" }
+          // we shouldn't be releasing an environment if its still 'in-use'.
+          // it should be marked as either 'cleaning' or 'dirty' beforehand.
+          ":unexpected_status_value": { S: "in-use" }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status = :expected_status_value",
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :unexpected_status_value",
         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
@@ -507,15 +506,8 @@ var EnvironmentsClient = class {
           throw new EnvironmentAlreadyReallocated(account, region);
         }
         const old_status = e.Item.status?.S;
-        if (old_status) {
-          switch (old_status) {
-            case "in-use":
-              throw new EnvironmentAlreadyInUseError(account, region);
-            case "dirty":
-              throw new EnvironmentAlreadyDirtyError(account, region);
-            default:
-              throw new Error(`Unexpected status for environment aws://${account}/${region}: ${old_status}`);
-          }
+        if (old_status === "in-use") {
+          throw new EnvironmentAlreadyInUseError(account, region);
         }
       }
       throw e;
@@ -666,47 +658,86 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
-// src/logging.ts
-var AllocationLogger = class {
-  constructor(props) {
-    this.prefix = `[${props.component}] [aloc:${props.id}]`;
-  }
-  info(message) {
-    console.log(`${this.prefix} ${message}`);
-  }
-  error(error, message = "") {
-    console.error(`${this.prefix} ${message}`, error);
-  }
-  setPool(pool) {
-    this.prefix = `${this.prefix} [pool:${pool}]`;
-  }
-};
-
-// src/allocation-timeout/allocation-timeout.lambda.ts
+// src/dirty-environments.widget.lambda.ts
 var clients = RuntimeClients.getOrCreate();
-async function handler(event) {
-  console.log("Event:", JSON.stringify(event, null, 2));
-  const log = new AllocationLogger({ id: event.allocationId, component: "allocation-timeout" });
-  try {
-    log.info("Fetching allocation");
-    const allocation = await clients.allocations.get(event.allocationId);
-    log.info("Successfully fetched allocation");
-    log.setPool(allocation.pool);
-    const body = JSON.stringify({ outcome: "timeout" });
-    const lambda = new import_client_lambda.Lambda();
-    const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
-    const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
-    log.info(`Invoking ${target} with payload: ${payload}`);
-    const response = await lambda.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
-    const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
-    if (responsePayload.statusCode !== 200) {
-      throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
-    }
-    log.info("Done");
-  } catch (e) {
-    log.error(e);
-    throw e;
+var ACTION_CLEAN = "clean";
+async function handler(event, context) {
+  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+  const pool = event.pool;
+  const region = event.region;
+  const cleanupClusterName = Envars.required(CLEANUP_CLUSTER_NAME_ENV);
+  if (event.action === ACTION_CLEAN) {
+    const allocationId = event.allocationId;
+    const env = event.env;
+    const allocation = await clients.allocations.get(allocationId);
+    console.log(`Starting cleanup task for allocation '${allocationId}'`);
+    const taskArn = await clients.cleanup.start({ timeoutSeconds: 3600, allocation });
+    console.log(`Cleanup task started: ${taskArn}`);
+    const taskId = taskArn.split("/").pop();
+    const logsLink = `/ecs/v2/clusters/${cleanupClusterName}/tasks/${taskId}/logs?region=${region}`;
+    return [
+      "<p><u>Task started successfully:</u></p>",
+      "<br>",
+      "<ul>",
+      `<li><b>Account:</b> ${env.account}</li>`,
+      `<li><b>Region:</b> ${env.region}</li>`,
+      `<li><b>Allocation:</b> ${allocationId}</li>`,
+      `<li><b>Arn:</b> ${taskArn}</li>`,
+      "</ul>",
+      `<p><a href="${logsLink}" target=_blank>Click here to view task logs</a> (may not be immediately available).</p>`,
+      "<p>Once the task completes successfully, the environment will be released and reinstated back to service operation.</p>"
+    ].join("");
   }
+  console.log(`Finding dirty environments in pool '${pool}'`);
+  const dirty = await findDirtyEnvironments(pool);
+  console.log(`Found ${dirty.length} dirty environments`);
+  return buildTable(dirty, context, region);
+}
+function buildTable(environments, context, region) {
+  const columns = ["account", "region", "status", "allocation"];
+  const header = [
+    "<tr>",
+    ...columns.map((c) => `<th>${c}</th>`),
+    "<th>",
+    "action",
+    "</th>",
+    "</tr>"
+  ].join("");
+  const rows = environments.map((e) => {
+    return [
+      "<tr>",
+      ...columns.map((c) => `<td>${e[c]}</td>`),
+      "<td>",
+      buildCleanAction(e.allocation, e, context, region),
+      "</td>",
+      "</tr>"
+    ].join("");
+  });
+  return `<table>${header}${rows}</table>`;
+}
+function buildCleanAction(allocationId, env, context, serviceRegion) {
+  const envSpec = `aws://${env.account}/${env.region}`;
+  return `<a class="btn btn-primary" style="submit">Clean</a>
+<cwdb-action 
+  action="call" 
+  display="popup" 
+  endpoint="${context.invokedFunctionArn}" 
+  confirmation="Are you sure you want to clean environment '${envSpec}'?">
+  { "region": "${serviceRegion}", "action": "${ACTION_CLEAN}", "allocationId": "${allocationId}", "env": { "account": "${env.account}", "region": "${env.region}" } }
+</cwdb-action>`;
+}
+async function findDirtyEnvironments(pool) {
+  console.log("Scanning environments table");
+  const environments = await clients.environments.scan();
+  const dirty = [];
+  for (const active of environments) {
+    const registered = await clients.configuration.getEnvironment(active.account, active.region);
+    if (registered.pool === pool && active.status === "dirty") {
+      dirty.push(active);
+    }
+  }
+  return dirty;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

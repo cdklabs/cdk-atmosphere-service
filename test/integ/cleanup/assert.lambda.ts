@@ -77,7 +77,7 @@ export async function handler(_: any) {
 
   });
 
-  await Runner.assert('doesnt-release-a-dirty-environment', async (session: Runner) => {
+  await Runner.assert('can-release-a-dirty-environment', async (session: Runner) => {
 
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     const body = JSON.parse(response.body!);
@@ -88,8 +88,12 @@ export async function handler(_: any) {
     await clients.environments.dirty(body.id, account, region);
     await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
 
-    const environment = await clients.environments.get(account, region);
-    assert.strictEqual(environment.status, 'dirty');
+    try {
+      await clients.environments.get(account, region);
+      assert.fail('expected environment to be released');
+    } catch (err: any) {
+      assert.strictEqual(err.constructor.name, 'EnvironmentNotFound');
+    }
 
   });
 

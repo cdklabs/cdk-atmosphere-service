@@ -52,6 +52,7 @@ var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
 var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
 var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
 var CLEANUP_CLUSTER_ARN_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_ARN`;
+var CLEANUP_CLUSTER_NAME_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_NAME`;
 var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`;
 var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
 var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
@@ -486,14 +487,13 @@ var EnvironmentsClient = class {
         },
         ExpressionAttributeValues: {
           ":allocation_value": { S: allocationId },
-          // we only expect to release an environment that is currenly being cleaned.
-          // 'in-use' environments should not be released until they cleaned
-          // 'dirty' environments should not be released because they trigger human intervention.
-          ":expected_status_value": { S: "cleaning" }
+          // we shouldn't be releasing an environment if its still 'in-use'.
+          // it should be marked as either 'cleaning' or 'dirty' beforehand.
+          ":unexpected_status_value": { S: "in-use" }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status = :expected_status_value",
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :unexpected_status_value",
         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
@@ -506,15 +506,8 @@ var EnvironmentsClient = class {
           throw new EnvironmentAlreadyReallocated(account, region);
         }
         const old_status = e.Item.status?.S;
-        if (old_status) {
-          switch (old_status) {
-            case "in-use":
-              throw new EnvironmentAlreadyInUseError(account, region);
-            case "dirty":
-              throw new EnvironmentAlreadyDirtyError(account, region);
-            default:
-              throw new Error(`Unexpected status for environment aws://${account}/${region}: ${old_status}`);
-          }
+        if (old_status === "in-use") {
+          throw new EnvironmentAlreadyInUseError(account, region);
         }
       }
       throw e;

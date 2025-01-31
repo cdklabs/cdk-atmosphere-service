@@ -60,6 +60,9 @@
           "spawn": "bundle:deallocate/deallocate.lambda"
         },
         {
+          "spawn": "bundle:dirty-environments.widget.lambda"
+        },
+        {
           "spawn": "bundle:storage/environments.monitor.lambda"
         },
         {
@@ -162,6 +165,24 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:dirty-environments.widget.lambda": {
+      "name": "bundle:dirty-environments.widget.lambda",
+      "description": "Create a JavaScript bundle from src/dirty-environments.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:dirty-environments.widget.lambda:watch": {
+      "name": "bundle:dirty-environments.widget.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/dirty-environments.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
@@ -422,6 +443,9 @@
     "integ:test/allocate:assert": {
       "name": "integ:test/allocate:assert",
       "description": "Run the assertion locally",
+      "env": {
+        "AWS_EMF_ENVIRONMENT": "Local"
+      },
       "steps": [
         {
           "exec": "ts-node test/integ/allocate/assert.lambda.ts"
@@ -491,6 +515,9 @@
     "integ:test/allocation-timeout:assert": {
       "name": "integ:test/allocation-timeout:assert",
       "description": "Run the assertion locally",
+      "env": {
+        "AWS_EMF_ENVIRONMENT": "Local"
+      },
       "steps": [
         {
           "exec": "ts-node test/integ/allocation-timeout/assert.lambda.ts"
@@ -572,6 +599,9 @@
     "integ:test/cleanup-timeout:assert": {
       "name": "integ:test/cleanup-timeout:assert",
       "description": "Run the assertion locally",
+      "env": {
+        "AWS_EMF_ENVIRONMENT": "Local"
+      },
       "steps": [
         {
           "exec": "ts-node test/integ/cleanup-timeout/assert.lambda.ts"
@@ -629,6 +659,9 @@
     "integ:test/cleanup:assert": {
       "name": "integ:test/cleanup:assert",
       "description": "Run the assertion locally",
+      "env": {
+        "AWS_EMF_ENVIRONMENT": "Local"
+      },
       "steps": [
         {
           "exec": "ts-node test/integ/cleanup/assert.lambda.ts"
@@ -698,6 +731,9 @@
     "integ:test/deallocate:assert": {
       "name": "integ:test/deallocate:assert",
       "description": "Run the assertion locally",
+      "env": {
+        "AWS_EMF_ENVIRONMENT": "Local"
+      },
       "steps": [
         {
           "exec": "ts-node test/integ/deallocate/assert.lambda.ts"
@@ -767,6 +803,9 @@
     "integ:test/dev:assert": {
       "name": "integ:test/dev:assert",
       "description": "Run the assertion locally",
+      "env": {
+        "AWS_EMF_ENVIRONMENT": "Local"
+      },
       "steps": [
         {
           "exec": "ts-node test/integ/dev/assert.lambda.ts"

@@ -5,8 +5,9 @@ import { Allocate } from './allocate';
 import { Cleanup } from './cleanup';
 import { Configuration } from './config';
 import { Deallocate } from './deallocate';
+import { DirtyEnvironmentsWidget } from './dirty-environments.widget';
 import { UNKNOWN_POOL } from './metrics';
-import { Environments } from './storage';
+import { Allocations, Environments } from './storage';
 
 const RED = '#FF0000';
 const GREEN = '#4CAF50';
@@ -20,6 +21,7 @@ export interface DashboardProps {
   readonly deallocate: Deallocate;
   readonly cleanup: Cleanup;
   readonly environments: Environments;
+  readonly allocations: Allocations;
   readonly name: string;
 }
 
@@ -114,6 +116,15 @@ export class Dashboard extends Construct {
         leftYAxis: { min: 0, showUnits: false },
         height: 6,
         width: 12,
+      }),
+      new DirtyEnvironmentsWidget(this, 'DirtyEnvironmentsWidget', {
+        environments: props.environments,
+        allocations: props.allocations,
+        configuration: props.config,
+        cleanup: props.cleanup,
+        pool: '${pool}',
+        width: 12,
+        height: 6,
       }),
     );
 

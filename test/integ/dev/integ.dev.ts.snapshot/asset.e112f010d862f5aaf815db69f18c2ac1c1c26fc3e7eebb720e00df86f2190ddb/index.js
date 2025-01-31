@@ -13391,6 +13391,7 @@ var ALLOCATIONS_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATIONS_RESOURCE_ID`;
 var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
 var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
 var CLEANUP_CLUSTER_ARN_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_ARN`;
+var CLEANUP_CLUSTER_NAME_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_NAME`;
 var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`;
 var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
 var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
@@ -13849,14 +13850,13 @@ var EnvironmentsClient = class {
         },
         ExpressionAttributeValues: {
           ":allocation_value": { S: allocationId },
-          // we only expect to release an environment that is currenly being cleaned.
-          // 'in-use' environments should not be released until they cleaned
-          // 'dirty' environments should not be released because they trigger human intervention.
-          ":expected_status_value": { S: "cleaning" }
+          // we shouldn't be releasing an environment if its still 'in-use'.
+          // it should be marked as either 'cleaning' or 'dirty' beforehand.
+          ":unexpected_status_value": { S: "in-use" }
         },
         // ensures deletion.
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html#Expressions.ConditionExpressions.PreventingOverwrites
-        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status = :expected_status_value",
+        ConditionExpression: "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :unexpected_status_value",
         ReturnValuesOnConditionCheckFailure: "ALL_OLD"
       });
     } catch (e) {
@@ -13869,15 +13869,8 @@ var EnvironmentsClient = class {
           throw new EnvironmentAlreadyReallocated(account, region);
         }
         const old_status = e.Item.status?.S;
-        if (old_status) {
-          switch (old_status) {
-            case "in-use":
-              throw new EnvironmentAlreadyInUseError(account, region);
-            case "dirty":
-              throw new EnvironmentAlreadyDirtyError(account, region);
-            default:
-              throw new Error(`Unexpected status for environment aws://${account}/${region}: ${old_status}`);
-          }
+        if (old_status === "in-use") {
+          throw new EnvironmentAlreadyInUseError(account, region);
         }
       }
       throw e;
@@ -14492,9 +14485,9 @@ async function doHandler2(req, metrics) {
     log.info("Done!");
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: "clean" });
   } catch (e) {
-    if (e instanceof EnvironmentAlreadyDirtyError) {
-      log.info(`Environment ${env3} was cleaned successfully, but it took too long to complete.`);
-      return;
+    if (e instanceof EnvironmentAlreadyInUseError) {
+      log.error(e, `Failed releasing environment '${env3}'`);
+      throw e;
     }
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: "dirty" });
     log.error(e);
@@ -14809,11 +14802,18 @@ var Runner = class _Runner {
    * Run an assertion function in a fresh service state.
    */
   static async assert(testCase, assertion) {
+    if (!_Runner.shouldRun(testCase)) {
+      return SUCCESS_PAYLOAD;
+    }
     const test = await _Runner.create(testCase);
     await test.clear();
     try {
       test.log(`\u{1F3AC} Start <> ${testCase} \u{1F3AC}`);
-      await env2(test.vars, async () => assertion(test));
+      const env3 = { ...test.vars };
+      if (Runtime.isLocal()) {
+        env3.AWS_EMF_ENVIRONMENT = "Local";
+      }
+      await env2(env3, async () => assertion(test));
       test.log(`\u2705 Success <> ${testCase} \u2705`);
       return SUCCESS_PAYLOAD;
     } catch (error) {
@@ -14825,6 +14825,11 @@ var Runner = class _Runner {
     const value = process.env[CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV];
     if (value === "false" || value === "0") return false;
     return true;
+  }
+  static shouldRun(testCase) {
+    const selection = process.env.CDK_ATMOSPHERE_INTEG_TEST_CASE_SELECTION;
+    if (!selection) return true;
+    return testCase === selection;
   }
   static async unzip(bucket, key, to) {
     const response = await s32.getObject({
@@ -14863,6 +14868,7 @@ var Runner = class _Runner {
       [ALLOCATION_RESOURCE_ID_ENV]: envValue(ALLOCATION_RESOURCE_ID_ENV),
       [DEALLOCATE_FUNCTION_NAME_ENV]: envValue(DEALLOCATE_FUNCTION_NAME_ENV),
       [CLEANUP_CLUSTER_ARN_ENV]: envValue(CLEANUP_CLUSTER_ARN_ENV),
+      [CLEANUP_CLUSTER_NAME_ENV]: envValue(CLEANUP_CLUSTER_NAME_ENV),
       [CLEANUP_TASK_DEFINITION_ARN_ENV]: envValue(CLEANUP_TASK_DEFINITION_ARN_ENV),
       [CLEANUP_TASK_SUBNET_ID_ENV]: envValue(CLEANUP_TASK_SUBNET_ID_ENV),
       [CLEANUP_TASK_SECURITY_GROUP_ID_ENV]: envValue(CLEANUP_TASK_SECURITY_GROUP_ID_ENV),

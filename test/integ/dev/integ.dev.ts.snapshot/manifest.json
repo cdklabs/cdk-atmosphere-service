@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/85e05f19ef231686419c039a106b54603e041042a778d2156f15dc566780aead.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/283c7acb20deb4ae766ddd33dc22d06214e6650719d25dd65f5c7a4081d0f447.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -229,10 +229,7 @@
         "/atmosphere-integ-dev/Atmosphere/Cleanup/TaskDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereCleanupTaskDefinition211D8C31",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AtmosphereCleanupTaskDefinition211D8C31"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Cleanup/TaskDefinition/ExecutionRole/Resource": [
@@ -487,6 +484,24 @@
             "data": "AtmosphereDashboardAF315303"
           }
         ],
+        "/atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicyCBF72617"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionBE87C3E0"
+          }
+        ],
         "/atmosphere-integ-dev/LatestNodeRuntimeMap": [
           {
             "type": "aws:cdk:logicalId",
@@ -629,6 +644,12 @@
             "data": "ExportsOutputFnGetAttAtmosphereCleanupCluster30204BBCArn57501D75"
           }
         ],
+        "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereCleanupCluster30204BBC\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereCleanupCluster30204BBC1678E2A0"
+          }
+        ],
         "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereCleanupTaskDefinition211D8C31\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -679,7 +700,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de939dce9700b49ee6fa6ea15656212b666a08a2d53d0f03563560c1e079642b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc3a8cd0e8b260fd2d20ebfc4de9943923782c58bff18fb6710eae3f65474bd0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -784,6 +805,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertCDKATMOSPHERECLEANUPCLUSTERARNDFAFC15B"
+          }
+        ],
+        "/atmosphere-integ-dev-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_CLUSTER_NAME": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPCLUSTERNAME0F7BEAAF"
           }
         ],
         "/atmosphere-integ-dev-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TASK_DEFINITION_ARN": [

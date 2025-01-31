@@ -93,11 +93,22 @@ export class Runner {
    * Run an assertion function in a fresh service state.
    */
   public static async assert(testCase: string, assertion: (runner: Runner) => Promise<void>): Promise<string> {
+
+    if (!Runner.shouldRun(testCase)) {
+      return SUCCESS_PAYLOAD;
+    }
+
     const test = await Runner.create(testCase);
     await test.clear();
     try {
       test.log(`🎬 Start <> ${testCase} 🎬`);
-      await _with.env(test.vars, async () => assertion(test));
+      const env: any = { ...test.vars };
+      if (Runtime.isLocal()) {
+        // when the runtime components are running locally we don't have
+        // metrics agent to send metrics through, so we do it via stdout.
+        env.AWS_EMF_ENVIRONMENT = 'Local';
+      }
+      await _with.env(env, async () => assertion(test));
       test.log(`✅ Success <> ${testCase} ✅`);
       return SUCCESS_PAYLOAD;
     } catch (error: any) {
@@ -110,6 +121,12 @@ export class Runner {
     const value = process.env[CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV];
     if (value === 'false' || value === '0') return false;
     return true;
+  }
+
+  private static shouldRun(testCase: string) {
+    const selection = process.env.CDK_ATMOSPHERE_INTEG_TEST_CASE_SELECTION;
+    if (!selection) return true;
+    return testCase === selection;
   }
 
   private static async unzip(bucket: string, key: string, to: string) {
@@ -164,6 +181,7 @@ export class Runner {
       [envars.ALLOCATION_RESOURCE_ID_ENV]: envValue(envars.ALLOCATION_RESOURCE_ID_ENV),
       [envars.DEALLOCATE_FUNCTION_NAME_ENV]: envValue(envars.DEALLOCATE_FUNCTION_NAME_ENV),
       [envars.CLEANUP_CLUSTER_ARN_ENV]: envValue(envars.CLEANUP_CLUSTER_ARN_ENV),
+      [envars.CLEANUP_CLUSTER_NAME_ENV]: envValue(envars.CLEANUP_CLUSTER_NAME_ENV),
       [envars.CLEANUP_TASK_DEFINITION_ARN_ENV]: envValue(envars.CLEANUP_TASK_DEFINITION_ARN_ENV),
       [envars.CLEANUP_TASK_SUBNET_ID_ENV]: envValue(envars.CLEANUP_TASK_SUBNET_ID_ENV),
       [envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV]: envValue(envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV),
