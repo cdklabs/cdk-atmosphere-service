@@ -8,7 +8,7 @@
 
 ### `Allocate/Errors`
 
-Description
+**Description**
 
 Fires when the `Allocate` Lambda function throws an error. Note that the function is
 configured as an HTTP proxy to our `APIGateway` endpoint, this means that the function
@@ -17,15 +17,15 @@ returns a 500 status code in case of a failure, and should never throw.
 The alarm indicates the lambda handler code did not run as expected, i.e the encoutered
 error was not explicitly caught and converted to a 500 response.
 
-Impact
+**Impact**
 
 Integration tests may start failing as they will not be able to acquire environments.
 
-Investigation
+**Investigation**
 
 Dive into the `CloudWatch` logs of the function to see the errors.
 
-Resolution
+**Resolution**
 
 The alarm will automatically go back to green once the Lambda function stops failing.
 
@@ -58,7 +58,7 @@ The alarm will automatically go back to green once the Lambda function stops fai
 
 ### `Deallocate/Errors`
 
-Description
+**Description**
 
 Fires when the `Deallocate` Lambda function throws an error. Note that the function is
 configured as an HTTP proxy to our `APIGateway` endpoint, this means that the function
@@ -67,16 +67,16 @@ returns a 500 status code in case of a failure, and should never throw.
 The alarm indicates the lambda handler code did not run as expected, i.e the encoutered
 error was not explicitly caught and converted to a 500 response.
 
-Impact
+**Impact**
 
 Integration tests won't be able to release environments. This won't fail the test,
 but may cause environment depletion that can lead to failures in subsequent tests.
 
-Investigation
+**Investigation**
 
 Dive into the `CloudWatch` logs of the function to see the errors.
 
-Resolution
+**Resolution**
 
 The alarm will automatically go back to green once the Lambda function stops failing.
 

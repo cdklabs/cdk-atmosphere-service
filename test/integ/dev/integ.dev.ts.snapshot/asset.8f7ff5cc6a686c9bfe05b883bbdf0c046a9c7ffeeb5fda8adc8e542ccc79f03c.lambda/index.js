@@ -3270,7 +3270,7 @@ var AllocationLogger = class {
     console.error(`${this.prefix} ${message}`, error);
   }
   setPool(pool) {
-    this.prefix = `[pool:${pool}] ${this.prefix}`;
+    this.prefix = `${this.prefix} [pool:${pool}]`;
   }
 };
 

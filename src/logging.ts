@@ -41,7 +41,7 @@ export class AllocationLogger {
   }
 
   public setPool(pool: string) {
-    this.prefix = `[pool:${pool}] ${this.prefix}`;
+    this.prefix = `${this.prefix} [pool:${pool}]`;
   }
 
 }

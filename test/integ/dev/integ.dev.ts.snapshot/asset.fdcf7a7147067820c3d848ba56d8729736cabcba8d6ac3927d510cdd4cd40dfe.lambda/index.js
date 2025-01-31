@@ -27,12 +27,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/cleanup-timeout/cleanup-timeout.lambda.ts
-var cleanup_timeout_lambda_exports = {};
-__export(cleanup_timeout_lambda_exports, {
+// src/allocation-timeout/allocation-timeout.lambda.ts
+var allocation_timeout_lambda_exports = {};
+__export(allocation_timeout_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(cleanup_timeout_lambda_exports);
+module.exports = __toCommonJS(allocation_timeout_lambda_exports);
+var import_client_lambda = require("@aws-sdk/client-lambda");
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -677,39 +678,32 @@ var AllocationLogger = class {
     console.error(`${this.prefix} ${message}`, error);
   }
   setPool(pool) {
-    this.prefix = `[pool:${pool}] ${this.prefix}`;
+    this.prefix = `${this.prefix} [pool:${pool}]`;
   }
 };
 
-// src/cleanup-timeout/cleanup-timeout.lambda.ts
+// src/allocation-timeout/allocation-timeout.lambda.ts
 var clients = RuntimeClients.getOrCreate();
 async function handler(event) {
   console.log("Event:", JSON.stringify(event, null, 2));
-  const account = event.account;
-  const region = event.region;
-  const allocationId = event.allocationId;
-  const log = new AllocationLogger({ id: allocationId, component: "cleanup-timeout" });
+  const log = new AllocationLogger({ id: event.allocationId, component: "allocation-timeout" });
   try {
     log.info("Fetching allocation");
     const allocation = await clients.allocations.get(event.allocationId);
     log.info("Successfully fetched allocation");
     log.setPool(allocation.pool);
-    log.info(`Marking environment 'aws://${account}/${region}' as dirty`);
-    await clients.environments.dirty(allocationId, account, region);
+    const body = JSON.stringify({ outcome: "timeout" });
+    const lambda = new import_client_lambda.Lambda();
+    const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
+    const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
+    log.info(`Invoking ${target} with payload: ${payload}`);
+    const response = await lambda.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
+    const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
+    if (responsePayload.statusCode !== 200) {
+      throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
+    }
     log.info("Done");
   } catch (e) {
-    if (e instanceof EnvironmentAlreadyReleasedError) {
-      log.info(e.message);
-      return;
-    }
-    if (e instanceof EnvironmentAlreadyDirtyError) {
-      log.info(e.message);
-      return;
-    }
-    if (e instanceof EnvironmentAlreadyReallocated) {
-      log.info(e.message);
-      return;
-    }
     log.error(e);
     throw e;
   }
