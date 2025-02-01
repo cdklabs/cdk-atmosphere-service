@@ -27,13 +27,13 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/dirty-environments.widget.lambda.ts
-var dirty_environments_widget_lambda_exports = {};
-__export(dirty_environments_widget_lambda_exports, {
+// src/allocation-timeout/allocation-timeout.lambda.ts
+var allocation_timeout_lambda_exports = {};
+__export(allocation_timeout_lambda_exports, {
   handler: () => handler
 });
-module.exports = __toCommonJS(dirty_environments_widget_lambda_exports);
-var import_client_cloudwatch_logs = require("@aws-sdk/client-cloudwatch-logs");
+module.exports = __toCommonJS(allocation_timeout_lambda_exports);
+var import_client_lambda = require("@aws-sdk/client-lambda");
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -41,6 +41,10 @@ var import_client_ecs = require("@aws-sdk/client-ecs");
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
 var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATE_LOG_GROUP_NAME`;
+var DEALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_LOG_GROUP_NAME`;
+var ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_LOG_GROUP_NAME`;
+var CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_LOG_GROUP_NAME`;
 var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
 var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
 var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
@@ -262,6 +266,33 @@ var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
+  }
+  async scan(from) {
+    const items = [];
+    let lastEvaluatedKey = void 0;
+    do {
+      const response = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+        FilterExpression: `start > ${from.toISOString()}`
+      });
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue("account", item),
+          region: requiredValue("region", item),
+          pool: requiredValue("pool", item),
+          start: requiredValue("start", item),
+          requester: requiredValue("requester", item),
+          id: requiredValue("id", item),
+          // if an allocation is queried before it ended, these attributes
+          // will be missing.
+          end: optionalValue("end", item),
+          outcome: optionalValue("outcome", item)
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+    return items;
   }
   /**
    * Retrieve an allocation by id.
@@ -660,166 +691,58 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
-// src/dirty-environments.widget.lambda.ts
+// src/logging.ts
+var AllocationLogger = class {
+  constructor(props) {
+    this.component = props.component;
+    this.allocationId = props.id;
+  }
+  info(message) {
+    console.log(`${this.prefix} ${message}`);
+  }
+  error(error, message = "") {
+    console.error(`${this.prefix} ${message}`, error);
+  }
+  setPool(pool) {
+    this.pool = pool;
+  }
+  get prefix() {
+    const parts = [
+      `[${this.component}]`
+    ];
+    if (this.pool) {
+      parts.push(`[pool:${this.pool}]`);
+    }
+    parts.push(`[aloc:${this.allocationId}]`);
+    return parts.join(" ");
+  }
+};
+
+// src/allocation-timeout/allocation-timeout.lambda.ts
 var clients = RuntimeClients.getOrCreate();
-var ACTION_CLEAN = "clean";
-var ACTION_LOGS = "logs";
-var CHECK_QUERY_STATUS_DELAY_MS = 250;
-async function handler(event, context) {
-  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-  const pool = event.pool;
-  const serviceRegion = event.serviceRegion;
-  const cleanupClusterName = Envars.required(CLEANUP_CLUSTER_NAME_ENV);
-  if (event.action === ACTION_LOGS) {
-    const allocationId = event.allocationId;
-    const allocation = await clients.allocations.get(allocationId);
-    console.log(`Fetching cleanup logs for allocation '${allocationId}'`);
-    const to = /* @__PURE__ */ new Date();
-    const from = /* @__PURE__ */ new Date();
-    from.setDate(to.getDate() - 7);
-    const logs = await fetchLogs(allocationId, from, to, serviceRegion);
-    if (logs && logs.length > 0) {
-      return [
-        "<p><u>Successfully fetched cleanup logs:</u></p>",
-        "<br>",
-        "<ul>",
-        `<li><b>Account:</b> ${allocation.account}</li>`,
-        `<li><b>Region:</b> ${allocation.region}</li>`,
-        `<li><b>Allocation:</b> ${allocationId}</li>`,
-        `<li><b>Timespan:</b> ${from.toISOString()} to ${to.toISOString()}</li>`,
-        "</ul>",
-        "<br>",
-        buildLogsTable(logs)
-      ].join("");
-    } else {
-      return `<br><p><b>No cleanup logs found for 'aws://${allocation.account}/${allocation.region}'</b></p>`;
+async function handler(event) {
+  console.log("Event:", JSON.stringify(event, null, 2));
+  const log = new AllocationLogger({ id: event.allocationId, component: "allocation-timeout" });
+  try {
+    log.info("Fetching allocation");
+    const allocation = await clients.allocations.get(event.allocationId);
+    log.info("Successfully fetched allocation");
+    log.setPool(allocation.pool);
+    const body = JSON.stringify({ outcome: "timeout" });
+    const lambda = new import_client_lambda.Lambda();
+    const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
+    const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
+    log.info(`Invoking ${target} with payload: ${payload}`);
+    const response = await lambda.invoke({ FunctionName: target, InvocationType: "RequestResponse", Payload: payload });
+    const responsePayload = JSON.parse(response.Payload?.transformToString("utf-8") ?? "{}");
+    if (responsePayload.statusCode !== 200) {
+      throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
     }
+    log.info("Done");
+  } catch (e) {
+    log.error(e);
+    throw e;
   }
-  if (event.action === ACTION_CLEAN) {
-    const allocationId = event.allocationId;
-    const allocation = await clients.allocations.get(allocationId);
-    console.log(`Starting cleanup task for allocation '${allocationId}'`);
-    const taskArn = await clients.cleanup.start({ timeoutSeconds: 3600, allocation });
-    console.log(`Cleanup task started: ${taskArn}`);
-    const taskId = taskArn.split("/").pop();
-    const logsLink = `/ecs/v2/clusters/${cleanupClusterName}/tasks/${taskId}/logs?region=${serviceRegion}`;
-    return [
-      "<p><u>Task started successfully:</u></p>",
-      "<br>",
-      "<ul>",
-      `<li><b>Account:</b> ${allocation.account}</li>`,
-      `<li><b>Region:</b> ${allocation.region}</li>`,
-      `<li><b>Allocation:</b> ${allocationId}</li>`,
-      `<li><b>Arn:</b> ${taskArn}</li>`,
-      "</ul>",
-      `<p><a href="${logsLink}" target=_blank>Click here to view task logs</a> (may not be immediately available).</p>`,
-      "<p>Once the task completes successfully, the environment will be released and reinstated back to service operation.</p>"
-    ].join("");
-  }
-  console.log(`Finding dirty environments in pool '${pool}'`);
-  const dirty = await findDirtyEnvironments(pool);
-  console.log(`Found ${dirty.length} dirty environments`);
-  if (dirty.length === 0) {
-    return "<br><p><b>No dirty environments, hurray!</b></p>";
-  }
-  return buildTable(dirty, context, serviceRegion);
-}
-function buildTable(environments, context, serviceRegion) {
-  const columns = ["account", "region", "status", "allocation"];
-  const header = [
-    "<tr>",
-    ...columns.map((c) => `<th>${c}</th>`),
-    "<th>",
-    "actions",
-    "</th>",
-    "</tr>"
-  ].join("");
-  const rows = environments.map((e) => {
-    return [
-      "<tr>",
-      ...columns.map((c) => `<td>${e[c]}</td>`),
-      "<td>",
-      '<div style="display: flex; justify-content: space-between; width: 100%; gap: 10px;">',
-      buildCleanAction(e.allocation, e, context, serviceRegion),
-      buildViewLogsAction(e.allocation, context, serviceRegion),
-      "</div>",
-      "</td>",
-      "</tr>"
-    ].join("");
-  });
-  return `<br><table>${header}${rows}</table>`;
-}
-function buildCleanAction(allocationId, env, context, serviceRegion) {
-  const envSpec = `aws://${env.account}/${env.region}`;
-  return `<a class="btn btn-primary" style="submit">Clean</a>
-<cwdb-action 
-  action="call" 
-  display="popup" 
-  endpoint="${context.invokedFunctionArn}" 
-  confirmation="Are you sure you want to clean environment '${envSpec}'?">
-  { "serviceRegion": "${serviceRegion}", "action": "${ACTION_CLEAN}", "allocationId": "${allocationId}" }
-</cwdb-action>`;
-}
-function buildViewLogsAction(allocationId, context, serviceRegion) {
-  return `<a class="btn btn-primary" style="submit">Logs</a>
-<cwdb-action 
-  action="call" 
-  display="popup" 
-  endpoint="${context.invokedFunctionArn}">
-  { "serviceRegion": "${serviceRegion}", "action": "${ACTION_LOGS}", "allocationId": "${allocationId}" }
-</cwdb-action>`;
-}
-async function findDirtyEnvironments(pool) {
-  const environments = await clients.environments.scan();
-  const dirty = [];
-  for (const active of environments) {
-    const registered = await clients.configuration.getEnvironment(active.account, active.region);
-    if (registered.pool === pool && active.status === "dirty") {
-      dirty.push(active);
-    }
-  }
-  return dirty;
-}
-async function fetchLogs(allocationId, from, to, serviceRegion) {
-  const client = new import_client_cloudwatch_logs.CloudWatchLogs({ region: serviceRegion });
-  const logGroupName = Envars.required(CLEANUP_LOG_GROUP_NAME_ENV);
-  const queryString = `fields @timestamp, @message | filter @message like /aloc:${allocationId}/ | sort @timestamp asc | limit 10000`;
-  console.log(`Starting execution of query '${queryString}' in log group '${logGroupName}'`);
-  console.log(`Start time: ${from.toISOString()}, end time: ${to.toISOString()}`);
-  const query = await client.startQuery({
-    logGroupNames: [logGroupName],
-    queryString,
-    startTime: Math.floor(from.getTime() / 1e3),
-    endTime: Math.floor(to.getTime() / 1e3)
-  });
-  const queryId = query.queryId;
-  console.log(`Query started: ${queryId}`);
-  while (true) {
-    console.log(`Checking query status: ${queryId}`);
-    const results = await client.getQueryResults({ queryId });
-    if (results.status !== "Complete") {
-      await sleep(CHECK_QUERY_STATUS_DELAY_MS);
-    } else {
-      console.log(`Query completed: ${queryId}. Found ${results.results?.length ?? 0} hits.`);
-      return results.results;
-    }
-  }
-}
-async function sleep(delayMs) {
-  return new Promise((resolve) => setTimeout(resolve, delayMs));
-}
-function stripPtr(result) {
-  return result.filter((entry) => entry.field !== "@ptr");
-}
-function buildLogsTable(results) {
-  const cols = stripPtr(results[0]).map((entry) => entry.field);
-  let html = `<table><thead><tr><th>${cols.join("</th><th>")}</th></tr></thead><tbody>`;
-  results.forEach((row) => {
-    const vals = stripPtr(row).map((entry) => entry.value);
-    html += `<tr><td>${vals.join("</td><td>")}</td></tr>`;
-  });
-  return html;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

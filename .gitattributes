@@ -28,6 +28,7 @@
 /src/cleanup-timeout/cleanup-timeout-function.ts linguist-generated
 /src/deallocate/deallocate-function.ts linguist-generated
 /src/dirty-environments.widget-function.ts linguist-generated
+/src/storage/allocations.monitor-function.ts linguist-generated
 /src/storage/environments.monitor-function.ts linguist-generated
 /tsconfig.dev.json linguist-generated
 /yarn.lock linguist-generated

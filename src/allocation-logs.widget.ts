@@ -43,7 +43,7 @@ export class AllocationLogsWidget extends Construct implements cloudwatch.IWidge
       width: props.width,
       height: props.height,
       functionArn: func.functionArn,
-      title: 'Allocation Logs',
+      title: 'Allocation Logs (All Pools)',
       params: {
         serviceRegion: Stack.of(this).region,
       },

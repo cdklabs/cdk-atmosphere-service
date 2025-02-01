@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0ed6438240534beecc1cc44b1461f464947ecf20ee02e7eba0f355ffcac371d8.zip"
+     "S3Key": "6d3d799e881c3e610f7451f73165508ec2c79164e56d71a527ba34c7dd6362b8.zip"
     },
     "Description": "test/integ/dev/assert.lambda.ts",
     "Environment": {
@@ -62,6 +62,18 @@
       },
       "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereAllocationsTable4ECEFD7B5F03CFB2"
+      },
+      "CDK_ATMOSPHERE_ALLOCATE_LOG_GROUP_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereAllocateFunctionLogRetentionDBC66CD2LogGroupNameF75ED96A"
+      },
+      "CDK_ATMOSPHERE_DEALLOCATE_LOG_GROUP_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereDeallocateFunctionLogRetentionD4621400LogGroupNameED72135B"
+      },
+      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_LOG_GROUP_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutLogRetentionB5CC2CE9LogGroupName54B4F7E4"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_LOG_GROUP_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutLogRetention319A1027LogGroupNameB95ACD78"
       },
       "CDK_ATMOSPHERE_CONFIGURATION_FILE_BUCKET": {
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
@@ -153,7 +165,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738356595262"
+    "salt": "1738424855291"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -283,6 +295,26 @@
   "CDK0ATMOSPHERE0ALLOCATIONS0TABLE0NAME": {
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereAllocationsTable4ECEFD7B5F03CFB2"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATE0LOG0GROUP0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereAllocateFunctionLogRetentionDBC66CD2LogGroupNameF75ED96A"
+   }
+  },
+  "CDK0ATMOSPHERE0DEALLOCATE0LOG0GROUP0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereDeallocateFunctionLogRetentionD4621400LogGroupNameED72135B"
+   }
+  },
+  "CDK0ATMOSPHERE0ALLOCATION0TIMEOUT0LOG0GROUP0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutLogRetentionB5CC2CE9LogGroupName54B4F7E4"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TIMEOUT0LOG0GROUP0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutLogRetention319A1027LogGroupNameB95ACD78"
    }
   },
   "CDK0ATMOSPHERE0CONFIGURATION0FILE0BUCKET": {

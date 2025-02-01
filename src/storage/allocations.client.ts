@@ -138,6 +138,41 @@ export class AllocationsClient {
     this.ddbClient = new ddb.DynamoDB({});
   }
 
+  public async scan(from: Date): Promise<Allocation[]> {
+
+    const items: Allocation[] = [];
+    let lastEvaluatedKey = undefined;
+
+    do {
+      const response: ddb.ScanCommandOutput = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+        FilterExpression: `start > ${from.toISOString()}`,
+      });
+
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue('account', item),
+          region: requiredValue('region', item),
+          pool: requiredValue('pool', item),
+          start: requiredValue('start', item),
+          requester: requiredValue('requester', item),
+          id: requiredValue('id', item),
+
+          // if an allocation is queried before it ended, these attributes
+          // will be missing.
+          end: optionalValue('end', item),
+          outcome: optionalValue('outcome', item),
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+
+    } while (lastEvaluatedKey);
+
+    return items;
+
+  }
+
   /**
    * Retrieve an allocation by id.
    */

@@ -40,6 +40,10 @@ var import_client_ecs = require("@aws-sdk/client-ecs");
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
 var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATE_LOG_GROUP_NAME`;
+var DEALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_LOG_GROUP_NAME`;
+var ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_LOG_GROUP_NAME`;
+var CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_LOG_GROUP_NAME`;
 var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
 var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
 var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
@@ -261,6 +265,33 @@ var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
+  }
+  async scan(from) {
+    const items = [];
+    let lastEvaluatedKey = void 0;
+    do {
+      const response = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+        FilterExpression: `start > ${from.toISOString()}`
+      });
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue("account", item),
+          region: requiredValue("region", item),
+          pool: requiredValue("pool", item),
+          start: requiredValue("start", item),
+          requester: requiredValue("requester", item),
+          id: requiredValue("id", item),
+          // if an allocation is queried before it ended, these attributes
+          // will be missing.
+          end: optionalValue("end", item),
+          outcome: optionalValue("outcome", item)
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+    return items;
   }
   /**
    * Retrieve an allocation by id.

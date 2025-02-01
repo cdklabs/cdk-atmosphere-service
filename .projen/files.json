@@ -22,6 +22,7 @@
     "src/cleanup-timeout/cleanup-timeout-function.ts",
     "src/deallocate/deallocate-function.ts",
     "src/dirty-environments.widget-function.ts",
+    "src/storage/allocations.monitor-function.ts",
     "src/storage/environments.monitor-function.ts",
     "tsconfig.dev.json"
   ],

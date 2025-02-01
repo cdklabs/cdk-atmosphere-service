@@ -155,6 +155,7 @@
           "src/cleanup-timeout/cleanup-timeout.lambda.ts",
           "src/deallocate/deallocate.lambda.ts",
           "src/dirty-environments.widget.lambda.ts",
+          "src/storage/allocations.monitor.lambda.ts",
           "src/storage/environments.monitor.lambda.ts",
           ".projenrc.ts",
           "projenrc/**/*.ts"

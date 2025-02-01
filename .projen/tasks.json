@@ -66,6 +66,9 @@
           "spawn": "bundle:dirty-environments.widget.lambda"
         },
         {
+          "spawn": "bundle:storage/allocations.monitor.lambda"
+        },
+        {
           "spawn": "bundle:storage/environments.monitor.lambda"
         },
         {
@@ -204,6 +207,24 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:storage/allocations.monitor.lambda": {
+      "name": "bundle:storage/allocations.monitor.lambda",
+      "description": "Create a JavaScript bundle from src/storage/allocations.monitor.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/storage/allocations.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/storage/allocations.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:storage/allocations.monitor.lambda:watch": {
+      "name": "bundle:storage/allocations.monitor.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/storage/allocations.monitor.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/storage/allocations.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/storage/allocations.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },

@@ -54,8 +54,17 @@ export class Dashboard extends Construct {
     // add all widgets in a single call so they are positioned
     // next to each other (vs stacked)
     dashboard.addWidgets(
+      new cloudwatch.TextWidget({
+        markdown: [
+          '# Requests Rate',
+          '',
+          'Widgets in this section display the rate of requests serviced by system components, segmented by various dimensions.',
+        ].join('\n'),
+        height: 2,
+        width: 24,
+      }),
       new cloudwatch.GraphWidget({
-        title: 'Allocate Response',
+        title: 'Allocate Status Code',
         left: [
           props.allocate.metricStatusCode('$pool', 200).with({ color: GREEN, label: '200 OK' }),
           props.allocate.metricStatusCode('$pool', 423).with({ color: ORANGE, label: '423 Locked' }),
@@ -67,7 +76,7 @@ export class Dashboard extends Construct {
         width: 12,
       }),
       new cloudwatch.GraphWidget({
-        title: 'Deallocate Response',
+        title: 'Deallocate Status Code',
         left: [
           props.deallocate.metricStatusCode('$pool', 200).with({ color: GREEN, label: '200 OK' }),
           props.deallocate.metricStatusCode('$pool', 400).with({ color: YELLOW, label: '400 Bad Request' }),
@@ -78,7 +87,7 @@ export class Dashboard extends Construct {
         width: 12,
       }),
       new cloudwatch.GraphWidget({
-        title: 'Allocation Outcome',
+        title: 'Deallocate Outcome',
         left: [
           props.deallocate.metricOutcome('$pool', 'success').with({ color: GREEN, label: 'success' }),
           props.deallocate.metricOutcome('$pool', 'failure').with({ color: RED, label: 'failure' }),
@@ -108,8 +117,17 @@ export class Dashboard extends Construct {
         height: 6,
         width: 12,
       }),
+      new cloudwatch.TextWidget({
+        markdown: [
+          '# Entities Count',
+          '',
+          'Widgets in this section display the current count of entities in the system, segmented by their status.',
+        ].join('\n'),
+        height: 2,
+        width: 24,
+      }),
       new cloudwatch.GraphWidget({
-        title: 'Environments Status',
+        title: 'Environments',
         left: [
           props.environments.metricFree('$pool').with({ color: GREEN, label: 'free' }),
           props.environments.metricRegistered('$pool').with({ color: BROWN, label: 'registered' }),
@@ -122,11 +140,25 @@ export class Dashboard extends Construct {
         width: 12,
       }),
       new cloudwatch.GraphWidget({
-        title: 'Scheduler Dead Letter Queue (All Pools)',
-        left: [props.scheduler.metricDlqSize().with({ color: BLUE, label: 'size' })],
+        title: 'Allocations',
+        left: [
+          props.allocations.metricSuccess('$pool').with({ color: GREEN, label: 'success' }),
+          props.allocations.metricInProgress('$pool').with({ color: BLUE, label: 'in-progress' }),
+          props.allocations.metricFailure('$pool').with({ color: RED, label: 'failure' }),
+          props.allocations.metricTimeout('$pool').with({ color: YELLOW, label: 'timeout' }),
+        ].map((m) => this.fill(m, 'REPEAT')),
         leftYAxis: { min: 0, showUnits: false },
         height: 6,
         width: 12,
+      }),
+      new cloudwatch.TextWidget({
+        markdown: [
+          '# Reports',
+          '',
+          'Widgets in this section display a detailed account of noteworthy system entities.',
+        ].join('\n'),
+        height: 2,
+        width: 24,
       }),
       new DirtyEnvironmentsWidget(this, 'DirtyEnvironmentsWidget', {
         environments: props.environments,
@@ -144,6 +176,13 @@ export class Dashboard extends Construct {
         cleanup: props.cleanup,
         width: 24,
         height: 18,
+      }),
+      new cloudwatch.GraphWidget({
+        title: 'Scheduler Dead Letter Queue (All Pools)',
+        left: [props.scheduler.metricDlqSize().with({ color: BLUE, label: 'size' })],
+        leftYAxis: { min: 0, showUnits: false },
+        height: 6,
+        width: 12,
       }),
     );
 

@@ -13379,6 +13379,10 @@ var unzipper = __toESM(require_unzip2());
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
 var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATE_LOG_GROUP_NAME`;
+var DEALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_LOG_GROUP_NAME`;
+var ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_LOG_GROUP_NAME`;
+var CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_LOG_GROUP_NAME`;
 var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
 var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
 var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
@@ -13624,6 +13628,33 @@ var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
+  }
+  async scan(from) {
+    const items = [];
+    let lastEvaluatedKey = void 0;
+    do {
+      const response = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+        FilterExpression: `start > ${from.toISOString()}`
+      });
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue("account", item),
+          region: requiredValue("region", item),
+          pool: requiredValue("pool", item),
+          start: requiredValue("start", item),
+          requester: requiredValue("requester", item),
+          id: requiredValue("id", item),
+          // if an allocation is queried before it ended, these attributes
+          // will be missing.
+          end: optionalValue("end", item),
+          outcome: optionalValue("outcome", item)
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+    return items;
   }
   /**
    * Retrieve an allocation by id.
@@ -14479,13 +14510,13 @@ async function handler3(req) {
 async function doHandler2(req, metrics) {
   console.log("Event:", JSON.stringify(req, null, 2));
   const log = new AllocationLogger({ id: req.allocationId, component: "cleanup" });
-  log.info("Fetching allocation");
   const allocation = await fetchAllocation(req.allocationId, log);
   log.setPool(allocation.pool);
   metrics.setPool(allocation.pool);
   const env3 = `aws://${allocation.account}/${allocation.region}`;
+  log.info(`Task started. Environment: ${env3}`);
   try {
-    log.info(`Fetching environment '${env3}'`);
+    log.info(`Fetching environment '${env3}' from database`);
     const environment = await clients3.configuration.getEnvironment(allocation.account, allocation.region);
     const cleaner = new Cleaner(environment, log);
     log.info(`Starting cleanup of '${env3}'`);
@@ -14502,7 +14533,7 @@ async function doHandler2(req, metrics) {
       throw e;
     }
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: "dirty" });
-    log.error(e);
+    log.error(e, `Failed cleaning environment '${env3}'`);
     log.info(`Marking environment '${env3}' as 'dirty'`);
     await clients3.environments.dirty(req.allocationId, allocation.account, allocation.region);
     log.info(`Successfully marked environment '${env3}' as 'dirty'`);
@@ -14869,6 +14900,10 @@ var Runner = class _Runner {
     return new _Runner({
       [ALLOCATIONS_TABLE_NAME_ENV]: envValue(ALLOCATIONS_TABLE_NAME_ENV),
       [ENVIRONMENTS_TABLE_NAME_ENV]: envValue(ENVIRONMENTS_TABLE_NAME_ENV),
+      [ALLOCATE_LOG_GROUP_NAME_ENV]: envValue(ALLOCATE_LOG_GROUP_NAME_ENV),
+      [DEALLOCATE_LOG_GROUP_NAME_ENV]: envValue(DEALLOCATE_LOG_GROUP_NAME_ENV),
+      [ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV]: envValue(ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV),
+      [CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV]: envValue(CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV),
       [CONFIGURATION_BUCKET_ENV]: envValue(CONFIGURATION_BUCKET_ENV),
       [CONFIGURATION_KEY_ENV]: envValue(CONFIGURATION_KEY_ENV),
       [SCHEDULER_DLQ_ARN_ENV]: envValue(SCHEDULER_DLQ_ARN_ENV),
@@ -14968,16 +15003,6 @@ var Runner = class _Runner {
         Key: {
           account: { S: environment.account.S },
           region: { S: environment.region.S }
-        }
-      });
-    }
-    const allocations = (await dynamo.scan({ TableName: this.vars[ALLOCATIONS_TABLE_NAME_ENV] })).Items ?? [];
-    for (const allocation of allocations) {
-      this.log(`  \xBB deleting allocation ${allocation.id.S}`);
-      await dynamo.deleteItem({
-        TableName: this.vars[ALLOCATIONS_TABLE_NAME_ENV],
-        Key: {
-          id: { S: allocation.id.S }
         }
       });
     }

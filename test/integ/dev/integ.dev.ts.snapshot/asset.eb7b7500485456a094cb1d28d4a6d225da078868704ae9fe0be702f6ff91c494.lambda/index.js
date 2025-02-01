@@ -2615,17 +2615,16 @@ var require_lib = __commonJS({
   }
 });
 
-// src/storage/environments.monitor.lambda.ts
-var environments_monitor_lambda_exports = {};
-__export(environments_monitor_lambda_exports, {
-  METRIC_NAME_ENVIRONMENTS_CLEANING: () => METRIC_NAME_ENVIRONMENTS_CLEANING,
-  METRIC_NAME_ENVIRONMENTS_DIRTY: () => METRIC_NAME_ENVIRONMENTS_DIRTY,
-  METRIC_NAME_ENVIRONMENTS_FREE: () => METRIC_NAME_ENVIRONMENTS_FREE,
-  METRIC_NAME_ENVIRONMENTS_IN_USE: () => METRIC_NAME_ENVIRONMENTS_IN_USE,
-  METRIC_NAME_ENVIRONMENTS_REGISTERED: () => METRIC_NAME_ENVIRONMENTS_REGISTERED,
+// src/deallocate/deallocate.lambda.ts
+var deallocate_lambda_exports = {};
+__export(deallocate_lambda_exports, {
+  METRIC_DIMENSION_OUTCOME: () => METRIC_DIMENSION_OUTCOME,
+  METRIC_DIMENSION_STATUS_CODE: () => METRIC_DIMENSION_STATUS_CODE,
+  METRIC_NAME: () => METRIC_NAME,
+  doHandler: () => doHandler,
   handler: () => handler
 });
-module.exports = __toCommonJS(environments_monitor_lambda_exports);
+module.exports = __toCommonJS(deallocate_lambda_exports);
 var import_aws_embedded_metrics2 = __toESM(require_lib());
 
 // src/cleanup/cleanup.client.ts
@@ -2634,6 +2633,10 @@ var import_client_ecs = require("@aws-sdk/client-ecs");
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
 var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATE_LOG_GROUP_NAME`;
+var DEALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_LOG_GROUP_NAME`;
+var ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_LOG_GROUP_NAME`;
+var CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_LOG_GROUP_NAME`;
 var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
 var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
 var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
@@ -2855,6 +2858,33 @@ var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
+  }
+  async scan(from) {
+    const items = [];
+    let lastEvaluatedKey = void 0;
+    do {
+      const response = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+        FilterExpression: `start > ${from.toISOString()}`
+      });
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue("account", item),
+          region: requiredValue("region", item),
+          pool: requiredValue("pool", item),
+          start: requiredValue("start", item),
+          requester: requiredValue("requester", item),
+          id: requiredValue("id", item),
+          // if an allocation is queried before it ended, these attributes
+          // will be missing.
+          end: optionalValue("end", item),
+          outcome: optionalValue("outcome", item)
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+    return items;
   }
   /**
    * Retrieve an allocation by id.
@@ -3253,6 +3283,33 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
+// src/logging.ts
+var AllocationLogger = class {
+  constructor(props) {
+    this.component = props.component;
+    this.allocationId = props.id;
+  }
+  info(message) {
+    console.log(`${this.prefix} ${message}`);
+  }
+  error(error, message = "") {
+    console.error(`${this.prefix} ${message}`, error);
+  }
+  setPool(pool) {
+    this.pool = pool;
+  }
+  get prefix() {
+    const parts = [
+      `[${this.component}]`
+    ];
+    if (this.pool) {
+      parts.push(`[pool:${this.pool}]`);
+    }
+    parts.push(`[aloc:${this.allocationId}]`);
+    return parts.join(" ");
+  }
+};
+
 // src/metrics.ts
 var import_aws_embedded_metrics = __toESM(require_lib());
 var METRICS_NAMESPACE = "Atmosphere";
@@ -3286,56 +3343,104 @@ var PoolAwareMetricsLogger = class {
   }
 };
 
-// src/storage/environments.monitor.lambda.ts
-var METRIC_NAME_ENVIRONMENTS_REGISTERED = "environments-registered";
-var METRIC_NAME_ENVIRONMENTS_FREE = "environments-free";
-var METRIC_NAME_ENVIRONMENTS_IN_USE = "environments-in-use";
-var METRIC_NAME_ENVIRONMENTS_CLEANING = "environments-cleaning";
-var METRIC_NAME_ENVIRONMENTS_DIRTY = "environments-dirty";
+// src/deallocate/deallocate.lambda.ts
+var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var ProxyError = class extends Error {
+  constructor(statusCode, message) {
+    super(`${statusCode}: ${message}`);
+    this.statusCode = statusCode;
+    this.message = message;
+  }
+};
+var METRIC_NAME = "deallocate";
+var METRIC_DIMENSION_STATUS_CODE = "statusCode";
+var METRIC_DIMENSION_OUTCOME = "outcome";
 var clients = RuntimeClients.getOrCreate();
-async function handler(event, _context) {
-  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-  console.log("Fetching registered environments");
-  const registeredEnvironments = await clients.configuration.listEnvironments();
-  console.log("Scanning environments table");
-  const activeEnvironments = await clients.environments.scan();
-  const pools = Array.from(new Set(registeredEnvironments.map((e) => e.pool)));
-  console.log(`Detected the following pools: ${pools.join(",")}`);
-  for (const pool of pools) {
-    await RuntimeMetrics.scoped(async (metrics) => {
-      metrics.setPool(pool);
-      metrics.putDimensions({});
-      const registeredInPool = registeredEnvironments.filter((e) => e.pool === pool);
-      const activeInPool = activeEnvironments.filter((e) => hasEnv(registeredInPool, e));
-      const freeCount = registeredInPool.filter((e) => !hasEnv(activeInPool, e)).length;
-      const registeredCount = registeredInPool.length;
-      const inUseCount = activeInPool.filter((e) => e.status === "in-use").length;
-      const cleaningCount = activeInPool.filter((e) => e.status === "cleaning").length;
-      const dirtyCount = activeInPool.filter((e) => e.status === "dirty").length;
-      const toEmit = {
-        [METRIC_NAME_ENVIRONMENTS_REGISTERED]: registeredCount,
-        [METRIC_NAME_ENVIRONMENTS_FREE]: freeCount,
-        [METRIC_NAME_ENVIRONMENTS_IN_USE]: inUseCount,
-        [METRIC_NAME_ENVIRONMENTS_CLEANING]: cleaningCount,
-        [METRIC_NAME_ENVIRONMENTS_DIRTY]: dirtyCount
-      };
-      for (const [metricName, value] of Object.entries(toEmit)) {
-        console.log(`Emitting metric: ${metricName} = ${value} | pool: ${pool}`);
-        metrics.delegate.putMetric(metricName, value, import_aws_embedded_metrics2.Unit.Count);
-      }
+async function handler(event) {
+  return RuntimeMetrics.scoped(async (metrics) => {
+    try {
+      const response = await doHandler(event, metrics);
+      metrics.putDimensions({ [METRIC_DIMENSION_STATUS_CODE]: response.statusCode.toString() });
+      return response;
+    } finally {
+      metrics.delegate.putMetric(METRIC_NAME, 1, import_aws_embedded_metrics2.Unit.Count);
+    }
+  });
+}
+async function doHandler(event, metrics) {
+  console.log("Event:", JSON.stringify(event, null, 2));
+  const id = (event.pathParameters ?? {}).id;
+  if (!id) {
+    return failure(400, "Missing 'id' path parameter");
+  }
+  const log = new AllocationLogger({ id, component: "deallocate" });
+  try {
+    const request = parseRequestBody(event.body);
+    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
+    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
+      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
+    }
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    log.info(`Ending allocation with outcome: ${request.outcome}`);
+    const allocation = await endAllocation(id, request.outcome);
+    log.setPool(allocation.pool);
+    metrics.setPool(allocation.pool);
+    metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: request.outcome });
+    log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
+    await clients.scheduler.scheduleCleanupTimeout({
+      allocationId: allocation.id,
+      account: allocation.account,
+      region: allocation.region,
+      timeoutDate: cleanupTimeoutDate,
+      functionArn: Envars.required(CLEANUP_TIMEOUT_FUNCTION_ARN_ENV)
     });
+    log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
+    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
+    return success({ cleanupDurationSeconds });
+  } catch (e) {
+    if (e instanceof AllocationAlreadyEndedError) {
+      log.info(`Returning success because: ${e.message}`);
+      return success({ cleanupDurationSeconds: -1 });
+    }
+    log.error(e);
+    const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+    return failure(statusCode, e.message);
   }
 }
-function hasEnv(envs, env) {
-  return envs.some((e) => e.account === env.account && e.region === env.region);
+function success(body) {
+  return { statusCode: 200, body: JSON.stringify(body) };
+}
+function failure(statusCode, message) {
+  return { statusCode, body: JSON.stringify({ message }) };
+}
+function parseRequestBody(body) {
+  if (!body) {
+    throw new ProxyError(400, "Request body not found");
+  }
+  const parsed = JSON.parse(body);
+  if (!parsed.outcome) {
+    throw new ProxyError(400, "'outcome' must be provided in the request body");
+  }
+  return parsed;
+}
+async function endAllocation(id, outcome) {
+  try {
+    return await clients.allocations.end({ id, outcome });
+  } catch (e) {
+    if (e instanceof InvalidInputError) {
+      throw new ProxyError(400, e.message);
+    }
+    throw e;
+  }
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  METRIC_NAME_ENVIRONMENTS_CLEANING,
-  METRIC_NAME_ENVIRONMENTS_DIRTY,
-  METRIC_NAME_ENVIRONMENTS_FREE,
-  METRIC_NAME_ENVIRONMENTS_IN_USE,
-  METRIC_NAME_ENVIRONMENTS_REGISTERED,
+  METRIC_DIMENSION_OUTCOME,
+  METRIC_DIMENSION_STATUS_CODE,
+  METRIC_NAME,
+  doHandler,
   handler
 });
 /*! Bundled license information:

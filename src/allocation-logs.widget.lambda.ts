@@ -21,20 +21,25 @@ export async function handler(event: any, context: any) {
 
   const logs = !!allocationId ? await fetchLogs(allocationId, from, to, serviceRegion): undefined;
 
+  console.log(`allocation id is empty: ${!!allocationId}`);
+
   let html = `
   <form>
   <table>
       <tr>
-          <td>Allocation ID</td><td><input name="allocationId" value="${allocationId}" size="100"></td>
+          <td>ID</td><td><input name="allocationId" value="${allocationId ?? ''}" size="100"></td>
       </tr>
   </table>
   </form>
   <a class="btn btn-primary">Run query</a>
-  <cwdb-action action="call" endpoint="${context.invokedFunctionArn}"></cwdb-action>`;
+  <cwdb-action action="call" endpoint="${context.invokedFunctionArn}"></cwdb-action>
+  <br><br>
+  <p><h2>Results (1 week)</h2>`;
 
   if (logs && logs.length > 0) {
-    html += '<p><h2>Results (1 week)</h2>';
     html += buildLogsTable(logs);
+  } else if (!!allocationId) {
+    html += `<br><p><b>No results found for allocation '${allocationId}'</b>`;
   }
 
   return html;

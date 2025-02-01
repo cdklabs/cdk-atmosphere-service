@@ -70882,6 +70882,10 @@ var import_client_ecs = __toESM(require_dist_cjs54());
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
 var ALLOCATIONS_TABLE_NAME_ENV = `${ENV_PREFIX}ALLOCATIONS_TABLE_NAME`;
+var ALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATE_LOG_GROUP_NAME`;
+var DEALLOCATE_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_LOG_GROUP_NAME`;
+var ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}ALLOCATION_TIMEOUT_LOG_GROUP_NAME`;
+var CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}CLEANUP_TIMEOUT_LOG_GROUP_NAME`;
 var ENVIRONMENTS_TABLE_NAME_ENV = `${ENV_PREFIX}ENVIRONMENTS_TABLE_NAME`;
 var CONFIGURATION_BUCKET_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_BUCKET`;
 var CONFIGURATION_KEY_ENV = `${ENV_PREFIX}CONFIGURATION_FILE_KEY`;
@@ -71103,6 +71107,33 @@ var AllocationsClient = class {
   constructor(tableName) {
     this.tableName = tableName;
     this.ddbClient = new ddb.DynamoDB({});
+  }
+  async scan(from) {
+    const items = [];
+    let lastEvaluatedKey = void 0;
+    do {
+      const response = await this.ddbClient.scan({
+        TableName: this.tableName,
+        ExclusiveStartKey: lastEvaluatedKey,
+        FilterExpression: `start > ${from.toISOString()}`
+      });
+      for (const item of response.Items ?? []) {
+        items.push({
+          account: requiredValue("account", item),
+          region: requiredValue("region", item),
+          pool: requiredValue("pool", item),
+          start: requiredValue("start", item),
+          requester: requiredValue("requester", item),
+          id: requiredValue("id", item),
+          // if an allocation is queried before it ended, these attributes
+          // will be missing.
+          end: optionalValue("end", item),
+          outcome: optionalValue("outcome", item)
+        });
+      }
+      lastEvaluatedKey = response.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+    return items;
   }
   /**
    * Retrieve an allocation by id.
@@ -71791,13 +71822,13 @@ async function handler(req) {
 async function doHandler(req, metrics) {
   console.log("Event:", JSON.stringify(req, null, 2));
   const log = new AllocationLogger({ id: req.allocationId, component: "cleanup" });
-  log.info("Fetching allocation");
   const allocation = await fetchAllocation(req.allocationId, log);
   log.setPool(allocation.pool);
   metrics.setPool(allocation.pool);
   const env = `aws://${allocation.account}/${allocation.region}`;
+  log.info(`Task started. Environment: ${env}`);
   try {
-    log.info(`Fetching environment '${env}'`);
+    log.info(`Fetching environment '${env}' from database`);
     const environment = await clients.configuration.getEnvironment(allocation.account, allocation.region);
     const cleaner = new Cleaner(environment, log);
     log.info(`Starting cleanup of '${env}'`);
@@ -71814,7 +71845,7 @@ async function doHandler(req, metrics) {
       throw e5;
     }
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: "dirty" });
-    log.error(e5);
+    log.error(e5, `Failed cleaning environment '${env}'`);
     log.info(`Marking environment '${env}' as 'dirty'`);
     await clients.environments.dirty(req.allocationId, allocation.account, allocation.region);
     log.info(`Successfully marked environment '${env}' as 'dirty'`);

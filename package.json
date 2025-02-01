@@ -21,6 +21,8 @@
     "bundle:deallocate/deallocate.lambda:watch": "npx projen bundle:deallocate/deallocate.lambda:watch",
     "bundle:dirty-environments.widget.lambda": "npx projen bundle:dirty-environments.widget.lambda",
     "bundle:dirty-environments.widget.lambda:watch": "npx projen bundle:dirty-environments.widget.lambda:watch",
+    "bundle:storage/allocations.monitor.lambda": "npx projen bundle:storage/allocations.monitor.lambda",
+    "bundle:storage/allocations.monitor.lambda:watch": "npx projen bundle:storage/allocations.monitor.lambda:watch",
     "bundle:storage/environments.monitor.lambda": "npx projen bundle:storage/environments.monitor.lambda",
     "bundle:storage/environments.monitor.lambda:watch": "npx projen bundle:storage/environments.monitor.lambda:watch",
     "bundle:test/integ/allocate/assert.lambda.ts": "npx projen bundle:test/integ/allocate/assert.lambda.ts",
