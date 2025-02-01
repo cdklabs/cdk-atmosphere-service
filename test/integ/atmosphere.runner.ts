@@ -306,6 +306,17 @@ export class Runner {
       });
     }
 
+    const allocations = (await dynamo.scan({ TableName: this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV] })).Items ?? [];
+    for (const allocation of allocations) {
+      this.log(`  » deleting allocation ${allocation.id.S!}`);
+      await dynamo.deleteItem({
+        TableName: this.vars[envars.ALLOCATIONS_TABLE_NAME_ENV],
+        Key: {
+          id: { S: allocation.id.S! },
+        },
+      });
+    }
+
     const schedules = (await scheduler.listSchedules({})).Schedules ?? [];
     for (const schedule of schedules) {
       this.log(`  » deleting schedule ${schedule.Name!}`);

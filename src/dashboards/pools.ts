@@ -57,11 +57,7 @@ export class PoolsDashboard extends Construct {
     // next to each other (vs stacked)
     dashboard.addWidgets(
       new cloudwatch.TextWidget({
-        markdown: [
-          '# Requests Rate',
-          '',
-          'Widgets in this section display the rate of requests serviced by system components, segmented by various dimensions.',
-        ].join('\n'),
+        markdown: ['# Requests Rate'].join('\n'),
         height: 2,
         width: 24,
       }),
@@ -120,11 +116,7 @@ export class PoolsDashboard extends Construct {
         width: 12,
       }),
       new cloudwatch.TextWidget({
-        markdown: [
-          '# Entities Count',
-          '',
-          'Widgets in this section display the current count of entities in the system, segmented by their status.',
-        ].join('\n'),
+        markdown: ['# Entities Count'].join('\n'),
         height: 2,
         width: 24,
       }),
@@ -154,11 +146,7 @@ export class PoolsDashboard extends Construct {
         width: 12,
       }),
       new cloudwatch.TextWidget({
-        markdown: [
-          '# Reports',
-          '',
-          'Widgets in this section display a detailed account of noteworthy system entities.',
-        ].join('\n'),
+        markdown: ['# Reports'].join('\n'),
         height: 2,
         width: 24,
       }),
