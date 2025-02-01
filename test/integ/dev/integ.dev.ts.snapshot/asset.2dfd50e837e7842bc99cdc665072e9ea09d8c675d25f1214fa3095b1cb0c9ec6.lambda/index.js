@@ -2615,16 +2615,16 @@ var require_lib = __commonJS({
   }
 });
 
-// src/allocate/allocate.lambda.ts
-var allocate_lambda_exports = {};
-__export(allocate_lambda_exports, {
-  METRIC_DIMENSION_STATUS_CODE: () => METRIC_DIMENSION_STATUS_CODE,
-  METRIC_NAME: () => METRIC_NAME,
+// src/storage/allocations.monitor.lambda.ts
+var allocations_monitor_lambda_exports = {};
+__export(allocations_monitor_lambda_exports, {
+  METRIC_NAME_ALLOCATIONS_FAILURE: () => METRIC_NAME_ALLOCATIONS_FAILURE,
+  METRIC_NAME_ALLOCATIONS_IN_PROGRESS: () => METRIC_NAME_ALLOCATIONS_IN_PROGRESS,
+  METRIC_NAME_ALLOCATIONS_SUCCESS: () => METRIC_NAME_ALLOCATIONS_SUCCESS,
+  METRIC_NAME_ALLOCATIONS_TIMEOUT: () => METRIC_NAME_ALLOCATIONS_TIMEOUT,
   handler: () => handler
 });
-module.exports = __toCommonJS(allocate_lambda_exports);
-var crypto = __toESM(require("crypto"));
-var import_client_sts = require("@aws-sdk/client-sts");
+module.exports = __toCommonJS(allocations_monitor_lambda_exports);
 var import_aws_embedded_metrics2 = __toESM(require_lib());
 
 // src/cleanup/cleanup.client.ts
@@ -2866,7 +2866,13 @@ var AllocationsClient = class {
       const response = await this.ddbClient.scan({
         TableName: this.tableName,
         ExclusiveStartKey: lastEvaluatedKey,
-        FilterExpression: `start > ${from.toISOString()}`
+        FilterExpression: "#start > :from",
+        ExpressionAttributeNames: {
+          "#start": "start"
+        },
+        ExpressionAttributeValues: {
+          ":from": { S: from.toISOString() }
+        }
       });
       for (const item of response.Items ?? []) {
         items.push({
@@ -3283,33 +3289,6 @@ var RuntimeClients = class _RuntimeClients {
   }
 };
 
-// src/logging.ts
-var AllocationLogger = class {
-  constructor(props) {
-    this.component = props.component;
-    this.allocationId = props.id;
-  }
-  info(message) {
-    console.log(`${this.prefix} ${message}`);
-  }
-  error(error, message = "") {
-    console.error(`${this.prefix} ${message}`, error);
-  }
-  setPool(pool) {
-    this.pool = pool;
-  }
-  get prefix() {
-    const parts = [
-      `[${this.component}]`
-    ];
-    if (this.pool) {
-      parts.push(`[pool:${this.pool}]`);
-    }
-    parts.push(`[aloc:${this.allocationId}]`);
-    return parts.join(" ");
-  }
-};
-
 // src/metrics.ts
 var import_aws_embedded_metrics = __toESM(require_lib());
 var METRICS_NAMESPACE = "Atmosphere";
@@ -3343,145 +3322,48 @@ var PoolAwareMetricsLogger = class {
   }
 };
 
-// src/allocate/allocate.lambda.ts
-var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
-var ProxyError = class extends Error {
-  constructor(statusCode, message) {
-    super(`${statusCode}: ${message}`);
-    this.statusCode = statusCode;
-    this.message = message;
-  }
-};
-var METRIC_NAME = "allocate";
-var METRIC_DIMENSION_STATUS_CODE = "statusCode";
+// src/storage/allocations.monitor.lambda.ts
+var METRIC_NAME_ALLOCATIONS_SUCCESS = "allocations-success";
+var METRIC_NAME_ALLOCATIONS_FAILURE = "allocations-failure";
+var METRIC_NAME_ALLOCATIONS_TIMEOUT = "allocations-timeout";
+var METRIC_NAME_ALLOCATIONS_IN_PROGRESS = "allocations-in-progress";
 var clients = RuntimeClients.getOrCreate();
-async function handler(event) {
-  return RuntimeMetrics.scoped(async (metrics) => {
-    try {
-      const response = await doHandler(event, metrics);
-      metrics.putDimensions({ [METRIC_DIMENSION_STATUS_CODE]: response.statusCode.toString() });
-      return response;
-    } finally {
-      metrics.delegate.putMetric(METRIC_NAME, 1, import_aws_embedded_metrics2.Unit.Count);
-    }
-  });
-}
-async function doHandler(event, metrics) {
-  console.log("Event:", JSON.stringify(event, null, 2));
-  const allocationId = crypto.randomUUID();
-  const log = new AllocationLogger({ id: allocationId, component: "allocate" });
-  try {
-    const request = parseRequestBody(event.body, metrics);
-    log.setPool(request.pool);
-    const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-    if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-      throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-    }
-    const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
-    log.info(`Acquiring environment from pool '${request.pool}'`);
-    const environment = await acquireEnvironment(allocationId, request.pool);
-    log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
-    await startAllocation(allocationId, environment, request.requester);
-    log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(allocationId, environment);
-    log.info("Allocation started successfully");
-    const response = { id: allocationId, environment, credentials, durationSeconds };
-    log.info(`Scheduling allocation timeout to ${timeoutDate}`);
-    await clients.scheduler.scheduleAllocationTimeout({
-      allocationId,
-      timeoutDate,
-      functionArn: Envars.required(ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV)
-    });
-    log.info("Done");
-    return success(response);
-  } catch (e) {
-    log.error(e);
-    const statusCode = e instanceof ProxyError ? e.statusCode : 500;
-    return failure(statusCode, e.message);
-  }
-}
-function success(body) {
-  return { statusCode: 200, body: JSON.stringify(body) };
-}
-function failure(statusCode, message) {
-  return { statusCode, body: JSON.stringify({ message }) };
-}
-function parseRequestBody(body, metrics) {
-  if (!body) {
-    throw new ProxyError(400, "Request body not found");
-  }
-  const parsed = JSON.parse(body);
-  if (!parsed.pool) {
-    throw new ProxyError(400, "'pool' must be provided in the request body");
-  }
-  metrics.setPool(parsed.pool);
-  if (!parsed.requester) {
-    throw new ProxyError(400, "'requester' must be provided in the request body");
-  }
-  return parsed;
-}
-async function acquireEnvironment(allocaionId, pool) {
-  const candidates = await clients.configuration.listEnvironments({ pool });
-  console.log(`Found ${candidates.length} environments in pool '${pool}'`);
-  for (const canditate of candidates) {
-    try {
-      console.log(`Acquiring environment 'aws://${canditate.account}/${canditate.region}'...`);
-      await clients.environments.acquire(allocaionId, canditate.account, canditate.region);
-      return canditate;
-    } catch (e) {
-      if (e instanceof EnvironmentAlreadyAcquiredError) {
-        console.log(`Environment 'aws://${canditate.account}/${canditate.region}' already acquired. Trying the next one.`);
-        continue;
+var DAYS_AGO = 7;
+async function handler(event, _context) {
+  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+  const from = /* @__PURE__ */ new Date();
+  from.setDate(from.getDate() - DAYS_AGO);
+  console.log(`Fetching allocations from the last ${DAYS_AGO} days`);
+  const allocations = await clients.allocations.scan(from);
+  const pools = Array.from(new Set(allocations.map((a) => a.pool)));
+  console.log(`Detected the following pools: ${pools.join(",")}`);
+  for (const pool of pools) {
+    await RuntimeMetrics.scoped(async (metrics) => {
+      metrics.setPool(pool);
+      metrics.putDimensions({});
+      const inProgressCount = allocations.filter((a) => a.end === void 0).length;
+      const successCount = allocations.filter((a) => a.outcome === "success").length;
+      const failureCount = allocations.filter((a) => a.outcome === "failure").length;
+      const timeoutCount = allocations.filter((a) => a.outcome === "timeout").length;
+      const toEmit = {
+        [METRIC_NAME_ALLOCATIONS_SUCCESS]: successCount,
+        [METRIC_NAME_ALLOCATIONS_FAILURE]: failureCount,
+        [METRIC_NAME_ALLOCATIONS_TIMEOUT]: timeoutCount,
+        [METRIC_NAME_ALLOCATIONS_IN_PROGRESS]: inProgressCount
+      };
+      for (const [metricName, value] of Object.entries(toEmit)) {
+        console.log(`Emitting metric: ${metricName} = ${value} | pool: ${pool}`);
+        metrics.delegate.putMetric(metricName, value, import_aws_embedded_metrics2.Unit.Count);
       }
-      throw e;
-    }
-  }
-  throw new ProxyError(423, `No environments available in pool '${pool}'`);
-}
-async function startAllocation(id, environment, requester) {
-  try {
-    await clients.allocations.start({
-      id,
-      account: environment.account,
-      region: environment.region,
-      pool: environment.pool,
-      requester
     });
-  } catch (e) {
-    if (e instanceof InvalidInputError) {
-      throw new ProxyError(400, e.message);
-    }
-    throw e;
   }
-}
-async function grabCredentials(id, environment) {
-  const sts = new import_client_sts.STS();
-  const assumed = await sts.assumeRole({
-    RoleArn: environment.adminRoleArn,
-    RoleSessionName: `atmosphere.allocation.${id}`
-  });
-  if (!assumed.Credentials) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
-  }
-  if (!assumed.Credentials.AccessKeyId) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
-  }
-  if (!assumed.Credentials.SecretAccessKey) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
-  }
-  if (!assumed.Credentials.SessionToken) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
-  }
-  return {
-    accessKeyId: assumed.Credentials.AccessKeyId,
-    secretAccessKey: assumed.Credentials.SecretAccessKey,
-    sessionToken: assumed.Credentials.SessionToken
-  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  METRIC_DIMENSION_STATUS_CODE,
-  METRIC_NAME,
+  METRIC_NAME_ALLOCATIONS_FAILURE,
+  METRIC_NAME_ALLOCATIONS_IN_PROGRESS,
+  METRIC_NAME_ALLOCATIONS_SUCCESS,
+  METRIC_NAME_ALLOCATIONS_TIMEOUT,
   handler
 });
 /*! Bundled license information:

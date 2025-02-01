@@ -1,10 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudWatchLogs, ResultField } from '@aws-sdk/client-cloudwatch-logs';
-import * as envars from './envars';
+import * as envars from '../../../envars';
 
 const CHECK_QUERY_STATUS_DELAY_MS = 250;
 
 export async function handler(event: any, context: any) {
+
+  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
 
   const serviceRegion = event.serviceRegion;
 
@@ -27,7 +30,7 @@ export async function handler(event: any, context: any) {
   <form>
   <table>
       <tr>
-          <td>ID</td><td><input name="allocationId" value="${allocationId ?? ''}" size="100"></td>
+          <td>Id</td><td><input name="allocationId" value="${allocationId ?? ''}" size="100"></td>
       </tr>
   </table>
   </form>

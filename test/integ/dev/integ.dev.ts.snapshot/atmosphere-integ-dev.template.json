@@ -335,7 +335,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8008c53e03a8c046c34e32176a40cc1bd6aca315c0902b33dcb471cb0687a5c9.zip"
+     "S3Key": "7d03b452aea5d7502d7446c8b8f60f41cfeb4a6df82e37b6f5cddd054c7bdf7d.zip"
     },
     "Description": "Emits metrics about environments status for every pool",
     "Environment": {
@@ -542,7 +542,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8008c53e03a8c046c34e32176a40cc1bd6aca315c0902b33dcb471cb0687a5c9.zip"
+     "S3Key": "2dfd50e837e7842bc99cdc665072e9ea09d8c675d25f1214fa3095b1cb0c9ec6.zip"
     },
     "Description": "Emits metrics about allocations status for every pool",
     "Environment": {
@@ -1038,7 +1038,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:9ae1b40bfe1461beb16a660e1f0dcea8f011e5db1a4b2eb24ad19f718fae18d7"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:e57cb3f7ffd1e4f1f6675c2f05315f037ab9b0448f31927609765ae5af5aa1ea"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1447,7 +1447,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe5d2898aea2ed23d6e9c5266bda070adf78bca7d34450238acfa1c32e91942f.zip"
+     "S3Key": "d15e8f57e406f2ffd33f5ac0b83459279ccf24d97bbe11be27054d8b46bf4332.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1653,7 +1653,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a4771e8bb8296c9cb2cae97b284513fdab85664d809c5a1bbf249bc3eedda700.zip"
+     "S3Key": "c8e3f313aef8f1c904f9b8d08e2b00c9523cbf42073413a2fac5e5edd0cf41ee.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1953,7 +1953,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5dd0e66e4df45729137eb7081d45b39f90185e45a2cd6d747fb2d68ea0ebe520.zip"
+     "S3Key": "56a700ef433ad5b1b44248b0861dc74ae2ab8cf9372fc4370f888923ccdbf89d.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -2252,7 +2252,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "eb7b7500485456a094cb1d28d4a6d225da078868704ae9fe0be702f6ff91c494.zip"
+     "S3Key": "79d10c3cecfd0b4823526dabc82869d98fc8ae697abcd4c8f0dab31683e5c76f.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -2773,7 +2773,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardAF315303": {
+  "AtmospherePoolsDashboard72A12357": {
    "Type": "AWS::CloudWatch::Dashboard",
    "Properties": {
     "DashboardBody": {
@@ -2808,10 +2808,10 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[{\"label\":\"success\",\"color\":\"#0073BB\",\"expression\":\"FILL(m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679, REPEAT)\"}],[\"Atmosphere\",\"allocations-success\",\"pool\",\"$pool\",{\"color\":\"#0073BB\",\"label\":\"success\",\"visible\":false,\"id\":\"m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679\"}],[{\"label\":\"in-progress\",\"color\":\"#0073BB\",\"expression\":\"FILL(m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5, REPEAT)\"}],[\"Atmosphere\",\"allocations-in-progress\",\"pool\",\"$pool\",{\"color\":\"#0073BB\",\"label\":\"in-progress\",\"visible\":false,\"id\":\"m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5\"}],[{\"label\":\"failure\",\"color\":\"#FF0000\",\"expression\":\"FILL(m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188, REPEAT)\"}],[\"Atmosphere\",\"allocations-failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"visible\":false,\"id\":\"m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188\"}],[{\"label\":\"timeout\",\"color\":\"#FFD700\",\"expression\":\"FILL(mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb, REPEAT)\"}],[\"Atmosphere\",\"allocations-timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"visible\":false,\"id\":\"mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"text\",\"width\":24,\"height\":2,\"x\":0,\"y\":28,\"properties\":{\"markdown\":\"# Reports\\n\\nWidgets in this section display a detailed account of noteworthy system entities.\"}},{\"type\":\"custom\",\"width\":12,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"endpoint\":\"",
+       "\",\"metrics\":[[{\"label\":\"success\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679, REPEAT)\"}],[\"Atmosphere\",\"allocations-success\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"success\",\"visible\":false,\"id\":\"m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679\"}],[{\"label\":\"in-progress\",\"color\":\"#0073BB\",\"expression\":\"FILL(m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5, REPEAT)\"}],[\"Atmosphere\",\"allocations-in-progress\",\"pool\",\"$pool\",{\"color\":\"#0073BB\",\"label\":\"in-progress\",\"visible\":false,\"id\":\"m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5\"}],[{\"label\":\"failure\",\"color\":\"#FF0000\",\"expression\":\"FILL(m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188, REPEAT)\"}],[\"Atmosphere\",\"allocations-failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"visible\":false,\"id\":\"m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188\"}],[{\"label\":\"timeout\",\"color\":\"#FFD700\",\"expression\":\"FILL(mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb, REPEAT)\"}],[\"Atmosphere\",\"allocations-timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"visible\":false,\"id\":\"mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"text\",\"width\":24,\"height\":2,\"x\":0,\"y\":28,\"properties\":{\"markdown\":\"# Reports\\n\\nWidgets in this section display a detailed account of noteworthy system entities.\"}},{\"type\":\"custom\",\"width\":24,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"endpoint\":\"",
        {
         "Fn::GetAtt": [
-         "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionBE87C3E0",
+         "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionB246C8D2",
          "Arn"
         ]
        },
@@ -2819,45 +2819,27 @@
        {
         "Ref": "AWS::Region"
        },
-       "\"},\"title\":\"Dirty Environments\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}},{\"type\":\"custom\",\"width\":24,\"height\":18,\"x\":0,\"y\":36,\"properties\":{\"endpoint\":\"",
+       "\"},\"title\":\"Dirty Environments\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}},{\"type\":\"custom\",\"width\":24,\"height\":6,\"x\":0,\"y\":36,\"properties\":{\"endpoint\":\"",
        {
         "Fn::GetAtt": [
-         "AtmosphereDashboardAllocationLogsWidgetFunction6FEC6E9E",
+         "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunction03B55D29",
          "Arn"
         ]
        },
-       "\",\"params\":{\"serviceRegion\":\"",
+       "\",\"params\":{\"pool\":\"${pool}\",\"serviceRegion\":\"",
        {
         "Ref": "AWS::Region"
        },
-       "\"},\"title\":\"Allocation Logs (All Pools)\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":54,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Scheduler Dead Letter Queue (All Pools)\",\"region\":\"",
-       {
-        "Ref": "AWS::Region"
-       },
-       "\",\"metrics\":[[{\"label\":\"size\",\"color\":\"#0073BB\",\"expression\":\"mVisible + mHidden\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
-       {
-        "Fn::GetAtt": [
-         "AtmosphereSchedulerDLQCF6976A3",
-         "QueueName"
-        ]
-       },
-       "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mVisible\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
-       {
-        "Fn::GetAtt": [
-         "AtmosphereSchedulerDLQCF6976A3",
-         "QueueName"
-        ]
-       },
-       "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mHidden\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"},{\"value\":\"UNKNOWN\"}]}]}"
+       "\"},\"title\":\"Unsuccessfull Allocations\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"},{\"value\":\"UNKNOWN\"}]}]}"
       ]
      ]
     },
-    "DashboardName": "atmosphere-integ-dev"
+    "DashboardName": "atmosphere-integ-dev-pools"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837": {
+  "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -2890,7 +2872,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicyCBF72617": {
+  "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicy4940D191": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -3001,26 +2983,26 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicyCBF72617",
+    "PolicyName": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicy4940D191",
     "Roles": [
      {
-      "Ref": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837"
+      "Ref": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionBE87C3E0": {
+  "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionB246C8D2": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "85f654a9b3fa2cae7cb68bbe55747a28c2903540fd3ed66d4a49ca74c8a9bd3d.zip"
+     "S3Key": "93e6e4527e675acd163ec052db3a5645f9ab4e5955667eacb4a7c3fd95d4772c.zip"
     },
-    "Description": "src/dirty-environments.widget.lambda.ts",
+    "Description": "src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts",
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -3064,7 +3046,7 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837",
+      "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08",
       "Arn"
      ]
     },
@@ -3072,13 +3054,13 @@
     "Timeout": 300
    },
    "DependsOn": [
-    "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicyCBF72617",
-    "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837"
+    "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicy4940D191",
+    "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771": {
+  "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -3111,7 +3093,312 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy37EF64E4": {
+  "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRoleDefaultPolicyAB71BBE2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereAllocationsTable4ECEFD7B",
+          "Arn"
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:GetQueryResults",
+        "logs:StartQuery"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereCleanupLogGroup72856C89",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "AtmosphereAllocateFunctionLogRetentionDBC66CD2",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "AtmosphereDeallocateFunctionLogRetentionD4621400",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "AtmosphereSchedulerAllocationTimeoutLogRetentionB5CC2CE9",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Fn::GetAtt": [
+             "AtmosphereSchedulerCleanupTimeoutLogRetention319A1027",
+             "LogGroupName"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRoleDefaultPolicyAB71BBE2",
+    "Roles": [
+     {
+      "Ref": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunction03B55D29": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5b46f3a1e61d257209b4b5a66a63b1d176bad62de3f0fd5b97c37bdb406e37e1.zip"
+    },
+    "Description": "src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+       "Ref": "AtmosphereAllocationsTable4ECEFD7B"
+      },
+      "CDK_ATMOSPHERE_ALLOCATE_LOG_GROUP_NAME": {
+       "Fn::GetAtt": [
+        "AtmosphereAllocateFunctionLogRetentionDBC66CD2",
+        "LogGroupName"
+       ]
+      },
+      "CDK_ATMOSPHERE_DEALLOCATE_LOG_GROUP_NAME": {
+       "Fn::GetAtt": [
+        "AtmosphereDeallocateFunctionLogRetentionD4621400",
+        "LogGroupName"
+       ]
+      },
+      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_LOG_GROUP_NAME": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerAllocationTimeoutLogRetentionB5CC2CE9",
+        "LogGroupName"
+       ]
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_LOG_GROUP_NAME": {
+       "Fn::GetAtt": [
+        "AtmosphereSchedulerCleanupTimeoutLogRetention319A1027",
+        "LogGroupName"
+       ]
+      },
+      "CDK_ATMOSPHERE_CLEANUP_LOG_GROUP_NAME": {
+       "Ref": "AtmosphereCleanupLogGroup72856C89"
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRoleDefaultPolicyAB71BBE2",
+    "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereGlobalDashboard45B3E0A9": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Scheduler Dead Letter Queue\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"size\",\"color\":\"#0073BB\",\"expression\":\"mVisible + mHidden\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerDLQCF6976A3",
+         "QueueName"
+        ]
+       },
+       "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mVisible\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "AtmosphereSchedulerDLQCF6976A3",
+         "QueueName"
+        ]
+       },
+       "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mHidden\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"custom\",\"width\":24,\"height\":18,\"x\":0,\"y\":6,\"properties\":{\"endpoint\":\"",
+       {
+        "Fn::GetAtt": [
+         "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionB5F78590",
+         "Arn"
+        ]
+       },
+       "\",\"params\":{\"serviceRegion\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\"},\"title\":\"Allocation Logs\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "atmosphere-integ-dev-global"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy90DCFFC2": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -3242,26 +3529,26 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy37EF64E4",
+    "PolicyName": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy90DCFFC2",
     "Roles": [
      {
-      "Ref": "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771"
+      "Ref": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereDashboardAllocationLogsWidgetFunction6FEC6E9E": {
+  "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionB5F78590": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0d2bb262c12ba33b59f269e5ca3751221089531a5009c2c1311c45047f83a1d9.zip"
+     "S3Key": "1fe55178c14df623b236282013f5809e25fda425f02ff346498029dbf7a9d239.zip"
     },
-    "Description": "src/allocation-logs.widget.lambda.ts",
+    "Description": "src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts",
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -3297,7 +3584,7 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771",
+      "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1",
       "Arn"
      ]
     },
@@ -3305,8 +3592,8 @@
     "Timeout": 300
    },
    "DependsOn": [
-    "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy37EF64E4",
-    "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771"
+    "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy90DCFFC2",
+    "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

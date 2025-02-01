@@ -582,7 +582,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "8008c53e03a8c046c34e32176a40cc1bd6aca315c0902b33dcb471cb0687a5c9.zip"
+                                  "s3Key": "7d03b452aea5d7502d7446c8b8f60f41cfeb4a6df82e37b6f5cddd054c7bdf7d.zip"
                                 },
                                 "description": "Emits metrics about environments status for every pool",
                                 "environment": {
@@ -949,7 +949,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "8008c53e03a8c046c34e32176a40cc1bd6aca315c0902b33dcb471cb0687a5c9.zip"
+                                  "s3Key": "2dfd50e837e7842bc99cdc665072e9ea09d8c675d25f1214fa3095b1cb0c9ec6.zip"
                                 },
                                 "description": "Emits metrics about allocations status for every pool",
                                 "environment": {
@@ -1663,7 +1663,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:9ae1b40bfe1461beb16a660e1f0dcea8f011e5db1a4b2eb24ad19f718fae18d7"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:e57cb3f7ffd1e4f1f6675c2f05315f037ab9b0448f31927609765ae5af5aa1ea"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1906,9 +1906,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2364,7 +2364,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "fe5d2898aea2ed23d6e9c5266bda070adf78bca7d34450238acfa1c32e91942f.zip"
+                              "s3Key": "d15e8f57e406f2ffd33f5ac0b83459279ccf24d97bbe11be27054d8b46bf4332.zip"
                             },
                             "deadLetterConfig": {
                               "targetArn": {
@@ -2666,7 +2666,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "a4771e8bb8296c9cb2cae97b284513fdab85664d809c5a1bbf249bc3eedda700.zip"
+                              "s3Key": "c8e3f313aef8f1c904f9b8d08e2b00c9523cbf42073413a2fac5e5edd0cf41ee.zip"
                             },
                             "deadLetterConfig": {
                               "targetArn": {
@@ -3088,7 +3088,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "5dd0e66e4df45729137eb7081d45b39f90185e45a2cd6d747fb2d68ea0ebe520.zip"
+                              "s3Key": "56a700ef433ad5b1b44248b0861dc74ae2ab8cf9372fc4370f888923ccdbf89d.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -3178,9 +3178,9 @@
                       "version": "2.173.1"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -3533,7 +3533,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "eb7b7500485456a094cb1d28d4a6d225da078868704ae9fe0be702f6ff91c494.zip"
+                              "s3Key": "79d10c3cecfd0b4823526dabc82869d98fc8ae697abcd4c8f0dab31683e5c76f.zip"
                             },
                             "description": "src/deallocate/deallocate.lambda.ts",
                             "environment": {
@@ -4273,17 +4273,17 @@
                   "version": "10.0.5"
                 }
               },
-              "Dashboard": {
-                "id": "Dashboard",
-                "path": "atmosphere-integ-dev/Atmosphere/Dashboard",
+              "PoolsDashboard": {
+                "id": "PoolsDashboard",
+                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard",
                 "children": {
-                  "Dashboard": {
-                    "id": "Dashboard",
-                    "path": "atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard",
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/Resource",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard/Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/Resource/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
                           "aws:cdk:cloudformation:props": {
@@ -4319,10 +4319,10 @@
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\",\"metrics\":[[{\"label\":\"success\",\"color\":\"#0073BB\",\"expression\":\"FILL(m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679, REPEAT)\"}],[\"Atmosphere\",\"allocations-success\",\"pool\",\"$pool\",{\"color\":\"#0073BB\",\"label\":\"success\",\"visible\":false,\"id\":\"m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679\"}],[{\"label\":\"in-progress\",\"color\":\"#0073BB\",\"expression\":\"FILL(m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5, REPEAT)\"}],[\"Atmosphere\",\"allocations-in-progress\",\"pool\",\"$pool\",{\"color\":\"#0073BB\",\"label\":\"in-progress\",\"visible\":false,\"id\":\"m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5\"}],[{\"label\":\"failure\",\"color\":\"#FF0000\",\"expression\":\"FILL(m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188, REPEAT)\"}],[\"Atmosphere\",\"allocations-failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"visible\":false,\"id\":\"m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188\"}],[{\"label\":\"timeout\",\"color\":\"#FFD700\",\"expression\":\"FILL(mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb, REPEAT)\"}],[\"Atmosphere\",\"allocations-timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"visible\":false,\"id\":\"mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"text\",\"width\":24,\"height\":2,\"x\":0,\"y\":28,\"properties\":{\"markdown\":\"# Reports\\n\\nWidgets in this section display a detailed account of noteworthy system entities.\"}},{\"type\":\"custom\",\"width\":12,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"endpoint\":\"",
+                                  "\",\"metrics\":[[{\"label\":\"success\",\"color\":\"#4CAF50\",\"expression\":\"FILL(m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679, REPEAT)\"}],[\"Atmosphere\",\"allocations-success\",\"pool\",\"$pool\",{\"color\":\"#4CAF50\",\"label\":\"success\",\"visible\":false,\"id\":\"m34fa5d3c972c0f858bee78f2356ffcc3446ee9b204f3af2ffd73c7681d98d679\"}],[{\"label\":\"in-progress\",\"color\":\"#0073BB\",\"expression\":\"FILL(m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5, REPEAT)\"}],[\"Atmosphere\",\"allocations-in-progress\",\"pool\",\"$pool\",{\"color\":\"#0073BB\",\"label\":\"in-progress\",\"visible\":false,\"id\":\"m529324769f6404b5b519d56d5a85a01c335929bcd9621b7a9e358eef8b9f27f5\"}],[{\"label\":\"failure\",\"color\":\"#FF0000\",\"expression\":\"FILL(m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188, REPEAT)\"}],[\"Atmosphere\",\"allocations-failure\",\"pool\",\"$pool\",{\"color\":\"#FF0000\",\"label\":\"failure\",\"visible\":false,\"id\":\"m5efb1d0698b30783aab2a1378d6d157483dad841831618ac04cb43d6b3c55188\"}],[{\"label\":\"timeout\",\"color\":\"#FFD700\",\"expression\":\"FILL(mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb, REPEAT)\"}],[\"Atmosphere\",\"allocations-timeout\",\"pool\",\"$pool\",{\"color\":\"#FFD700\",\"label\":\"timeout\",\"visible\":false,\"id\":\"mda2351bb4d8d06623b048305b1f5fe02aed97f43601e98daea5282b0950c0cbb\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"text\",\"width\":24,\"height\":2,\"x\":0,\"y\":28,\"properties\":{\"markdown\":\"# Reports\\n\\nWidgets in this section display a detailed account of noteworthy system entities.\"}},{\"type\":\"custom\",\"width\":24,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"endpoint\":\"",
                                   {
                                     "Fn::GetAtt": [
-                                      "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionBE87C3E0",
+                                      "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionB246C8D2",
                                       "Arn"
                                     ]
                                   },
@@ -4330,40 +4330,22 @@
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\"},\"title\":\"Dirty Environments\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}},{\"type\":\"custom\",\"width\":24,\"height\":18,\"x\":0,\"y\":36,\"properties\":{\"endpoint\":\"",
+                                  "\"},\"title\":\"Dirty Environments\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}},{\"type\":\"custom\",\"width\":24,\"height\":6,\"x\":0,\"y\":36,\"properties\":{\"endpoint\":\"",
                                   {
                                     "Fn::GetAtt": [
-                                      "AtmosphereDashboardAllocationLogsWidgetFunction6FEC6E9E",
+                                      "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunction03B55D29",
                                       "Arn"
                                     ]
                                   },
-                                  "\",\"params\":{\"serviceRegion\":\"",
+                                  "\",\"params\":{\"pool\":\"${pool}\",\"serviceRegion\":\"",
                                   {
                                     "Ref": "AWS::Region"
                                   },
-                                  "\"},\"title\":\"Allocation Logs (All Pools)\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":54,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Scheduler Dead Letter Queue (All Pools)\",\"region\":\"",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  "\",\"metrics\":[[{\"label\":\"size\",\"color\":\"#0073BB\",\"expression\":\"mVisible + mHidden\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "AtmosphereSchedulerDLQCF6976A3",
-                                      "QueueName"
-                                    ]
-                                  },
-                                  "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mVisible\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "AtmosphereSchedulerDLQCF6976A3",
-                                      "QueueName"
-                                    ]
-                                  },
-                                  "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mHidden\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"},{\"value\":\"UNKNOWN\"}]}]}"
+                                  "\"},\"title\":\"Unsuccessfull Allocations\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}],\"variables\":[{\"property\":\"pool\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"pool\",\"defaultValue\":\"release\",\"label\":\"pool\",\"values\":[{\"value\":\"release\"},{\"value\":\"UNKNOWN\"}]}]}"
                                 ]
                               ]
                             },
-                            "dashboardName": "atmosphere-integ-dev"
+                            "dashboardName": "atmosphere-integ-dev-pools"
                           }
                         },
                         "constructInfo": {
@@ -4379,19 +4361,19 @@
                   },
                   "DirtyEnvironmentsWidget": {
                     "id": "DirtyEnvironmentsWidget",
-                    "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget",
+                    "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget",
                     "children": {
                       "Function": {
                         "id": "Function",
-                        "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function",
+                        "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function",
                         "children": {
                           "ServiceRole": {
                             "id": "ServiceRole",
-                            "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole",
+                            "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole",
                             "children": {
                               "ImportServiceRole": {
                                 "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/ImportServiceRole",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "2.173.1"
@@ -4399,7 +4381,7 @@
                               },
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/Resource",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                                   "aws:cdk:cloudformation:props": {
@@ -4438,11 +4420,11 @@
                               },
                               "DefaultPolicy": {
                                 "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                       "aws:cdk:cloudformation:props": {
@@ -4554,10 +4536,10 @@
                                           ],
                                           "Version": "2012-10-17"
                                         },
-                                        "policyName": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicyCBF72617",
+                                        "policyName": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicy4940D191",
                                         "roles": [
                                           {
-                                            "Ref": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837"
+                                            "Ref": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08"
                                           }
                                         ]
                                       }
@@ -4581,11 +4563,11 @@
                           },
                           "Code": {
                             "id": "Code",
-                            "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/Code",
+                            "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/Code",
                             "children": {
                               "Stage": {
                                 "id": "Stage",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/Code/Stage",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/Code/Stage",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "2.173.1"
@@ -4593,7 +4575,7 @@
                               },
                               "AssetBucket": {
                                 "id": "AssetBucket",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/Code/AssetBucket",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/Code/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "2.173.1"
@@ -4607,7 +4589,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                               "aws:cdk:cloudformation:props": {
@@ -4615,9 +4597,9 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "85f654a9b3fa2cae7cb68bbe55747a28c2903540fd3ed66d4a49ca74c8a9bd3d.zip"
+                                  "s3Key": "93e6e4527e675acd163ec052db3a5645f9ab4e5955667eacb4a7c3fd95d4772c.zip"
                                 },
-                                "description": "src/dirty-environments.widget.lambda.ts",
+                                "description": "src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts",
                                 "environment": {
                                   "variables": {
                                     "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -4661,7 +4643,7 @@
                                 "handler": "index.handler",
                                 "role": {
                                   "Fn::GetAtt": [
-                                    "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837",
+                                    "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08",
                                     "Arn"
                                   ]
                                 },
@@ -4686,21 +4668,21 @@
                       "version": "10.0.5"
                     }
                   },
-                  "AllocationLogsWidget": {
-                    "id": "AllocationLogsWidget",
-                    "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget",
+                  "UnsuccessfullAllocationsWidget": {
+                    "id": "UnsuccessfullAllocationsWidget",
+                    "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget",
                     "children": {
                       "Function": {
                         "id": "Function",
-                        "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function",
+                        "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function",
                         "children": {
                           "ServiceRole": {
                             "id": "ServiceRole",
-                            "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole",
+                            "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole",
                             "children": {
                               "ImportServiceRole": {
                                 "id": "ImportServiceRole",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole/ImportServiceRole",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.Resource",
                                   "version": "2.173.1"
@@ -4708,7 +4690,7 @@
                               },
                               "Resource": {
                                 "id": "Resource",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole/Resource",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                                   "aws:cdk:cloudformation:props": {
@@ -4747,11 +4729,430 @@
                               },
                               "DefaultPolicy": {
                                 "id": "DefaultPolicy",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole/DefaultPolicy",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole/DefaultPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "attributes": {
+                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                      "aws:cdk:cloudformation:props": {
+                                        "policyDocument": {
+                                          "Statement": [
+                                            {
+                                              "Action": [
+                                                "dynamodb:BatchGetItem",
+                                                "dynamodb:ConditionCheckItem",
+                                                "dynamodb:DescribeTable",
+                                                "dynamodb:GetItem",
+                                                "dynamodb:GetRecords",
+                                                "dynamodb:GetShardIterator",
+                                                "dynamodb:Query",
+                                                "dynamodb:Scan"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereAllocationsTable4ECEFD7B",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Ref": "AWS::NoValue"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Action": [
+                                                "logs:GetQueryResults",
+                                                "logs:StartQuery"
+                                              ],
+                                              "Effect": "Allow",
+                                              "Resource": [
+                                                {
+                                                  "Fn::GetAtt": [
+                                                    "AtmosphereCleanupLogGroup72856C89",
+                                                    "Arn"
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":logs:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":log-group:",
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "AtmosphereAllocateFunctionLogRetentionDBC66CD2",
+                                                          "LogGroupName"
+                                                        ]
+                                                      },
+                                                      ":*"
+                                                    ]
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":logs:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":log-group:",
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "AtmosphereDeallocateFunctionLogRetentionD4621400",
+                                                          "LogGroupName"
+                                                        ]
+                                                      },
+                                                      ":*"
+                                                    ]
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":logs:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":log-group:",
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "AtmosphereSchedulerAllocationTimeoutLogRetentionB5CC2CE9",
+                                                          "LogGroupName"
+                                                        ]
+                                                      },
+                                                      ":*"
+                                                    ]
+                                                  ]
+                                                },
+                                                {
+                                                  "Fn::Join": [
+                                                    "",
+                                                    [
+                                                      "arn:",
+                                                      {
+                                                        "Ref": "AWS::Partition"
+                                                      },
+                                                      ":logs:",
+                                                      {
+                                                        "Ref": "AWS::Region"
+                                                      },
+                                                      ":",
+                                                      {
+                                                        "Ref": "AWS::AccountId"
+                                                      },
+                                                      ":log-group:",
+                                                      {
+                                                        "Fn::GetAtt": [
+                                                          "AtmosphereSchedulerCleanupTimeoutLogRetention319A1027",
+                                                          "LogGroupName"
+                                                        ]
+                                                      },
+                                                      ":*"
+                                                    ]
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ],
+                                          "Version": "2012-10-17"
+                                        },
+                                        "policyName": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRoleDefaultPolicyAB71BBE2",
+                                        "roles": [
+                                          {
+                                            "Ref": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A"
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    "constructInfo": {
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                      "version": "2.173.1"
+                                    }
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Code": {
+                            "id": "Code",
+                            "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/Code",
+                            "children": {
+                              "Stage": {
+                                "id": "Stage",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/Code/Stage",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.AssetStaging",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "AssetBucket": {
+                                "id": "AssetBucket",
+                                "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/Code/AssetBucket",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                                  "version": "2.173.1"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                              "version": "2.173.1"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                              "aws:cdk:cloudformation:props": {
+                                "code": {
+                                  "s3Bucket": {
+                                    "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                  },
+                                  "s3Key": "5b46f3a1e61d257209b4b5a66a63b1d176bad62de3f0fd5b97c37bdb406e37e1.zip"
+                                },
+                                "description": "src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts",
+                                "environment": {
+                                  "variables": {
+                                    "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                    "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
+                                      "Ref": "AtmosphereAllocationsTable4ECEFD7B"
+                                    },
+                                    "CDK_ATMOSPHERE_ALLOCATE_LOG_GROUP_NAME": {
+                                      "Fn::GetAtt": [
+                                        "AtmosphereAllocateFunctionLogRetentionDBC66CD2",
+                                        "LogGroupName"
+                                      ]
+                                    },
+                                    "CDK_ATMOSPHERE_DEALLOCATE_LOG_GROUP_NAME": {
+                                      "Fn::GetAtt": [
+                                        "AtmosphereDeallocateFunctionLogRetentionD4621400",
+                                        "LogGroupName"
+                                      ]
+                                    },
+                                    "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_LOG_GROUP_NAME": {
+                                      "Fn::GetAtt": [
+                                        "AtmosphereSchedulerAllocationTimeoutLogRetentionB5CC2CE9",
+                                        "LogGroupName"
+                                      ]
+                                    },
+                                    "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_LOG_GROUP_NAME": {
+                                      "Fn::GetAtt": [
+                                        "AtmosphereSchedulerCleanupTimeoutLogRetention319A1027",
+                                        "LogGroupName"
+                                      ]
+                                    },
+                                    "CDK_ATMOSPHERE_CLEANUP_LOG_GROUP_NAME": {
+                                      "Ref": "AtmosphereCleanupLogGroup72856C89"
+                                    }
+                                  }
+                                },
+                                "handler": "index.handler",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A",
+                                    "Arn"
+                                  ]
+                                },
+                                "runtime": "nodejs18.x",
+                                "timeout": 300
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                              "version": "2.173.1"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.0.5"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
+              },
+              "GlobalDashboard": {
+                "id": "GlobalDashboard",
+                "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/Resource",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/Resource/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                          "aws:cdk:cloudformation:props": {
+                            "dashboardBody": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "{\"widgets\":[{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Scheduler Dead Letter Queue\",\"region\":\"",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  "\",\"metrics\":[[{\"label\":\"size\",\"color\":\"#0073BB\",\"expression\":\"mVisible + mHidden\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "AtmosphereSchedulerDLQCF6976A3",
+                                      "QueueName"
+                                    ]
+                                  },
+                                  "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mVisible\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "AtmosphereSchedulerDLQCF6976A3",
+                                      "QueueName"
+                                    ]
+                                  },
+                                  "\",{\"stat\":\"Maximum\",\"visible\":false,\"id\":\"mHidden\"}]],\"yAxis\":{\"left\":{\"min\":0,\"showUnits\":false}}}},{\"type\":\"custom\",\"width\":24,\"height\":18,\"x\":0,\"y\":6,\"properties\":{\"endpoint\":\"",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionB5F78590",
+                                      "Arn"
+                                    ]
+                                  },
+                                  "\",\"params\":{\"serviceRegion\":\"",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  "\"},\"title\":\"Allocation Logs\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
+                                ]
+                              ]
+                            },
+                            "dashboardName": "atmosphere-integ-dev-global"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_cloudwatch.CfnDashboard",
+                          "version": "2.173.1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cloudwatch.Dashboard",
+                      "version": "2.173.1"
+                    }
+                  },
+                  "AllocationLogsWidget": {
+                    "id": "AllocationLogsWidget",
+                    "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget",
+                    "children": {
+                      "Function": {
+                        "id": "Function",
+                        "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function",
+                        "children": {
+                          "ServiceRole": {
+                            "id": "ServiceRole",
+                            "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole",
+                            "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                                  "aws:cdk:cloudformation:props": {
+                                    "assumeRolePolicyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "sts:AssumeRole",
+                                          "Effect": "Allow",
+                                          "Principal": {
+                                            "Service": "lambda.amazonaws.com"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "managedPolicyArns": [
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                                  "version": "2.173.1"
+                                }
+                              },
+                              "DefaultPolicy": {
+                                "id": "DefaultPolicy",
+                                "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole/DefaultPolicy",
+                                "children": {
+                                  "Resource": {
+                                    "id": "Resource",
+                                    "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole/DefaultPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                       "aws:cdk:cloudformation:props": {
@@ -4883,10 +5284,10 @@
                                           ],
                                           "Version": "2012-10-17"
                                         },
-                                        "policyName": "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy37EF64E4",
+                                        "policyName": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy90DCFFC2",
                                         "roles": [
                                           {
-                                            "Ref": "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771"
+                                            "Ref": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1"
                                           }
                                         ]
                                       }
@@ -4910,11 +5311,11 @@
                           },
                           "Code": {
                             "id": "Code",
-                            "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/Code",
+                            "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/Code",
                             "children": {
                               "Stage": {
                                 "id": "Stage",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/Code/Stage",
+                                "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/Code/Stage",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.AssetStaging",
                                   "version": "2.173.1"
@@ -4922,7 +5323,7 @@
                               },
                               "AssetBucket": {
                                 "id": "AssetBucket",
-                                "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/Code/AssetBucket",
+                                "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/Code/AssetBucket",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                                   "version": "2.173.1"
@@ -4936,7 +5337,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                               "aws:cdk:cloudformation:props": {
@@ -4944,9 +5345,9 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "0d2bb262c12ba33b59f269e5ca3751221089531a5009c2c1311c45047f83a1d9.zip"
+                                  "s3Key": "1fe55178c14df623b236282013f5809e25fda425f02ff346498029dbf7a9d239.zip"
                                 },
-                                "description": "src/allocation-logs.widget.lambda.ts",
+                                "description": "src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts",
                                 "environment": {
                                   "variables": {
                                     "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -4982,7 +5383,7 @@
                                 "handler": "index.handler",
                                 "role": {
                                   "Fn::GetAtt": [
-                                    "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771",
+                                    "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1",
                                     "Arn"
                                   ]
                                 },
@@ -5794,7 +6195,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "6d3d799e881c3e610f7451f73165508ec2c79164e56d71a527ba34c7dd6362b8.zip"
+                      "s3Key": "00048e4589bbfd666c9ff7d4d911f3e2972e091b04f71689b9720ddc343321c3.zip"
                     },
                     "description": "test/integ/dev/assert.lambda.ts",
                     "environment": {

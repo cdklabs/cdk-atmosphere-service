@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudWatchLogs, ResultField } from '@aws-sdk/client-cloudwatch-logs';
-import { RuntimeClients } from './clients';
-import * as envars from './envars';
-import { ActiveEnvironment } from './storage/environments.client';
+import { RuntimeClients } from '../../../clients';
+import * as envars from '../../../envars';
+import { ActiveEnvironment } from '../../../storage/environments.client';
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -133,7 +133,7 @@ function buildCleanAction(allocationId: string, env: ActiveEnvironment, context:
 }
 
 function buildViewLogsAction(allocationId: string, context: any, serviceRegion: string) {
-  return `<a class="btn btn-primary" style="submit">Logs</a>
+  return `<a class="btn" style="submit">Logs</a>
 <cwdb-action 
   action="call" 
   display="popup" 

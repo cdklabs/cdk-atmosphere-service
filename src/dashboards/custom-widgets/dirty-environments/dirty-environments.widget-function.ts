@@ -10,16 +10,16 @@ export interface DirtyEnvironmentsWidgetFunctionProps extends lambda.FunctionOpt
 }
 
 /**
- * An AWS Lambda function which executes src/dirty-environments.widget.
+ * An AWS Lambda function which executes src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.
  */
 export class DirtyEnvironmentsWidgetFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props?: DirtyEnvironmentsWidgetFunctionProps) {
     super(scope, id, {
-      description: 'src/dirty-environments.widget.lambda.ts',
+      description: 'src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts',
       ...props,
       runtime: new lambda.Runtime('nodejs18.x', lambda.RuntimeFamily.NODEJS),
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../assets/dirty-environments.widget.lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../../../assets/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda')),
     });
     this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
   }

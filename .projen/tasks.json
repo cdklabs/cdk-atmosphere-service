@@ -51,19 +51,22 @@
           "spawn": "bundle:allocate/allocate.lambda"
         },
         {
-          "spawn": "bundle:allocation-logs.widget.lambda"
-        },
-        {
           "spawn": "bundle:allocation-timeout/allocation-timeout.lambda"
         },
         {
           "spawn": "bundle:cleanup-timeout/cleanup-timeout.lambda"
         },
         {
-          "spawn": "bundle:deallocate/deallocate.lambda"
+          "spawn": "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda"
         },
         {
-          "spawn": "bundle:dirty-environments.widget.lambda"
+          "spawn": "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda"
+        },
+        {
+          "spawn": "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda"
+        },
+        {
+          "spawn": "bundle:deallocate/deallocate.lambda"
         },
         {
           "spawn": "bundle:storage/allocations.monitor.lambda"
@@ -112,24 +115,6 @@
         }
       ]
     },
-    "bundle:allocation-logs.widget.lambda": {
-      "name": "bundle:allocation-logs.widget.lambda",
-      "description": "Create a JavaScript bundle from src/allocation-logs.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:allocation-logs.widget.lambda:watch": {
-      "name": "bundle:allocation-logs.widget.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/allocation-logs.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
     "bundle:allocation-timeout/allocation-timeout.lambda": {
       "name": "bundle:allocation-timeout/allocation-timeout.lambda",
       "description": "Create a JavaScript bundle from src/allocation-timeout/allocation-timeout.lambda.ts",
@@ -174,6 +159,60 @@
         }
       ]
     },
+    "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda": {
+      "name": "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda",
+      "description": "Create a JavaScript bundle from src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda:watch": {
+      "name": "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda": {
+      "name": "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda",
+      "description": "Create a JavaScript bundle from src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda:watch": {
+      "name": "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda": {
+      "name": "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda",
+      "description": "Create a JavaScript bundle from src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda:watch": {
+      "name": "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
     "bundle:deallocate/deallocate.lambda": {
       "name": "bundle:deallocate/deallocate.lambda",
       "description": "Create a JavaScript bundle from src/deallocate/deallocate.lambda.ts",
@@ -189,24 +228,6 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
-    "bundle:dirty-environments.widget.lambda": {
-      "name": "bundle:dirty-environments.widget.lambda",
-      "description": "Create a JavaScript bundle from src/dirty-environments.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:dirty-environments.widget.lambda:watch": {
-      "name": "bundle:dirty-environments.widget.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/dirty-environments.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },

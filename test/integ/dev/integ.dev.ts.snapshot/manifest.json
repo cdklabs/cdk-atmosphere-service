@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d5b826b408e9a2a75feb76b91c1a6dc0d26b8e93a22416b39244e3d91f5a90e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a4158e931b4d38fe763fca350dcc3908902a585938c73db9fe31594887530f7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -259,10 +259,7 @@
         "/atmosphere-integ-dev/Atmosphere/Cleanup/TaskDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereCleanupTaskDefinition211D8C31",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AtmosphereCleanupTaskDefinition211D8C31"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Cleanup/TaskDefinition/ExecutionRole/Resource": [
@@ -535,46 +532,70 @@
             "data": "AtmosphereEndpointApiallocationsidDELETE40B2AB4B"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/Dashboard/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/Resource/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardAF315303"
+            "data": "AtmospherePoolsDashboard72A12357"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRole65918837"
+            "data": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRole655DBF08"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicyCBF72617"
+            "data": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionServiceRoleDefaultPolicy4940D191"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/DirtyEnvironmentsWidget/Function/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/DirtyEnvironmentsWidget/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardDirtyEnvironmentsWidgetFunctionBE87C3E0"
+            "data": "AtmospherePoolsDashboardDirtyEnvironmentsWidgetFunctionB246C8D2"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRole81181771"
+            "data": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRole0960367A"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/ServiceRole/DefaultPolicy/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy37EF64E4"
+            "data": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunctionServiceRoleDefaultPolicyAB71BBE2"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Dashboard/AllocationLogsWidget/Function/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/PoolsDashboard/UnsuccessfullAllocationsWidget/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereDashboardAllocationLogsWidgetFunction6FEC6E9E"
+            "data": "AtmospherePoolsDashboardUnsuccessfullAllocationsWidgetFunction03B55D29"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/GlobalDashboard/Resource/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereGlobalDashboard45B3E0A9"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleBB3BA3E1"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionServiceRoleDefaultPolicy90DCFFC2"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/GlobalDashboard/AllocationLogsWidget/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereGlobalDashboardAllocationLogsWidgetFunctionB5F78590"
           }
         ],
         "/atmosphere-integ-dev/LatestNodeRuntimeMap": [
@@ -823,7 +844,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a05214357732c57563a68d1eaec3d489e433c8f5edaa41ec51624b57ef32425.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/acd74a0f12ef184bf59d7115faf5d04063ac1624436b62e5b8b7eba64444e6d2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

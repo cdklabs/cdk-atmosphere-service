@@ -1,38 +1,43 @@
 import { Duration, Stack } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
-import { Allocate } from './allocate';
-import { AllocationLogsWidgetFunction } from './allocation-logs.widget-function';
-import { Cleanup } from './cleanup';
-import { Deallocate } from './deallocate';
-import * as envars from './envars';
-import { Scheduler } from './scheduler';
+import { UnsuccessfullAllocationsWidgetFunction } from './unsuccessfull-allocations.widget-function';
+import { Allocate } from '../../../allocate';
+import { Cleanup } from '../../../cleanup';
+import { Deallocate } from '../../../deallocate';
+import * as envars from '../../../envars';
+import { Scheduler } from '../../../scheduler';
+import { Allocations } from '../../../storage';
 
-export interface AllocationLogsWidgetProps {
+export interface UnsuccessfullAllocationsWidgetProps {
+  readonly allocations: Allocations;
   readonly allocate: Allocate;
   readonly deallocate: Deallocate;
   readonly cleanup: Cleanup;
   readonly scheduler: Scheduler;
+  readonly pool: string;
   readonly width: number;
   readonly height: number;
 }
 
-export class AllocationLogsWidget extends Construct implements cloudwatch.IWidget {
+export class UnsuccessfullAllocationsWidget extends Construct implements cloudwatch.IWidget {
 
   private readonly _widget: cloudwatch.CustomWidget;
 
-  public constructor(scope: Construct, id: string, props: AllocationLogsWidgetProps) {
+  public constructor(scope: Construct, id: string, props: UnsuccessfullAllocationsWidgetProps) {
     super(scope, id);
 
-    const func = new AllocationLogsWidgetFunction(this, 'Function', {
+    const func = new UnsuccessfullAllocationsWidgetFunction(this, 'Function', {
       timeout: Duration.minutes(5),
     });
 
+    props.allocations.grantRead(func);
     props.allocate.grantQueryLogs(func);
     props.deallocate.grantQueryLogs(func);
     props.scheduler.grantQueryLogs(func);
     props.cleanup.grantQueryLogs(func);
 
+    func.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
     func.addEnvironment(envars.ALLOCATE_LOG_GROUP_NAME_ENV, props.allocate.function.logGroup.logGroupName);
     func.addEnvironment(envars.DEALLOCATE_LOG_GROUP_NAME_ENV, props.deallocate.function.logGroup.logGroupName);
     func.addEnvironment(envars.ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV, props.scheduler.allocationTimeoutFunction.logGroup.logGroupName);
@@ -43,8 +48,9 @@ export class AllocationLogsWidget extends Construct implements cloudwatch.IWidge
       width: props.width,
       height: props.height,
       functionArn: func.functionArn,
-      title: 'Allocation Logs (All Pools)',
+      title: 'Unsuccessfull Allocations',
       params: {
+        pool: props.pool,
         serviceRegion: Stack.of(this).region,
       },
       updateOnRefresh: true,

@@ -1,24 +1,25 @@
 import { createHash } from 'crypto';
+import { Stack } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
-import { Allocate } from './allocate';
-import { AllocationLogsWidget } from './allocation-logs.widget';
-import { Cleanup } from './cleanup';
-import { Configuration } from './config';
-import { Deallocate } from './deallocate';
-import { DirtyEnvironmentsWidget } from './dirty-environments.widget';
-import { UNKNOWN_POOL } from './metrics';
-import { Scheduler } from './scheduler';
-import { Allocations, Environments } from './storage';
+import { Allocate } from '../allocate';
+import { Cleanup } from '../cleanup';
+import { Configuration } from '../config';
+import { Deallocate } from '../deallocate';
+import { UNKNOWN_POOL } from '../metrics';
+import { Scheduler } from '../scheduler';
+import { Allocations, Environments } from '../storage';
+import { DirtyEnvironmentsWidget } from './custom-widgets/dirty-environments/dirty-environments.widget';
+import { UnsuccessfullAllocationsWidget } from './custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget';
 
 const RED = '#FF0000';
 const GREEN = '#4CAF50';
 const ORANGE = '#FFA500';
 const YELLOW = '#FFD700';
 const BROWN = '#5D4037';
-const BLUE= '#0073BB';
+const BLUE = '#0073BB';
 
-export interface DashboardProps {
+export interface PoolsDashboardProps {
   readonly config: Configuration;
   readonly allocate: Allocate;
   readonly deallocate: Deallocate;
@@ -26,14 +27,15 @@ export interface DashboardProps {
   readonly environments: Environments;
   readonly allocations: Allocations;
   readonly scheduler: Scheduler;
-  readonly name: string;
 }
 
-export class Dashboard extends Construct {
-  constructor(scope: Construct, id: string, props: DashboardProps) {
+export class PoolsDashboard extends Construct {
+  constructor(scope: Construct, id: string, props: PoolsDashboardProps) {
     super(scope, id);
 
-    const dashboard = new cloudwatch.Dashboard(this, 'Dashboard', { dashboardName: props.name });
+    const dashboard = new cloudwatch.Dashboard(this, 'Resource', {
+      dashboardName: `${Stack.of(this).stackName}-pools`,
+    });
 
     const pools = Array.from(new Set(props.config.data.environments.map(e => e.pool)));
 
@@ -166,23 +168,18 @@ export class Dashboard extends Construct {
         configuration: props.config,
         cleanup: props.cleanup,
         pool: '${pool}',
-        width: 12,
+        width: 24,
         height: 6,
       }),
-      new AllocationLogsWidget(this, 'AllocationLogsWidget', {
+      new UnsuccessfullAllocationsWidget(this, 'UnsuccessfullAllocationsWidget', {
+        allocations: props.allocations,
         allocate: props.allocate,
         deallocate: props.deallocate,
         scheduler: props.scheduler,
         cleanup: props.cleanup,
+        pool: '${pool}',
         width: 24,
-        height: 18,
-      }),
-      new cloudwatch.GraphWidget({
-        title: 'Scheduler Dead Letter Queue (All Pools)',
-        left: [props.scheduler.metricDlqSize().with({ color: BLUE, label: 'size' })],
-        leftYAxis: { min: 0, showUnits: false },
         height: 6,
-        width: 12,
       }),
     );
 

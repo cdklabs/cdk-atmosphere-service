@@ -71115,7 +71115,13 @@ var AllocationsClient = class {
       const response = await this.ddbClient.scan({
         TableName: this.tableName,
         ExclusiveStartKey: lastEvaluatedKey,
-        FilterExpression: `start > ${from.toISOString()}`
+        FilterExpression: "#start > :from",
+        ExpressionAttributeNames: {
+          "#start": "start"
+        },
+        ExpressionAttributeValues: {
+          ":from": { S: from.toISOString() }
+        }
       });
       for (const item of response.Items ?? []) {
         items.push({

@@ -4,7 +4,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { Construct } from 'constructs';
 import { Allocations } from '.';
 import * as envars from '../envars';
-import { EnvironmentsMonitorFunction } from './environments.monitor-function';
+import { AllocationsMonitorFunction } from './allocations.monitor-function';
 
 export interface AllocationsMonitorProps {
   readonly allocations: Allocations;
@@ -17,7 +17,7 @@ export class AllocationsMonitor extends Construct {
   constructor(scope: Construct, id: string, props: AllocationsMonitorProps) {
     super(scope, id);
 
-    const func = new EnvironmentsMonitorFunction(this, 'Function', {
+    const func = new AllocationsMonitorFunction(this, 'Function', {
       reservedConcurrentExecutions: 1,
       timeout: Duration.minutes(5),
       description: 'Emits metrics about allocations status for every pool',

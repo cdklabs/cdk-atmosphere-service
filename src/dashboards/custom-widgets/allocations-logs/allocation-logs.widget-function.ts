@@ -10,16 +10,16 @@ export interface AllocationLogsWidgetFunctionProps extends lambda.FunctionOption
 }
 
 /**
- * An AWS Lambda function which executes src/allocation-logs.widget.
+ * An AWS Lambda function which executes src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.
  */
 export class AllocationLogsWidgetFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props?: AllocationLogsWidgetFunctionProps) {
     super(scope, id, {
-      description: 'src/allocation-logs.widget.lambda.ts',
+      description: 'src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts',
       ...props,
       runtime: new lambda.Runtime('nodejs18.x', lambda.RuntimeFamily.NODEJS),
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '../assets/allocation-logs.widget.lambda')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '../../../../assets/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda')),
     });
     this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
   }

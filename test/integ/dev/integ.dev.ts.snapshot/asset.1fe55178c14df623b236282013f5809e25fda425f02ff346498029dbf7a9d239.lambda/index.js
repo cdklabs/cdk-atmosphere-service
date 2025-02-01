@@ -17,7 +17,7 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/allocation-logs.widget.lambda.ts
+// src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts
 var allocation_logs_widget_lambda_exports = {};
 __export(allocation_logs_widget_lambda_exports, {
   handler: () => handler
@@ -65,9 +65,11 @@ var Envars = class _Envars {
   }
 };
 
-// src/allocation-logs.widget.lambda.ts
+// src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts
 var CHECK_QUERY_STATUS_DELAY_MS = 250;
 async function handler(event, context) {
+  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
   const serviceRegion = event.serviceRegion;
   const widgetContext = event.widgetContext;
   const form = widgetContext.forms.all;
@@ -81,7 +83,7 @@ async function handler(event, context) {
   <form>
   <table>
       <tr>
-          <td>ID</td><td><input name="allocationId" value="${allocationId ?? ""}" size="100"></td>
+          <td>Id</td><td><input name="allocationId" value="${allocationId ?? ""}" size="100"></td>
       </tr>
   </table>
   </form>

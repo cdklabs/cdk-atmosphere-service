@@ -1,11 +1,11 @@
 import { Duration, Stack } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
-import { Cleanup } from './cleanup';
-import { Configuration } from './config';
 import { DirtyEnvironmentsWidgetFunction } from './dirty-environments.widget-function';
-import * as envars from './envars';
-import { Allocations, Environments } from './storage';
+import { Cleanup } from '../../../cleanup';
+import { Configuration } from '../../../config';
+import * as envars from '../../../envars';
+import { Allocations, Environments } from '../../../storage';
 
 export interface DirtyEnvironmentsWidgetProps {
   readonly environments: Environments;

@@ -10,6 +10,10 @@ export async function handler(_: any) {
     const response = await session.runtime.allocate({ pool: 'release', requester: 'test' } );
     assert.strictEqual(response.status, 200);
 
+    const from = new Date();
+    from.setDate(from.getDate() -7);
+    await clients.allocations.scan(from);
+
     const body = JSON.parse(response.body!);
 
     const environment = await clients.environments.get(body.environment.account, body.environment.region);
