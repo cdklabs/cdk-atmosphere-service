@@ -1,5 +1,6 @@
 import { Duration } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { DeallocateFunction } from './deallocate-function';
@@ -102,6 +103,16 @@ export class Deallocate extends Construct {
       });
     }
 
+  }
+
+  public grantQueryLogs(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:StartQuery',
+        'logs:GetQueryResults',
+      ],
+      resources: [this.function.logGroup.logGroupArn],
+    }));
   }
 
   public metricOutcome(pool: string, outcome: string) {

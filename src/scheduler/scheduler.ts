@@ -90,13 +90,7 @@ export class Scheduler extends Construct {
 
     this.dlq.grantSendMessages(this.role);
 
-    new cloudwatch.MathExpression({
-      expression: 'mVisible + mHidden',
-      usingMetrics: {
-        mVisible: this.dlq.metricApproximateNumberOfMessagesVisible({ period: Duration.minutes(1) }),
-        mHidden: this.dlq.metricApproximateNumberOfMessagesNotVisible({ period: Duration.minutes(1) }),
-      },
-    }).createAlarm(this, 'DLQ/NotEmpty', {
+    this.metricDlqSize().createAlarm(this, 'DLQ/NotEmpty', {
       alarmName: `${this.node.path}/DLQ/NotEmpty`,
       threshold: 1,
       evaluationPeriods: 1,
@@ -104,8 +98,29 @@ export class Scheduler extends Construct {
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       alarmDescription: runBookAnchor('TODO'),
     });
+  }
 
+  public grantQueryLogs(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:StartQuery',
+        'logs:GetQueryResults',
+      ],
+      resources: [
+        this.allocationTimeoutFunction.logGroup.logGroupArn,
+        this.cleanupTimeoutFunction.logGroup.logGroupArn,
+      ],
+    }));
+  }
 
+  public metricDlqSize() {
+    return new cloudwatch.MathExpression({
+      expression: 'mVisible + mHidden',
+      usingMetrics: {
+        mVisible: this.dlq.metricApproximateNumberOfMessagesVisible({ period: Duration.minutes(1) }),
+        mHidden: this.dlq.metricApproximateNumberOfMessagesNotVisible({ period: Duration.minutes(1) }),
+      },
+    });
   }
 
   public grantSchedule(grantee: iam.IGrantable) {
@@ -114,5 +129,6 @@ export class Scheduler extends Construct {
       resources: ['*'],
     }));
   }
+
 
 }

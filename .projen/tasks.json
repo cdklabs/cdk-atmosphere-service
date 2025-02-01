@@ -51,6 +51,9 @@
           "spawn": "bundle:allocate/allocate.lambda"
         },
         {
+          "spawn": "bundle:allocation-logs.widget.lambda"
+        },
+        {
           "spawn": "bundle:allocation-timeout/allocation-timeout.lambda"
         },
         {
@@ -103,6 +106,24 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/allocate/allocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocate/allocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:allocation-logs.widget.lambda": {
+      "name": "bundle:allocation-logs.widget.lambda",
+      "description": "Create a JavaScript bundle from src/allocation-logs.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:allocation-logs.widget.lambda:watch": {
+      "name": "bundle:allocation-logs.widget.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/allocation-logs.widget.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
@@ -1061,13 +1082,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-dynamodb,@aws-sdk/client-ecr,@aws-sdk/client-ecs,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@aws-sdk/credential-providers,@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,@types/unzipper,aws-cdk,aws-embedded-metrics,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,unzipper"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-cloudwatch-logs,@aws-sdk/client-dynamodb,@aws-sdk/client-ecr,@aws-sdk/client-ecs,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@aws-sdk/credential-providers,@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,@types/unzipper,aws-cdk,aws-embedded-metrics,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,unzipper"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecr @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-embedded-metrics aws-sdk-client-mock aws-sdk-client-mock-jest commit-and-tag-version esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-cloudwatch-logs @aws-sdk/client-dynamodb @aws-sdk/client-ecr @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-embedded-metrics aws-sdk-client-mock aws-sdk-client-mock-jest commit-and-tag-version esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"

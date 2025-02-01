@@ -38,6 +38,7 @@ export interface CleanupProps {
 export class Cleanup extends Construct {
 
   public readonly cluster: ecs.Cluster;
+  public readonly logGroup: logs.LogGroup;
   public readonly task: ecs.FargateTaskDefinition;
   public readonly subnetId: string;
   public readonly securityGroupId: string;
@@ -53,7 +54,7 @@ export class Cleanup extends Construct {
       }],
     });
 
-    const logGroup = new logs.LogGroup(this, 'LogGroup');
+    this.logGroup = new logs.LogGroup(this, 'LogGroup');
     const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc, allowAllOutbound: true });
 
     this.cluster = new ecs.Cluster(this, 'Cluster', {
@@ -76,7 +77,7 @@ export class Cleanup extends Construct {
     this.task.addContainer(this.containerName, {
       image: ecs.ContainerImage.fromAsset(path.join(__dirname, 'image'), { platform: Platform.LINUX_ARM64 }),
       logging: ecs.LogDriver.awsLogs({
-        logGroup,
+        logGroup: this.logGroup,
         streamPrefix: 'cleanup',
       }),
       environment: {
@@ -123,6 +124,16 @@ export class Cleanup extends Construct {
 
   public grantRun(grantee: iam.IGrantable) {
     this.task.grantRun(grantee);
+  }
+
+  public grantQueryLogs(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:StartQuery',
+        'logs:GetQueryResults',
+      ],
+      resources: [this.logGroup.logGroupArn],
+    }));
   }
 
   public metricExitCode(pool: string, exitCode: number) {

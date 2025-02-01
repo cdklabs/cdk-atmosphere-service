@@ -102,6 +102,16 @@ export class Allocate extends Construct {
 
   }
 
+  public grantQueryLogs(grantee: iam.IGrantable) {
+    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:StartQuery',
+        'logs:GetQueryResults',
+      ],
+      resources: [this.function.logGroup.logGroupArn],
+    }));
+  }
+
   public metricStatusCode(pool: string, statusCode: number) {
     return new cloudwatch.Metric({
       metricName: METRIC_NAME,

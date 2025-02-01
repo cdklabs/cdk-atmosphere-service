@@ -2646,6 +2646,7 @@ var ALLOCATION_RESOURCE_ID_ENV = `${ENV_PREFIX}ALLOCATION_RESOURCE_ID`;
 var DEALLOCATE_FUNCTION_NAME_ENV = `${ENV_PREFIX}DEALLOCATE_FUNCTION_NAME`;
 var CLEANUP_CLUSTER_ARN_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_ARN`;
 var CLEANUP_CLUSTER_NAME_ENV = `${ENV_PREFIX}CLEANUP_CLUSTER_NAME`;
+var CLEANUP_LOG_GROUP_NAME_ENV = `${ENV_PREFIX}CLEANUP_LOG_GROUP_NAME`;
 var CLEANUP_TASK_DEFINITION_ARN_ENV = `${ENV_PREFIX}CLEANUP_TASK_DEFINITION_ARN`;
 var CLEANUP_TASK_SUBNET_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SUBNET_ID`;
 var CLEANUP_TASK_SECURITY_GROUP_ID_ENV = `${ENV_PREFIX}CLEANUP_TASK_SECURITY_GROUP_ID`;
@@ -3254,7 +3255,8 @@ var RuntimeClients = class _RuntimeClients {
 // src/logging.ts
 var AllocationLogger = class {
   constructor(props) {
-    this.prefix = `[${props.component}] [aloc:${props.id}]`;
+    this.component = props.component;
+    this.allocationId = props.id;
   }
   info(message) {
     console.log(`${this.prefix} ${message}`);
@@ -3263,7 +3265,17 @@ var AllocationLogger = class {
     console.error(`${this.prefix} ${message}`, error);
   }
   setPool(pool) {
-    this.prefix = `${this.prefix} [pool:${pool}]`;
+    this.pool = pool;
+  }
+  get prefix() {
+    const parts = [
+      `[${this.component}]`
+    ];
+    if (this.pool) {
+      parts.push(`[pool:${this.pool}]`);
+    }
+    parts.push(`[aloc:${this.allocationId}]`);
+    return parts.join(" ");
   }
 };
 

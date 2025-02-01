@@ -2,11 +2,13 @@ import { createHash } from 'crypto';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { Construct } from 'constructs';
 import { Allocate } from './allocate';
+import { AllocationLogsWidget } from './allocation-logs.widget';
 import { Cleanup } from './cleanup';
 import { Configuration } from './config';
 import { Deallocate } from './deallocate';
 import { DirtyEnvironmentsWidget } from './dirty-environments.widget';
 import { UNKNOWN_POOL } from './metrics';
+import { Scheduler } from './scheduler';
 import { Allocations, Environments } from './storage';
 
 const RED = '#FF0000';
@@ -14,6 +16,7 @@ const GREEN = '#4CAF50';
 const ORANGE = '#FFA500';
 const YELLOW = '#FFD700';
 const BROWN = '#5D4037';
+const BLUE= '#0073BB';
 
 export interface DashboardProps {
   readonly config: Configuration;
@@ -22,6 +25,7 @@ export interface DashboardProps {
   readonly cleanup: Cleanup;
   readonly environments: Environments;
   readonly allocations: Allocations;
+  readonly scheduler: Scheduler;
   readonly name: string;
 }
 
@@ -117,6 +121,13 @@ export class Dashboard extends Construct {
         height: 6,
         width: 12,
       }),
+      new cloudwatch.GraphWidget({
+        title: 'Scheduler Dead Letter Queue (All Pools)',
+        left: [props.scheduler.metricDlqSize().with({ color: BLUE, label: 'size' })],
+        leftYAxis: { min: 0, showUnits: false },
+        height: 6,
+        width: 12,
+      }),
       new DirtyEnvironmentsWidget(this, 'DirtyEnvironmentsWidget', {
         environments: props.environments,
         allocations: props.allocations,
@@ -125,6 +136,14 @@ export class Dashboard extends Construct {
         pool: '${pool}',
         width: 12,
         height: 6,
+      }),
+      new AllocationLogsWidget(this, 'AllocationLogsWidget', {
+        allocate: props.allocate,
+        deallocate: props.deallocate,
+        scheduler: props.scheduler,
+        cleanup: props.cleanup,
+        width: 24,
+        height: 18,
       }),
     );
 

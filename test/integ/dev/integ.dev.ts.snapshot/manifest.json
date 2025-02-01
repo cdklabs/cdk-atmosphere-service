@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/283c7acb20deb4ae766ddd33dc22d06214e6650719d25dd65f5c7a4081d0f447.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d2138e7c2d3c659d725acccd1d0f78fdc4001c78e62faa9d0aa96ce661d45692.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -650,6 +650,12 @@
             "data": "ExportsOutputRefAtmosphereCleanupCluster30204BBC1678E2A0"
           }
         ],
+        "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereCleanupLogGroup72856C89\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereCleanupLogGroup72856C894961F6AD"
+          }
+        ],
         "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereCleanupTaskDefinition211D8C31\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -700,7 +706,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc3a8cd0e8b260fd2d20ebfc4de9943923782c58bff18fb6710eae3f65474bd0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d0aa1cab1fa9c57fa7933f2d9a42ef8a329c567ada10cf567e05924aa585727.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -811,6 +817,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertCDKATMOSPHERECLEANUPCLUSTERNAME0F7BEAAF"
+          }
+        ],
+        "/atmosphere-integ-dev-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_LOG_GROUP_NAME": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHERECLEANUPLOGGROUPNAME3A0ADA6F"
           }
         ],
         "/atmosphere-integ-dev-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TASK_DEFINITION_ARN": [

@@ -13,6 +13,7 @@ const project = new CdklabsConstructLibrary({
   devDeps: [
     'cdklabs-projen-project-types',
     'aws-cdk',
+    '@aws-sdk/client-cloudwatch-logs',
     '@aws-sdk/client-s3',
     '@aws-sdk/client-dynamodb',
     '@aws-sdk/client-api-gateway',

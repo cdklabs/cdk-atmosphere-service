@@ -42,7 +42,6 @@ export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLo
 
   const log = new AllocationLogger({ id: req.allocationId, component: 'cleanup' });
 
-  log.info('Fetching allocation');
   const allocation = await fetchAllocation(req.allocationId, log);
 
   log.setPool(allocation.pool);
@@ -50,9 +49,11 @@ export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLo
 
   const env = `aws://${allocation.account}/${allocation.region}`;
 
+  log.info(`Task started. Environment: ${env}`);
+
   try {
 
-    log.info(`Fetching environment '${env}'`);
+    log.info(`Fetching environment '${env}' from database`);
     const environment = await clients.configuration.getEnvironment(allocation.account, allocation.region);
 
     const cleaner = new Cleaner(environment, log);
@@ -80,7 +81,7 @@ export async function doHandler(req: CleanupRequest, metrics: PoolAwareMetricsLo
 
     metrics.putDimensions({ [METRIC_DIMENSION_OUTCOME]: 'dirty' });
 
-    log.error(e);
+    log.error(e, `Failed cleaning environment '${env}'`);
 
     log.info(`Marking environment '${env}' as 'dirty'`);
     await clients.environments.dirty(req.allocationId, allocation.account, allocation.region);

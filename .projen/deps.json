@@ -9,6 +9,10 @@
       "type": "build"
     },
     {
+      "name": "@aws-sdk/client-cloudwatch-logs",
+      "type": "build"
+    },
+    {
       "name": "@aws-sdk/client-dynamodb",
       "type": "build"
     },

@@ -118,6 +118,10 @@ export class AtmosphereIntegTest {
     const envVariables: envars.EnvironmentVariables = {
       [envars.ENVIRONMENTS_TABLE_NAME_ENV]: service.environments.table.tableName,
       [envars.ALLOCATIONS_TABLE_NAME_ENV]: service.allocations.table.tableName,
+      [envars.ALLOCATE_LOG_GROUP_NAME_ENV]: service.allocate.function.logGroup.logGroupName,
+      [envars.DEALLOCATE_LOG_GROUP_NAME_ENV]: service.deallocate.function.logGroup.logGroupName,
+      [envars.ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV]: service.scheduler.allocationTimeoutFunction.logGroup.logGroupName,
+      [envars.CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV]: service.scheduler.cleanupTimeoutFunction.logGroup.logGroupName,
       [envars.CONFIGURATION_BUCKET_ENV]: service.config.bucket.bucketName,
       [envars.CONFIGURATION_KEY_ENV]: service.config.key,
       [envars.SCHEDULER_DLQ_ARN_ENV]: service.scheduler.dlq.queueArn,
@@ -130,6 +134,7 @@ export class AtmosphereIntegTest {
       [envars.DEALLOCATE_FUNCTION_NAME_ENV]: service.deallocate.function.functionName,
       [envars.CLEANUP_CLUSTER_ARN_ENV]: service.cleanup.cluster.clusterArn,
       [envars.CLEANUP_CLUSTER_NAME_ENV]: service.cleanup.cluster.clusterName,
+      [envars.CLEANUP_LOG_GROUP_NAME_ENV]: service.cleanup.logGroup.logGroupName,
       [envars.CLEANUP_TASK_DEFINITION_ARN_ENV]: service.cleanup.task.taskDefinitionArn,
       [envars.CLEANUP_TASK_SUBNET_ID_ENV]: service.cleanup.subnetId,
       [envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV]: service.cleanup.securityGroupId,

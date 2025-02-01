@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e112f010d862f5aaf815db69f18c2ac1c1c26fc3e7eebb720e00df86f2190ddb.zip"
+     "S3Key": "0ed6438240534beecc1cc44b1461f464947ecf20ee02e7eba0f355ffcac371d8.zip"
     },
     "Description": "test/integ/dev/assert.lambda.ts",
     "Environment": {
@@ -96,6 +96,9 @@
       },
       "CDK_ATMOSPHERE_CLEANUP_CLUSTER_NAME": {
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereCleanupCluster30204BBC1678E2A0"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_LOG_GROUP_NAME": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereCleanupLogGroup72856C894961F6AD"
       },
       "CDK_ATMOSPHERE_CLEANUP_TASK_DEFINITION_ARN": {
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereCleanupTaskDefinition211D8C31C390C734"
@@ -150,7 +153,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738341007963"
+    "salt": "1738356595262"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -338,6 +341,11 @@
   "CDK0ATMOSPHERE0CLEANUP0CLUSTER0NAME": {
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereCleanupCluster30204BBC1678E2A0"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0LOG0GROUP0NAME": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereCleanupLogGroup72856C894961F6AD"
    }
   },
   "CDK0ATMOSPHERE0CLEANUP0TASK0DEFINITION0ARN": {

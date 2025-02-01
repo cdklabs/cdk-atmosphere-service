@@ -32,6 +32,7 @@ export class DirtyEnvironmentsWidget extends Construct implements cloudwatch.IWi
     props.allocations.grantRead(func);
     props.configuration.grantRead(func);
     props.cleanup.grantRun(func);
+    props.cleanup.grantQueryLogs(func);
 
     func.addEnvironment(envars.ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
     func.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
@@ -39,6 +40,7 @@ export class DirtyEnvironmentsWidget extends Construct implements cloudwatch.IWi
     func.addEnvironment(envars.CONFIGURATION_KEY_ENV, props.configuration.key);
     func.addEnvironment(envars.CLEANUP_CLUSTER_ARN_ENV, props.cleanup.cluster.clusterArn);
     func.addEnvironment(envars.CLEANUP_CLUSTER_NAME_ENV, props.cleanup.cluster.clusterName);
+    func.addEnvironment(envars.CLEANUP_LOG_GROUP_NAME_ENV, props.cleanup.logGroup.logGroupName);
     func.addEnvironment(envars.CLEANUP_TASK_DEFINITION_ARN_ENV, props.cleanup.task.taskDefinitionArn);
     func.addEnvironment(envars.CLEANUP_TASK_SUBNET_ID_ENV, props.cleanup.subnetId);
     func.addEnvironment(envars.CLEANUP_TASK_SECURITY_GROUP_ID_ENV, props.cleanup.securityGroupId);
@@ -51,7 +53,7 @@ export class DirtyEnvironmentsWidget extends Construct implements cloudwatch.IWi
       title: 'Dirty Environments',
       params: {
         pool: props.pool,
-        region: Stack.of(this).region,
+        serviceRegion: Stack.of(this).region,
       },
       updateOnRefresh: true,
       updateOnTimeRangeChange: true,
