@@ -1064,7 +1064,11 @@
                               {
                                 "essential": true,
                                 "image": {
+<<<<<<< HEAD
                                   "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8788312dc4150c8a250ede6146a92847b68c59fc766d0a4ed068c602a9d6b0e5"
+=======
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:5096c581be5a94338982ed6720710f69e1ddc95d8b3be5768db0783cced2cae0"
+>>>>>>> main
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1307,9 +1311,15 @@
                       "version": "2.173.1"
                     }
                   },
+<<<<<<< HEAD
                   "AdminRole${Token[AWS.AccountId.2]}eu-central-1": {
                     "id": "AdminRole${Token[AWS.AccountId.2]}eu-central-1",
                     "path": "atmosphere-integ-deallocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.2]}eu-central-1",
+=======
+                  "AdminRole${Token[AWS.AccountId.4]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+                    "path": "atmosphere-integ-deallocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+>>>>>>> main
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2232,9 +2242,15 @@
                       "version": "2.173.1"
                     }
                   },
+<<<<<<< HEAD
                   "AdminRole${Token[AWS.AccountId.2]}eu-central-1": {
                     "id": "AdminRole${Token[AWS.AccountId.2]}eu-central-1",
                     "path": "atmosphere-integ-deallocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.2]}eu-central-1",
+=======
+                  "AdminRole${Token[AWS.AccountId.4]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+                    "path": "atmosphere-integ-deallocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+>>>>>>> main
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -4010,7 +4026,11 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
+<<<<<<< HEAD
                       "s3Key": "6be3aca6fb34d455842efef2bffef83d5f294a4dd834bf22ea80ffe9b18c60a1.zip"
+=======
+                      "s3Key": "9c4fe672c66b479c4f5abd4cf17445ebfa47b45b35835fd017c88d9b8de88a6d.zip"
+>>>>>>> main
                     },
                     "description": "test/integ/deallocate/assert.lambda.ts",
                     "environment": {
@@ -4243,7 +4263,7 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.176.0-alpha.0"
+                  "version": "2.177.0-alpha.0"
                 }
               },
               "Default": {
@@ -4283,7 +4303,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.176.0-alpha.0"
+              "version": "2.177.0-alpha.0"
             }
           },
           "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -4369,13 +4389,13 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "2.176.0-alpha.0"
+              "version": "2.177.0-alpha.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "2.176.0-alpha.0"
+          "version": "2.177.0-alpha.0"
         }
       },
       "Tree": {

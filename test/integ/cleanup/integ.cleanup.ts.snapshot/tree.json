@@ -1064,7 +1064,11 @@
                               {
                                 "essential": true,
                                 "image": {
+<<<<<<< HEAD
                                   "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8788312dc4150c8a250ede6146a92847b68c59fc766d0a4ed068c602a9d6b0e5"
+=======
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:5096c581be5a94338982ed6720710f69e1ddc95d8b3be5768db0783cced2cae0"
+>>>>>>> main
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -4085,7 +4089,11 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
+<<<<<<< HEAD
                       "s3Key": "f8ea68d3e287cbc8e2766facf7372794a2c47eaac472e4117cd31a9536a653e2.zip"
+=======
+                      "s3Key": "83da94d00e28d54ba3a31116302f8eaef50bfe014d20dc6eeac6fe0805e70b91.zip"
+>>>>>>> main
                     },
                     "description": "test/integ/cleanup/assert.lambda.ts",
                     "environment": {
@@ -4348,7 +4356,7 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.176.0-alpha.0"
+                  "version": "2.177.0-alpha.0"
                 }
               },
               "Default": {
@@ -4388,7 +4396,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.176.0-alpha.0"
+              "version": "2.177.0-alpha.0"
             }
           },
           "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -4474,13 +4482,13 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "2.176.0-alpha.0"
+              "version": "2.177.0-alpha.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "2.176.0-alpha.0"
+          "version": "2.177.0-alpha.0"
         }
       },
       "Tree": {

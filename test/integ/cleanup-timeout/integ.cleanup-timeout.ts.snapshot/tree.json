@@ -1064,7 +1064,11 @@
                               {
                                 "essential": true,
                                 "image": {
+<<<<<<< HEAD
                                   "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8788312dc4150c8a250ede6146a92847b68c59fc766d0a4ed068c602a9d6b0e5"
+=======
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:5096c581be5a94338982ed6720710f69e1ddc95d8b3be5768db0783cced2cae0"
+>>>>>>> main
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1307,9 +1311,15 @@
                       "version": "2.173.1"
                     }
                   },
+<<<<<<< HEAD
                   "AdminRole${Token[AWS.AccountId.2]}eu-central-1": {
                     "id": "AdminRole${Token[AWS.AccountId.2]}eu-central-1",
                     "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.2]}eu-central-1",
+=======
+                  "AdminRole${Token[AWS.AccountId.1]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+                    "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+>>>>>>> main
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -2232,9 +2242,15 @@
                       "version": "2.173.1"
                     }
                   },
+<<<<<<< HEAD
                   "AdminRole${Token[AWS.AccountId.2]}eu-central-1": {
                     "id": "AdminRole${Token[AWS.AccountId.2]}eu-central-1",
                     "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.2]}eu-central-1",
+=======
+                  "AdminRole${Token[AWS.AccountId.1]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+                    "path": "atmosphere-integ-cleanup-timeout/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.1]}eu-central-1",
+>>>>>>> main
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.173.1"
@@ -4085,7 +4101,11 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
+<<<<<<< HEAD
                       "s3Key": "5e70330d7d9a43d261abf118505da6da4ce004d6328568c3659c43aa78978fb4.zip"
+=======
+                      "s3Key": "d2b15def8baab45e30cef2d9c03cc5231b60008617ba0abe5eddfa457d4a8618.zip"
+>>>>>>> main
                     },
                     "description": "test/integ/cleanup-timeout/assert.lambda.ts",
                     "environment": {
@@ -4348,7 +4368,7 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.176.0-alpha.0"
+                  "version": "2.177.0-alpha.0"
                 }
               },
               "Default": {
@@ -4388,7 +4408,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.176.0-alpha.0"
+              "version": "2.177.0-alpha.0"
             }
           },
           "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -4474,13 +4494,13 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "2.176.0-alpha.0"
+              "version": "2.177.0-alpha.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "2.176.0-alpha.0"
+          "version": "2.177.0-alpha.0"
         }
       },
       "Tree": {

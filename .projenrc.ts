@@ -5,26 +5,31 @@ import { IntegTests } from './projenrc/integ-tests';
 
 const coverageThreshold = 95;
 
+// pinning sdk version because upgrading it requires
+// updating integration test snapshosts, which cannot be done
+// automatically, and thus prevents automatic upgrades of other dependencies.
+const sdkVersion = '3.734.0';
+
 const project = new CdklabsConstructLibrary({
   author: 'AWS',
   authorAddress: 'aws-cdk-dev@amazon.com',
-  cdkVersion: '2.173.1',
+  cdkVersion: '2.177.0',
   defaultReleaseBranch: 'main',
   devDeps: [
     'cdklabs-projen-project-types',
     'aws-cdk',
-    '@aws-sdk/client-cloudwatch-logs',
-    '@aws-sdk/client-s3',
-    '@aws-sdk/client-dynamodb',
-    '@aws-sdk/client-api-gateway',
-    '@aws-sdk/client-sts',
-    '@aws-sdk/client-scheduler',
-    '@aws-sdk/client-cloudformation',
-    '@aws-sdk/client-lambda',
-    '@aws-sdk/client-ecs',
-    '@aws-sdk/client-ecr',
-    '@aws-sdk/credential-providers',
     'aws-embedded-metrics',
+    `@aws-sdk/client-cloudwatch-logs@${sdkVersion}`,
+    `@aws-sdk/client-s3@${sdkVersion}`,
+    `@aws-sdk/client-dynamodb@${sdkVersion}`,
+    `@aws-sdk/client-api-gateway@${sdkVersion}`,
+    `@aws-sdk/client-sts@${sdkVersion}`,
+    `@aws-sdk/client-scheduler@${sdkVersion}`,
+    `@aws-sdk/client-cloudformation@${sdkVersion}`,
+    `@aws-sdk/client-lambda@${sdkVersion}`,
+    `@aws-sdk/client-ecs@${sdkVersion}`,
+    `@aws-sdk/client-ecr@${sdkVersion}`,
+    `@aws-sdk/credential-providers@${sdkVersion}`,
     'unzipper',
     '@smithy/util-stream',
     '@smithy/types',

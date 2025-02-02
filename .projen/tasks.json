@@ -57,22 +57,7 @@
           "spawn": "bundle:cleanup-timeout/cleanup-timeout.lambda"
         },
         {
-          "spawn": "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda"
-        },
-        {
-          "spawn": "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda"
-        },
-        {
-          "spawn": "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda"
-        },
-        {
           "spawn": "bundle:deallocate/deallocate.lambda"
-        },
-        {
-          "spawn": "bundle:storage/allocations.monitor.lambda"
-        },
-        {
-          "spawn": "bundle:storage/environments.monitor.lambda"
         },
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -159,60 +144,6 @@
         }
       ]
     },
-    "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda": {
-      "name": "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda",
-      "description": "Create a JavaScript bundle from src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda:watch": {
-      "name": "bundle:dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/allocations-logs/allocation-logs.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
-    "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda": {
-      "name": "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda",
-      "description": "Create a JavaScript bundle from src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda:watch": {
-      "name": "bundle:dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/dirty-environments/dirty-environments.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
-    "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda": {
-      "name": "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda",
-      "description": "Create a JavaScript bundle from src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda:watch": {
-      "name": "bundle:dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/dashboards/custom-widgets/unsuccessfull-allocations/unsuccessfull-allocations.widget.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
     "bundle:deallocate/deallocate.lambda": {
       "name": "bundle:deallocate/deallocate.lambda",
       "description": "Create a JavaScript bundle from src/deallocate/deallocate.lambda.ts",
@@ -228,42 +159,6 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
-    "bundle:storage/allocations.monitor.lambda": {
-      "name": "bundle:storage/allocations.monitor.lambda",
-      "description": "Create a JavaScript bundle from src/storage/allocations.monitor.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/storage/allocations.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/storage/allocations.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:storage/allocations.monitor.lambda:watch": {
-      "name": "bundle:storage/allocations.monitor.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/storage/allocations.monitor.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/storage/allocations.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/storage/allocations.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
-    "bundle:storage/environments.monitor.lambda": {
-      "name": "bundle:storage/environments.monitor.lambda",
-      "description": "Create a JavaScript bundle from src/storage/environments.monitor.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/storage/environments.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/storage/environments.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:storage/environments.monitor.lambda:watch": {
-      "name": "bundle:storage/environments.monitor.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/storage/environments.monitor.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/storage/environments.monitor.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/storage/environments.monitor.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
@@ -506,9 +401,6 @@
     "integ:test/allocate:assert": {
       "name": "integ:test/allocate:assert",
       "description": "Run the assertion locally",
-      "env": {
-        "AWS_EMF_ENVIRONMENT": "Local"
-      },
       "steps": [
         {
           "exec": "ts-node test/integ/allocate/assert.lambda.ts"
@@ -578,9 +470,6 @@
     "integ:test/allocation-timeout:assert": {
       "name": "integ:test/allocation-timeout:assert",
       "description": "Run the assertion locally",
-      "env": {
-        "AWS_EMF_ENVIRONMENT": "Local"
-      },
       "steps": [
         {
           "exec": "ts-node test/integ/allocation-timeout/assert.lambda.ts"
@@ -662,9 +551,6 @@
     "integ:test/cleanup-timeout:assert": {
       "name": "integ:test/cleanup-timeout:assert",
       "description": "Run the assertion locally",
-      "env": {
-        "AWS_EMF_ENVIRONMENT": "Local"
-      },
       "steps": [
         {
           "exec": "ts-node test/integ/cleanup-timeout/assert.lambda.ts"
@@ -722,9 +608,6 @@
     "integ:test/cleanup:assert": {
       "name": "integ:test/cleanup:assert",
       "description": "Run the assertion locally",
-      "env": {
-        "AWS_EMF_ENVIRONMENT": "Local"
-      },
       "steps": [
         {
           "exec": "ts-node test/integ/cleanup/assert.lambda.ts"
@@ -794,9 +677,6 @@
     "integ:test/deallocate:assert": {
       "name": "integ:test/deallocate:assert",
       "description": "Run the assertion locally",
-      "env": {
-        "AWS_EMF_ENVIRONMENT": "Local"
-      },
       "steps": [
         {
           "exec": "ts-node test/integ/deallocate/assert.lambda.ts"
@@ -866,9 +746,6 @@
     "integ:test/dev:assert": {
       "name": "integ:test/dev:assert",
       "description": "Run the assertion locally",
-      "env": {
-        "AWS_EMF_ENVIRONMENT": "Local"
-      },
       "steps": [
         {
           "exec": "ts-node test/integ/dev/assert.lambda.ts"
@@ -1124,13 +1001,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@aws-sdk/client-api-gateway,@aws-sdk/client-cloudformation,@aws-sdk/client-cloudwatch-logs,@aws-sdk/client-dynamodb,@aws-sdk/client-ecr,@aws-sdk/client-ecs,@aws-sdk/client-lambda,@aws-sdk/client-s3,@aws-sdk/client-scheduler,@aws-sdk/client-sts,@aws-sdk/credential-providers,@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,@types/unzipper,aws-cdk,aws-embedded-metrics,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,unzipper"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --no-deprecated --dep=dev --filter=@smithy/types,@smithy/util-stream,@types/aws-lambda,@types/jest,@types/unzipper,aws-cdk,aws-sdk-client-mock,aws-sdk-client-mock-jest,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,jsii-diff,jsii-pacmak,jsii-rosetta,ts-jest,ts-node,typescript,unzipper"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-cloudwatch-logs @aws-sdk/client-dynamodb @aws-sdk/client-ecr @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-embedded-metrics aws-sdk-client-mock aws-sdk-client-mock-jest commit-and-tag-version esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
+          "exec": "yarn upgrade @aws-sdk/client-api-gateway @aws-sdk/client-cloudformation @aws-sdk/client-dynamodb @aws-sdk/client-ecr @aws-sdk/client-ecs @aws-sdk/client-lambda @aws-sdk/client-s3 @aws-sdk/client-scheduler @aws-sdk/client-sts @aws-sdk/credential-providers @smithy/types @smithy/util-stream @stylistic/eslint-plugin @types/aws-lambda @types/jest @types/node @types/unzipper @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk aws-sdk-client-mock aws-sdk-client-mock-jest commit-and-tag-version esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit jsii-diff jsii-docgen jsii-pacmak jsii-rosetta jsii ts-jest ts-node typescript unzipper @aws-cdk/integ-runner @aws-cdk/integ-tests-alpha"
         },
         {
           "exec": "npx projen"
