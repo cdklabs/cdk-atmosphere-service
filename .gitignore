@@ -50,9 +50,9 @@ tsconfig.json
 !/API.md
 /assets/
 !/src/allocate/allocate-function.ts
-!/src/allocation-timeout/allocation-timeout-function.ts
-!/src/cleanup-timeout/cleanup-timeout-function.ts
 !/src/deallocate/deallocate-function.ts
+!/src/scheduler/allocation-timeout/allocation-timeout-function.ts
+!/src/scheduler/cleanup-timeout/cleanup-timeout-function.ts
 .jsii.tabl.json
 !/rosetta/default.ts-fixture
 !/.github/workflows/auto-queue.yml

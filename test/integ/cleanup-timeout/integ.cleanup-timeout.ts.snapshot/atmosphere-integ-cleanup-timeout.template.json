@@ -823,13 +823,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "AtmosphereSchedulerAllocationTimeout5187E9EA",
+          "AtmosphereSchedulerAllocationTimeoutFunction96FB0607",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "AtmosphereSchedulerCleanupTimeout19EF968B",
+          "AtmosphereSchedulerCleanupTimeoutFunctionCE231484",
           "Arn"
          ]
         },
@@ -839,7 +839,7 @@
           [
            {
             "Fn::GetAtt": [
-             "AtmosphereSchedulerAllocationTimeout5187E9EA",
+             "AtmosphereSchedulerAllocationTimeoutFunction96FB0607",
              "Arn"
             ]
            },
@@ -853,7 +853,7 @@
           [
            {
             "Fn::GetAtt": [
-             "AtmosphereSchedulerCleanupTimeout19EF968B",
+             "AtmosphereSchedulerCleanupTimeoutFunctionCE231484",
              "Arn"
             ]
            },
@@ -898,7 +898,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0": {
+  "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleF27E89A8": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -931,7 +931,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205": {
+  "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleDefaultPolicyFEC23BB4": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -977,24 +977,24 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205",
+    "PolicyName": "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleDefaultPolicyFEC23BB4",
     "Roles": [
      {
-      "Ref": "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0"
+      "Ref": "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleF27E89A8"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereSchedulerCleanupTimeout19EF968B": {
+  "AtmosphereSchedulerCleanupTimeoutFunctionCE231484": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d1cddf309560e6fd9d86f67758ead300f98a4c4f8c316bbefe4b51a9c9983bf6.zip"
+     "S3Key": "439bf5a987bd5e1b2e962f573ae895bb952ed6da6b8cd65f147f804a99694d43.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1004,7 +1004,7 @@
       ]
      }
     },
-    "Description": "src/cleanup-timeout/cleanup-timeout.lambda.ts",
+    "Description": "src/scheduler/cleanup-timeout/cleanup-timeout.lambda.ts",
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -1016,7 +1016,7 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0",
+      "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleF27E89A8",
       "Arn"
      ]
     },
@@ -1024,13 +1024,13 @@
     "Timeout": 60
    },
    "DependsOn": [
-    "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205",
-    "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0"
+    "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleDefaultPolicyFEC23BB4",
+    "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleF27E89A8"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404": {
+  "AtmosphereSchedulerAllocationTimeoutFunctionServiceRole3697FC64": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1063,7 +1063,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814": {
+  "AtmosphereSchedulerAllocationTimeoutFunctionServiceRoleDefaultPolicy1EAC6C8C": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1077,40 +1077,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": [
-        "dynamodb:BatchGetItem",
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DeleteItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:GetItem",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "AtmosphereAllocationsTable4ECEFD7B",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "AtmosphereEnvironmentsTable430B8CE1",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
       },
       {
        "Action": "lambda:InvokeFunction",
@@ -1141,24 +1107,24 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814",
+    "PolicyName": "AtmosphereSchedulerAllocationTimeoutFunctionServiceRoleDefaultPolicy1EAC6C8C",
     "Roles": [
      {
-      "Ref": "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404"
+      "Ref": "AtmosphereSchedulerAllocationTimeoutFunctionServiceRole3697FC64"
      }
     ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereSchedulerAllocationTimeout5187E9EA": {
+  "AtmosphereSchedulerAllocationTimeoutFunction96FB0607": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bf534ff959a8e8e82513b77fa5b0f1f66dea56d8d807716b3b950dfeed4e4770.zip"
+     "S3Key": "4a3b772857c9f8eb3de53c93ffa41466f2f2d0945ccd9c8764d9d4eaafacfd8a.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1168,7 +1134,7 @@
       ]
      }
     },
-    "Description": "src/allocation-timeout/allocation-timeout.lambda.ts",
+    "Description": "src/scheduler/allocation-timeout/allocation-timeout.lambda.ts",
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
@@ -1180,7 +1146,7 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404",
+      "AtmosphereSchedulerAllocationTimeoutFunctionServiceRole3697FC64",
       "Arn"
      ]
     },
@@ -1188,8 +1154,8 @@
     "Timeout": 60
    },
    "DependsOn": [
-    "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814",
-    "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404"
+    "AtmosphereSchedulerAllocationTimeoutFunctionServiceRoleDefaultPolicy1EAC6C8C",
+    "AtmosphereSchedulerAllocationTimeoutFunctionServiceRole3697FC64"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1371,13 +1337,13 @@
       },
       "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "AtmosphereSchedulerAllocationTimeout5187E9EA",
+        "AtmosphereSchedulerAllocationTimeoutFunction96FB0607",
         "Arn"
        ]
       },
       "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "AtmosphereSchedulerCleanupTimeout19EF968B",
+        "AtmosphereSchedulerCleanupTimeoutFunctionCE231484",
         "Arn"
        ]
       }
@@ -1563,7 +1529,7 @@
       },
       "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_FUNCTION_ARN": {
        "Fn::GetAtt": [
-        "AtmosphereSchedulerCleanupTimeout19EF968B",
+        "AtmosphereSchedulerCleanupTimeoutFunctionCE231484",
         "Arn"
        ]
       },
@@ -2370,26 +2336,26 @@
     "Name": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
    }
   },
-  "ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9": {
+  "ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutFunction96FB0607Arn5EDB1E3B": {
    "Value": {
     "Fn::GetAtt": [
-     "AtmosphereSchedulerAllocationTimeout5187E9EA",
+     "AtmosphereSchedulerAllocationTimeoutFunction96FB0607",
      "Arn"
     ]
    },
    "Export": {
-    "Name": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9"
+    "Name": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutFunction96FB0607Arn5EDB1E3B"
    }
   },
-  "ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B": {
+  "ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutFunctionCE231484Arn16D750F9": {
    "Value": {
     "Fn::GetAtt": [
-     "AtmosphereSchedulerCleanupTimeout19EF968B",
+     "AtmosphereSchedulerCleanupTimeoutFunctionCE231484",
      "Arn"
     ]
    },
    "Export": {
-    "Name": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B"
+    "Name": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutFunctionCE231484Arn16D750F9"
    }
   },
   "ExportsOutputRefAtmosphereEndpointApi64E9173819330649": {

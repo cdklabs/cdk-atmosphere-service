@@ -1,5 +1,5 @@
-import { handler } from '../../../src/cleanup-timeout/cleanup-timeout.lambda';
 import { RuntimeClients } from '../../../src/clients';
+import { handler } from '../../../src/scheduler/cleanup-timeout/cleanup-timeout.lambda';
 import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../../../src/storage/environments.client';
 import { RuntimeClientsMock } from '../clients.mock';
 

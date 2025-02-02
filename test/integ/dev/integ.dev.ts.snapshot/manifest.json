@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/978980e66e04860bb211f1b91b4b0c756cf52bd9bee550930536710c994c3f78.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a7aafae63c6b34741b5b40540b6ba00380a527332a91f4a95332896791efeed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -226,40 +226,40 @@
             "data": "AtmosphereSchedulerDLQCF6976A3"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0"
+            "data": "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleF27E89A8"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/ServiceRole/DefaultPolicy/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205"
+            "data": "AtmosphereSchedulerCleanupTimeoutFunctionServiceRoleDefaultPolicyFEC23BB4"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/CleanupTimeout/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereSchedulerCleanupTimeout19EF968B"
+            "data": "AtmosphereSchedulerCleanupTimeoutFunctionCE231484"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404"
+            "data": "AtmosphereSchedulerAllocationTimeoutFunctionServiceRole3697FC64"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/ServiceRole/DefaultPolicy/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814"
+            "data": "AtmosphereSchedulerAllocationTimeoutFunctionServiceRoleDefaultPolicy1EAC6C8C"
           }
         ],
-        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Resource": [
+        "/atmosphere-integ-dev/Atmosphere/Scheduler/AllocationTimeout/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereSchedulerAllocationTimeout5187E9EA"
+            "data": "AtmosphereSchedulerAllocationTimeoutFunction96FB0607"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Allocate/Function/ServiceRole/Resource": [
@@ -470,16 +470,16 @@
             "data": "ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
           }
         ],
-        "/atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerAllocationTimeout5187E9EA\",\"Arn\"]}": [
+        "/atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerAllocationTimeoutFunction96FB0607\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeout5187E9EAArnC7AD40F9"
+            "data": "ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutFunction96FB0607Arn5EDB1E3B"
           }
         ],
-        "/atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeout19EF968B\",\"Arn\"]}": [
+        "/atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutFunctionCE231484\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeout19EF968BArn4675DF3B"
+            "data": "ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutFunctionCE231484Arn16D750F9"
           }
         ],
         "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}": [
@@ -541,6 +541,60 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerCleanupTimeoutServiceRole5E8A30F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerCleanupTimeoutServiceRoleDefaultPolicy3CA03205",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AtmosphereSchedulerCleanupTimeout19EF968B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerCleanupTimeout19EF968B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerAllocationTimeoutServiceRole7476C404",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerAllocationTimeoutServiceRoleDefaultPolicy2C21A814",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AtmosphereSchedulerAllocationTimeout5187E9EA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereSchedulerAllocationTimeout5187E9EA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "atmosphere-integ-dev"
@@ -562,7 +616,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04847b62e961ea3ee53cc1d038f6c1a68881ea4ea0f2e7f8beddb7d047e00508.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b7cb731740d1f13faa87ee698e548e9adc1e6f272ecbfc70dab298a995ec4de7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

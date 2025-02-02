@@ -1,8 +1,8 @@
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { Uint8ArrayBlobAdapter } from '@smithy/util-stream';
 import { mockClient } from 'aws-sdk-client-mock';
-import { handler } from '../../../src/allocation-timeout/allocation-timeout.lambda';
 import * as envars from '../../../src/envars';
+import { handler } from '../../../src/scheduler/allocation-timeout/allocation-timeout.lambda';
 import * as _with from '../../with';
 import 'aws-sdk-client-mock-jest';
 

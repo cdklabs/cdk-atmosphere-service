@@ -1,12 +1,9 @@
-import { Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import { AllocationTimeoutFunction } from '../allocation-timeout/allocation-timeout-function';
-import { CleanupTimeoutFunction } from '../cleanup-timeout/cleanup-timeout-function';
-import * as envars from '../envars';
 import { Allocations, Environments } from '../storage';
+import { AllocationTimeout } from './allocation-timeout';
+import { CleanupTimeout } from './cleanup-timeout';
 
 /**
  * Properties for `Scheduler`.
@@ -30,8 +27,8 @@ export class Scheduler extends Construct {
 
   public readonly role: iam.Role;
   public readonly dlq: sqs.Queue;
-  public readonly cleanupTimeoutFunction: lambda.Function;
-  public readonly allocationTimeoutFunction: lambda.Function;
+  public readonly cleanupTimeout: CleanupTimeout;
+  public readonly allocationTimeout: AllocationTimeout;
 
   public constructor(scope: Construct, id: string, props: SchedulerProps) {
     super(scope, id);
@@ -42,23 +39,16 @@ export class Scheduler extends Construct {
 
     this.dlq = new sqs.Queue(this, 'DLQ', { encryption: sqs.QueueEncryption.KMS_MANAGED });
 
-    this.cleanupTimeoutFunction = new CleanupTimeoutFunction(this, 'CleanupTimeout', {
-      deadLetterQueue: this.dlq,
-      timeout: Duration.minutes(1),
+    this.cleanupTimeout = new CleanupTimeout(this, 'CleanupTimeout', {
+      environments: props.environments,
+      dlq: this.dlq,
     });
-    this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout', {
-      deadLetterQueue: this.dlq,
-      timeout: Duration.minutes(1),
+    this.allocationTimeout = new AllocationTimeout(this, 'AllocationTimeout', {
+      dlq: this.dlq,
     });
 
-    props.environments.grantReadWrite(this.cleanupTimeoutFunction);
-    props.allocations.grantReadWrite(this.allocationTimeoutFunction);
-    props.environments.grantReadWrite(this.allocationTimeoutFunction);
-
-    this.cleanupTimeoutFunction.addEnvironment(envars.ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
-
-    this.cleanupTimeoutFunction.grantInvoke(this.role);
-    this.allocationTimeoutFunction.grantInvoke(this.role);
+    this.cleanupTimeout.grantInvoke(this.role);
+    this.allocationTimeout.grantInvoke(this.role);
 
     this.dlq.grantSendMessages(this.role);
 
