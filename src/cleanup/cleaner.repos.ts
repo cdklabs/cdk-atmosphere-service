@@ -4,7 +4,7 @@ import { CloudFormation, Stack } from '@aws-sdk/client-cloudformation';
 import { ECR, RepositoryNotFoundException } from '@aws-sdk/client-ecr';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
-import { AllocationLogger } from '../logging';
+import { Logger } from '../logging';
 
 
 export class ReposCleaner {
@@ -16,7 +16,7 @@ export class ReposCleaner {
     credentials: AwsCredentialIdentityProvider,
     region: string,
     private readonly stack: Stack,
-    private readonly log: AllocationLogger) {
+    private readonly log: Logger) {
     this.cfn = new CloudFormation({ credentials: credentials, region });
     this.ecr = new ECR({ credentials: credentials, region });
   }

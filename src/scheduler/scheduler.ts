@@ -37,8 +37,11 @@ export class Scheduler extends Construct {
 
     this.cleanupTimeout = new CleanupTimeout(this, 'CleanupTimeout', {
       environments: props.environments,
+      allocations: props.allocations,
     });
-    this.allocationTimeout = new AllocationTimeout(this, 'AllocationTimeout');
+    this.allocationTimeout = new AllocationTimeout(this, 'AllocationTimeout', {
+      allocations: props.allocations,
+    });
 
     this.cleanupTimeout.grantInvoke(this.role);
     this.allocationTimeout.grantInvoke(this.role);

@@ -150,6 +150,7 @@ new Allocations(scope: Construct, id: string)
 | **Name** | **Description** |
 | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.grantRead">grantRead</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite">grantReadWrite</a></code> | *No description.* |
 
 ---
@@ -161,6 +162,18 @@ public toString(): string
 ```
 
 Returns a string representation of this construct.
+
+##### `grantRead` <a name="grantRead" id="@cdklabs/cdk-atmosphere-service.Allocations.grantRead"></a>
+
+```typescript
+public grantRead(identity: IGrantable): void
+```
+
+###### `identity`<sup>Required</sup> <a name="identity" id="@cdklabs/cdk-atmosphere-service.Allocations.grantRead.parameter.identity"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
 
 ##### `grantReadWrite` <a name="grantReadWrite" id="@cdklabs/cdk-atmosphere-service.Allocations.grantReadWrite"></a>
 
@@ -239,13 +252,14 @@ public readonly table: Table;
 ```typescript
 import { AllocationTimeout } from '@cdklabs/cdk-atmosphere-service'
 
-new AllocationTimeout(scope: Construct, id: string)
+new AllocationTimeout(scope: Construct, id: string, props: AllocationTimeoutProps)
 ```
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps">AllocationTimeoutProps</a></code> | *No description.* |
 
 ---
 
@@ -258,6 +272,12 @@ new AllocationTimeout(scope: Construct, id: string)
 ##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.id"></a>
 
 - *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps">AllocationTimeoutProps</a>
 
 ---
 
@@ -1614,6 +1634,34 @@ Scheduler.
 
 ---
 
+### AllocationTimeoutProps <a name="AllocationTimeoutProps" id="@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps.Initializer"></a>
+
+```typescript
+import { AllocationTimeoutProps } from '@cdklabs/cdk-atmosphere-service'
+
+const allocationTimeoutProps: AllocationTimeoutProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | *No description.* |
+
+---
+
+##### `allocations`<sup>Required</sup> <a name="allocations" id="@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps.property.allocations"></a>
+
+```typescript
+public readonly allocations: Allocations;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
+
+---
+
 ### AtmosphereServiceProps <a name="AtmosphereServiceProps" id="@cdklabs/cdk-atmosphere-service.AtmosphereServiceProps"></a>
 
 Properties for `AtmosphereService`.
@@ -1731,7 +1779,18 @@ const cleanupTimeoutProps: CleanupTimeoutProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.allocations">allocations</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | *No description.* |
+
+---
+
+##### `allocations`<sup>Required</sup> <a name="allocations" id="@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.allocations"></a>
+
+```typescript
+public readonly allocations: Allocations;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Allocations">Allocations</a>
 
 ---
 

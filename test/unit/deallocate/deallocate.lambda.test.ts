@@ -16,6 +16,10 @@ describe('handler', () => {
 
   beforeEach(() => {
     RuntimeClientsMock.mock();
+
+    // needed because we query allocations to configure the pool of the logger.
+    jest.spyOn(clients.allocations, 'get').mockReturnValue(Promise.resolve({ pool: 'pool' } as any));
+
   });
 
 

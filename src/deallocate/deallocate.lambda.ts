@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import * as envars from '../envars';
-import { AllocationLogger } from '../logging';
+import { Logger } from '../logging';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
 
 // an hour should plenty to clean one environment
@@ -35,19 +35,19 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const id = (event.pathParameters ?? {}).id;
-  if (!id) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: 'Missing \'id\' path parameter' }),
-    };
+  try {
+    const [allocationId, request] = parseEvent(event);
+    const pool = (await clients.allocations.get(allocationId)).pool;
+    const log = new Logger({ allocationId, pool, component: 'deallocate' });
+    return await doHandler(allocationId, request, log);
+  } catch (e: any) {
+    return failure(e instanceof ProxyError ? e.statusCode : 500, e.message);
   }
 
-  const log = new AllocationLogger({ id, component: 'deallocate' });
+}
 
+export async function doHandler(allocationId: string, request: DeallocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
   try {
-
-    const request = parseRequestBody(event.body);
 
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
     if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
@@ -57,7 +57,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupDurationSeconds);
 
     log.info(`Ending allocation with outcome: ${request.outcome}`);
-    const allocation = await endAllocation(id, request.outcome);
+    const allocation = await endAllocation(allocationId, request.outcome);
 
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
     await clients.scheduler.scheduleCleanupTimeout({
@@ -69,7 +69,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     });
 
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
-    await clients.environments.cleaning(id, allocation.account, allocation.region);
+    await clients.environments.cleaning(allocationId, allocation.account, allocation.region);
     const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
 
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
@@ -93,18 +93,23 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
   }
 }
 
-function parseRequestBody(body: string | null): DeallocateRequest {
+function parseEvent(event: any): [string, DeallocateRequest] {
 
-  if (!body) {
+  const id = (event.pathParameters ?? {}).id;
+  if (!id) {
+    throw new ProxyError(400, 'Missing \'id\' path parameter');
+  }
+
+  if (!event.body) {
     throw new ProxyError(400, 'Request body not found');
   }
 
-  const parsed = JSON.parse(body);
+  const parsed = JSON.parse(event.body);
   if (!parsed.outcome) {
     throw new ProxyError(400, '\'outcome\' must be provided in the request body');
   }
 
-  return parsed;
+  return [id, parsed];
 }
 
 async function endAllocation(id: string, outcome: string): Promise<Allocation> {
@@ -118,9 +123,10 @@ async function endAllocation(id: string, outcome: string): Promise<Allocation> {
   }
 }
 
-function success(response: DeallocateResponse) {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(response),
-  };
+function success(body: any) {
+  return { statusCode: 200, body: JSON.stringify(body) };
+}
+
+function failure(statusCode: number, message: string) {
+  return { statusCode: statusCode, body: JSON.stringify({ message }) };
 }

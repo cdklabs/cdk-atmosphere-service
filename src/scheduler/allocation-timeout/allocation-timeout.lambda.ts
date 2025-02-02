@@ -1,11 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Lambda } from '@aws-sdk/client-lambda';
+import { RuntimeClients } from '../../clients';
 import { Envars, DEALLOCATE_FUNCTION_NAME_ENV } from '../../envars';
-import { AllocationLogger } from '../../logging';
+import { Logger } from '../../logging';
 
 export interface AllocationTimeoutEvent {
   readonly allocationId: string;
 }
+
+const clients = RuntimeClients.getOrCreate();
 
 /**
  * Responsible for forcefully releasing an environment in case its allocation period has
@@ -28,25 +31,29 @@ export interface AllocationTimeoutEvent {
 export async function handler(event: AllocationTimeoutEvent) {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const log = new AllocationLogger({ id: event.allocationId, component: 'allocation-timeout' });
+  const allocation = await clients.allocations.get(event.allocationId);
+  const log = new Logger({ allocationId: event.allocationId, pool: allocation.pool, component: 'allocation-timeout' });
 
   try {
-    const body = JSON.stringify({ outcome: 'timeout' });
-    const lambda = new Lambda();
-
-    const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
-    const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
-
-    log.info(`Invoking ${target} with payload: ${payload}`);
-    const response = await lambda.invoke({ FunctionName: target, InvocationType: 'RequestResponse', Payload: payload });
-    const responsePayload = JSON.parse(response.Payload?.transformToString('utf-8') ?? '{}');
-    if (responsePayload.statusCode !== 200) {
-      throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
-    }
-    log.info('Done');
+    return await doHandler(event, log);
   } catch (e: any) {
     log.error(e);
     throw e;
   }
+}
 
+export async function doHandler(event: AllocationTimeoutEvent, log: Logger) {
+  const body = JSON.stringify({ outcome: 'timeout' });
+  const lambda = new Lambda();
+
+  const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
+  const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
+
+  log.info(`Invoking ${target} with payload: ${payload}`);
+  const response = await lambda.invoke({ FunctionName: target, InvocationType: 'RequestResponse', Payload: payload });
+  const responsePayload = JSON.parse(response.Payload?.transformToString('utf-8') ?? '{}');
+  if (responsePayload.statusCode !== 200) {
+    throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
+  }
+  log.info('Done');
 }

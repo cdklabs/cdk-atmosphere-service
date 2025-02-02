@@ -1,5 +1,5 @@
 import { RuntimeClients } from '../../clients';
-import { AllocationLogger } from '../../logging';
+import { Logger } from '../../logging';
 import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../../storage/environments.client';
 
 export interface CleanupTimeoutEvent {
@@ -33,15 +33,18 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: CleanupTimeoutEvent) {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const account = event.account;
-  const region = event.region;
   const allocationId = event.allocationId;
 
-  const log = new AllocationLogger({ id: allocationId, component: 'cleanup-timeout' });
+  const allocation = await clients.allocations.get(event.allocationId);
+  const log = new Logger({ allocationId: allocationId, pool: allocation.pool, component: 'cleanup-timeout' });
 
+  return doHandler(event, log);
+}
+
+export async function doHandler(event: CleanupTimeoutEvent, log: Logger) {
   try {
-    log.info(`Marking environment 'aws://${account}/${region}' as dirty`);
-    await clients.environments.dirty(allocationId, account, region);
+    log.info(`Marking environment 'aws://${event.account}/${event.region}' as dirty`);
+    await clients.environments.dirty(event.allocationId, event.account, event.region);
     log.info('Done');
   } catch (e: any) {
     if (e instanceof EnvironmentAlreadyReleasedError) {
@@ -62,8 +65,6 @@ export async function handler(event: CleanupTimeoutEvent) {
     }
 
     log.error(e);
-
-    // unhappy path
     throw e;
   }
 }
