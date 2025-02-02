@@ -4,12 +4,13 @@ import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { mockClient } from 'aws-sdk-client-mock';
 import { ReposCleaner } from '../../../src/cleanup/cleaner.repos';
 import 'aws-sdk-client-mock-jest';
-import { AllocationLogger } from '../../../src/logging';
+import { Logger } from '../../../src/logging';
 
 describe('ReposCleaner', () => {
 
   const ecrMock = mockClient(ECRClient);
   const cfnMock = mockClient(CloudFormationClient);
+  const logger = new Logger({ allocationId: 'id', component: 'cleanup', pool: 'pool' });
 
   beforeEach(() => {
     ecrMock.reset();
@@ -25,7 +26,7 @@ describe('ReposCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
         StackResources: [{
@@ -53,7 +54,7 @@ describe('ReposCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
         StackResources: [{
@@ -78,7 +79,7 @@ describe('ReposCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
         StackResources: [{

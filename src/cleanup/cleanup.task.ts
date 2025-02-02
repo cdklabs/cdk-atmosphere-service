@@ -1,8 +1,8 @@
 import { RuntimeClients } from '../clients';
 import { Cleaner, CleanerError } from './cleaner';
 import * as envars from '../envars';
-import { AllocationLogger } from '../logging';
-import type { Allocation } from '../storage/allocations.client';
+import { Logger } from '../logging';
+import { Allocation } from '../storage/allocations.client';
 import { EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
 const clients = RuntimeClients.getOrCreate();
@@ -11,13 +11,13 @@ export interface CleanupRequest {
   readonly allocationId: string;
   readonly timeoutSeconds: number;
 }
-
 export async function handler(req: CleanupRequest) {
+  const allocation = await clients.allocations.get(req.allocationId);
+  const log = new Logger({ allocationId: req.allocationId, pool: allocation.pool, component: 'cleanup' });
+  return doHandler(allocation, req.timeoutSeconds, log);
+}
 
-  const log = new AllocationLogger({ id: req.allocationId, component: 'cleanup' });
-
-  log.info('Fetching allocation');
-  const allocation = await fetchAllocation(req.allocationId, log);
+export async function doHandler(allocation: Allocation, timeoutSeconds: number, log: Logger) {
 
   const env = `aws://${allocation.account}/${allocation.region}`;
 
@@ -29,11 +29,11 @@ export async function handler(req: CleanupRequest) {
     const cleaner = new Cleaner(environment, log);
 
     log.info(`Starting cleanup of '${env}'`);
-    await cleaner.clean(req.timeoutSeconds);
+    await cleaner.clean(timeoutSeconds);
     log.info(`Successfully cleaned '${env}'`);
 
     log.info(`Releasing environment '${env}'`);
-    await clients.environments.release(req.allocationId, environment.account, environment.region);
+    await clients.environments.release(allocation.id, environment.account, environment.region);
     log.info(`Successfully released environment '${env}'`);
 
     log.info('Done!');
@@ -50,7 +50,7 @@ export async function handler(req: CleanupRequest) {
     log.error(e);
 
     log.info(`Marking environment '${env}' as 'dirty'`);
-    await clients.environments.dirty(req.allocationId, allocation.account, allocation.region);
+    await clients.environments.dirty(allocation.id, allocation.account, allocation.region);
     log.info(`Successfully marked environment '${env}' as 'dirty'`);
 
     if (e instanceof CleanerError) {
@@ -70,17 +70,6 @@ export async function handler(req: CleanupRequest) {
     throw e;
   }
 
-}
-
-async function fetchAllocation(id: string, log: AllocationLogger): Promise<Allocation> {
-  try {
-    return await clients.allocations.get(id);
-  } catch (e: any) {
-    // to make sure error logging is done with the allocation logger.
-    // otherwise ecs will log it but we loose the context.
-    log.error(e);
-    throw new Error('Failed fetching allocation from database');
-  }
 }
 
 if (require.main !== module) {

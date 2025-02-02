@@ -4,12 +4,13 @@ import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { BucketsCleaner } from '../../../src/cleanup/cleaner.buckets';
-import { AllocationLogger } from '../../../src/logging';
+import { Logger } from '../../../src/logging';
 
 describe('BucketCleaner', () => {
 
   const s3Mock = mockClient(S3Client);
   const cfnMock = mockClient(CloudFormationClient);
+  const logger = new Logger({ allocationId: 'id', component: 'cleanup', pool: 'pool' });
   jest.useFakeTimers();
 
   beforeEach(() => {
@@ -26,7 +27,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date();
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -52,7 +53,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -92,7 +93,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -148,7 +149,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -175,7 +176,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -201,7 +202,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -234,7 +235,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({
@@ -261,7 +262,7 @@ describe('BucketCleaner', () => {
           RoleArn: 'adminRole',
           RoleSessionName: 'session',
         },
-      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, new AllocationLogger({ id: 'id', component: 'cleanup' }));
+      }), 'us-east-1', { StackName: 'stack', CreationTime: new Date(), StackStatus: 'CREATE_COMPLETE' }, logger);
       const timeoutDate = new Date(Date.now() + 10 * 1000);
 
       cfnMock.on(DescribeStackResourcesCommand).resolves({

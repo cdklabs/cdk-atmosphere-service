@@ -6,7 +6,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { RuntimeClients } from '../clients';
 import type { Environment } from '../config';
 import * as envars from '../envars';
-import { AllocationLogger } from '../logging';
+import { Logger } from '../logging';
 import { InvalidInputError } from '../storage/allocations.client';
 import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client';
 
@@ -48,12 +48,19 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
-  const allocationId = crypto.randomUUID();
-  const log = new AllocationLogger({ id: allocationId, component: 'allocate' });
-
   try {
-
+    const allocationId = crypto.randomUUID();
     const request = parseRequestBody(event.body);
+    const log = new Logger({ allocationId: allocationId, pool: request.pool, component: 'allocate' });
+    return await doHandler(allocationId, request, log);
+  } catch (e: any) {
+    return failure(e instanceof ProxyError ? e.statusCode : 500, e.message);
+  }
+
+}
+
+export async function doHandler(allocationId: string, request: AllocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
+  try {
     const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
     if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
       throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
@@ -80,19 +87,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       timeoutDate,
       functionArn: envars.Envars.required(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
     });
-    log.info('Done');
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(response),
-    };
+    log.info('Done');
+    return success(response);
 
   } catch (e: any) {
     log.error(e);
-    return {
-      statusCode: e instanceof ProxyError ? e.statusCode : 500,
-      body: JSON.stringify({ message: e.message }),
-    };
+    throw e;
   }
 }
 
@@ -179,4 +180,12 @@ async function grabCredentials(id: string, environment: Environment): Promise<Cr
     secretAccessKey: assumed.Credentials.SecretAccessKey,
     sessionToken: assumed.Credentials.SessionToken,
   };
+}
+
+function success(body: any) {
+  return { statusCode: 200, body: JSON.stringify(body) };
+}
+
+function failure(statusCode: number, message: string) {
+  return { statusCode: statusCode, body: JSON.stringify({ message }) };
 }

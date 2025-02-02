@@ -7,7 +7,7 @@ import { AwsCredentialIdentityProvider } from '@smithy/types';
 import type { Environment } from '../config';
 import { BucketsCleaner } from './cleaner.buckets';
 import { ReposCleaner } from './cleaner.repos';
-import { AllocationLogger } from '../logging';
+import { Logger } from '../logging';
 
 export interface DeleteStackResult {
   readonly name: string;
@@ -31,7 +31,7 @@ export class Cleaner {
 
   constructor(
     private readonly environment: Environment,
-    private readonly log: AllocationLogger) {
+    private readonly log: Logger) {
     this.credentials = fromTemporaryCredentials({
       params: {
         RoleArn: this.environment.adminRoleArn,

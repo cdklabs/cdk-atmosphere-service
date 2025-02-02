@@ -29,4 +29,8 @@ export class Allocations extends Construct {
     this.table.grantReadWriteData(identity);
   }
 
+  public grantRead(identity: iam.IGrantable) {
+    this.table.grantReadData(identity);
+  }
+
 }

@@ -4,7 +4,7 @@ import { CloudFormation, Stack } from '@aws-sdk/client-cloudformation';
 import { DeleteObjectsCommand, ListObjectVersionsCommandOutput, NoSuchBucket, S3, waitUntilBucketNotExists } from '@aws-sdk/client-s3';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
-import { AllocationLogger } from '../logging';
+import { Logger } from '../logging';
 
 /**
  * Options for `clean`.
@@ -25,7 +25,7 @@ export class BucketsCleaner {
     credentials: AwsCredentialIdentityProvider,
     region: string,
     private readonly stack: Stack,
-    private readonly log: AllocationLogger) {
+    private readonly log: Logger) {
     this.cfn = new CloudFormation({ credentials: credentials, region });
     this.s3 = new S3({ credentials: credentials, region });
   }
