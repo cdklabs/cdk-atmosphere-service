@@ -93,6 +93,11 @@ export class Runner {
    * Run an assertion function in a fresh service state.
    */
   public static async assert(testCase: string, assertion: (runner: Runner) => Promise<void>): Promise<string> {
+
+    if (!Runner.shouldRun(testCase)) {
+      return SUCCESS_PAYLOAD;
+    }
+
     const test = await Runner.create(testCase);
     await test.clear();
     try {
@@ -110,6 +115,12 @@ export class Runner {
     const value = process.env[CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV];
     if (value === 'false' || value === '0') return false;
     return true;
+  }
+
+  private static shouldRun(testCase: string) {
+    const selection = process.env.CDK_ATMOSPHERE_INTEG_TEST_CASE_SELECTION;
+    if (!selection) return true;
+    return testCase === selection;
   }
 
   private static async unzip(bucket: string, key: string, to: string) {
