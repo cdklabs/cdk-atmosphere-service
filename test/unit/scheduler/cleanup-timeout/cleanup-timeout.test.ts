@@ -1,7 +1,7 @@
-import { RuntimeClients } from '../../../src/clients';
-import { handler } from '../../../src/scheduler/cleanup-timeout/cleanup-timeout.lambda';
-import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../../../src/storage/environments.client';
-import { RuntimeClientsMock } from '../clients.mock';
+import { RuntimeClients } from '../../../../src/clients';
+import { handler } from '../../../../src/scheduler/cleanup-timeout/cleanup-timeout.lambda';
+import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../../../../src/storage/environments.client';
+import { RuntimeClientsMock } from '../../clients.mock';
 
 // this grabs the same instance the handler uses
 // so we can easily mock it.
