@@ -1,12 +1,10 @@
 import { Duration } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
-import { AllocationTimeoutFunction } from '../allocation-timeout/allocation-timeout-function';
-import { CleanupTimeoutFunction } from '../cleanup-timeout/cleanup-timeout-function';
-import * as envars from '../envars';
+import { AllocationTimeout } from '../allocation-timeout';
+import { CleanupTimeout } from '../cleanup-timeout';
 import { anchor as runBookAnchor } from '../runbook';
 import { Allocations, Environments } from '../storage';
 
@@ -32,8 +30,8 @@ export class Scheduler extends Construct {
 
   public readonly role: iam.Role;
   public readonly dlq: sqs.Queue;
-  public readonly cleanupTimeoutFunction: lambda.Function;
-  public readonly allocationTimeoutFunction: lambda.Function;
+  public readonly cleanupTimeout: CleanupTimeout;
+  public readonly allocationTimeout: AllocationTimeout;
 
   public constructor(scope: Construct, id: string, props: SchedulerProps) {
     super(scope, id);
@@ -44,49 +42,19 @@ export class Scheduler extends Construct {
 
     this.dlq = new sqs.Queue(this, 'DLQ', { encryption: sqs.QueueEncryption.KMS_MANAGED });
 
-    this.cleanupTimeoutFunction = new CleanupTimeoutFunction(this, 'CleanupTimeout', {
-      deadLetterQueue: this.dlq,
-      timeout: Duration.minutes(1),
+    this.cleanupTimeout = new CleanupTimeout(this, 'CleanupTimeout', {
+      dlq: this.dlq,
+      allocations: props.allocations,
+      environments: props.environments,
     });
 
-    this.cleanupTimeoutFunction.metricErrors().createAlarm(this.cleanupTimeoutFunction, 'Errors', {
-      alarmName: `${this.cleanupTimeoutFunction.node.path}/Errors`,
-      threshold: 1,
-      evaluationPeriods: 1,
-      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      alarmDescription: runBookAnchor('TODO'),
+    this.allocationTimeout = new AllocationTimeout(this, 'AllocationTimeout', {
+      dlq: this.dlq,
+      allocations: props.allocations,
     });
 
-    this.allocationTimeoutFunction = new AllocationTimeoutFunction(this, 'AllocationTimeout', {
-      deadLetterQueue: this.dlq,
-      timeout: Duration.minutes(1),
-    });
-
-    this.cleanupTimeoutFunction.metricErrors().createAlarm(this.allocationTimeoutFunction, 'Errors', {
-      alarmName: `${this.allocationTimeoutFunction.node.path}/Errors`,
-      threshold: 1,
-      evaluationPeriods: 1,
-      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      alarmDescription: runBookAnchor('TODO'),
-    });
-
-    // needed because the function changes environment status
-    props.environments.grantReadWrite(this.cleanupTimeoutFunction);
-
-    // needed because the function fetches the allocation from storage
-    props.allocations.grantRead(this.cleanupTimeoutFunction);
-
-    // needed because the function fetches the allocation from storage
-    props.allocations.grantRead(this.allocationTimeoutFunction);
-
-    this.cleanupTimeoutFunction.addEnvironment(envars.ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
-    this.cleanupTimeoutFunction.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
-    this.allocationTimeoutFunction.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
-
-    this.cleanupTimeoutFunction.grantInvoke(this.role);
-    this.allocationTimeoutFunction.grantInvoke(this.role);
+    this.cleanupTimeout.function.grantInvoke(this.role);
+    this.allocationTimeout.function.grantInvoke(this.role);
 
     this.dlq.grantSendMessages(this.role);
 
@@ -98,19 +66,6 @@ export class Scheduler extends Construct {
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       alarmDescription: runBookAnchor('TODO'),
     });
-  }
-
-  public grantQueryLogs(grantee: iam.IGrantable) {
-    grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:StartQuery',
-        'logs:GetQueryResults',
-      ],
-      resources: [
-        this.allocationTimeoutFunction.logGroup.logGroupArn,
-        this.cleanupTimeoutFunction.logGroup.logGroupArn,
-      ],
-    }));
   }
 
   public metricDlqSize() {

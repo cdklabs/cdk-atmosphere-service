@@ -1,5 +1,7 @@
+import { Unit } from 'aws-embedded-metrics';
 import { RuntimeClients } from '../clients';
 import { AllocationLogger } from '../logging';
+import { PoolAwareMetricsLogger, RuntimeMetrics } from '../metrics';
 import { EnvironmentAlreadyReleasedError, EnvironmentAlreadyReallocated, EnvironmentAlreadyDirtyError } from '../storage/environments.client';
 
 export interface CleanupTimeoutEvent {
@@ -7,6 +9,9 @@ export interface CleanupTimeoutEvent {
   readonly account: string;
   readonly region: string;
 }
+
+export const METRIC_NAME = 'allocation-timeout';
+export const METRIC_DIMENSION_RESULT = 'result';
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -31,6 +36,24 @@ const clients = RuntimeClients.getOrCreate();
  * > that can only be done with a dedicated function.
  */
 export async function handler(event: CleanupTimeoutEvent) {
+
+  return RuntimeMetrics.scoped(async (metrics) => {
+
+    try {
+      await doHandler(event, metrics);
+      metrics.putDimensions({ [METRIC_DIMENSION_RESULT]: 'success' });
+    } catch (e: any) {
+      metrics.putDimensions({ [METRIC_DIMENSION_RESULT]: 'error' });
+      throw e;
+    } finally {
+      metrics.delegate.putMetric(METRIC_NAME, 1, Unit.Count);
+    }
+
+  });
+
+}
+
+export async function doHandler(event: CleanupTimeoutEvent, metrics: PoolAwareMetricsLogger) {
   console.log('Event:', JSON.stringify(event, null, 2));
 
   const account = event.account;
@@ -46,6 +69,7 @@ export async function handler(event: CleanupTimeoutEvent) {
     log.info('Successfully fetched allocation');
 
     log.setPool(allocation.pool);
+    metrics.setPool(allocation.pool);
 
     log.info(`Marking environment 'aws://${account}/${region}' as dirty`);
     await clients.environments.dirty(allocationId, account, region);

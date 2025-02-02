@@ -96,6 +96,26 @@ export class PoolsDashboard extends Construct {
         width: 12,
       }),
       new cloudwatch.GraphWidget({
+        title: 'Allocation Timeout',
+        left: [
+          props.scheduler.allocationTimeout.metricSuccess('$pool').with({ color: GREEN, label: 'success' }),
+          props.scheduler.allocationTimeout.metricError('$pool').with({ color: RED, label: 'error' }),
+        ].map((m) => this.fill(m, '0')),
+        leftYAxis: { min: 0, showUnits: false },
+        height: 6,
+        width: 12,
+      }),
+      new cloudwatch.GraphWidget({
+        title: 'Cleanup Timeout',
+        left: [
+          props.scheduler.cleanupTimeout.metricSuccess('$pool').with({ color: GREEN, label: 'success' }),
+          props.scheduler.cleanupTimeout.metricError('$pool').with({ color: RED, label: 'error' }),
+        ].map((m) => this.fill(m, '0')),
+        leftYAxis: { min: 0, showUnits: false },
+        height: 6,
+        width: 12,
+      }),
+      new cloudwatch.GraphWidget({
         title: 'Cleanup Exit Code',
         left: [
           props.cleanup.metricExitCode('$pool', 0).with({ color: GREEN, label: '0' }),

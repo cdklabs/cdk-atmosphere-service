@@ -30,13 +30,14 @@ export class AllocationLogsWidget extends Construct implements cloudwatch.IWidge
 
     props.allocate.grantQueryLogs(func);
     props.deallocate.grantQueryLogs(func);
-    props.scheduler.grantQueryLogs(func);
+    props.scheduler.allocationTimeout.grantQueryLogs(func);
+    props.scheduler.cleanupTimeout.grantQueryLogs(func);
     props.cleanup.grantQueryLogs(func);
 
     func.addEnvironment(envars.ALLOCATE_LOG_GROUP_NAME_ENV, props.allocate.function.logGroup.logGroupName);
     func.addEnvironment(envars.DEALLOCATE_LOG_GROUP_NAME_ENV, props.deallocate.function.logGroup.logGroupName);
-    func.addEnvironment(envars.ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV, props.scheduler.allocationTimeoutFunction.logGroup.logGroupName);
-    func.addEnvironment(envars.CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV, props.scheduler.cleanupTimeoutFunction.logGroup.logGroupName);
+    func.addEnvironment(envars.ALLOCATION_TIMEOUT_LOG_GROUP_NAME_ENV, props.scheduler.allocationTimeout.function.logGroup.logGroupName);
+    func.addEnvironment(envars.CLEANUP_TIMEOUT_LOG_GROUP_NAME_ENV, props.scheduler.cleanupTimeout.function.logGroup.logGroupName);
     func.addEnvironment(envars.CLEANUP_LOG_GROUP_NAME_ENV, props.cleanup.logGroup.logGroupName);
 
     this._widget = new cloudwatch.CustomWidget({

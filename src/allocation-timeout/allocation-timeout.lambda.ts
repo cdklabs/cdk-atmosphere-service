@@ -1,12 +1,17 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Lambda } from '@aws-sdk/client-lambda';
+import { Unit } from 'aws-embedded-metrics';
 import { RuntimeClients } from '../clients';
 import { Envars, DEALLOCATE_FUNCTION_NAME_ENV } from '../envars';
 import { AllocationLogger } from '../logging';
+import { PoolAwareMetricsLogger, RuntimeMetrics } from '../metrics';
 
 export interface AllocationTimeoutEvent {
   readonly allocationId: string;
 }
+
+export const METRIC_NAME = 'allocation-timeout';
+export const METRIC_DIMENSION_RESULT = 'result';
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -29,6 +34,24 @@ const clients = RuntimeClients.getOrCreate();
  * > on an allocation timeout.
 */
 export async function handler(event: AllocationTimeoutEvent) {
+
+  return RuntimeMetrics.scoped(async (metrics) => {
+
+    try {
+      await doHandler(event, metrics);
+      metrics.putDimensions({ [METRIC_DIMENSION_RESULT]: 'success' });
+    } catch (e: any) {
+      metrics.putDimensions({ [METRIC_DIMENSION_RESULT]: 'error' });
+      throw e;
+    } finally {
+      metrics.delegate.putMetric(METRIC_NAME, 1, Unit.Count);
+    }
+
+  });
+
+}
+
+async function doHandler(event: AllocationTimeoutEvent, metrics: PoolAwareMetricsLogger) {
   console.log('Event:', JSON.stringify(event, null, 2));
 
   const log = new AllocationLogger({ id: event.allocationId, component: 'allocation-timeout' });
@@ -40,6 +63,7 @@ export async function handler(event: AllocationTimeoutEvent) {
     log.info('Successfully fetched allocation');
 
     log.setPool(allocation.pool);
+    metrics.setPool(allocation.pool);
 
     const body = JSON.stringify({ outcome: 'timeout' });
     const lambda = new Lambda();
