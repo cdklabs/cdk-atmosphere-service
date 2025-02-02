@@ -62,8 +62,8 @@ export class Allocate extends Construct {
     this.function.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
     this.function.addEnvironment(envars.SCHEDULER_DLQ_ARN_ENV, props.scheduler.dlq.queueArn);
     this.function.addEnvironment(envars.SCHEDULER_ROLE_ARN_ENV, props.scheduler.role.roleArn);
-    this.function.addEnvironment(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.allocationTimeoutFunction.functionArn);
-    this.function.addEnvironment(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.cleanupTimeoutFunction.functionArn);
+    this.function.addEnvironment(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.allocationTimeout.function.functionArn);
+    this.function.addEnvironment(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.cleanupTimeout.function.functionArn);
 
     // allocation must be able to assume admin roles for all its environments
     // because it passes credentials to clients.

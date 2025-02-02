@@ -2,12 +2,12 @@ import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-g
 import { ECS, waitUntilTasksStopped } from '@aws-sdk/client-ecs';
 import { Lambda } from '@aws-sdk/client-lambda';
 import * as allocate from '../../src/allocate/allocate.lambda';
-import * as allocationTimeout from '../../src/allocation-timeout/allocation-timeout.lambda';
 import * as cleanup from '../../src/cleanup/cleanup.task';
-import * as cleanupTimeout from '../../src/cleanup-timeout/cleanup-timeout.lambda';
 import { RuntimeClients } from '../../src/clients';
 import * as deallocate from '../../src/deallocate/deallocate.lambda';
 import * as envars from '../../src/envars';
+import * as allocationTimeout from '../../src/scheduler/allocation-timeout/allocation-timeout.lambda';
+import * as cleanupTimeout from '../../src/scheduler/cleanup-timeout/cleanup-timeout.lambda';
 import * as _with from '../with';
 
 export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;

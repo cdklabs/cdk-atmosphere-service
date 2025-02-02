@@ -232,6 +232,129 @@ public readonly table: Table;
 ---
 
 
+### AllocationTimeout <a name="AllocationTimeout" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer"></a>
+
+```typescript
+import { AllocationTimeout } from '@cdklabs/cdk-atmosphere-service'
+
+new AllocationTimeout(scope: Construct, id: string, props: AllocationTimeoutProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps">AllocationTimeoutProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps">AllocationTimeoutProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.grantInvoke">grantInvoke</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): void
+```
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.isConstruct"></a>
+
+```typescript
+import { AllocationTimeout } from '@cdklabs/cdk-atmosphere-service'
+
+AllocationTimeout.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout.property.function">function</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `function`<sup>Required</sup> <a name="function" id="@cdklabs/cdk-atmosphere-service.AllocationTimeout.property.function"></a>
+
+```typescript
+public readonly function: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
+
+---
+
+
 ### AtmosphereService <a name="AtmosphereService" id="@cdklabs/cdk-atmosphere-service.AtmosphereService"></a>
 
 Atmosphere service to allocate AWS environments on-demand.
@@ -602,6 +725,129 @@ public readonly task: FargateTaskDefinition;
 ```
 
 - *Type:* aws-cdk-lib.aws_ecs.FargateTaskDefinition
+
+---
+
+
+### CleanupTimeout <a name="CleanupTimeout" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout"></a>
+
+#### Initializers <a name="Initializers" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer"></a>
+
+```typescript
+import { CleanupTimeout } from '@cdklabs/cdk-atmosphere-service'
+
+new CleanupTimeout(scope: Construct, id: string, props: CleanupTimeoutProps)
+```
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer.parameter.props">props</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps">CleanupTimeoutProps</a></code> | *No description.* |
+
+---
+
+##### `scope`<sup>Required</sup> <a name="scope" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer.parameter.scope"></a>
+
+- *Type:* constructs.Construct
+
+---
+
+##### `id`<sup>Required</sup> <a name="id" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer.parameter.id"></a>
+
+- *Type:* string
+
+---
+
+##### `props`<sup>Required</sup> <a name="props" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps">CleanupTimeoutProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.grantInvoke">grantInvoke</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### `grantInvoke` <a name="grantInvoke" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.grantInvoke"></a>
+
+```typescript
+public grantInvoke(grantee: IGrantable): void
+```
+
+###### `grantee`<sup>Required</sup> <a name="grantee" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.grantInvoke.parameter.grantee"></a>
+
+- *Type:* aws-cdk-lib.aws_iam.IGrantable
+
+---
+
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
+
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.isConstruct"></a>
+
+```typescript
+import { CleanupTimeout } from '@cdklabs/cdk-atmosphere-service'
+
+CleanupTimeout.isConstruct(x: any)
+```
+
+Checks if `x` is a construct.
+
+###### `x`<sup>Required</sup> <a name="x" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout.property.function">function</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | *No description.* |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `function`<sup>Required</sup> <a name="function" id="@cdklabs/cdk-atmosphere-service.CleanupTimeout.property.function"></a>
+
+```typescript
+public readonly function: Function;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.Function
 
 ---
 
@@ -1231,8 +1477,8 @@ Any object.
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.allocationTimeoutFunction">allocationTimeoutFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | *No description.* |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.cleanupTimeoutFunction">cleanupTimeoutFunction</a></code> | <code>aws-cdk-lib.aws_lambda.Function</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.allocationTimeout">allocationTimeout</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout">AllocationTimeout</a></code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.cleanupTimeout">cleanupTimeout</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout">CleanupTimeout</a></code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.dlq">dlq</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | *No description.* |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Scheduler.property.role">role</a></code> | <code>aws-cdk-lib.aws_iam.Role</code> | *No description.* |
 
@@ -1250,23 +1496,23 @@ The tree node.
 
 ---
 
-##### `allocationTimeoutFunction`<sup>Required</sup> <a name="allocationTimeoutFunction" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.allocationTimeoutFunction"></a>
+##### `allocationTimeout`<sup>Required</sup> <a name="allocationTimeout" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.allocationTimeout"></a>
 
 ```typescript
-public readonly allocationTimeoutFunction: Function;
+public readonly allocationTimeout: AllocationTimeout;
 ```
 
-- *Type:* aws-cdk-lib.aws_lambda.Function
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeout">AllocationTimeout</a>
 
 ---
 
-##### `cleanupTimeoutFunction`<sup>Required</sup> <a name="cleanupTimeoutFunction" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.cleanupTimeoutFunction"></a>
+##### `cleanupTimeout`<sup>Required</sup> <a name="cleanupTimeout" id="@cdklabs/cdk-atmosphere-service.Scheduler.property.cleanupTimeout"></a>
 
 ```typescript
-public readonly cleanupTimeoutFunction: Function;
+public readonly cleanupTimeout: CleanupTimeout;
 ```
 
-- *Type:* aws-cdk-lib.aws_lambda.Function
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeout">CleanupTimeout</a>
 
 ---
 
@@ -1361,6 +1607,34 @@ public readonly scheduler: Scheduler;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Scheduler">Scheduler</a>
 
 Scheduler.
+
+---
+
+### AllocationTimeoutProps <a name="AllocationTimeoutProps" id="@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps.Initializer"></a>
+
+```typescript
+import { AllocationTimeoutProps } from '@cdklabs/cdk-atmosphere-service'
+
+const allocationTimeoutProps: AllocationTimeoutProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps.property.dlq">dlq</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | *No description.* |
+
+---
+
+##### `dlq`<sup>Required</sup> <a name="dlq" id="@cdklabs/cdk-atmosphere-service.AllocationTimeoutProps.property.dlq"></a>
+
+```typescript
+public readonly dlq: Queue;
+```
+
+- *Type:* aws-cdk-lib.aws_sqs.Queue
 
 ---
 
@@ -1464,6 +1738,45 @@ public readonly environments: Environments;
 - *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 Environments storage.
+
+---
+
+### CleanupTimeoutProps <a name="CleanupTimeoutProps" id="@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps"></a>
+
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.Initializer"></a>
+
+```typescript
+import { CleanupTimeoutProps } from '@cdklabs/cdk-atmosphere-service'
+
+const cleanupTimeoutProps: CleanupTimeoutProps = { ... }
+```
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.dlq">dlq</a></code> | <code>aws-cdk-lib.aws_sqs.Queue</code> | *No description.* |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a></code> | *No description.* |
+
+---
+
+##### `dlq`<sup>Required</sup> <a name="dlq" id="@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.dlq"></a>
+
+```typescript
+public readonly dlq: Queue;
+```
+
+- *Type:* aws-cdk-lib.aws_sqs.Queue
+
+---
+
+##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.CleanupTimeoutProps.property.environments"></a>
+
+```typescript
+public readonly environments: Environments;
+```
+
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environments">Environments</a>
 
 ---
 

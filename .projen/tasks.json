@@ -51,13 +51,13 @@
           "spawn": "bundle:allocate/allocate.lambda"
         },
         {
-          "spawn": "bundle:allocation-timeout/allocation-timeout.lambda"
-        },
-        {
-          "spawn": "bundle:cleanup-timeout/cleanup-timeout.lambda"
-        },
-        {
           "spawn": "bundle:deallocate/deallocate.lambda"
+        },
+        {
+          "spawn": "bundle:scheduler/allocation-timeout/allocation-timeout.lambda"
+        },
+        {
+          "spawn": "bundle:scheduler/cleanup-timeout/cleanup-timeout.lambda"
         },
         {
           "spawn": "bundle:test/integ/allocate/assert.lambda.ts"
@@ -100,47 +100,11 @@
         }
       ]
     },
-    "bundle:allocation-timeout/allocation-timeout.lambda": {
-      "name": "bundle:allocation-timeout/allocation-timeout.lambda",
-      "description": "Create a JavaScript bundle from src/allocation-timeout/allocation-timeout.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:allocation-timeout/allocation-timeout.lambda:watch": {
-      "name": "bundle:allocation-timeout/allocation-timeout.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/allocation-timeout/allocation-timeout.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
-        }
-      ]
-    },
     "bundle:cleanup": {
       "name": "bundle:cleanup",
       "steps": [
         {
           "exec": "esbuild --bundle src/cleanup/cleanup.task.ts --target=\"node18\" --platform=\"node\" --outfile=\"src/cleanup/image/index.js\" --tsconfig=\"tsconfig.dev.json\""
-        }
-      ]
-    },
-    "bundle:cleanup-timeout/cleanup-timeout.lambda": {
-      "name": "bundle:cleanup-timeout/cleanup-timeout.lambda",
-      "description": "Create a JavaScript bundle from src/cleanup-timeout/cleanup-timeout.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/cleanup-timeout/cleanup-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/cleanup-timeout/cleanup-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
-        }
-      ]
-    },
-    "bundle:cleanup-timeout/cleanup-timeout.lambda:watch": {
-      "name": "bundle:cleanup-timeout/cleanup-timeout.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/cleanup-timeout/cleanup-timeout.lambda.ts",
-      "steps": [
-        {
-          "exec": "esbuild --bundle src/cleanup-timeout/cleanup-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/cleanup-timeout/cleanup-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
@@ -159,6 +123,42 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/deallocate/deallocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/deallocate/deallocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:scheduler/allocation-timeout/allocation-timeout.lambda": {
+      "name": "bundle:scheduler/allocation-timeout/allocation-timeout.lambda",
+      "description": "Create a JavaScript bundle from src/scheduler/allocation-timeout/allocation-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/scheduler/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/scheduler/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:scheduler/allocation-timeout/allocation-timeout.lambda:watch": {
+      "name": "bundle:scheduler/allocation-timeout/allocation-timeout.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/scheduler/allocation-timeout/allocation-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/scheduler/allocation-timeout/allocation-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/scheduler/allocation-timeout/allocation-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:scheduler/cleanup-timeout/cleanup-timeout.lambda": {
+      "name": "bundle:scheduler/cleanup-timeout/cleanup-timeout.lambda",
+      "description": "Create a JavaScript bundle from src/scheduler/cleanup-timeout/cleanup-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/scheduler/cleanup-timeout/cleanup-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/scheduler/cleanup-timeout/cleanup-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:scheduler/cleanup-timeout/cleanup-timeout.lambda:watch": {
+      "name": "bundle:scheduler/cleanup-timeout/cleanup-timeout.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/scheduler/cleanup-timeout/cleanup-timeout.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/scheduler/cleanup-timeout/cleanup-timeout.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/scheduler/cleanup-timeout/cleanup-timeout.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
