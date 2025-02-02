@@ -663,7 +663,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7eb25893524ec4ac5ca3484128b911c9e0668625e9b234227a78aa88fc487911"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6e47ed507f137d100dc84bcee6b5eeac34eb9d627e22a4441e470cf496427df5"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1008,7 +1008,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9c4f4f20c1cc89562ccced6eab4fbfb98edfba33b3fd6e57130918d0f4721c3a.zip"
+     "S3Key": "604f617d14c34451c9d14caa174f8c4d4541537fbddcd903c547cb4e67d4e9de.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1173,7 +1173,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bb8bfa35a1aabd51a8861f172b8dda0aeef7706e570f33e81f7dfacfcecd6365.zip"
+     "S3Key": "cbeea44a9d3c9b226c9ed79515a0d5ff2026e637c3dafd8fda32f6c059d2f7ae.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1359,7 +1359,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "56a05f7767097217f65d15d955c6f9df15e5f25d705e0fd7655a20391d89fa82.zip"
+     "S3Key": "ca62b033c473049104f97c054b64a2b51ed651ab8a329d4245890bd04e2d5121.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -1555,7 +1555,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "302f1f33c150ab99d16d09613a1639116e7d635972151971908fad236463e781.zip"
+     "S3Key": "38dff565c9a3ee0f6c289a5a5a64348571d692069bf0bbaa1fe9f09c044bd329.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {

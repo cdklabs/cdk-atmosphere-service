@@ -17,7 +17,7 @@ export async function handler(req: CleanupRequest) {
   return doHandler(allocation, req.timeoutSeconds, log);
 }
 
-export async function doHandler(allocation: Allocation, timeoutSeconds: number, log: Logger) {
+async function doHandler(allocation: Allocation, timeoutSeconds: number, log: Logger) {
 
   const env = `aws://${allocation.account}/${allocation.region}`;
 

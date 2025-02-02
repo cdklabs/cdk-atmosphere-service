@@ -38,7 +38,7 @@ export async function handler(event: CleanupTimeoutEvent) {
   const allocation = await clients.allocations.get(event.allocationId);
   const log = new Logger({ allocationId: allocationId, pool: allocation.pool, component: 'cleanup-timeout' });
 
-  return doHandler(event, log);
+  await doHandler(event, log);
 }
 
 export async function doHandler(event: CleanupTimeoutEvent, log: Logger) {
@@ -63,7 +63,6 @@ export async function doHandler(event: CleanupTimeoutEvent, log: Logger) {
       log.info(e.message);
       return;
     }
-
     log.error(e);
     throw e;
   }

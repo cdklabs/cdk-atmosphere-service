@@ -34,26 +34,26 @@ export async function handler(event: AllocationTimeoutEvent) {
   const allocation = await clients.allocations.get(event.allocationId);
   const log = new Logger({ allocationId: event.allocationId, pool: allocation.pool, component: 'allocation-timeout' });
 
+  await doHandler(event, log);
+}
+
+export async function doHandler(event: AllocationTimeoutEvent, log: Logger) {
   try {
-    return await doHandler(event, log);
+    const body = JSON.stringify({ outcome: 'timeout' });
+    const lambda = new Lambda();
+
+    const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
+    const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
+
+    log.info(`Invoking ${target} with payload: ${payload}`);
+    const response = await lambda.invoke({ FunctionName: target, InvocationType: 'RequestResponse', Payload: payload });
+    const responsePayload = JSON.parse(response.Payload?.transformToString('utf-8') ?? '{}');
+    if (responsePayload.statusCode !== 200) {
+      throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
+    }
+    log.info('Done');
   } catch (e: any) {
     log.error(e);
     throw e;
   }
-}
-
-export async function doHandler(event: AllocationTimeoutEvent, log: Logger) {
-  const body = JSON.stringify({ outcome: 'timeout' });
-  const lambda = new Lambda();
-
-  const payload = JSON.stringify({ pathParameters: { id: event.allocationId }, body });
-  const target = Envars.required(DEALLOCATE_FUNCTION_NAME_ENV);
-
-  log.info(`Invoking ${target} with payload: ${payload}`);
-  const response = await lambda.invoke({ FunctionName: target, InvocationType: 'RequestResponse', Payload: payload });
-  const responsePayload = JSON.parse(response.Payload?.transformToString('utf-8') ?? '{}');
-  if (responsePayload.statusCode !== 200) {
-    throw new Error(`Unexpected response status code ${responsePayload.statusCode}: ${responsePayload.body}`);
-  }
-  log.info('Done');
 }
