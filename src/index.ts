@@ -6,4 +6,6 @@ export * from './deallocate';
 export * from './api';
 export * from './scheduler';
 export * from './cleanup';
-export * from './dashboards/pools';
+export * from './dashboards';
+export * from './cleanup-timeout';
+export * from './allocation-timeout';

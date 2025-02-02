@@ -1,6 +1,7 @@
 import { Duration } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { CleanupTimeoutFunction } from './cleanup-timeout-function';
@@ -18,7 +19,7 @@ export interface CleanupTimeoutProps {
 
 export class CleanupTimeout extends Construct {
 
-  public readonly function: CleanupTimeoutFunction;
+  public readonly function: lambda.Function;
 
   constructor(scope: Construct, id: string, props: CleanupTimeoutProps) {
     super(scope, id);

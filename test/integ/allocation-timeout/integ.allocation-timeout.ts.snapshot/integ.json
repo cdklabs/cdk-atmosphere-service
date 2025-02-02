@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "atmosphere-integ-allocation-timeout"
+      ],
+      "diffAssets": true,
+      "assertionStack": "atmosphere-integ-allocation-timeout-assertions",
+      "assertionStackName": "atmosphere-integ-allocation-timeout-assertions"
+    }
+  }
+}

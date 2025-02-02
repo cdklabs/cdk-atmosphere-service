@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "atmosphere-integ-deallocate"
+      ],
+      "diffAssets": true,
+      "assertionStack": "atmosphere-integ-deallocate-assertions",
+      "assertionStackName": "atmosphere-integ-deallocate-assertions"
+    }
+  }
+}

@@ -256,7 +256,7 @@ describe('EnvironmentsClient', () => {
       expect(ddbMock).toHaveReceivedCommandTimes(DeleteItemCommand, 1);
       expect(ddbMock.commandCall(0, DeleteItemCommand).args[0].input).toMatchInlineSnapshot(`
 {
-  "ConditionExpression": "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status = :expected_status_value",
+  "ConditionExpression": "attribute_exists(#account) AND attribute_exists(#region) AND #allocation = :allocation_value AND #status <> :unexpected_status_value",
   "ExpressionAttributeNames": {
     "#account": "account",
     "#allocation": "allocation",
@@ -267,8 +267,8 @@ describe('EnvironmentsClient', () => {
     ":allocation_value": {
       "S": "id",
     },
-    ":expected_status_value": {
-      "S": "cleaning",
+    ":unexpected_status_value": {
+      "S": "in-use",
     },
   },
   "Key": {
