@@ -237,6 +237,56 @@
     tslib "^2.6.2"
     uuid "^9.0.1"
 
+"@aws-sdk/client-cloudwatch-logs@3.734.0":
+  version "3.734.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-cloudwatch-logs/-/client-cloudwatch-logs-3.734.0.tgz#b7e73deb26817d967d5e8da4508b88701c64d00b"
+  integrity sha512-i3UDGOq4E83hKjZMPnL4jDVryWRZbyjvr76YA1x9q7TPpmpcWZc2oOPNZYrbB4yWU5wh7QEr6j/3N9iO59esDg==
+  dependencies:
+    "@aws-crypto/sha256-browser" "5.2.0"
+    "@aws-crypto/sha256-js" "5.2.0"
+    "@aws-sdk/core" "3.734.0"
+    "@aws-sdk/credential-provider-node" "3.734.0"
+    "@aws-sdk/middleware-host-header" "3.734.0"
+    "@aws-sdk/middleware-logger" "3.734.0"
+    "@aws-sdk/middleware-recursion-detection" "3.734.0"
+    "@aws-sdk/middleware-user-agent" "3.734.0"
+    "@aws-sdk/region-config-resolver" "3.734.0"
+    "@aws-sdk/types" "3.734.0"
+    "@aws-sdk/util-endpoints" "3.734.0"
+    "@aws-sdk/util-user-agent-browser" "3.734.0"
+    "@aws-sdk/util-user-agent-node" "3.734.0"
+    "@smithy/config-resolver" "^4.0.1"
+    "@smithy/core" "^3.1.1"
+    "@smithy/eventstream-serde-browser" "^4.0.1"
+    "@smithy/eventstream-serde-config-resolver" "^4.0.1"
+    "@smithy/eventstream-serde-node" "^4.0.1"
+    "@smithy/fetch-http-handler" "^5.0.1"
+    "@smithy/hash-node" "^4.0.1"
+    "@smithy/invalid-dependency" "^4.0.1"
+    "@smithy/middleware-content-length" "^4.0.1"
+    "@smithy/middleware-endpoint" "^4.0.2"
+    "@smithy/middleware-retry" "^4.0.3"
+    "@smithy/middleware-serde" "^4.0.1"
+    "@smithy/middleware-stack" "^4.0.1"
+    "@smithy/node-config-provider" "^4.0.1"
+    "@smithy/node-http-handler" "^4.0.2"
+    "@smithy/protocol-http" "^5.0.1"
+    "@smithy/smithy-client" "^4.1.2"
+    "@smithy/types" "^4.1.0"
+    "@smithy/url-parser" "^4.0.1"
+    "@smithy/util-base64" "^4.0.0"
+    "@smithy/util-body-length-browser" "^4.0.0"
+    "@smithy/util-body-length-node" "^4.0.0"
+    "@smithy/util-defaults-mode-browser" "^4.0.3"
+    "@smithy/util-defaults-mode-node" "^4.0.3"
+    "@smithy/util-endpoints" "^3.0.1"
+    "@smithy/util-middleware" "^4.0.1"
+    "@smithy/util-retry" "^4.0.1"
+    "@smithy/util-utf8" "^4.0.0"
+    "@types/uuid" "^9.0.1"
+    tslib "^2.6.2"
+    uuid "^9.0.1"
+
 "@aws-sdk/client-cognito-identity@3.734.0":
   version "3.734.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/client-cognito-identity/-/client-cognito-identity-3.734.0.tgz#ea7b69b76f6a0aaa72a8fe84812e89dc7fe8cc90"
@@ -1426,6 +1476,11 @@
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@csstools/css-tokenizer/-/css-tokenizer-3.0.3.tgz#a5502c8539265fecbd873c1e395a890339f119c2"
   integrity sha512-UJnjoFsmxfKUdNYdWgOB0mWUypuLvAfQPH1+pyvRJs6euowbFkFC6P13w1l8mJyi3vxYMxc9kld5jZEGRQs6bw==
+
+"@datastructures-js/heap@^4.0.2":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@datastructures-js/heap/-/heap-4.3.3.tgz#824c10f092ab03180702f0dea8ce96227ffe50a8"
+  integrity sha512-UcUu/DLh/aM4W3C8zZfwxxm6/6FIZUlm3mcAXuNOCa6Aj4iizNvNXQyb8DjZQH2jKSQbMRyNlngP6TPimuGjpQ==
 
 "@esbuild/aix-ppc64@0.24.2":
   version "0.24.2"
@@ -3177,6 +3232,13 @@ aws-cdk@2.177.0, aws-cdk@^2.177.0:
   integrity sha512-TiBoyE5wMB5q4jX1bELwkklgbs5eLY1Phjfnb4Mof0K9tOSRJ9UEq6xEamF0esMS+TuYU7a/ESTpmKX3iYqA3w==
   optionalDependencies:
     fsevents "2.3.2"
+
+aws-embedded-metrics@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/aws-embedded-metrics/-/aws-embedded-metrics-4.2.0.tgz#6a2ccd5ff22573be8a790d68d482ab2757dc6f59"
+  integrity sha512-IFZTPulj5OEgl2BuGMWyHPo6fF5wVAojGr2V23ilI+znCJ7WcMHPi0X0Q98lkdXJtVDE2ASID58vGub22oBZtg==
+  dependencies:
+    "@datastructures-js/heap" "^4.0.2"
 
 aws-sdk-client-mock-jest@^4.1.0:
   version "4.1.0"

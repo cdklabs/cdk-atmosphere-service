@@ -12,6 +12,7 @@
     },
     {
       "name": "@aws-sdk/client-cloudwatch-logs",
+      "version": "3.734.0",
       "type": "build"
     },
     {
