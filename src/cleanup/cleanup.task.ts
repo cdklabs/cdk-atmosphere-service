@@ -3,7 +3,7 @@ import { Cleaner, CleanerError } from './cleaner';
 import * as envars from '../envars';
 import { Logger } from '../logging';
 import { Allocation } from '../storage/allocations.client';
-import { EnvironmentAlreadyDirtyError } from '../storage/environments.client';
+import { EnvironmentAlreadyInUseError } from '../storage/environments.client';
 
 const clients = RuntimeClients.getOrCreate();
 
@@ -39,12 +39,11 @@ export async function doHandler(allocation: Allocation, timeoutSeconds: number, 
     log.info('Done!');
   } catch (e: any) {
 
-    if (e instanceof EnvironmentAlreadyDirtyError) {
-      // unlikely but can happen if the cleanup timeout event already triggered.
-      // even though we successfully cleaned the environment, we still keep it marked as
-      // dirty because it took too long, and needs investigation.
-      log.info(`Environment ${env} was cleaned successfully, but it took too long to complete.`);
-      return;
+    if (e instanceof EnvironmentAlreadyInUseError) {
+      // this is an illegal state transition and should never happen.
+      // TODO - we should catch this state before cleaning any resources.
+      log.error(e, `Failed releasing environment '${env}'`);
+      throw e;
     }
 
     log.error(e);

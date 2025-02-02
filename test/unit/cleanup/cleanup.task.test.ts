@@ -1,7 +1,7 @@
 import { Cleaner, CleanerError } from '../../../src/cleanup/cleaner';
 import { handler } from '../../../src/cleanup/cleanup.task';
 import { RuntimeClients } from '../../../src/clients';
-import { EnvironmentAlreadyDirtyError } from '../../../src/storage/environments.client';
+import { EnvironmentAlreadyInUseError } from '../../../src/storage/environments.client';
 import { RuntimeClientsMock } from '../clients.mock';
 
 // this grabs the same instance the handler uses
@@ -44,16 +44,18 @@ describe('handler', () => {
 
   });
 
-  test('gracefull handles when the environment is already dirty', async () => {
+  test('rethrows when the environment is already in-use', async () => {
 
     jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1' } as any);
     jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
-    jest.spyOn(clients.environments, 'release').mockRejectedValue(new EnvironmentAlreadyDirtyError('1111', 'us-east-1'));
+    jest.spyOn(clients.environments, 'release').mockRejectedValue(new EnvironmentAlreadyInUseError('1111', 'us-east-1'));
+    jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
     const mockClean = jest.fn();
     jest.spyOn(Cleaner.prototype, 'clean').mockImplementation(mockClean);
 
-    await handler({ allocationId: 'id', timeoutSeconds: 10 });
+    await expect(handler({ allocationId: 'id', timeoutSeconds: 10 })).rejects.toThrow(EnvironmentAlreadyInUseError);
+    expect(clients.environments.dirty).toHaveBeenCalledTimes(0);
 
   });
 
