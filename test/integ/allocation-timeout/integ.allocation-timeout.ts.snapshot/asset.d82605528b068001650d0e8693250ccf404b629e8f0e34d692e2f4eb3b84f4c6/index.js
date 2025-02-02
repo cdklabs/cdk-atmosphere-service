@@ -10792,7 +10792,7 @@ var require_unzip2 = __commonJS({
   }
 });
 
-// test/integ/allocate/assert.lambda.ts
+// test/integ/allocation-timeout/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
@@ -12124,6 +12124,9 @@ var Runner = class _Runner {
    * Run an assertion function in a fresh service state.
    */
   static async assert(testCase, assertion) {
+    if (!_Runner.shouldRun(testCase)) {
+      return SUCCESS_PAYLOAD;
+    }
     const test = await _Runner.create(testCase);
     await test.clear();
     try {
@@ -12140,6 +12143,11 @@ var Runner = class _Runner {
     const value = process.env[CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV];
     if (value === "false" || value === "0") return false;
     return true;
+  }
+  static shouldRun(testCase) {
+    const selection = process.env.CDK_ATMOSPHERE_INTEG_TEST_CASE_SELECTION;
+    if (!selection) return true;
+    return testCase === selection;
   }
   static async unzip(bucket, key, to) {
     const response = await s32.getObject({
@@ -12299,26 +12307,23 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/allocate/assert.lambda.ts
+// test/integ/allocation-timeout/assert.lambda.ts
 var clients6 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("creates-the-right-resources", async (session) => {
+  await Runner.assert("ends-allocation-if-active", async (session) => {
     const response = await session.runtime.allocate({ pool: "release", requester: "test" });
-    assert2.strictEqual(response.status, 200);
     const body = JSON.parse(response.body);
-    const environment = await clients6.environments.get(body.environment.account, body.environment.region);
-    assert2.strictEqual(environment.status, "in-use");
-    assert2.strictEqual(environment.allocation, body.id);
-    const allocation = await clients6.allocations.get(environment.allocation);
-    assert2.strictEqual(allocation.account, body.environment.account);
-    assert2.strictEqual(allocation.region, body.environment.region);
-    const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
-    assert2.ok(timeoutSchedule);
+    await session.runtime.allocationTimeout({ allocationId: body.id });
+    const allocation = await clients6.allocations.get(body.id);
+    assert2.ok(allocation.end);
   });
-  await Runner.assert("responds-with-locked-when-no-environments-are-available", async (session) => {
-    await session.runtime.allocate({ pool: "release", requester: "test" });
-    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
-    assert2.strictEqual(response.status, 423);
+  await Runner.assert("no-ops-if-allocation-has-ended", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test", durationSeconds: 30 });
+    const body = JSON.parse(response.body);
+    await clients6.allocations.end({ id: body.id, outcome: "success" });
+    await session.runtime.allocationTimeout({ allocationId: body.id });
+    const allocation = await clients6.allocations.get(body.id);
+    assert2.strictEqual(allocation.outcome, "success");
   });
   return SUCCESS_PAYLOAD;
 }

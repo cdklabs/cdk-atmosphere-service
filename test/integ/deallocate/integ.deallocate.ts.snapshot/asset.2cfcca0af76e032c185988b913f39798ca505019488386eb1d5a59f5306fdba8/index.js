@@ -12124,6 +12124,9 @@ var Runner = class _Runner {
    * Run an assertion function in a fresh service state.
    */
   static async assert(testCase, assertion) {
+    if (!_Runner.shouldRun(testCase)) {
+      return SUCCESS_PAYLOAD;
+    }
     const test = await _Runner.create(testCase);
     await test.clear();
     try {
@@ -12140,6 +12143,11 @@ var Runner = class _Runner {
     const value = process.env[CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT_ENV];
     if (value === "false" || value === "0") return false;
     return true;
+  }
+  static shouldRun(testCase) {
+    const selection = process.env.CDK_ATMOSPHERE_INTEG_TEST_CASE_SELECTION;
+    if (!selection) return true;
+    return testCase === selection;
   }
   static async unzip(bucket, key, to) {
     const response = await s32.getObject({
