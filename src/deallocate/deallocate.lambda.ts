@@ -35,18 +35,28 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
+  let allocationId, request, pool;
   try {
-    const [allocationId, request] = parseEvent(event);
-    const pool = (await clients.allocations.get(allocationId)).pool;
-    const log = new Logger({ allocationId, pool, component: 'deallocate' });
-    return await doHandler(allocationId, request, log);
+    [allocationId, request] = parseEvent(event);
+    pool = (await clients.allocations.get(allocationId)).pool;
   } catch (e: any) {
-    return failure(e instanceof ProxyError ? e.statusCode : 500, e.message);
+    return failure(e);
   }
 
+  const log = new Logger({ allocationId, pool, component: 'deallocate' });
+  return safeDoHandler(allocationId, request, log);
 }
 
-export async function doHandler(allocationId: string, request: DeallocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
+async function safeDoHandler(allocationId: string, request: DeallocateRequest, log: Logger) {
+  try {
+    return await doHandler(allocationId, request, log);
+  } catch (e: any) {
+    log.error(e);
+    return failure(e);
+  }
+}
+
+async function doHandler(allocationId: string, request: DeallocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
   try {
 
     const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
@@ -84,12 +94,7 @@ export async function doHandler(allocationId: string, request: DeallocateRequest
       return success({ cleanupDurationSeconds: -1 });
     }
 
-    log.error(e);
-
-    return {
-      statusCode: e instanceof ProxyError ? e.statusCode : 500,
-      body: JSON.stringify({ message: e.message }),
-    };
+    throw e;
   }
 }
 
@@ -127,6 +132,7 @@ function success(body: any) {
   return { statusCode: 200, body: JSON.stringify(body) };
 }
 
-function failure(statusCode: number, message: string) {
-  return { statusCode: statusCode, body: JSON.stringify({ message }) };
+function failure(e: any) {
+  const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+  return { statusCode: statusCode, body: JSON.stringify({ message: e.message }) };
 }

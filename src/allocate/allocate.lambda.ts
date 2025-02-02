@@ -48,53 +48,60 @@ const clients = RuntimeClients.getOrCreate();
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   console.log('Event:', JSON.stringify(event, null, 2));
 
+  const allocationId = crypto.randomUUID();
+
+  let request;
   try {
-    const allocationId = crypto.randomUUID();
-    const request = parseRequestBody(event.body);
-    const log = new Logger({ allocationId: allocationId, pool: request.pool, component: 'allocate' });
-    return await doHandler(allocationId, request, log);
+    request = parseRequestBody(event.body);
   } catch (e: any) {
-    return failure(e instanceof ProxyError ? e.statusCode : 500, e.message);
+    return failure(e);
   }
+
+  const log = new Logger({ allocationId: allocationId, pool: request.pool, component: 'allocate' });
+  return safeDoHandler(allocationId, request, log);
 
 }
 
-export async function doHandler(allocationId: string, request: AllocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
+async function safeDoHandler(allocationId: string, request: AllocateRequest, log: Logger) {
   try {
-    const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-    if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-      throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-    }
-
-    const timeoutDate = new Date(Date.now() + 1000 * durationSeconds);
-
-    log.info(`Acquiring environment from pool '${request.pool}'`);
-    const environment = await acquireEnvironment(allocationId, request.pool);
-
-    log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
-    await startAllocation(allocationId, environment, request.requester);
-
-    log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-    const credentials = await grabCredentials(allocationId, environment);
-
-    log.info('Allocation started successfully');
-
-    const response: AllocateResponse = { id: allocationId, environment, credentials, durationSeconds };
-
-    log.info(`Scheduling allocation timeout to ${timeoutDate}`);
-    await clients.scheduler.scheduleAllocationTimeout({
-      allocationId,
-      timeoutDate,
-      functionArn: envars.Envars.required(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
-    });
-
-    log.info('Done');
-    return success(response);
-
+    return await doHandler(allocationId, request, log);
   } catch (e: any) {
     log.error(e);
-    throw e;
+    return failure(e);
   }
+}
+
+async function doHandler(allocationId: string, request: AllocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
+  const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
+  if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
+    throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
+  }
+
+  const timeoutDate = new Date(Date.now() + 1000 * durationSeconds);
+
+  log.info(`Acquiring environment from pool '${request.pool}'`);
+  const environment = await acquireEnvironment(allocationId, request.pool);
+
+  log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
+  await startAllocation(allocationId, environment, request.requester);
+
+  log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
+  const credentials = await grabCredentials(allocationId, environment);
+
+  log.info('Allocation started successfully');
+
+  const response: AllocateResponse = { id: allocationId, environment, credentials, durationSeconds };
+
+  log.info(`Scheduling allocation timeout to ${timeoutDate}`);
+  await clients.scheduler.scheduleAllocationTimeout({
+    allocationId,
+    timeoutDate,
+    functionArn: envars.Envars.required(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV),
+  });
+
+  log.info('Done');
+  return success(response);
+
 }
 
 function parseRequestBody(body: string | null): AllocateRequest {
@@ -186,6 +193,7 @@ function success(body: any) {
   return { statusCode: 200, body: JSON.stringify(body) };
 }
 
-function failure(statusCode: number, message: string) {
-  return { statusCode: statusCode, body: JSON.stringify({ message }) };
+function failure(e: any) {
+  const statusCode = e instanceof ProxyError ? e.statusCode : 500;
+  return { statusCode: statusCode, body: JSON.stringify({ message: e.message }) };
 }
