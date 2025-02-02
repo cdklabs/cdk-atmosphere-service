@@ -9,18 +9,20 @@ import { Environments } from '../../storage';
 
 export interface CleanupTimeoutProps {
   readonly environments: Environments;
-  readonly dlq: sqs.Queue;
 }
 
 export class CleanupTimeout extends Construct {
 
+  public readonly dlq: sqs.Queue;
   public readonly function: lambda.Function;
 
   constructor(scope: Construct, id: string, props: CleanupTimeoutProps) {
     super(scope, id);
 
+    this.dlq = new sqs.Queue(this, 'DLQ', { encryption: sqs.QueueEncryption.KMS_MANAGED });
+
     this.function = new CleanupTimeoutFunction(this, 'Function', {
-      deadLetterQueue: props.dlq,
+      deadLetterQueue: this.dlq,
       timeout: Duration.minutes(1),
     });
 

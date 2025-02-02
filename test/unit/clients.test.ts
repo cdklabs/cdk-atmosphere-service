@@ -56,11 +56,7 @@ describe('RuntimeClients', () => {
 
     expect(() => clients.scheduler).toThrow(`Missing environment variable: ${envars.SCHEDULER_ROLE_ARN_ENV}`);
 
-    await _with.env( { [envars.SCHEDULER_ROLE_ARN_ENV]: 'dlq' }, async () => {
-      expect(() => clients.scheduler).toThrow(`Missing environment variable: ${envars.SCHEDULER_DLQ_ARN_ENV}`);
-    });
-
-    await _with.env( { [envars.SCHEDULER_DLQ_ARN_ENV]: 'dql', [envars.SCHEDULER_ROLE_ARN_ENV]: 'arn' }, async () => {
+    await _with.env( { [envars.SCHEDULER_ROLE_ARN_ENV]: 'arn' }, async () => {
       expect(clients.scheduler).toBeDefined();
     });
 

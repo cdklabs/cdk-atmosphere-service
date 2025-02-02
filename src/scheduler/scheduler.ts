@@ -1,5 +1,4 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { Allocations, Environments } from '../storage';
 import { AllocationTimeout } from './allocation-timeout';
@@ -26,7 +25,6 @@ export interface SchedulerProps {
 export class Scheduler extends Construct {
 
   public readonly role: iam.Role;
-  public readonly dlq: sqs.Queue;
   public readonly cleanupTimeout: CleanupTimeout;
   public readonly allocationTimeout: AllocationTimeout;
 
@@ -37,20 +35,16 @@ export class Scheduler extends Construct {
       assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
     });
 
-    this.dlq = new sqs.Queue(this, 'DLQ', { encryption: sqs.QueueEncryption.KMS_MANAGED });
-
     this.cleanupTimeout = new CleanupTimeout(this, 'CleanupTimeout', {
       environments: props.environments,
-      dlq: this.dlq,
     });
-    this.allocationTimeout = new AllocationTimeout(this, 'AllocationTimeout', {
-      dlq: this.dlq,
-    });
+    this.allocationTimeout = new AllocationTimeout(this, 'AllocationTimeout');
 
     this.cleanupTimeout.grantInvoke(this.role);
     this.allocationTimeout.grantInvoke(this.role);
 
-    this.dlq.grantSendMessages(this.role);
+    this.cleanupTimeout.dlq.grantSendMessages(this.role);
+    this.allocationTimeout.dlq.grantSendMessages(this.role);
 
   }
 

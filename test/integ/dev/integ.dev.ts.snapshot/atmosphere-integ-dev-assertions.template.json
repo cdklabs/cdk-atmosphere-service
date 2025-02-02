@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ed17263731f13e2faf7948234af3c58f7e9b38d8855cd4e7fe206ce36a8e0894.zip"
+     "S3Key": "39bba9e59e07df6c8db55fbeaa33ce462ef67fd1e406413565af49e1b41cee2a.zip"
     },
     "Description": "test/integ/dev/assert.lambda.ts",
     "Environment": {
@@ -67,8 +67,11 @@
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
       },
       "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutDLQ26CDE2AAArnEAE49F52"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutDLQBA504919Arn1A7D060C"
       },
       "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
        "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
@@ -147,7 +150,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738491957795"
+    "salt": "1738508565779"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -287,9 +290,14 @@
   "CDK0ATMOSPHERE0CONFIGURATION0FILE0KEY": {
    "Value": "configuration.json"
   },
-  "CDK0ATMOSPHERE0SCHEDULER0DLQ0ARN": {
+  "CDK0ATMOSPHERE0ALLOCATION0TIMEOUT0DLQ0ARN": {
    "Value": {
-    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutDLQ26CDE2AAArnEAE49F52"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TIMEOUT0DLQ0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutDLQBA504919Arn1A7D060C"
    }
   },
   "CDK0ATMOSPHERE0SCHEDULER0ROLE0ARN": {

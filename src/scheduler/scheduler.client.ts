@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Scheduler } from '@aws-sdk/client-scheduler';
+import * as envars from '../envars';
 
 /**
  * Properties for the `SchedulerClient`.
@@ -9,10 +10,6 @@ export interface SchedulerClientProps {
    * The role eventbridge will use to invoke the event on its target.
    */
   readonly roleArn: string;
-  /**
-   * Unsuccessfull delivieries of events will be sent to this DLQ.
-   */
-  readonly dlqArn: string;
 }
 
 /**
@@ -77,6 +74,7 @@ export class SchedulerClient {
       functionArn: opts.functionArn,
       at: opts.timeoutDate,
       payload: { allocationId: opts.allocationId },
+      dlqArn: envars.Envars.required(envars.ALLOCATION_TIMEOUT_DLQ_ARN_ENV),
     });
   }
 
@@ -90,6 +88,7 @@ export class SchedulerClient {
       functionArn: opts.functionArn,
       at: opts.timeoutDate,
       payload: { allocationId: opts.allocationId, account: opts.account, region: opts.region },
+      dlqArn: envars.Envars.required(envars.CLEANUP_TIMEOUT_DLQ_ARN_ENV),
     });
 
   }
@@ -115,7 +114,7 @@ export class SchedulerClient {
       ScheduleExpressionTimezone: 'UTC',
       Target: {
         DeadLetterConfig: {
-          Arn: this.props.dlqArn,
+          Arn: opts.dlqArn,
         },
         Arn: opts.functionArn,
         RoleArn: this.props.roleArn,
@@ -134,4 +133,5 @@ interface ScheduleLambdaInvokeOptions {
   readonly description: string;
   readonly at: Date;
   readonly payload: any;
+  readonly dlqArn: string;
 }

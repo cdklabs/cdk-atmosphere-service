@@ -60,7 +60,7 @@ export class Allocate extends Construct {
     this.function.addEnvironment(envars.CONFIGURATION_KEY_ENV, props.configuration.key);
     this.function.addEnvironment(envars.ENVIRONMENTS_TABLE_NAME_ENV, props.environments.table.tableName);
     this.function.addEnvironment(envars.ALLOCATIONS_TABLE_NAME_ENV, props.allocations.table.tableName);
-    this.function.addEnvironment(envars.SCHEDULER_DLQ_ARN_ENV, props.scheduler.dlq.queueArn);
+    this.function.addEnvironment(envars.ALLOCATION_TIMEOUT_DLQ_ARN_ENV, props.scheduler.allocationTimeout.dlq.queueArn);
     this.function.addEnvironment(envars.SCHEDULER_ROLE_ARN_ENV, props.scheduler.role.roleArn);
     this.function.addEnvironment(envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.allocationTimeout.function.functionArn);
     this.function.addEnvironment(envars.CLEANUP_TIMEOUT_FUNCTION_ARN_ENV, props.scheduler.cleanupTimeout.function.functionArn);
