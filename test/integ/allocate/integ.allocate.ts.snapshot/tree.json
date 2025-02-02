@@ -1057,7 +1057,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:5096c581be5a94338982ed6720710f69e1ddc95d8b3be5768db0783cced2cae0"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:96cb0556ff769c6f0ee783c9dc4cad7b327a4d8900ed6676b6a6aaab2c3a4239"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1296,9 +1296,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.7]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.7]}eu-central-1",
+                    "path": "atmosphere-integ-allocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.7]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -1416,12 +1416,20 @@
                                         "sqs:SendMessage"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "AtmosphereSchedulerDLQCF6976A3",
-                                          "Arn"
-                                        ]
-                                      }
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereSchedulerCleanupTimeoutDLQBA504919",
+                                            "Arn"
+                                          ]
+                                        }
+                                      ]
                                     }
                                   ],
                                   "Version": "2012-10-17"
@@ -1451,34 +1459,34 @@
                       "version": "2.177.0"
                     }
                   },
-                  "DLQ": {
-                    "id": "DLQ",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/DLQ",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/DLQ/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
-                          "aws:cdk:cloudformation:props": {
-                            "kmsMasterKeyId": "alias/aws/sqs"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
-                          "version": "2.177.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sqs.Queue",
-                      "version": "2.177.0"
-                    }
-                  },
                   "CleanupTimeout": {
                     "id": "CleanupTimeout",
                     "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/CleanupTimeout",
                     "children": {
+                      "DLQ": {
+                        "id": "DLQ",
+                        "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/CleanupTimeout/DLQ",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/CleanupTimeout/DLQ/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                              "aws:cdk:cloudformation:props": {
+                                "kmsMasterKeyId": "alias/aws/sqs"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                              "version": "2.177.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                          "version": "2.177.0"
+                        }
+                      },
                       "Function": {
                         "id": "Function",
                         "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/CleanupTimeout/Function",
@@ -1551,7 +1559,7 @@
                                               "Effect": "Allow",
                                               "Resource": {
                                                 "Fn::GetAtt": [
-                                                  "AtmosphereSchedulerDLQCF6976A3",
+                                                  "AtmosphereSchedulerCleanupTimeoutDLQBA504919",
                                                   "Arn"
                                                 ]
                                               }
@@ -1648,12 +1656,12 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "439bf5a987bd5e1b2e962f573ae895bb952ed6da6b8cd65f147f804a99694d43.zip"
+                                  "s3Key": "69ca29c878d7964d48568676a1b62765145c65894d518f3215fc705148a98b00.zip"
                                 },
                                 "deadLetterConfig": {
                                   "targetArn": {
                                     "Fn::GetAtt": [
-                                      "AtmosphereSchedulerDLQCF6976A3",
+                                      "AtmosphereSchedulerCleanupTimeoutDLQBA504919",
                                       "Arn"
                                     ]
                                   }
@@ -1699,6 +1707,30 @@
                     "id": "AllocationTimeout",
                     "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/AllocationTimeout",
                     "children": {
+                      "DLQ": {
+                        "id": "DLQ",
+                        "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/AllocationTimeout/DLQ",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/AllocationTimeout/DLQ/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                              "aws:cdk:cloudformation:props": {
+                                "kmsMasterKeyId": "alias/aws/sqs"
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                              "version": "2.177.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_sqs.Queue",
+                          "version": "2.177.0"
+                        }
+                      },
                       "Function": {
                         "id": "Function",
                         "path": "atmosphere-integ-allocate/Atmosphere/Scheduler/AllocationTimeout/Function",
@@ -1771,7 +1803,7 @@
                                               "Effect": "Allow",
                                               "Resource": {
                                                 "Fn::GetAtt": [
-                                                  "AtmosphereSchedulerDLQCF6976A3",
+                                                  "AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA",
                                                   "Arn"
                                                 ]
                                               }
@@ -1866,12 +1898,12 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "4a3b772857c9f8eb3de53c93ffa41466f2f2d0945ccd9c8764d9d4eaafacfd8a.zip"
+                                  "s3Key": "e93dd9d6bad675dcd5a8dcb6e7e508546642b04ee63bc7d88ed7a0fe05eb0dbb.zip"
                                 },
                                 "deadLetterConfig": {
                                   "targetArn": {
                                     "Fn::GetAtt": [
-                                      "AtmosphereSchedulerDLQCF6976A3",
+                                      "AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA",
                                       "Arn"
                                     ]
                                   }
@@ -2143,7 +2175,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "3fe4f8d036045d40550bd76ad7830ecde42ecbd953086b99154b15ab1dedfd6d.zip"
+                              "s3Key": "bb870d75114e42debdc428efa88fdea11a6b667a02cccb63e55643133e66345e.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -2159,9 +2191,9 @@
                                 "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
                                   "Ref": "AtmosphereAllocationsTable4ECEFD7B"
                                 },
-                                "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
+                                "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN": {
                                   "Fn::GetAtt": [
-                                    "AtmosphereSchedulerDLQCF6976A3",
+                                    "AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA",
                                     "Arn"
                                   ]
                                 },
@@ -2207,9 +2239,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.7]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.7]}eu-central-1",
+                    "path": "atmosphere-integ-allocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.7]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2435,7 +2467,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "e81934f52e339ce1fcbd1b64c51a5277942e7325827430cb2cc79f85e0c2b500.zip"
+                              "s3Key": "10c980138f79b04e5509d8e4dcead314bacb48e6926800141d3f7fc3b2a708a7.zip"
                             },
                             "description": "src/deallocate/deallocate.lambda.ts",
                             "environment": {
@@ -2447,9 +2479,9 @@
                                 "CDK_ATMOSPHERE_ALLOCATIONS_TABLE_NAME": {
                                   "Ref": "AtmosphereAllocationsTable4ECEFD7B"
                                 },
-                                "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
+                                "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN": {
                                   "Fn::GetAtt": [
-                                    "AtmosphereSchedulerDLQCF6976A3",
+                                    "AtmosphereSchedulerCleanupTimeoutDLQBA504919",
                                     "Arn"
                                   ]
                                 },
@@ -3375,9 +3407,17 @@
                   "version": "2.177.0"
                 }
               },
-              "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerDLQCF6976A3\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerDLQCF6976A3\",\"Arn\"]}",
-                "path": "atmosphere-integ-allocate/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerDLQCF6976A3\",\"Arn\"]}",
+              "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA\",\"Arn\"]}",
+                "path": "atmosphere-integ-allocate/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerAllocationTimeoutDLQ26CDE2AA\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.177.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutDLQBA504919\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutDLQBA504919\",\"Arn\"]}",
+                "path": "atmosphere-integ-allocate/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutDLQBA504919\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.177.0"
@@ -3612,7 +3652,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "493abb86ed4df4b4f7fe06c82b89bef2a8660ee0b7e2c2a456da686c7f44272f.zip"
+                      "s3Key": "7ce70b16276a9806ebbe0f3bd4f88f8ae0de2fde48c2ddc70a93f6fd5653c6d3.zip"
                     },
                     "description": "test/integ/allocate/assert.lambda.ts",
                     "environment": {
@@ -3629,8 +3669,11 @@
                           "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
                         },
                         "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-                        "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-                          "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+                        "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN": {
+                          "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutDLQ26CDE2AAArnEAE49F52"
+                        },
+                        "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN": {
+                          "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutDLQBA504919Arn1A7D060C"
                         },
                         "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
                           "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
@@ -3716,9 +3759,17 @@
                   "version": "2.177.0"
                 }
               },
-              "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-                "id": "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN",
-                "path": "atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN",
+              "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN": {
+                "id": "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN",
+                "path": "atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.177.0"
+                }
+              },
+              "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN": {
+                "id": "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN",
+                "path": "atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.177.0"

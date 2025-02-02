@@ -5,19 +5,18 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 import { AllocationTimeoutFunction } from './allocation-timeout-function';
 
-export interface AllocationTimeoutProps {
-  readonly dlq: sqs.Queue;
-}
-
 export class AllocationTimeout extends Construct {
 
+  public readonly dlq: sqs.Queue;
   public readonly function: lambda.Function;
 
-  constructor(scope: Construct, id: string, props: AllocationTimeoutProps) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    this.dlq = new sqs.Queue(this, 'DLQ', { encryption: sqs.QueueEncryption.KMS_MANAGED });
+
     this.function = new AllocationTimeoutFunction(this, 'Function', {
-      deadLetterQueue: props.dlq,
+      deadLetterQueue: this.dlq,
       timeout: Duration.minutes(1),
     });
 

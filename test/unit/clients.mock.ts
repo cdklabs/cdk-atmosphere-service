@@ -14,7 +14,7 @@ export class RuntimeClientsMock {
     const configuration = new ConfigurationClient({ bucket: 'mock', key: 'mock' });
     const environments = new EnvironmentsClient('mock');
     const allocations = new AllocationsClient('mock');
-    const scheduler = new SchedulerClient({ dlqArn: 'mock', roleArn: 'mock' });
+    const scheduler = new SchedulerClient({ roleArn: 'mock' });
     const cleanup = new CleanupClient({
       clusterArn: 'cluster',
       taskDefinitionArn: 'task',

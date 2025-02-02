@@ -55,8 +55,7 @@ export class RuntimeClients {
   public get scheduler(): SchedulerClient {
     if (!this._scheduler) {
       const roleArn = envars.Envars.required(envars.SCHEDULER_ROLE_ARN_ENV);
-      const dlqArn = envars.Envars.required(envars.SCHEDULER_DLQ_ARN_ENV);
-      this._scheduler = new SchedulerClient({ roleArn, dlqArn });
+      this._scheduler = new SchedulerClient({ roleArn });
     }
     return this._scheduler;
   }

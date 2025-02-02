@@ -107,7 +107,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68e09c3ddd3e48a505c56271f6ca4e9ab3f7ce63a2fef331f76414f76e60ca7d.zip"
+     "S3Key": "180849294c473acfbae0524276b002208dd4a6dccf01ccebb7fb00452c31b995.zip"
     },
     "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
     "Environment": {
@@ -128,8 +128,11 @@
        "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereConfigurationBucket70B4698A46E37514"
       },
       "CDK_ATMOSPHERE_CONFIGURATION_FILE_KEY": "configuration.json",
-      "CDK_ATMOSPHERE_SCHEDULER_DLQ_ARN": {
-       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+      "CDK_ATMOSPHERE_ALLOCATION_TIMEOUT_DLQ_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutDLQ26CDE2AAArnEAE49F52"
+      },
+      "CDK_ATMOSPHERE_CLEANUP_TIMEOUT_DLQ_ARN": {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutDLQBA504919Arn1A7D060C"
       },
       "CDK_ATMOSPHERE_SCHEDULER_ROLE_ARN": {
        "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerRole0116FB56ArnFB95F0D0"
@@ -209,7 +212,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738491957795"
+    "salt": "1738508565781"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -349,9 +352,14 @@
   "CDK0ATMOSPHERE0CONFIGURATION0FILE0KEY": {
    "Value": "configuration.json"
   },
-  "CDK0ATMOSPHERE0SCHEDULER0DLQ0ARN": {
+  "CDK0ATMOSPHERE0ALLOCATION0TIMEOUT0DLQ0ARN": {
    "Value": {
-    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerDLQCF6976A3Arn3C730238"
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerAllocationTimeoutDLQ26CDE2AAArnEAE49F52"
+   }
+  },
+  "CDK0ATMOSPHERE0CLEANUP0TIMEOUT0DLQ0ARN": {
+   "Value": {
+    "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutDLQBA504919Arn1A7D060C"
    }
   },
   "CDK0ATMOSPHERE0SCHEDULER0ROLE0ARN": {
