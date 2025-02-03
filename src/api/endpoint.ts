@@ -1,5 +1,6 @@
 import { Aws } from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as certificates from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Allocate } from '../allocate';
@@ -61,6 +62,8 @@ export class Endpoint extends Construct {
     // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-cross-account-example
     const principals = [Aws.ACCOUNT_ID, ...(props.allowedAccounts ?? [])].map(a => new iam.AccountPrincipal(a));
 
+    const name = 'cdk-atmosphere-service';
+
     // Create the API Gateway
     this.api = new apigateway.RestApi(this, 'Api', {
       description: 'RESTful endpoint for the Atmosphere service',
@@ -77,6 +80,22 @@ export class Endpoint extends Construct {
           }),
         ],
       }),
+      endpointTypes: [apigateway.EndpointType.REGIONAL],
+    });
+
+    const certificate = new certificates.Certificate(this, 'Certificate', {
+      domainName: name,
+      region: 'us-east-1', // Required for API Gateway custom domains
+    });
+
+    const domainName = new apigateway.DomainName(this, 'DomainName', {
+      mapping: this.api,
+      domainName: name,
+      certificate: 'asd',
+      endpointType: apigateway.EndpointType.REGIONAL,
+
+      // will reject TLS 1.0
+      securityPolicy: apigateway.SecurityPolicy.TLS_1_2,
     });
 
     // Create /allocations resource
