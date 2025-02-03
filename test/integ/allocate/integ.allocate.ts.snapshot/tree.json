@@ -1250,7 +1250,7 @@
                               {
                                 "essential": true,
                                 "image": {
-                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6e47ed507f137d100dc84bcee6b5eeac34eb9d627e22a4441e470cf496427df5"
+                                  "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2e3999ff2475f90ac94c1e982c007049f27cb3ba109b7572f115e24b009c3bcf"
                                 },
                                 "name": "main",
                                 "logConfiguration": {
@@ -1489,9 +1489,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                    "path": "atmosphere-integ-allocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -1855,7 +1855,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "604f617d14c34451c9d14caa174f8c4d4541537fbddcd903c547cb4e67d4e9de.zip"
+                                  "s3Key": "82e253f20f2589866f34262660356d9d4cd3af7577653fde37ff51334f1a6713.zip"
                                 },
                                 "deadLetterConfig": {
                                   "targetArn": {
@@ -2124,7 +2124,7 @@
                                   "s3Bucket": {
                                     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                                   },
-                                  "s3Key": "cbeea44a9d3c9b226c9ed79515a0d5ff2026e637c3dafd8fda32f6c059d2f7ae.zip"
+                                  "s3Key": "0bbd6cab98661925952fa7f008c754b26f615f83a36f0ca1a83a6ce075d8074a.zip"
                                 },
                                 "deadLetterConfig": {
                                   "targetArn": {
@@ -2404,7 +2404,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "ca62b033c473049104f97c054b64a2b51ed651ab8a329d4245890bd04e2d5121.zip"
+                              "s3Key": "33174d1cdb83f3914597f3c2dd8251feff2d32ef50582f8dc9fc2cd0e6fa37c5.zip"
                             },
                             "description": "src/allocate/allocate.lambda.ts",
                             "environment": {
@@ -2468,9 +2468,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-allocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                    "path": "atmosphere-integ-allocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2696,7 +2696,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "38dff565c9a3ee0f6c289a5a5a64348571d692069bf0bbaa1fe9f09c044bd329.zip"
+                              "s3Key": "bd8d4f46c0209934806dc1d20c30509f6da94bdc70dc8cc87486b7dca0c8075c.zip"
                             },
                             "description": "src/deallocate/deallocate.lambda.ts",
                             "environment": {
@@ -3612,6 +3612,22 @@
             "id": "Exports",
             "path": "atmosphere-integ-allocate/Exports",
             "children": {
+              "Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}": {
+                "id": "Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}",
+                "path": "atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.177.0"
+                }
+              },
+              "Output{\"Ref\":\"AtmosphereEndpointApiDeploymentStageprod2712B9E2\"}": {
+                "id": "Output{\"Ref\":\"AtmosphereEndpointApiDeploymentStageprod2712B9E2\"}",
+                "path": "atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereEndpointApiDeploymentStageprod2712B9E2\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.177.0"
+                }
+              },
               "Output{\"Ref\":\"AtmosphereEnvironmentsTable430B8CE1\"}": {
                 "id": "Output{\"Ref\":\"AtmosphereEnvironmentsTable430B8CE1\"}",
                 "path": "atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereEnvironmentsTable430B8CE1\"}",
@@ -3671,14 +3687,6 @@
               "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutFunctionCE231484\",\"Arn\"]}": {
                 "id": "Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutFunctionCE231484\",\"Arn\"]}",
                 "path": "atmosphere-integ-allocate/Exports/Output{\"Fn::GetAtt\":[\"AtmosphereSchedulerCleanupTimeoutFunctionCE231484\",\"Arn\"]}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.177.0"
-                }
-              },
-              "Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}": {
-                "id": "Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}",
-                "path": "atmosphere-integ-allocate/Exports/Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.177.0"
@@ -3881,13 +3889,37 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f9c807e1405a3d4c4a76a7a4ff4647e4e26cd67cb78cccb017d9aa9d5a97b271.zip"
+                      "s3Key": "1eb8271e76a3059682bc3b31470ffe496e93e94c94bd1d0284f33596791514c2.zip"
                     },
                     "description": "test/integ/allocate/assert.lambda.ts",
                     "environment": {
                       "variables": {
                         "CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT": "false",
                         "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME": "false",
+                        "CDK_ATMOSPHERE_ENDPOINT_URL": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "https://",
+                              {
+                                "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+                              },
+                              ".execute-api.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/",
+                              {
+                                "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+                              },
+                              "/"
+                            ]
+                          ]
+                        },
                         "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
                           "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
                         },
@@ -3953,6 +3985,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.177.0"
+                }
+              },
+              "CDK_ATMOSPHERE_ENDPOINT_URL": {
+                "id": "CDK_ATMOSPHERE_ENDPOINT_URL",
+                "path": "atmosphere-integ-allocate-assertions/Assert/CDK_ATMOSPHERE_ENDPOINT_URL",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.177.0"
                 }
               },

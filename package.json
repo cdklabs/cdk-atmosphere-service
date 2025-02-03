@@ -108,6 +108,7 @@
     "@aws-sdk/client-scheduler": "3.734.0",
     "@aws-sdk/client-sts": "3.734.0",
     "@aws-sdk/credential-providers": "3.734.0",
+    "@cdklabs/cdk-atmosphere-client": "^0.0.7",
     "@smithy/types": "^4.1.0",
     "@smithy/util-stream": "^3.3.4",
     "@stylistic/eslint-plugin": "^2",

@@ -121,6 +121,7 @@ export class AtmosphereIntegTest {
     assert.node.addDependency(service);
 
     const envVariables: envars.EnvironmentVariables = {
+      [envars.ENDPOINT_URL_ENV]: service.endpoint.api.urlForPath(),
       [envars.ENVIRONMENTS_TABLE_NAME_ENV]: service.environments.table.tableName,
       [envars.ALLOCATIONS_TABLE_NAME_ENV]: service.allocations.table.tableName,
       [envars.CONFIGURATION_BUCKET_ENV]: service.config.bucket.bucketName,
