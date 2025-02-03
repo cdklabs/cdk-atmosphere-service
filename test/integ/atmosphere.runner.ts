@@ -162,7 +162,7 @@ export class Runner {
     }
 
     return new Runner({
-      [envars.ENDPOINT_URL_ENV]: envValue(envars.ALLOCATIONS_TABLE_NAME_ENV),
+      [envars.ENDPOINT_URL_ENV]: envValue(envars.ENDPOINT_URL_ENV),
       [envars.ALLOCATIONS_TABLE_NAME_ENV]: envValue(envars.ALLOCATIONS_TABLE_NAME_ENV),
       [envars.ENVIRONMENTS_TABLE_NAME_ENV]: envValue(envars.ENVIRONMENTS_TABLE_NAME_ENV),
       [envars.CONFIGURATION_BUCKET_ENV]: envValue(envars.CONFIGURATION_BUCKET_ENV),

@@ -7334,7 +7334,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail(reason) {
+      function fail2(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -7365,7 +7365,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail,
+                fail2,
                 void 0,
                 this,
                 void 0
@@ -7382,11 +7382,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler7, type, success3, fail2) {
+      Promise2.prototype._passThrough = function(handler7, type, success3, fail3) {
         if (typeof handler7 !== "function") return this.then();
         return this._then(
           success3,
-          fail2,
+          fail3,
           void 0,
           new PassThroughHandlerContext(this, type, handler7),
           void 0
@@ -11084,15 +11084,16 @@ var require_client = __commonJS({
   "node_modules/@cdklabs/cdk-atmosphere-client/lib/client.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AtmosphereClient = void 0;
+    exports2.AtmosphereClient = exports2.ServiceError = void 0;
     var credential_providers_1 = require("@aws-sdk/credential-providers");
     var aws4fetch_1 = require_aws4fetch_cjs();
-    var ServiceError = class extends Error {
+    var ServiceError2 = class extends Error {
       constructor(statusCode, message, statusText) {
         super(`${statusCode} ${statusText ? `(${statusText})` : ""}: ${message}`);
         this.statusCode = statusCode;
       }
     };
+    exports2.ServiceError = ServiceError2;
     var AtmosphereClient2 = class {
       constructor(endpoint) {
         this.endpoint = endpoint;
@@ -11108,9 +11109,9 @@ var require_client = __commonJS({
        */
       async acquire(options) {
         var _a;
-        const timeoutMinutes = (_a = options.timeoutMinutes) !== null && _a !== void 0 ? _a : 10;
+        const timeoutSeconds = (_a = options.timeoutSeconds) !== null && _a !== void 0 ? _a : 600;
         const startTime = Date.now();
-        const timeoutMs = 60 * timeoutMinutes * 1e3;
+        const timeoutMs = timeoutSeconds * 1e3;
         let retryDelay = 1e3;
         const maxRetryDelay = 6e4;
         this.log(`Acquire | environment from pool '${options.pool}' (requester: '${options.requester}')`);
@@ -11126,7 +11127,7 @@ var require_client = __commonJS({
             if (error.statusCode === 423) {
               const elapsed = Date.now() - startTime;
               if (elapsed >= timeoutMs) {
-                throw new Error(`Failed to acquire environment within ${timeoutMinutes} minutes`);
+                throw error;
               }
               this.log(`Acquire | Retrying due to: ${error.message}`);
               await new Promise((resolve) => setTimeout(resolve, retryDelay));
@@ -11170,7 +11171,7 @@ var require_client = __commonJS({
         if (response.status === 200) {
           return responseBody;
         }
-        throw new ServiceError(response.status, (_a = responseBody.message) !== null && _a !== void 0 ? _a : "Unknown error", response.statusText);
+        throw new ServiceError2(response.status, (_a = responseBody.message) !== null && _a !== void 0 ? _a : "Unknown error", response.statusText);
       }
       log(message) {
         console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`);
@@ -11205,13 +11206,14 @@ var require_lib2 = __commonJS({
   }
 });
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/cleanup/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
 });
 module.exports = __toCommonJS(assert_lambda_exports);
 var assert2 = __toESM(require("assert"));
+var import_client_s33 = require("@aws-sdk/client-s3");
 
 // src/cleanup/cleanup.client.ts
 var import_client_ecs = require("@aws-sdk/client-ecs");
@@ -11840,7 +11842,6 @@ async function env2(envVars, fn) {
 }
 
 // test/integ/atmosphere.runtime.ts
-var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
 var import_client_ecs2 = require("@aws-sdk/client-ecs");
 var import_client_lambda2 = require("@aws-sdk/client-lambda");
 var import_cdk_atmosphere_client = __toESM(require_lib2());
@@ -12410,7 +12411,6 @@ var clients6 = RuntimeClients.getOrCreate();
 var Runtime = class _Runtime {
   constructor(vars) {
     this.vars = vars;
-    this.apigw = new import_client_api_gateway.APIGateway();
     this.lambda = new import_client_lambda2.Lambda();
     this.ecs = new import_client_ecs2.ECS();
   }
@@ -12504,13 +12504,16 @@ var Runtime = class _Runtime {
   }
   async deallocateRemote(id, jsonBody) {
     this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
-    return this.apigw.testInvokeMethod({
-      restApiId: this.vars[REST_API_ID_ENV],
-      resourceId: this.vars[ALLOCATION_RESOURCE_ID_ENV],
-      httpMethod: "DELETE",
-      pathWithQueryString: `/allocations/${id}`,
-      body: jsonBody
-    });
+    const client = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
+    try {
+      const body = await client.release(id, JSON.parse(jsonBody).outcome);
+      return { status: 200, body: JSON.stringify(body) };
+    } catch (e) {
+      if (e instanceof import_cdk_atmosphere_client.ServiceError) {
+        return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
+      }
+      throw e;
+    }
   }
   async allocateLocal(jsonBody) {
     this.log(`Invoking local allocate handler with body: ${jsonBody}`);
@@ -12525,10 +12528,10 @@ var Runtime = class _Runtime {
     this.log(`Sending allocation request with body: ${jsonBody}`);
     const client = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
     try {
-      const allocation = await client.acquire(JSON.parse(jsonBody));
+      const allocation = await client.acquire({ ...JSON.parse(jsonBody), timeoutSeconds: 5 });
       return { status: 200, body: JSON.stringify(allocation) };
     } catch (e) {
-      if (e.statusCode) {
+      if (e instanceof import_cdk_atmosphere_client.ServiceError) {
         return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
       }
       throw e;
@@ -12607,7 +12610,7 @@ var Runner = class _Runner {
       envValue = (name) => Envars.required(name);
     }
     return new _Runner({
-      [ENDPOINT_URL_ENV]: envValue(ALLOCATIONS_TABLE_NAME_ENV),
+      [ENDPOINT_URL_ENV]: envValue(ENDPOINT_URL_ENV),
       [ALLOCATIONS_TABLE_NAME_ENV]: envValue(ALLOCATIONS_TABLE_NAME_ENV),
       [ENVIRONMENTS_TABLE_NAME_ENV]: envValue(ENVIRONMENTS_TABLE_NAME_ENV),
       [CONFIGURATION_BUCKET_ENV]: envValue(CONFIGURATION_BUCKET_ENV),
@@ -12742,29 +12745,84 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/deallocate/assert.lambda.ts
+// test/integ/cleanup/assert.lambda.ts
 var clients7 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("creates-right-resources", async (session) => {
-    const allocateResponse = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    const account = allocationResponseBody.environment.account;
-    const region = allocationResponseBody.environment.region;
-    const deallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(deallocateResponse.status, 200);
-    const environment = await clients7.environments.get(account, region);
-    assert2.strictEqual(environment.status, "cleaning");
-    const allocation = await clients7.allocations.get(allocationResponseBody.id);
-    assert2.ok(allocation.end);
-    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
-    assert2.ok(cleanupTimeoutSchedule);
+  await Runner.assert("deletes-stack-and-releases-environment", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName] = await session.deployStack({ templatePath: "cleanup/stacks/simple.yaml", region });
+    await clients7.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    try {
+      await clients7.environments.get(account, region);
+      assert2.fail("expected environment to be deleted");
+    } catch (err) {
+      assert2.strictEqual(err.constructor.name, "EnvironmentNotFound");
+    }
+    const stack = await session.fetchStack(stackName, region);
+    assert2.ok(!stack);
   });
-  await Runner.assert("is-idempotent", async (session) => {
-    const allocateResponse = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const allocationResponseBody = JSON.parse(allocateResponse.body);
-    await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
-    const secondDeallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
-    assert2.strictEqual(secondDeallocateResponse.status, 200);
+  await Runner.assert("empties-and-deletes-buckets", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName, resources] = await session.deployStack({ templatePath: "cleanup/stacks/versioned-bucket.yaml", region });
+    const bucketName = resources.filter((r) => r.ResourceType === "AWS::S3::Bucket").map((r) => r.PhysicalResourceId)[0];
+    const s33 = new import_client_s33.S3({ region });
+    await s33.putObject({ Bucket: bucketName, Key: "one.txt", Body: "one" });
+    await s33.putObject({ Bucket: bucketName, Key: "two.txt", Body: "two" });
+    await s33.deleteObject({ Bucket: bucketName, Key: "two.txt" });
+    await clients7.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 120 });
+    const stack = await session.fetchStack(stackName, region);
+    assert2.ok(!stack);
+    try {
+      await s33.headBucket({ Bucket: bucketName });
+    } catch (err) {
+      assert2.strictEqual(err.name, "NotFound");
+    }
+  });
+  await Runner.assert("disables-termination-protection", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName] = await session.deployStack({ templatePath: "cleanup/stacks/simple.yaml", region, terminationProtection: true });
+    await clients7.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    const stack = await session.fetchStack(stackName, region);
+    assert2.ok(!stack);
+  });
+  await Runner.assert("can-release-a-dirty-environment", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    await clients7.allocations.end({ id: body.id, outcome: "success" });
+    await clients7.environments.dirty(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    try {
+      await clients7.environments.get(account, region);
+      assert2.fail("expected environment to be released");
+    } catch (err) {
+      assert2.strictEqual(err.constructor.name, "EnvironmentNotFound");
+    }
+  });
+  await Runner.assert("marks-environment-dirty-if-fail", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const [stackName] = await session.deployStack({ templatePath: "cleanup/stacks/cannot-delete.yaml", region });
+    await clients7.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanup({ allocationId: body.id, timeoutSeconds: 30 });
+    const environment = await clients7.environments.get(account, region);
+    assert2.strictEqual(environment.status, "dirty");
+    await session.destroyStack({ stackName, region });
   });
   return SUCCESS_PAYLOAD;
 }

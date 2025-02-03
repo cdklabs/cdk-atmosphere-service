@@ -11084,15 +11084,16 @@ var require_client = __commonJS({
   "node_modules/@cdklabs/cdk-atmosphere-client/lib/client.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AtmosphereClient = void 0;
+    exports2.AtmosphereClient = exports2.ServiceError = void 0;
     var credential_providers_1 = require("@aws-sdk/credential-providers");
     var aws4fetch_1 = require_aws4fetch_cjs();
-    var ServiceError = class extends Error {
+    var ServiceError2 = class extends Error {
       constructor(statusCode, message, statusText) {
         super(`${statusCode} ${statusText ? `(${statusText})` : ""}: ${message}`);
         this.statusCode = statusCode;
       }
     };
+    exports2.ServiceError = ServiceError2;
     var AtmosphereClient2 = class {
       constructor(endpoint) {
         this.endpoint = endpoint;
@@ -11108,9 +11109,9 @@ var require_client = __commonJS({
        */
       async acquire(options) {
         var _a;
-        const timeoutMinutes = (_a = options.timeoutMinutes) !== null && _a !== void 0 ? _a : 10;
+        const timeoutSeconds = (_a = options.timeoutSeconds) !== null && _a !== void 0 ? _a : 600;
         const startTime = Date.now();
-        const timeoutMs = 60 * timeoutMinutes * 1e3;
+        const timeoutMs = timeoutSeconds * 1e3;
         let retryDelay = 1e3;
         const maxRetryDelay = 6e4;
         this.log(`Acquire | environment from pool '${options.pool}' (requester: '${options.requester}')`);
@@ -11126,7 +11127,7 @@ var require_client = __commonJS({
             if (error.statusCode === 423) {
               const elapsed = Date.now() - startTime;
               if (elapsed >= timeoutMs) {
-                throw new Error(`Failed to acquire environment within ${timeoutMinutes} minutes`);
+                throw error;
               }
               this.log(`Acquire | Retrying due to: ${error.message}`);
               await new Promise((resolve) => setTimeout(resolve, retryDelay));
@@ -11170,7 +11171,7 @@ var require_client = __commonJS({
         if (response.status === 200) {
           return responseBody;
         }
-        throw new ServiceError(response.status, (_a = responseBody.message) !== null && _a !== void 0 ? _a : "Unknown error", response.statusText);
+        throw new ServiceError2(response.status, (_a = responseBody.message) !== null && _a !== void 0 ? _a : "Unknown error", response.statusText);
       }
       log(message) {
         console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`);
@@ -11205,7 +11206,7 @@ var require_lib2 = __commonJS({
   }
 });
 
-// test/integ/allocation-timeout/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
@@ -11840,7 +11841,6 @@ async function env2(envVars, fn) {
 }
 
 // test/integ/atmosphere.runtime.ts
-var import_client_api_gateway = require("@aws-sdk/client-api-gateway");
 var import_client_ecs2 = require("@aws-sdk/client-ecs");
 var import_client_lambda2 = require("@aws-sdk/client-lambda");
 var import_cdk_atmosphere_client = __toESM(require_lib2());
@@ -12410,7 +12410,6 @@ var clients6 = RuntimeClients.getOrCreate();
 var Runtime = class _Runtime {
   constructor(vars) {
     this.vars = vars;
-    this.apigw = new import_client_api_gateway.APIGateway();
     this.lambda = new import_client_lambda2.Lambda();
     this.ecs = new import_client_ecs2.ECS();
   }
@@ -12504,13 +12503,16 @@ var Runtime = class _Runtime {
   }
   async deallocateRemote(id, jsonBody) {
     this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
-    return this.apigw.testInvokeMethod({
-      restApiId: this.vars[REST_API_ID_ENV],
-      resourceId: this.vars[ALLOCATION_RESOURCE_ID_ENV],
-      httpMethod: "DELETE",
-      pathWithQueryString: `/allocations/${id}`,
-      body: jsonBody
-    });
+    const client = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
+    try {
+      const body = await client.release(id, JSON.parse(jsonBody).outcome);
+      return { status: 200, body: JSON.stringify(body) };
+    } catch (e) {
+      if (e instanceof import_cdk_atmosphere_client.ServiceError) {
+        return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
+      }
+      throw e;
+    }
   }
   async allocateLocal(jsonBody) {
     this.log(`Invoking local allocate handler with body: ${jsonBody}`);
@@ -12525,10 +12527,10 @@ var Runtime = class _Runtime {
     this.log(`Sending allocation request with body: ${jsonBody}`);
     const client = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
     try {
-      const allocation = await client.acquire(JSON.parse(jsonBody));
+      const allocation = await client.acquire({ ...JSON.parse(jsonBody), timeoutSeconds: 5 });
       return { status: 200, body: JSON.stringify(allocation) };
     } catch (e) {
-      if (e.statusCode) {
+      if (e instanceof import_cdk_atmosphere_client.ServiceError) {
         return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
       }
       throw e;
@@ -12607,7 +12609,7 @@ var Runner = class _Runner {
       envValue = (name) => Envars.required(name);
     }
     return new _Runner({
-      [ENDPOINT_URL_ENV]: envValue(ALLOCATIONS_TABLE_NAME_ENV),
+      [ENDPOINT_URL_ENV]: envValue(ENDPOINT_URL_ENV),
       [ALLOCATIONS_TABLE_NAME_ENV]: envValue(ALLOCATIONS_TABLE_NAME_ENV),
       [ENVIRONMENTS_TABLE_NAME_ENV]: envValue(ENVIRONMENTS_TABLE_NAME_ENV),
       [CONFIGURATION_BUCKET_ENV]: envValue(CONFIGURATION_BUCKET_ENV),
@@ -12742,23 +12744,26 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/allocation-timeout/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
 var clients7 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("ends-allocation-if-active", async (session) => {
+  await Runner.assert("creates-the-right-resources", async (session) => {
     const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 200);
     const body = JSON.parse(response.body);
-    await session.runtime.allocationTimeout({ allocationId: body.id });
-    const allocation = await clients7.allocations.get(body.id);
-    assert2.ok(allocation.end);
+    const environment = await clients7.environments.get(body.environment.account, body.environment.region);
+    assert2.strictEqual(environment.status, "in-use");
+    assert2.strictEqual(environment.allocation, body.id);
+    const allocation = await clients7.allocations.get(environment.allocation);
+    assert2.strictEqual(allocation.account, body.environment.account);
+    assert2.strictEqual(allocation.region, body.environment.region);
+    const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
+    assert2.ok(timeoutSchedule);
   });
-  await Runner.assert("no-ops-if-allocation-has-ended", async (session) => {
-    const response = await session.runtime.allocate({ pool: "release", requester: "test", durationSeconds: 30 });
-    const body = JSON.parse(response.body);
-    await clients7.allocations.end({ id: body.id, outcome: "success" });
-    await session.runtime.allocationTimeout({ allocationId: body.id });
-    const allocation = await clients7.allocations.get(body.id);
-    assert2.strictEqual(allocation.outcome, "success");
+  await Runner.assert("responds-with-locked-when-no-environments-are-available", async (session) => {
+    await session.runtime.allocate({ pool: "release", requester: "test" });
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 423);
   });
   return SUCCESS_PAYLOAD;
 }

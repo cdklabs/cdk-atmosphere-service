@@ -1,7 +1,6 @@
-import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
 import { ECS, waitUntilTasksStopped } from '@aws-sdk/client-ecs';
 import { Lambda } from '@aws-sdk/client-lambda';
-import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
+import { AtmosphereClient, ServiceError } from '@cdklabs/cdk-atmosphere-client';
 import * as allocate from '../../src/allocate/allocate.lambda';
 import * as cleanup from '../../src/cleanup/cleanup.task';
 import { RuntimeClients } from '../../src/clients';
@@ -11,7 +10,7 @@ import * as allocationTimeout from '../../src/scheduler/allocation-timeout/alloc
 import * as cleanupTimeout from '../../src/scheduler/cleanup-timeout/cleanup-timeout.lambda';
 import * as _with from '../with';
 
-export type APIGatewayResponse = Pick<TestInvokeMethodCommandOutput, 'body' | 'status'>;
+export type ServiceResponse = { status: number; body: string };
 
 /**
  * Determines if runtime components are invoked locally or remotely.
@@ -31,19 +30,18 @@ export class Runtime {
     return true;
   }
 
-  private readonly apigw = new APIGateway();
   private readonly lambda = new Lambda();
   private readonly ecs = new ECS();
 
   public constructor(private readonly vars: envars.EnvironmentVariables) {}
 
-  public async allocate(body: allocate.AllocateRequest): Promise<APIGatewayResponse> {
+  public async allocate(body: allocate.AllocateRequest): Promise<ServiceResponse> {
     const json = JSON.stringify(body);
     const response = Runtime.isLocal() ? await this.allocateLocal(json) : await this.allocateRemote(json);
     return response;
   }
 
-  public async deallocate(id: string, body: deallocate.DeallocateRequest): Promise<APIGatewayResponse> {
+  public async deallocate(id: string, body: deallocate.DeallocateRequest): Promise<ServiceResponse> {
     const json = JSON.stringify(body);
     const response = Runtime.isLocal() ? await this.deallocateLocal(id, json) : await this.deallocateRemote(id, json);
     return response;
@@ -138,14 +136,16 @@ export class Runtime {
   private async deallocateRemote(id: string, jsonBody: string) {
 
     this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
-    return this.apigw.testInvokeMethod({
-      restApiId: this.vars[envars.REST_API_ID_ENV],
-      resourceId: this.vars[envars.ALLOCATION_RESOURCE_ID_ENV],
-      httpMethod: 'DELETE',
-      pathWithQueryString: `/allocations/${id}`,
-      body: jsonBody,
-    });
-
+    const client = new AtmosphereClient(this.vars[envars.ENDPOINT_URL_ENV]);
+    try {
+      const body = await client.release(id, JSON.parse(jsonBody).outcome);
+      return { status: 200, body: JSON.stringify(body) };
+    } catch (e: any) {
+      if (e instanceof ServiceError) {
+        return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
+      }
+      throw e;
+    }
   }
 
   private async allocateLocal(jsonBody: string) {
@@ -163,22 +163,14 @@ export class Runtime {
     this.log(`Sending allocation request with body: ${jsonBody}`);
     const client = new AtmosphereClient(this.vars[envars.ENDPOINT_URL_ENV]);
     try {
-      const allocation = await client.acquire(JSON.parse(jsonBody));
+      const allocation = await client.acquire({ ...JSON.parse(jsonBody), timeoutSeconds: 5 });
       return { status: 200, body: JSON.stringify(allocation) };
     } catch (e: any) {
-      if (e.statusCode) {
+      if (e instanceof ServiceError) {
         return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
       }
       throw e;
     }
-    // return this.apigw.testInvokeMethod({
-    //   restApiId: this.vars[envars.REST_API_ID_ENV],
-    //   resourceId: this.vars[envars.ALLOCATIONS_RESOURCE_ID_ENV],
-    //   httpMethod: 'POST',
-    //   pathWithQueryString: '/allocations',
-    //   body: jsonBody,
-    // });
-
   }
 
   private log(message: string) {

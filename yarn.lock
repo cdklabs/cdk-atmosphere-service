@@ -1484,10 +1484,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cdklabs/cdk-atmosphere-client@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@cdklabs/cdk-atmosphere-client/-/cdk-atmosphere-client-0.0.5.tgz#fdabe33533bf25b94e4403bbb304027861292ea9"
-  integrity sha512-LX5e/+2S72UnZcANVFndbhzYT4jK0oXj2RaK0zMIlsqZSjWvkjB9ZFGg2MP7Nl2evwFYAYCHYHibVPDi0vib3Q==
+"@cdklabs/cdk-atmosphere-client@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@cdklabs/cdk-atmosphere-client/-/cdk-atmosphere-client-0.0.7.tgz#8825ee566c2f2527739eff5c4817ea6816ab5a87"
+  integrity sha512-4JXrk5DbOFe3LoXacw83DfnrZNPUmOdcvN2cyo6CkFbsrgQGeUsAcYe0jDsIN3G3rWS9oHwaQ3OzeLEVoLFIgg==
   dependencies:
     "@aws-sdk/credential-providers" "^3.738.0"
     aws4fetch "^1.0.20"
