@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/417810980d0564e569d8b51a1f1a4244730d15f5aae78801142bcf5bbc9315da.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/06e1b220d64fb0eefc9d2422f498e1f369c28f7d5479abf77b21ad24c4284030.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -458,6 +458,18 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
+        "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+          }
+        ],
+        "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereEndpointApiDeploymentStageprod2712B9E2\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+          }
+        ],
         "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereEnvironmentsTable430B8CE1\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -504,12 +516,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutFunctionCE231484Arn16D750F9"
-          }
-        ],
-        "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereEndpointApi64E91738\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
           }
         ],
         "/atmosphere-integ-dev/Exports/Output{\"Ref\":\"AtmosphereEndpointApiallocations8406C04D\"}": [
@@ -586,7 +592,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b17ff63c2025683386f48687b155f3736ad632a215af19809ca548dfd2f79061.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0caeb6afd63f807215994cff575786150a66b72ee72fc26352595942caee04c6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -613,6 +619,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertC205B4DA"
+          }
+        ],
+        "/atmosphere-integ-dev-assertions/Assert/CDK_ATMOSPHERE_ENDPOINT_URL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertCDKATMOSPHEREENDPOINTURL6138FA89"
           }
         ],
         "/atmosphere-integ-dev-assertions/Assert/CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": [

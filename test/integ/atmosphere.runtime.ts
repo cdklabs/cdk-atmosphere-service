@@ -1,6 +1,7 @@
 import { APIGateway, TestInvokeMethodCommandOutput } from '@aws-sdk/client-api-gateway';
 import { ECS, waitUntilTasksStopped } from '@aws-sdk/client-ecs';
 import { Lambda } from '@aws-sdk/client-lambda';
+import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 import * as allocate from '../../src/allocate/allocate.lambda';
 import * as cleanup from '../../src/cleanup/cleanup.task';
 import { RuntimeClients } from '../../src/clients';
@@ -158,14 +159,25 @@ export class Runtime {
   }
 
   private async allocateRemote(jsonBody: string) {
+
     this.log(`Sending allocation request with body: ${jsonBody}`);
-    return this.apigw.testInvokeMethod({
-      restApiId: this.vars[envars.REST_API_ID_ENV],
-      resourceId: this.vars[envars.ALLOCATIONS_RESOURCE_ID_ENV],
-      httpMethod: 'POST',
-      pathWithQueryString: '/allocations',
-      body: jsonBody,
-    });
+    const client = new AtmosphereClient(this.vars[envars.ENDPOINT_URL_ENV]);
+    try {
+      const allocation = await client.acquire(JSON.parse(jsonBody));
+      return { status: 200, body: JSON.stringify(allocation) };
+    } catch (e: any) {
+      if (e.statusCode) {
+        return { status: e.statusCode, body: JSON.stringify({ message: e.message }) };
+      }
+      throw e;
+    }
+    // return this.apigw.testInvokeMethod({
+    //   restApiId: this.vars[envars.REST_API_ID_ENV],
+    //   resourceId: this.vars[envars.ALLOCATIONS_RESOURCE_ID_ENV],
+    //   httpMethod: 'POST',
+    //   pathWithQueryString: '/allocations',
+    //   body: jsonBody,
+    // });
 
   }
 

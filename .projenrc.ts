@@ -35,6 +35,7 @@ const project = new CdklabsConstructLibrary({
     '@types/unzipper',
     'aws-sdk-client-mock',
     'aws-sdk-client-mock-jest',
+    '@cdklabs/cdk-atmosphere-client',
   ],
   name: '@cdklabs/cdk-atmosphere-service',
   projenrcTs: true,

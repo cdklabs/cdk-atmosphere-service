@@ -50,13 +50,37 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f5adb3e26dce9491cd54494d16e316be02dd43b796517521c8a264617c3204e3.zip"
+     "S3Key": "d375cd78d4fc4f3f17faaeff8a53ce32d5c5d142ba4ed4818d6a79cf0aaff774.zip"
     },
     "Description": "test/integ/deallocate/assert.lambda.ts",
     "Environment": {
      "Variables": {
       "CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT": "false",
       "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME": "false",
+      "CDK_ATMOSPHERE_ENDPOINT_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+         },
+         "/"
+        ]
+       ]
+      },
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
       },
@@ -150,7 +174,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738580218541"
+    "salt": "1738591395637"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -272,6 +296,32 @@
   }
  },
  "Outputs": {
+  "CDK0ATMOSPHERE0ENDPOINT0URL": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
   "CDK0ATMOSPHERE0ENVIRONMENTS0TABLE0NAME": {
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-deallocate:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"

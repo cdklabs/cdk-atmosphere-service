@@ -107,7 +107,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "090d04342522e31c6411e1d2920e64927a1c31f9d854c4a48c2ca2eb23331d0a.zip"
+     "S3Key": "1fc7910d2dcf409e83bced9244c8b8c4637237e54fc34e6c045c68f2d26371d5.zip"
     },
     "Description": "test/integ/cleanup-timeout/assert.lambda.ts",
     "Environment": {
@@ -118,6 +118,30 @@
        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
       },
       "CDK_ATMOSPHERE_INTEG_STACKS_KEY": "d81248eac4ffbd37e5f74df3c8ec02683b11fe9941ed803e6102fbdc6852b4cf.zip",
+      "CDK_ATMOSPHERE_ENDPOINT_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+         },
+         "/"
+        ]
+       ]
+      },
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
       },
@@ -212,7 +236,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738580218541"
+    "salt": "1738591395640"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -334,6 +358,32 @@
   }
  },
  "Outputs": {
+  "CDK0ATMOSPHERE0ENDPOINT0URL": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
   "CDK0ATMOSPHERE0ENVIRONMENTS0TABLE0NAME": {
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-cleanup-timeout:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
