@@ -1,4 +1,3 @@
-import { Aws } from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
@@ -11,11 +10,11 @@ import { Deallocate } from '../deallocate';
 export interface EndpointOptions {
 
   /**
-   * List of accounts that are allowed to access the endpoint.
+   * List of principals that are allowed to access the endpoint.
    *
-   * @default - only the service account is allowed.
+   * @default - endpoint is not accessible by anyone.
    */
-  readonly allowedAccounts?: string[];
+  readonly allowedPrincipals?: iam.IPrincipal[];
 
 }
 
@@ -55,11 +54,14 @@ export class Endpoint extends Construct {
   constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id);
 
-    // we add the service account so that a resource policy always exists
-    // and thus rejecting annonymous access.
     // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-resource-policy-only
     // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-cross-account-example
-    const principals = [Aws.ACCOUNT_ID, ...(props.allowedAccounts ?? [])].map(a => new iam.AccountPrincipal(a));
+    const principals = props.allowedPrincipals ?? [new iam.AnyPrincipal()];
+    const effect = props.allowedPrincipals ? iam.Effect.ALLOW: iam.Effect.DENY;
+    const resources = props.allowedPrincipals ? [
+      'execute-api:/prod/POST/allocations',
+      'execute-api:/prod/DELETE/allocations/{id}',
+    ] : ['*'];
 
     // Create the API Gateway
     this.api = new apigateway.RestApi(this, 'Api', {
@@ -68,12 +70,10 @@ export class Endpoint extends Construct {
       policy: new iam.PolicyDocument({
         statements: [
           new iam.PolicyStatement({
+            effect,
             actions: ['execute-api:Invoke'],
             principals,
-            resources: [
-              'execute-api:/prod/POST/allocations',
-              'execute-api:/prod/DELETE/allocations/{id}',
-            ],
+            resources,
           }),
         ],
       }),

@@ -1,5 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { AccountPrincipal } from 'aws-cdk-lib/aws-iam';
 import { AtmosphereService } from '../../../src';
 
 test('default resource policy', () => {
@@ -19,36 +20,18 @@ test('default resource policy', () => {
     Policy: {
       Statement: [{
         Action: 'execute-api:Invoke',
-        Effect: 'Allow',
+        Effect: 'Deny',
         Principal: {
-          AWS: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':iam::',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':root',
-              ],
-            ],
-          },
+          AWS: '*',
         },
-        Resource: [
-          'execute-api:/prod/POST/allocations',
-          'execute-api:/prod/DELETE/allocations/{id}',
-        ],
+        Resource: '*',
       }],
     },
   });
 
 });
 
-test('can add accounts to resource policy', () => {
+test('can add principals to resource policy', () => {
 
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -58,7 +41,7 @@ test('can add accounts to resource policy', () => {
       environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
     },
     endpoint: {
-      allowedAccounts: ['2222'],
+      allowedPrincipals: [new AccountPrincipal('2222')],
     },
   });
 
@@ -70,36 +53,18 @@ test('can add accounts to resource policy', () => {
         Action: 'execute-api:Invoke',
         Effect: 'Allow',
         Principal: {
-          AWS: [
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
+          AWS: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':iam::2222:root',
               ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::2222:root',
-                ],
-              ],
-            },
-          ],
+            ],
+          },
         },
         Resource: [
           'execute-api:/prod/POST/allocations',

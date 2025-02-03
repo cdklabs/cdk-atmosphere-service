@@ -89,6 +89,145 @@
                 "id": "Configuration",
                 "path": "atmosphere-integ-deallocate/Atmosphere/Configuration",
                 "children": {
+                  "AccessLogs": {
+                    "id": "AccessLogs",
+                    "path": "atmosphere-integ-deallocate/Atmosphere/Configuration/AccessLogs",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-deallocate/Atmosphere/Configuration/AccessLogs/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                          "aws:cdk:cloudformation:props": {
+                            "bucketEncryption": {
+                              "serverSideEncryptionConfiguration": [
+                                {
+                                  "serverSideEncryptionByDefault": {
+                                    "sseAlgorithm": "AES256"
+                                  }
+                                }
+                              ]
+                            },
+                            "publicAccessBlockConfiguration": {
+                              "blockPublicAcls": true,
+                              "blockPublicPolicy": true,
+                              "ignorePublicAcls": true,
+                              "restrictPublicBuckets": true
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                          "version": "2.177.0"
+                        }
+                      },
+                      "Policy": {
+                        "id": "Policy",
+                        "path": "atmosphere-integ-deallocate/Atmosphere/Configuration/AccessLogs/Policy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-deallocate/Atmosphere/Configuration/AccessLogs/Policy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                              "aws:cdk:cloudformation:props": {
+                                "bucket": {
+                                  "Ref": "AtmosphereConfigurationAccessLogs46D18306"
+                                },
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "s3:*",
+                                      "Condition": {
+                                        "Bool": {
+                                          "aws:SecureTransport": "false"
+                                        }
+                                      },
+                                      "Effect": "Deny",
+                                      "Principal": {
+                                        "AWS": "*"
+                                      },
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereConfigurationAccessLogs46D18306",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "AtmosphereConfigurationAccessLogs46D18306",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Action": "s3:PutObject",
+                                      "Condition": {
+                                        "ArnLike": {
+                                          "aws:SourceArn": {
+                                            "Fn::GetAtt": [
+                                              "AtmosphereConfigurationBucket70B4698A",
+                                              "Arn"
+                                            ]
+                                          }
+                                        },
+                                        "StringEquals": {
+                                          "aws:SourceAccount": {
+                                            "Ref": "AWS::AccountId"
+                                          }
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "logging.s3.amazonaws.com"
+                                      },
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "AtmosphereConfigurationAccessLogs46D18306",
+                                                "Arn"
+                                              ]
+                                            },
+                                            "/*"
+                                          ]
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                              "version": "2.177.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                          "version": "2.177.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                      "version": "2.177.0"
+                    }
+                  },
                   "Bucket": {
                     "id": "Bucket",
                     "path": "atmosphere-integ-deallocate/Atmosphere/Configuration/Bucket",
@@ -99,6 +238,26 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                           "aws:cdk:cloudformation:props": {
+                            "bucketEncryption": {
+                              "serverSideEncryptionConfiguration": [
+                                {
+                                  "serverSideEncryptionByDefault": {
+                                    "sseAlgorithm": "AES256"
+                                  }
+                                }
+                              ]
+                            },
+                            "loggingConfiguration": {
+                              "destinationBucketName": {
+                                "Ref": "AtmosphereConfigurationAccessLogs46D18306"
+                              }
+                            },
+                            "publicAccessBlockConfiguration": {
+                              "blockPublicAcls": true,
+                              "blockPublicPolicy": true,
+                              "ignorePublicAcls": true,
+                              "restrictPublicBuckets": true
+                            },
                             "tags": [
                               {
                                 "key": "aws-cdk:auto-delete-objects",
@@ -131,6 +290,40 @@
                                 },
                                 "policyDocument": {
                                   "Statement": [
+                                    {
+                                      "Action": "s3:*",
+                                      "Condition": {
+                                        "Bool": {
+                                          "aws:SecureTransport": "false"
+                                        }
+                                      },
+                                      "Effect": "Deny",
+                                      "Principal": {
+                                        "AWS": "*"
+                                      },
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "AtmosphereConfigurationBucket70B4698A",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "AtmosphereConfigurationBucket70B4698A",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              "/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
                                     {
                                       "Action": [
                                         "s3:DeleteObject*",
@@ -1296,9 +1489,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-deallocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.2]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.2]}eu-central-1",
+                    "path": "atmosphere-integ-deallocate/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.2]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2275,9 +2468,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-deallocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.2]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.2]}eu-central-1",
+                    "path": "atmosphere-integ-deallocate/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.2]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"

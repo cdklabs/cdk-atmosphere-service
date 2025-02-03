@@ -72,6 +72,11 @@ export class AtmosphereIntegTest {
 
     const service = new AtmosphereService(serviceStack, 'Atmosphere', {
       config: { environments },
+      endpoint: {
+        // allow any role in the deployment account to access the service
+        // during integ tests so we can run assertions locally.
+        allowedPrincipals: [new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID)],
+      },
     });
 
     const assertionPath = path.join(__dirname, props.dir, ASSERT_HANDLER_FILE);

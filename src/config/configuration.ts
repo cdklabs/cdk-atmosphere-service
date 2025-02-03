@@ -84,12 +84,23 @@ export class Configuration extends Construct {
     super(scope, id);
 
     this.data = props.data;
+
+    const accessLogsBucket = new s3.Bucket(this, 'AccessLogs', {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
+
     this.bucket = new s3.Bucket(this, 'Bucket', {
       // makes it easier in integ test cycles.
       // the bucket doesn't store state so its
       // ok to delete its data.
       autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      serverAccessLogsBucket: accessLogsBucket,
     });
 
     new s3Deploy.BucketDeployment(this, 'Deployment', {
