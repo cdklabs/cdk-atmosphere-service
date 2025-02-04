@@ -69,7 +69,7 @@ test('can add principals to resource policy', () => {
         },
         Resource: [
           'execute-api:/prod/POST/allocations',
-          'execute-api:/prod/DELETE/allocations/{id}',
+          'execute-api:/prod/DELETE/allocations/*',
         ],
       }],
     },
