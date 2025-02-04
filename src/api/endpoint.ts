@@ -73,7 +73,7 @@ export class Endpoint extends Construct {
     const effect = props.allowedPrincipals ? iam.Effect.ALLOW: iam.Effect.DENY;
     const resources = props.allowedPrincipals ? [
       'execute-api:/prod/POST/allocations',
-      'execute-api:/prod/DELETE/allocations/{id}',
+      'execute-api:/prod/DELETE/allocations/*',
     ] : ['*'];
 
     // Create the API Gateway
