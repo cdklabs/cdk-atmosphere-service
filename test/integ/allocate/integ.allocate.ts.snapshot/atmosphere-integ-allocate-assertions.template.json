@@ -50,13 +50,37 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f9c807e1405a3d4c4a76a7a4ff4647e4e26cd67cb78cccb017d9aa9d5a97b271.zip"
+     "S3Key": "1eb8271e76a3059682bc3b31470ffe496e93e94c94bd1d0284f33596791514c2.zip"
     },
     "Description": "test/integ/allocate/assert.lambda.ts",
     "Environment": {
      "Variables": {
       "CDK_ATMOSPHERE_INTEG_LOCAL_ASSERT": "false",
       "CDK_ATMOSPHERE_INTEG_LOCAL_RUNTIME": "false",
+      "CDK_ATMOSPHERE_ENDPOINT_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+         },
+         "/"
+        ]
+       ]
+      },
       "CDK_ATMOSPHERE_ENVIRONMENTS_TABLE_NAME": {
        "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"
       },
@@ -150,7 +174,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738525639202"
+    "salt": "1738616679862"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -272,6 +296,32 @@
   }
  },
  "Outputs": {
+  "CDK0ATMOSPHERE0ENDPOINT0URL": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
   "CDK0ATMOSPHERE0ENVIRONMENTS0TABLE0NAME": {
    "Value": {
     "Fn::ImportValue": "atmosphere-integ-allocate:ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F"

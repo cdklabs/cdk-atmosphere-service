@@ -1955,20 +1955,20 @@ const endpointOptions: EndpointOptions = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedAccounts">allowedAccounts</a></code> | <code>string[]</code> | List of accounts that are allowed to access the endpoint. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
 
 ---
 
-##### `allowedAccounts`<sup>Optional</sup> <a name="allowedAccounts" id="@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedAccounts"></a>
+##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedPrincipals"></a>
 
 ```typescript
-public readonly allowedAccounts: string[];
+public readonly allowedPrincipals: IPrincipal[];
 ```
 
-- *Type:* string[]
-- *Default:* only the service account is allowed.
+- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
+- *Default:* endpoint is not accessible by anyone.
 
-List of accounts that are allowed to access the endpoint.
+List of principals that are allowed to access the endpoint.
 
 ---
 
@@ -1988,22 +1988,22 @@ const endpointProps: EndpointProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedAccounts">allowedAccounts</a></code> | <code>string[]</code> | List of accounts that are allowed to access the endpoint. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allocate">allocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate">Allocate</a></code> | Allocate function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Deallocate function. |
 
 ---
 
-##### `allowedAccounts`<sup>Optional</sup> <a name="allowedAccounts" id="@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedAccounts"></a>
+##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedPrincipals"></a>
 
 ```typescript
-public readonly allowedAccounts: string[];
+public readonly allowedPrincipals: IPrincipal[];
 ```
 
-- *Type:* string[]
-- *Default:* only the service account is allowed.
+- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
+- *Default:* endpoint is not accessible by anyone.
 
-List of accounts that are allowed to access the endpoint.
+List of principals that are allowed to access the endpoint.
 
 ---
 

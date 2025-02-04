@@ -49,9 +49,136 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AtmosphereConfigurationAccessLogs46D18306": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereConfigurationAccessLogsPolicy6ACB5068": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "AtmosphereConfigurationAccessLogs46D18306"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereConfigurationAccessLogs46D18306",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereConfigurationAccessLogs46D18306",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "AtmosphereConfigurationBucket70B4698A",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "AtmosphereConfigurationAccessLogs46D18306",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereConfigurationBucket70B4698A": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "LoggingConfiguration": {
+     "DestinationBucketName": {
+      "Ref": "AtmosphereConfigurationAccessLogs46D18306"
+     }
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -74,6 +201,40 @@
     },
     "PolicyDocument": {
      "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AtmosphereConfigurationBucket70B4698A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AtmosphereConfigurationBucket70B4698A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
       {
        "Action": [
         "s3:DeleteObject*",
@@ -663,7 +824,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6e47ed507f137d100dc84bcee6b5eeac34eb9d627e22a4441e470cf496427df5"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2e3999ff2475f90ac94c1e982c007049f27cb3ba109b7572f115e24b009c3bcf"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -1008,7 +1169,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "604f617d14c34451c9d14caa174f8c4d4541537fbddcd903c547cb4e67d4e9de.zip"
+     "S3Key": "82e253f20f2589866f34262660356d9d4cd3af7577653fde37ff51334f1a6713.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1173,7 +1334,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cbeea44a9d3c9b226c9ed79515a0d5ff2026e637c3dafd8fda32f6c059d2f7ae.zip"
+     "S3Key": "0bbd6cab98661925952fa7f008c754b26f615f83a36f0ca1a83a6ce075d8074a.zip"
     },
     "DeadLetterConfig": {
      "TargetArn": {
@@ -1359,7 +1520,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ca62b033c473049104f97c054b64a2b51ed651ab8a329d4245890bd04e2d5121.zip"
+     "S3Key": "33174d1cdb83f3914597f3c2dd8251feff2d32ef50582f8dc9fc2cd0e6fa37c5.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
@@ -1555,7 +1716,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "38dff565c9a3ee0f6c289a5a5a64348571d692069bf0bbaa1fe9f09c044bd329.zip"
+     "S3Key": "bd8d4f46c0209934806dc1d20c30509f6da94bdc70dc8cc87486b7dca0c8075c.zip"
     },
     "Description": "src/deallocate/deallocate.lambda.ts",
     "Environment": {
@@ -2342,6 +2503,22 @@
     ]
    }
   },
+  "ExportsOutputRefAtmosphereEndpointApi64E9173819330649": {
+   "Value": {
+    "Ref": "AtmosphereEndpointApi64E91738"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-dev:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
+   }
+  },
+  "ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4": {
+   "Value": {
+    "Ref": "AtmosphereEndpointApiDeploymentStageprod2712B9E2"
+   },
+   "Export": {
+    "Name": "atmosphere-integ-dev:ExportsOutputRefAtmosphereEndpointApiDeploymentStageprod2712B9E2E813D9C4"
+   }
+  },
   "ExportsOutputRefAtmosphereEnvironmentsTable430B8CE1CE99927F": {
    "Value": {
     "Ref": "AtmosphereEnvironmentsTable430B8CE1"
@@ -2419,14 +2596,6 @@
    },
    "Export": {
     "Name": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereSchedulerCleanupTimeoutFunctionCE231484Arn16D750F9"
-   }
-  },
-  "ExportsOutputRefAtmosphereEndpointApi64E9173819330649": {
-   "Value": {
-    "Ref": "AtmosphereEndpointApi64E91738"
-   },
-   "Export": {
-    "Name": "atmosphere-integ-dev:ExportsOutputRefAtmosphereEndpointApi64E9173819330649"
    }
   },
   "ExportsOutputRefAtmosphereEndpointApiallocations8406C04D55150FB2": {
