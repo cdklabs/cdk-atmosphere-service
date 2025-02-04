@@ -91,6 +91,7 @@ export class Endpoint extends Construct {
         ],
       }),
       endpointTypes: [apigateway.EndpointType.REGIONAL],
+      disableExecuteApiEndpoint: props.hostedZone ? true : false,
     });
 
     if (props.hostedZone) {

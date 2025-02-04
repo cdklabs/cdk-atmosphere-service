@@ -1788,6 +1788,12 @@
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
     "Description": "RESTful endpoint for the Atmosphere service",
+    "DisableExecuteApiEndpoint": false,
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
     "Name": "Atmosphere",
     "Policy": {
      "Statement": [
@@ -1824,7 +1830,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereEndpointApiDeployment2DF1AFBEef617c1338fea6cd9a98c3bd22320995": {
+  "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "RESTful endpoint for the Atmosphere service",
@@ -1845,7 +1851,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEef617c1338fea6cd9a98c3bd22320995"
+     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366"
     },
     "RestApiId": {
      "Ref": "AtmosphereEndpointApi64E91738"

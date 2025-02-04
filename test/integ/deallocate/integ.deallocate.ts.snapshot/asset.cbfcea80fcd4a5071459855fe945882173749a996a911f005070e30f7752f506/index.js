@@ -11155,7 +11155,8 @@ var require_client = __commonJS({
           this._aws = new aws4fetch_1.AwsClient({
             accessKeyId: creds.accessKeyId,
             secretAccessKey: creds.secretAccessKey,
-            sessionToken: creds.sessionToken
+            sessionToken: creds.sessionToken,
+            service: "execute-api"
           });
         }
         return this._aws;
