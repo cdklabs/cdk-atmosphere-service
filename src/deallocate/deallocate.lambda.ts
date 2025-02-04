@@ -5,7 +5,7 @@ import { Logger } from '../logging';
 import { Allocation, AllocationAlreadyEndedError, InvalidInputError } from '../storage/allocations.client';
 
 // an hour should plenty to clean one environment
-const MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+const CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -15,19 +15,6 @@ class ProxyError extends Error {
 
 export interface DeallocateRequest {
   readonly outcome: string;
-
-  // honestly this is just so that we can easily write timeout
-  // integration tests.
-  readonly cleanupDurationSeconds?: number;
-}
-
-export interface DeallocateResponse {
-  /**
-   * How many seconds should the cleanup task run before timing out.
-   *
-   * Negative number means the cleanup will not run because the allocation has already ended.
-   */
-  readonly cleanupDurationSeconds: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -59,12 +46,7 @@ async function safeDoHandler(allocationId: string, request: DeallocateRequest, l
 async function doHandler(allocationId: string, request: DeallocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
   try {
 
-    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
-    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
-      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
-    }
-
-    const cleanupTimeoutDate = new Date(Date.now() + 1000 * cleanupDurationSeconds);
+    const cleanupTimeoutDate = new Date(Date.now() + 1000 * CLEANUP_TIMEOUT_SECONDS);
 
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(allocationId, request.outcome);
@@ -80,18 +62,18 @@ async function doHandler(allocationId: string, request: DeallocateRequest, log: 
 
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients.environments.cleaning(allocationId, allocation.account, allocation.region);
-    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: CLEANUP_TIMEOUT_SECONDS });
 
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
 
-    return success({ cleanupDurationSeconds });
+    return success();
   } catch (e: any) {
 
     if (e instanceof AllocationAlreadyEndedError) {
       // expected because deallocation can be requested either
       // by the timeout event or explicitly by the user.
       log.info(`Returning success because: ${e.message}`);
-      return success({ cleanupDurationSeconds: -1 });
+      return success();
     }
 
     throw e;
@@ -128,8 +110,8 @@ async function endAllocation(id: string, outcome: string): Promise<Allocation> {
   }
 }
 
-function success(body: any) {
-  return { statusCode: 200, body: JSON.stringify(body) };
+function success() {
+  return { statusCode: 200, body: JSON.stringify({}) };
 }
 
 function failure(e: any) {

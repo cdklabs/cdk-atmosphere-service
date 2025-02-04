@@ -13,7 +13,7 @@ import { EnvironmentAlreadyAcquiredError } from '../storage/environments.client'
 // this will be the duration of the credentials being passed
 // the the caller. currently, it cannot be more than 1 hour because of role chaining.
 // TODO - how can we avoid role chaining?
-const MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
+const ALLOCATION_DURATION_SECONDS = 60 * 60;
 
 class ProxyError extends Error {
   constructor(public readonly statusCode: number, public readonly message: string) {
@@ -24,10 +24,6 @@ class ProxyError extends Error {
 export interface AllocateRequest {
   readonly pool: string;
   readonly requester: string;
-
-  // honestly this is just so that we can easily write timeout
-  // integration tests.
-  readonly durationSeconds?: number;
 }
 
 export interface Credentials {
@@ -40,7 +36,6 @@ export interface AllocateResponse {
   readonly id: string;
   readonly environment: Environment;
   readonly credentials: Credentials;
-  readonly durationSeconds: number;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -72,12 +67,7 @@ async function safeDoHandler(allocationId: string, request: AllocateRequest, log
 }
 
 async function doHandler(allocationId: string, request: AllocateRequest, log: Logger): Promise<APIGatewayProxyResult> {
-  const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-  if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-    throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-  }
-
-  const timeoutDate = new Date(Date.now() + 1000 * durationSeconds);
+  const timeoutDate = new Date(Date.now() + 1000 * ALLOCATION_DURATION_SECONDS);
 
   log.info(`Acquiring environment from pool '${request.pool}'`);
   const environment = await acquireEnvironment(allocationId, request.pool);
@@ -90,7 +80,7 @@ async function doHandler(allocationId: string, request: AllocateRequest, log: Lo
 
   log.info('Allocation started successfully');
 
-  const response: AllocateResponse = { id: allocationId, environment, credentials, durationSeconds };
+  const response: AllocateResponse = { id: allocationId, environment, credentials };
 
   log.info(`Scheduling allocation timeout to ${timeoutDate}`);
   await clients.scheduler.scheduleAllocationTimeout({

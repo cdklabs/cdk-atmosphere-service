@@ -64,15 +64,6 @@ describe('handler', () => {
 
   });
 
-  test('returns 400 when duration excceeds maximum', async () => {
-    const response = await handler({ body: JSON.stringify({ pool: 'release', requester: 'user1', durationSeconds: 2 * 60 * 60 }) } as APIGatewayProxyEvent);
-    const body = JSON.parse(response.body);
-
-    expect(response.statusCode).toEqual(400);
-    expect(body.message).toEqual('Maximum allocation duration is 3600 seconds');
-
-  });
-
   test('rethrows on unexpected error when allocating', async () => {
 
     jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
@@ -117,7 +108,6 @@ describe('handler', () => {
     const body = JSON.parse(response.body);
 
     expect(response.statusCode).toEqual(200);
-    expect(body.durationSeconds).toEqual(3600);
     expect(body.id.length).toEqual(36);
     expect(body.environment).toEqual({
       account: '1111',
@@ -150,34 +140,6 @@ describe('handler', () => {
       RoleArn: 'arn:aws:iam::1111:role/Admin',
       RoleSessionName: `atmosphere.allocation.${body.id}`,
     });
-
-  });
-
-  test('respects duration seconds', async () => {
-
-    stsMock.on(AssumeRoleCommand).resolves({
-      Credentials: {
-        AccessKeyId: 'key',
-        SecretAccessKey: 'secret',
-        SessionToken: 'token',
-        Expiration: new Date(),
-      },
-    });
-
-    jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
-      account: '1111',
-      region: 'us-east-1',
-      pool: 'canary',
-      adminRoleArn: 'arn:aws:iam::1111:role/Admin',
-    }]));
-    jest.spyOn(clients.environments, 'acquire').mockImplementation(jest.fn());
-    jest.spyOn(clients.allocations, 'start').mockImplementation(jest.fn());
-    jest.spyOn(clients.scheduler, 'scheduleAllocationTimeout').mockImplementation(jest.fn());
-
-    const response = await _with.env({ [envars.ALLOCATION_TIMEOUT_FUNCTION_ARN_ENV]: 'arn' }, async () => handler({ body: JSON.stringify({ pool: 'release', requester: 'user1', durationSeconds: 30 }) } as APIGatewayProxyEvent));
-    const body = JSON.parse(response.body);
-
-    expect(body.durationSeconds).toEqual(30);
 
   });
 

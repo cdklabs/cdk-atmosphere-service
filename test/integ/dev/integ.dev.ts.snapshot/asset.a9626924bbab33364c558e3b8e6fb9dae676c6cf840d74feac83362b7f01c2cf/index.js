@@ -11861,7 +11861,7 @@ var Logger = class {
 };
 
 // src/allocate/allocate.lambda.ts
-var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
+var ALLOCATION_DURATION_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -11891,11 +11891,7 @@ async function safeDoHandler(allocationId, request, log) {
   }
 }
 async function doHandler(allocationId, request, log) {
-  const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-  if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-    throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-  }
-  const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
+  const timeoutDate = new Date(Date.now() + 1e3 * ALLOCATION_DURATION_SECONDS);
   log.info(`Acquiring environment from pool '${request.pool}'`);
   const environment = await acquireEnvironment(allocationId, request.pool);
   log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
@@ -11903,7 +11899,7 @@ async function doHandler(allocationId, request, log) {
   log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
   const credentials = await grabCredentials(allocationId, environment);
   log.info("Allocation started successfully");
-  const response = { id: allocationId, environment, credentials, durationSeconds };
+  const response = { id: allocationId, environment, credentials };
   log.info(`Scheduling allocation timeout to ${timeoutDate}`);
   await clients.scheduler.scheduleAllocationTimeout({
     allocationId,
@@ -12251,7 +12247,7 @@ if (require.main !== module) {
 }
 
 // src/deallocate/deallocate.lambda.ts
-var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError2 = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -12282,11 +12278,7 @@ async function safeDoHandler2(allocationId, request, log) {
 }
 async function doHandler3(allocationId, request, log) {
   try {
-    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
-    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
-      throw new ProxyError2(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
-    }
-    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * CLEANUP_TIMEOUT_SECONDS);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(allocationId, request.outcome);
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
@@ -12299,13 +12291,13 @@ async function doHandler3(allocationId, request, log) {
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients3.environments.cleaning(allocationId, allocation.account, allocation.region);
-    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: CLEANUP_TIMEOUT_SECONDS });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
-    return success2({ cleanupDurationSeconds });
+    return success2();
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       log.info(`Returning success because: ${e.message}`);
-      return success2({ cleanupDurationSeconds: -1 });
+      return success2();
     }
     throw e;
   }
@@ -12334,8 +12326,8 @@ async function endAllocation(id, outcome) {
     throw e;
   }
 }
-function success2(body) {
-  return { statusCode: 200, body: JSON.stringify(body) };
+function success2() {
+  return { statusCode: 200, body: JSON.stringify({}) };
 }
 function failure2(e) {
   const statusCode = e instanceof ProxyError2 ? e.statusCode : 500;
