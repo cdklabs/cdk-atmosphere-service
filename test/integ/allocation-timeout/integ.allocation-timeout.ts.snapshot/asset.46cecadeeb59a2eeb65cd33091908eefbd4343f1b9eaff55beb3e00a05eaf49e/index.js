@@ -7334,7 +7334,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail2(reason) {
+      function fail(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -7365,7 +7365,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail2,
+                fail,
                 void 0,
                 this,
                 void 0
@@ -7382,11 +7382,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler7, type, success3, fail3) {
+      Promise2.prototype._passThrough = function(handler7, type, success3, fail2) {
         if (typeof handler7 !== "function") return this.then();
         return this._then(
           success3,
-          fail3,
+          fail2,
           void 0,
           new PassThroughHandlerContext(this, type, handler7),
           void 0
@@ -11207,7 +11207,7 @@ var require_lib2 = __commonJS({
   }
 });
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/allocation-timeout/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
@@ -11864,7 +11864,7 @@ var Logger = class {
 };
 
 // src/allocate/allocate.lambda.ts
-var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
+var ALLOCATION_DURATION_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -11894,11 +11894,7 @@ async function safeDoHandler(allocationId, request, log) {
   }
 }
 async function doHandler(allocationId, request, log) {
-  const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-  if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-    throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-  }
-  const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
+  const timeoutDate = new Date(Date.now() + 1e3 * ALLOCATION_DURATION_SECONDS);
   log.info(`Acquiring environment from pool '${request.pool}'`);
   const environment = await acquireEnvironment(allocationId, request.pool);
   log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
@@ -11906,7 +11902,7 @@ async function doHandler(allocationId, request, log) {
   log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
   const credentials = await grabCredentials(allocationId, environment);
   log.info("Allocation started successfully");
-  const response = { id: allocationId, environment, credentials, durationSeconds };
+  const response = { id: allocationId, environment, credentials };
   log.info(`Scheduling allocation timeout to ${timeoutDate}`);
   await clients.scheduler.scheduleAllocationTimeout({
     allocationId,
@@ -12254,7 +12250,7 @@ if (require.main !== module) {
 }
 
 // src/deallocate/deallocate.lambda.ts
-var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError2 = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -12285,11 +12281,7 @@ async function safeDoHandler2(allocationId, request, log) {
 }
 async function doHandler3(allocationId, request, log) {
   try {
-    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
-    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
-      throw new ProxyError2(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
-    }
-    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * CLEANUP_TIMEOUT_SECONDS);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(allocationId, request.outcome);
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
@@ -12302,13 +12294,13 @@ async function doHandler3(allocationId, request, log) {
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients3.environments.cleaning(allocationId, allocation.account, allocation.region);
-    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: CLEANUP_TIMEOUT_SECONDS });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
-    return success2({ cleanupDurationSeconds });
+    return success2();
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       log.info(`Returning success because: ${e.message}`);
-      return success2({ cleanupDurationSeconds: -1 });
+      return success2();
     }
     throw e;
   }
@@ -12337,8 +12329,8 @@ async function endAllocation(id, outcome) {
     throw e;
   }
 }
-function success2(body) {
-  return { statusCode: 200, body: JSON.stringify(body) };
+function success2() {
+  return { statusCode: 200, body: JSON.stringify({}) };
 }
 function failure2(e) {
   const statusCode = e instanceof ProxyError2 ? e.statusCode : 500;
@@ -12745,48 +12737,23 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/cleanup-timeout/assert.lambda.ts
+// test/integ/allocation-timeout/assert.lambda.ts
 var clients7 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("marks-dirty-when-environment-is-still-cleaning", async (session) => {
+  await Runner.assert("ends-allocation-if-active", async (session) => {
     const response = await session.runtime.allocate({ pool: "release", requester: "test" });
     const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    await clients7.environments.cleaning(body.id, account, region);
-    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
-    const environment = await clients7.environments.get(account, region);
-    assert2.strictEqual(environment.status, "dirty");
+    await session.runtime.allocationTimeout({ allocationId: body.id });
+    const allocation = await clients7.allocations.get(body.id);
+    assert2.ok(allocation.end);
   });
-  await Runner.assert("no-ops-when-environment-is-already-released", async (session) => {
+  await Runner.assert("no-ops-if-allocation-has-ended", async (session) => {
     const response = await session.runtime.allocate({ pool: "release", requester: "test" });
     const body = JSON.parse(response.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    await clients7.environments.cleaning(body.id, account, region);
-    await clients7.environments.release(body.id, account, region);
-    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
-    try {
-      await clients7.environments.get(account, region);
-      assert2.fail("expected environment to be deleted");
-    } catch (err) {
-      assert2.strictEqual(err.constructor.name, "EnvironmentNotFound");
-    }
-  });
-  await Runner.assert("no-ops-when-environment-has-been-reallocated", async (session) => {
-    const allocateResponse1 = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(allocateResponse1.body);
-    const account = body.environment.account;
-    const region = body.environment.region;
-    const allocationId = body.id;
-    await clients7.environments.cleaning(allocationId, account, region);
-    await clients7.environments.release(allocationId, account, region);
-    const allocateResponse2 = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const allocateResponseBody2 = JSON.parse(allocateResponse2.body);
-    await session.runtime.cleanupTimeout({ allocationId, account, region });
-    const environment = await clients7.environments.get(account, region);
-    assert2.strictEqual(environment.status, "in-use");
-    assert2.strictEqual(environment.allocation, allocateResponseBody2.id);
+    await clients7.allocations.end({ id: body.id, outcome: "success" });
+    await session.runtime.allocationTimeout({ allocationId: body.id });
+    const allocation = await clients7.allocations.get(body.id);
+    assert2.strictEqual(allocation.outcome, "success");
   });
   return SUCCESS_PAYLOAD;
 }

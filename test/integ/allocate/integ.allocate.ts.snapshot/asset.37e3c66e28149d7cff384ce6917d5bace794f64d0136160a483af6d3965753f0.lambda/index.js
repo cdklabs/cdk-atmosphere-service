@@ -653,7 +653,7 @@ var Logger = class {
 };
 
 // src/allocate/allocate.lambda.ts
-var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
+var ALLOCATION_DURATION_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -683,11 +683,7 @@ async function safeDoHandler(allocationId, request, log) {
   }
 }
 async function doHandler(allocationId, request, log) {
-  const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-  if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-    throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-  }
-  const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
+  const timeoutDate = new Date(Date.now() + 1e3 * ALLOCATION_DURATION_SECONDS);
   log.info(`Acquiring environment from pool '${request.pool}'`);
   const environment = await acquireEnvironment(allocationId, request.pool);
   log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
@@ -695,7 +691,7 @@ async function doHandler(allocationId, request, log) {
   log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
   const credentials = await grabCredentials(allocationId, environment);
   log.info("Allocation started successfully");
-  const response = { id: allocationId, environment, credentials, durationSeconds };
+  const response = { id: allocationId, environment, credentials };
   log.info(`Scheduling allocation timeout to ${timeoutDate}`);
   await clients.scheduler.scheduleAllocationTimeout({
     allocationId,

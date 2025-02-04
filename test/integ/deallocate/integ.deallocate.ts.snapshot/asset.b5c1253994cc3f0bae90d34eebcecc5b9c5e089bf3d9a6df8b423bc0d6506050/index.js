@@ -11207,7 +11207,7 @@ var require_lib2 = __commonJS({
   }
 });
 
-// test/integ/allocation-timeout/assert.lambda.ts
+// test/integ/deallocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
@@ -11864,7 +11864,7 @@ var Logger = class {
 };
 
 // src/allocate/allocate.lambda.ts
-var MAX_ALLOCATION_DURATION_SECONDS = 60 * 60;
+var ALLOCATION_DURATION_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -11894,11 +11894,7 @@ async function safeDoHandler(allocationId, request, log) {
   }
 }
 async function doHandler(allocationId, request, log) {
-  const durationSeconds = request.durationSeconds ?? MAX_ALLOCATION_DURATION_SECONDS;
-  if (durationSeconds > MAX_ALLOCATION_DURATION_SECONDS) {
-    throw new ProxyError(400, `Maximum allocation duration is ${MAX_ALLOCATION_DURATION_SECONDS} seconds`);
-  }
-  const timeoutDate = new Date(Date.now() + 1e3 * durationSeconds);
+  const timeoutDate = new Date(Date.now() + 1e3 * ALLOCATION_DURATION_SECONDS);
   log.info(`Acquiring environment from pool '${request.pool}'`);
   const environment = await acquireEnvironment(allocationId, request.pool);
   log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
@@ -11906,7 +11902,7 @@ async function doHandler(allocationId, request, log) {
   log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
   const credentials = await grabCredentials(allocationId, environment);
   log.info("Allocation started successfully");
-  const response = { id: allocationId, environment, credentials, durationSeconds };
+  const response = { id: allocationId, environment, credentials };
   log.info(`Scheduling allocation timeout to ${timeoutDate}`);
   await clients.scheduler.scheduleAllocationTimeout({
     allocationId,
@@ -12254,7 +12250,7 @@ if (require.main !== module) {
 }
 
 // src/deallocate/deallocate.lambda.ts
-var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError2 = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -12285,11 +12281,7 @@ async function safeDoHandler2(allocationId, request, log) {
 }
 async function doHandler3(allocationId, request, log) {
   try {
-    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
-    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
-      throw new ProxyError2(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
-    }
-    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * CLEANUP_TIMEOUT_SECONDS);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(allocationId, request.outcome);
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
@@ -12302,13 +12294,13 @@ async function doHandler3(allocationId, request, log) {
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients3.environments.cleaning(allocationId, allocation.account, allocation.region);
-    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    const taskInstanceArn = await clients3.cleanup.start({ allocation, timeoutSeconds: CLEANUP_TIMEOUT_SECONDS });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
-    return success2({ cleanupDurationSeconds });
+    return success2();
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       log.info(`Returning success because: ${e.message}`);
-      return success2({ cleanupDurationSeconds: -1 });
+      return success2();
     }
     throw e;
   }
@@ -12337,8 +12329,8 @@ async function endAllocation(id, outcome) {
     throw e;
   }
 }
-function success2(body) {
-  return { statusCode: 200, body: JSON.stringify(body) };
+function success2() {
+  return { statusCode: 200, body: JSON.stringify({}) };
 }
 function failure2(e) {
   const statusCode = e instanceof ProxyError2 ? e.statusCode : 500;
@@ -12745,23 +12737,29 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/allocation-timeout/assert.lambda.ts
+// test/integ/deallocate/assert.lambda.ts
 var clients7 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  await Runner.assert("ends-allocation-if-active", async (session) => {
-    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
-    const body = JSON.parse(response.body);
-    await session.runtime.allocationTimeout({ allocationId: body.id });
-    const allocation = await clients7.allocations.get(body.id);
+  await Runner.assert("creates-right-resources", async (session) => {
+    const allocateResponse = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const allocationResponseBody = JSON.parse(allocateResponse.body);
+    const account = allocationResponseBody.environment.account;
+    const region = allocationResponseBody.environment.region;
+    const deallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
+    assert2.strictEqual(deallocateResponse.status, 200);
+    const environment = await clients7.environments.get(account, region);
+    assert2.strictEqual(environment.status, "cleaning");
+    const allocation = await clients7.allocations.get(allocationResponseBody.id);
     assert2.ok(allocation.end);
+    const cleanupTimeoutSchedule = await session.fetchCleanupTimeoutSchedule(allocationResponseBody.id);
+    assert2.ok(cleanupTimeoutSchedule);
   });
-  await Runner.assert("no-ops-if-allocation-has-ended", async (session) => {
-    const response = await session.runtime.allocate({ pool: "release", requester: "test", durationSeconds: 30 });
-    const body = JSON.parse(response.body);
-    await clients7.allocations.end({ id: body.id, outcome: "success" });
-    await session.runtime.allocationTimeout({ allocationId: body.id });
-    const allocation = await clients7.allocations.get(body.id);
-    assert2.strictEqual(allocation.outcome, "success");
+  await Runner.assert("is-idempotent", async (session) => {
+    const allocateResponse = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const allocationResponseBody = JSON.parse(allocateResponse.body);
+    await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
+    const secondDeallocateResponse = await session.runtime.deallocate(allocationResponseBody.id, { outcome: "success" });
+    assert2.strictEqual(secondDeallocateResponse.status, 200);
   });
   return SUCCESS_PAYLOAD;
 }

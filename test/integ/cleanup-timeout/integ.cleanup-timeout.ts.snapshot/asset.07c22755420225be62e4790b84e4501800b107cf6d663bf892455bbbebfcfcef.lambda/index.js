@@ -651,7 +651,7 @@ var Logger = class {
 };
 
 // src/deallocate/deallocate.lambda.ts
-var MAX_CLEANUP_TIMEOUT_SECONDS = 60 * 60;
+var CLEANUP_TIMEOUT_SECONDS = 60 * 60;
 var ProxyError = class extends Error {
   constructor(statusCode, message) {
     super(`${statusCode}: ${message}`);
@@ -682,11 +682,7 @@ async function safeDoHandler(allocationId, request, log) {
 }
 async function doHandler(allocationId, request, log) {
   try {
-    const cleanupDurationSeconds = request.cleanupDurationSeconds ?? MAX_CLEANUP_TIMEOUT_SECONDS;
-    if (cleanupDurationSeconds > MAX_CLEANUP_TIMEOUT_SECONDS) {
-      throw new ProxyError(400, `Maximum cleanup timeout is ${MAX_CLEANUP_TIMEOUT_SECONDS} seconds`);
-    }
-    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * cleanupDurationSeconds);
+    const cleanupTimeoutDate = new Date(Date.now() + 1e3 * CLEANUP_TIMEOUT_SECONDS);
     log.info(`Ending allocation with outcome: ${request.outcome}`);
     const allocation = await endAllocation(allocationId, request.outcome);
     log.info(`Scheduling timeout for cleanup of environment 'aws://${allocation.account}/${allocation.region}' to ${cleanupTimeoutDate}`);
@@ -699,13 +695,13 @@ async function doHandler(allocationId, request, log) {
     });
     log.info(`Starting cleanup of 'aws://${allocation.account}/${allocation.region}'`);
     await clients.environments.cleaning(allocationId, allocation.account, allocation.region);
-    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: cleanupDurationSeconds });
+    const taskInstanceArn = await clients.cleanup.start({ allocation, timeoutSeconds: CLEANUP_TIMEOUT_SECONDS });
     log.info(`Successfully started cleanup task: ${taskInstanceArn}`);
-    return success({ cleanupDurationSeconds });
+    return success();
   } catch (e) {
     if (e instanceof AllocationAlreadyEndedError) {
       log.info(`Returning success because: ${e.message}`);
-      return success({ cleanupDurationSeconds: -1 });
+      return success();
     }
     throw e;
   }
@@ -734,8 +730,8 @@ async function endAllocation(id, outcome) {
     throw e;
   }
 }
-function success(body) {
-  return { statusCode: 200, body: JSON.stringify(body) };
+function success() {
+  return { statusCode: 200, body: JSON.stringify({}) };
 }
 function failure(e) {
   const statusCode = e instanceof ProxyError ? e.statusCode : 500;
