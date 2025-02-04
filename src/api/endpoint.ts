@@ -1,6 +1,8 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as certificates from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as r53 from 'aws-cdk-lib/aws-route53';
+import * as r53targets from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from 'constructs';
 import { Allocate } from '../allocate';
 import { Deallocate } from '../deallocate';
@@ -16,6 +18,16 @@ export interface EndpointOptions {
    * @default - endpoint is not accessible by anyone.
    */
   readonly allowedPrincipals?: iam.IPrincipal[];
+
+  /**
+   * Providing a hosted zone will create a custom domain for the API endpoint.
+   * The FQDN will be the same as the domain name of the hosted zone.
+   *
+   * Sub domains are not currently supported.
+   *
+   * @default - no custom domain is created.
+   */
+  readonly hostedZone?: r53.IHostedZone;
 
 }
 
@@ -64,8 +76,6 @@ export class Endpoint extends Construct {
       'execute-api:/prod/DELETE/allocations/{id}',
     ] : ['*'];
 
-    const name = 'cdk-atmosphere-service';
-
     // Create the API Gateway
     this.api = new apigateway.RestApi(this, 'Api', {
       description: 'RESTful endpoint for the Atmosphere service',
@@ -83,20 +93,28 @@ export class Endpoint extends Construct {
       endpointTypes: [apigateway.EndpointType.REGIONAL],
     });
 
-    const certificate = new certificates.Certificate(this, 'Certificate', {
-      domainName: name,
-      region: 'us-east-1', // Required for API Gateway custom domains
-    });
+    if (props.hostedZone) {
+      const certificate = new certificates.Certificate(this, 'Certificate', {
+        domainName: props.hostedZone.zoneName,
+        validation: certificates.CertificateValidation.fromDns(props.hostedZone),
+      });
 
-    const domainName = new apigateway.DomainName(this, 'DomainName', {
-      mapping: this.api,
-      domainName: name,
-      certificate: 'asd',
-      endpointType: apigateway.EndpointType.REGIONAL,
+      const domainName = this.api.addDomainName('DomainName', {
+        domainName: props.hostedZone.zoneName,
+        certificate,
+        endpointType: apigateway.EndpointType.REGIONAL,
 
-      // will reject TLS 1.0
-      securityPolicy: apigateway.SecurityPolicy.TLS_1_2,
-    });
+        // will reject TLS 1.0
+        securityPolicy: apigateway.SecurityPolicy.TLS_1_2,
+      });
+
+      new r53.ARecord(this, 'ARecord', {
+        zone: props.hostedZone,
+        target: r53.RecordTarget.fromAlias(
+          new r53targets.ApiGatewayDomain(domainName),
+        ),
+      });
+    }
 
     // Create /allocations resource
     this.allocationsResource = this.api.root.addResource('allocations');
