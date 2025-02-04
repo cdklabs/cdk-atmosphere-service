@@ -1,5 +1,8 @@
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as certificates from 'aws-cdk-lib/aws-certificatemanager';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as r53 from 'aws-cdk-lib/aws-route53';
+import * as r53targets from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from 'constructs';
 import { Allocate } from '../allocate';
 import { Deallocate } from '../deallocate';
@@ -15,6 +18,16 @@ export interface EndpointOptions {
    * @default - endpoint is not accessible by anyone.
    */
   readonly allowedPrincipals?: iam.IPrincipal[];
+
+  /**
+   * Providing a hosted zone will create a custom domain for the API endpoint.
+   * The FQDN will be the same as the domain name of the hosted zone.
+   *
+   * Sub domains are not currently supported.
+   *
+   * @default - no custom domain is created.
+   */
+  readonly hostedZone?: r53.IHostedZone;
 
 }
 
@@ -77,7 +90,32 @@ export class Endpoint extends Construct {
           }),
         ],
       }),
+      endpointTypes: [apigateway.EndpointType.REGIONAL],
+      disableExecuteApiEndpoint: props.hostedZone ? true : false,
     });
+
+    if (props.hostedZone) {
+      const certificate = new certificates.Certificate(this, 'Certificate', {
+        domainName: props.hostedZone.zoneName,
+        validation: certificates.CertificateValidation.fromDns(props.hostedZone),
+      });
+
+      const domainName = this.api.addDomainName('DomainName', {
+        domainName: props.hostedZone.zoneName,
+        certificate,
+        endpointType: apigateway.EndpointType.REGIONAL,
+
+        // will reject TLS 1.0
+        securityPolicy: apigateway.SecurityPolicy.TLS_1_2,
+      });
+
+      new r53.ARecord(this, 'ARecord', {
+        zone: props.hostedZone,
+        target: r53.RecordTarget.fromAlias(
+          new r53targets.ApiGatewayDomain(domainName),
+        ),
+      });
+    }
 
     // Create /allocations resource
     this.allocationsResource = this.api.root.addResource('allocations');

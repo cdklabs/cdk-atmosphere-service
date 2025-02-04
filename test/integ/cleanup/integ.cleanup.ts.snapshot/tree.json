@@ -1489,9 +1489,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-cleanup/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-cleanup/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2468,9 +2468,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.5]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.5]}eu-central-1",
-                    "path": "atmosphere-integ-cleanup/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.5]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.0]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.0]}eu-central-1",
+                    "path": "atmosphere-integ-cleanup/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.0]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2790,6 +2790,12 @@
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                           "aws:cdk:cloudformation:props": {
                             "description": "RESTful endpoint for the Atmosphere service",
+                            "disableExecuteApiEndpoint": false,
+                            "endpointConfiguration": {
+                              "types": [
+                                "REGIONAL"
+                              ]
+                            },
                             "name": "Atmosphere",
                             "policy": {
                               "Statement": [
@@ -2867,7 +2873,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                               "aws:cdk:cloudformation:props": {
                                 "deploymentId": {
-                                  "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEef617c1338fea6cd9a98c3bd22320995"
+                                  "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366"
                                 },
                                 "restApiId": {
                                   "Ref": "AtmosphereEndpointApi64E91738"
@@ -3964,7 +3970,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "ac054f9520e663980b2a2adf7103e2729a347046277c819ba08888cb62bc7c21.zip"
+                      "s3Key": "49f2fc7b322a41fb287bd12ad20f9ed9d7d507575bc3a23908a08e942c40013b.zip"
                     },
                     "description": "test/integ/cleanup/assert.lambda.ts",
                     "environment": {

@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1eb8271e76a3059682bc3b31470ffe496e93e94c94bd1d0284f33596791514c2.zip"
+     "S3Key": "4c61a8eae045cde55e413d8ab9df35252b808d833859c537a07c3944667df2bd.zip"
     },
     "Description": "test/integ/allocate/assert.lambda.ts",
     "Environment": {
@@ -174,7 +174,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738616679862"
+    "salt": "1738682524493"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

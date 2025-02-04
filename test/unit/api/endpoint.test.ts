@@ -1,6 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountPrincipal } from 'aws-cdk-lib/aws-iam';
+import * as r53 from 'aws-cdk-lib/aws-route53';
 import { AtmosphereService } from '../../../src';
 
 test('default resource policy', () => {
@@ -73,5 +74,28 @@ test('can add principals to resource policy', () => {
       }],
     },
   });
+
+});
+
+test('a custom domain is created if hosted zone is provided', () => {
+
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  new AtmosphereService(stack, 'AtmosphereService', {
+    config: {
+      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
+    },
+    endpoint: {
+      allowedPrincipals: [new AccountPrincipal('2222')],
+      hostedZone: r53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: '123456',
+        zoneName: 'example.com',
+      }),
+    },
+  });
+
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ApiGateway::DomainName', {});
 
 });

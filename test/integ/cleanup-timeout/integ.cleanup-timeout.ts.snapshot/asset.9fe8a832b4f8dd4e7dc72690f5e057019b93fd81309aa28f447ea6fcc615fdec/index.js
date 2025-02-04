@@ -7334,7 +7334,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail(reason) {
+      function fail2(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -7365,7 +7365,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail,
+                fail2,
                 void 0,
                 this,
                 void 0
@@ -7382,11 +7382,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler7, type, success3, fail2) {
+      Promise2.prototype._passThrough = function(handler7, type, success3, fail3) {
         if (typeof handler7 !== "function") return this.then();
         return this._then(
           success3,
-          fail2,
+          fail3,
           void 0,
           new PassThroughHandlerContext(this, type, handler7),
           void 0
@@ -11155,7 +11155,8 @@ var require_client = __commonJS({
           this._aws = new aws4fetch_1.AwsClient({
             accessKeyId: creds.accessKeyId,
             secretAccessKey: creds.secretAccessKey,
-            sessionToken: creds.sessionToken
+            sessionToken: creds.sessionToken,
+            service: "execute-api"
           });
         }
         return this._aws;
@@ -11206,22 +11207,16 @@ var require_lib2 = __commonJS({
   }
 });
 
-// test/integ/dev/assert.lambda.ts
+// test/integ/cleanup-timeout/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
 });
 module.exports = __toCommonJS(assert_lambda_exports);
+var assert2 = __toESM(require("assert"));
 
-// test/integ/atmosphere.runner.ts
-var assert = __toESM(require("assert"));
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
-var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
-var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
-var import_client_s32 = require("@aws-sdk/client-s3");
-var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
-var unzipper = __toESM(require_unzip2());
+// src/cleanup/cleanup.client.ts
+var import_client_ecs = require("@aws-sdk/client-ecs");
 
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
@@ -11259,30 +11254,7 @@ var Envars = class _Envars {
   }
 };
 
-// test/with.ts
-async function env2(envVars, fn) {
-  const originalEnv = { ...process.env };
-  try {
-    Object.entries(envVars).forEach(([key, value]) => {
-      process.env[key] = value;
-    });
-    return await fn();
-  } finally {
-    process.env = originalEnv;
-  }
-}
-
-// test/integ/atmosphere.runtime.ts
-var import_client_ecs2 = require("@aws-sdk/client-ecs");
-var import_client_lambda2 = require("@aws-sdk/client-lambda");
-var import_cdk_atmosphere_client = __toESM(require_lib2());
-
-// src/allocate/allocate.lambda.ts
-var crypto2 = __toESM(require("crypto"));
-var import_client_sts = require("@aws-sdk/client-sts");
-
 // src/cleanup/cleanup.client.ts
-var import_client_ecs = require("@aws-sdk/client-ecs");
 var CleanupClient = class {
   constructor(props) {
     this.props = props;
@@ -11845,6 +11817,38 @@ var RuntimeClients = class _RuntimeClients {
     return this._cleanup;
   }
 };
+
+// test/integ/atmosphere.runner.ts
+var assert = __toESM(require("assert"));
+var fs = __toESM(require("fs"));
+var path = __toESM(require("path"));
+var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
+var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
+var import_client_s32 = require("@aws-sdk/client-s3");
+var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
+var unzipper = __toESM(require_unzip2());
+
+// test/with.ts
+async function env2(envVars, fn) {
+  const originalEnv = { ...process.env };
+  try {
+    Object.entries(envVars).forEach(([key, value]) => {
+      process.env[key] = value;
+    });
+    return await fn();
+  } finally {
+    process.env = originalEnv;
+  }
+}
+
+// test/integ/atmosphere.runtime.ts
+var import_client_ecs2 = require("@aws-sdk/client-ecs");
+var import_client_lambda2 = require("@aws-sdk/client-lambda");
+var import_cdk_atmosphere_client = __toESM(require_lib2());
+
+// src/allocate/allocate.lambda.ts
+var crypto2 = __toESM(require("crypto"));
+var import_client_sts = require("@aws-sdk/client-sts");
 
 // src/logging.ts
 var Logger = class {
@@ -12741,11 +12745,50 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/dev/assert.lambda.ts
+// test/integ/cleanup-timeout/assert.lambda.ts
+var clients7 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  return Runner.assert("default", async () => {
-    return;
+  await Runner.assert("marks-dirty-when-environment-is-still-cleaning", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    await clients7.environments.cleaning(body.id, account, region);
+    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
+    const environment = await clients7.environments.get(account, region);
+    assert2.strictEqual(environment.status, "dirty");
   });
+  await Runner.assert("no-ops-when-environment-is-already-released", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(response.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    await clients7.environments.cleaning(body.id, account, region);
+    await clients7.environments.release(body.id, account, region);
+    await session.runtime.cleanupTimeout({ allocationId: body.id, account, region });
+    try {
+      await clients7.environments.get(account, region);
+      assert2.fail("expected environment to be deleted");
+    } catch (err) {
+      assert2.strictEqual(err.constructor.name, "EnvironmentNotFound");
+    }
+  });
+  await Runner.assert("no-ops-when-environment-has-been-reallocated", async (session) => {
+    const allocateResponse1 = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const body = JSON.parse(allocateResponse1.body);
+    const account = body.environment.account;
+    const region = body.environment.region;
+    const allocationId = body.id;
+    await clients7.environments.cleaning(allocationId, account, region);
+    await clients7.environments.release(allocationId, account, region);
+    const allocateResponse2 = await session.runtime.allocate({ pool: "release", requester: "test" });
+    const allocateResponseBody2 = JSON.parse(allocateResponse2.body);
+    await session.runtime.cleanupTimeout({ allocationId, account, region });
+    const environment = await clients7.environments.get(account, region);
+    assert2.strictEqual(environment.status, "in-use");
+    assert2.strictEqual(environment.allocation, allocateResponseBody2.id);
+  });
+  return SUCCESS_PAYLOAD;
 }
 if (Runner.isLocal()) {
   void handler6({});
