@@ -23,6 +23,7 @@
 /LICENSE linguist-generated
 /package.json linguist-generated
 /src/allocate/allocate-function.ts linguist-generated
+/src/canaries/annonymous-access/annonymous-access.canary-function.ts linguist-generated
 /src/deallocate/deallocate-function.ts linguist-generated
 /src/scheduler/allocation-timeout/allocation-timeout-function.ts linguist-generated
 /src/scheduler/cleanup-timeout/cleanup-timeout-function.ts linguist-generated

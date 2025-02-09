@@ -51,6 +51,9 @@
           "spawn": "bundle:allocate/allocate.lambda"
         },
         {
+          "spawn": "bundle:canaries/annonymous-access/annonymous-access.canary.lambda"
+        },
+        {
           "spawn": "bundle:deallocate/deallocate.lambda"
         },
         {
@@ -97,6 +100,24 @@
       "steps": [
         {
           "exec": "esbuild --bundle src/allocate/allocate.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/allocate/allocate.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:canaries/annonymous-access/annonymous-access.canary.lambda": {
+      "name": "bundle:canaries/annonymous-access/annonymous-access.canary.lambda",
+      "description": "Create a JavaScript bundle from src/canaries/annonymous-access/annonymous-access.canary.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/canaries/annonymous-access/annonymous-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/annonymous-access/annonymous-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:canaries/annonymous-access/annonymous-access.canary.lambda:watch": {
+      "name": "bundle:canaries/annonymous-access/annonymous-access.canary.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/canaries/annonymous-access/annonymous-access.canary.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/canaries/annonymous-access/annonymous-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/annonymous-access/annonymous-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
