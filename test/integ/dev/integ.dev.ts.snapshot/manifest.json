@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a129fb58626073caf2793156995409ac65e72afecbd99e307c5551d2ec8c46d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c06372116a179cc0cd6a28eda33799cd4cdaed8c2048d77d3ef901d91ec23390.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AdminC75D2A91"
+          }
+        ],
+        "/atmosphere-integ-dev/AssertRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertRoleD3BBCB18"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Configuration/AccessLogs/Resource": [
@@ -325,7 +331,7 @@
         "/atmosphere-integ-dev/Atmosphere/Endpoint/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBE86a6dc5ec01669d2a5ab788d7586d3ef"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource": [
@@ -386,6 +392,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AtmosphereEndpointApiallocationsidDELETE40B2AB4B"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAnnonymousAccessCanaryFunctionServiceRole7EA4F180"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAnnonymousAccessCanaryFunctionE20BE215"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAnnonymousAccessCanarySchedule243383A3"
+          }
+        ],
+        "/atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Schedule/AllowEventRuleatmosphereintegdevAtmosphereAnnonymousAccessCanaryFunction9D6AC076": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AtmosphereAnnonymousAccessCanaryScheduleAllowEventRuleatmosphereintegdevAtmosphereAnnonymousAccessCanaryFunction9D6AC0768CCA734B"
           }
         ],
         "/atmosphere-integ-dev/LatestNodeRuntimeMap": [
@@ -560,6 +590,12 @@
             "data": "ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
           }
         ],
+        "/atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
+          }
+        ],
         "/atmosphere-integ-dev/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -572,10 +608,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366": [
+        "AtmosphereEndpointApiDeployment2DF1AFBE7b390854dbe506d12c310e2d6f3ffbc9": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366",
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBE7b390854dbe506d12c310e2d6f3ffbc9",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -601,7 +637,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1d9752e4003ef8e7a942fb5c69dc8cf73726d706664c49825bb47a3b69aa0d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/87aa034c130bb87a1f6a08a7e8ee6f25e528d2cd84a539af5313aa4f7c31b978.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -618,12 +654,6 @@
         "atmosphere-integ-dev-assertions.assets"
       ],
       "metadata": {
-        "/atmosphere-integ-dev-assertions/Assert/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertServiceRoleE8D7787D"
-          }
-        ],
         "/atmosphere-integ-dev-assertions/Assert/Resource": [
           {
             "type": "aws:cdk:logicalId",

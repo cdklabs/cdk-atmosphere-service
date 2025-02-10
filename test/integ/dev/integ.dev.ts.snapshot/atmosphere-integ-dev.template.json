@@ -49,6 +49,51 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AssertRoleD3BBCB18": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AdministratorAccess"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereConfigurationAccessLogs46D18306": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -1801,27 +1846,63 @@
        "Action": "execute-api:Invoke",
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+        "AWS": [
+         {
+          "Fn::GetAtt": [
+           "AssertRoleD3BBCB18",
+           "Arn"
           ]
-         ]
-        }
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/Admin"
+           ]
+          ]
+         }
+        ]
        },
        "Resource": [
         "execute-api:/prod/DELETE/allocations/*",
         "execute-api:/prod/POST/allocations"
        ]
+      },
+      {
+       "Action": "execute-api:Invoke",
+       "Condition": {
+        "ForAllValues:StringNotEquals": {
+         "aws:PrincipalArn": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:iam::",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":role/Admin"
+            ]
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "AssertRoleD3BBCB18",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -1830,7 +1911,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5": {
+  "AtmosphereEndpointApiDeployment2DF1AFBE86a6dc5ec01669d2a5ab788d7586d3ef": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "RESTful endpoint for the Atmosphere service",
@@ -1851,7 +1932,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE86a6dc5ec01669d2a5ab788d7586d3ef"
     },
     "RestApiId": {
      "Ref": "AtmosphereEndpointApi64E91738"
@@ -2135,6 +2216,137 @@
     },
     "RestApiId": {
      "Ref": "AtmosphereEndpointApi64E91738"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAnnonymousAccessCanaryFunctionServiceRole7EA4F180": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAnnonymousAccessCanaryFunctionE20BE215": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bed33120a6ff312c86b7e9ffefc8de2aec0088f07a4fe7911c6f1d601b32fb2e.zip"
+    },
+    "Description": "src/canaries/anonymous-access/anonymous-access.canary.lambda.ts",
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "CDK_ATMOSPHERE_ENDPOINT_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Ref": "AtmosphereEndpointApi64E91738"
+         },
+         ".execute-api.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "AtmosphereEndpointApiDeploymentStageprod2712B9E2"
+         },
+         "/"
+        ]
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "ReservedConcurrentExecutions": 1,
+    "Role": {
+     "Fn::GetAtt": [
+      "AtmosphereAnnonymousAccessCanaryFunctionServiceRole7EA4F180",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "AtmosphereAnnonymousAccessCanaryFunctionServiceRole7EA4F180"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAnnonymousAccessCanarySchedule243383A3": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Periodically runs the annonymous canary function (atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function)",
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AtmosphereAnnonymousAccessCanaryFunctionE20BE215",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AtmosphereAnnonymousAccessCanaryScheduleAllowEventRuleatmosphereintegdevAtmosphereAnnonymousAccessCanaryFunction9D6AC0768CCA734B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AtmosphereAnnonymousAccessCanaryFunctionE20BE215",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "AtmosphereAnnonymousAccessCanarySchedule243383A3",
+      "Arn"
+     ]
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -2664,6 +2876,17 @@
    },
    "Export": {
     "Name": "atmosphere-integ-dev:ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+   }
+  },
+  "ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AssertRoleD3BBCB18",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "atmosphere-integ-dev:ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
    }
   }
  },

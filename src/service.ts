@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { Allocate } from './allocate';
 import { Endpoint, EndpointOptions } from './api';
+import { AnonymousAccessCanary } from './canaries/anonymous-access/anonymous-access.canary';
 import { Cleanup } from './cleanup';
 import { Configuration, ConfigurationData } from './config/configuration';
 import { Deallocate } from './deallocate';
@@ -20,7 +21,7 @@ export interface AtmosphereServiceProps {
   /**
    * Options for the API endpoint.
    */
-  readonly endpoint?: EndpointOptions;
+  readonly endpoint: EndpointOptions;
 
 }
 
@@ -109,6 +110,8 @@ export class AtmosphereService extends Construct {
       deallocate: this.deallocate,
       ...props.endpoint,
     });
+
+    new AnonymousAccessCanary(this, 'AnnonymousAccessCanary', { endpoint: this.endpoint });
 
   }
 }

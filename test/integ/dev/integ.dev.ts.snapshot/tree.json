@@ -81,6 +81,75 @@
               "version": "2.177.0"
             }
           },
+          "AssertRole": {
+            "id": "AssertRole",
+            "path": "atmosphere-integ-dev/AssertRole",
+            "children": {
+              "ImportAssertRole": {
+                "id": "ImportAssertRole",
+                "path": "atmosphere-integ-dev/AssertRole/ImportAssertRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.177.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "atmosphere-integ-dev/AssertRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AdministratorAccess"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.177.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.177.0"
+            }
+          },
           "Atmosphere": {
             "id": "Atmosphere",
             "path": "atmosphere-integ-dev/Atmosphere",
@@ -1489,9 +1558,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.4]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.4]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2468,9 +2537,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.4]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.4]}eu-central-1",
-                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.9]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.9]}eu-central-1",
+                    "path": "atmosphere-integ-dev/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.9]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2803,27 +2872,63 @@
                                   "Action": "execute-api:Invoke",
                                   "Effect": "Allow",
                                   "Principal": {
-                                    "AWS": {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":iam::",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":root"
+                                    "AWS": [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "AssertRoleD3BBCB18",
+                                          "Arn"
                                         ]
-                                      ]
-                                    }
+                                      },
+                                      {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:aws:iam::",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":role/Admin"
+                                          ]
+                                        ]
+                                      }
+                                    ]
                                   },
                                   "Resource": [
                                     "execute-api:/prod/DELETE/allocations/*",
                                     "execute-api:/prod/POST/allocations"
                                   ]
+                                },
+                                {
+                                  "Action": "execute-api:Invoke",
+                                  "Condition": {
+                                    "ForAllValues:StringNotEquals": {
+                                      "aws:PrincipalArn": [
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:aws:iam::",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":role/Admin"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "AssertRoleD3BBCB18",
+                                            "Arn"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "Effect": "Deny",
+                                  "Principal": {
+                                    "AWS": "*"
+                                  },
+                                  "Resource": "*"
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -2873,7 +2978,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                               "aws:cdk:cloudformation:props": {
                                 "deploymentId": {
-                                  "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+                                  "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE86a6dc5ec01669d2a5ab788d7586d3ef"
                                 },
                                 "restApiId": {
                                   "Ref": "AtmosphereEndpointApi64E91738"
@@ -3280,6 +3385,232 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
+                      "version": "2.177.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.0.5"
+                }
+              },
+              "AnnonymousAccessCanary": {
+                "id": "AnnonymousAccessCanary",
+                "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary",
+                "children": {
+                  "Function": {
+                    "id": "Function",
+                    "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "2.177.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "2.177.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "2.177.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "2.177.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "2.177.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "2.177.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "bed33120a6ff312c86b7e9ffefc8de2aec0088f07a4fe7911c6f1d601b32fb2e.zip"
+                            },
+                            "description": "src/canaries/anonymous-access/anonymous-access.canary.lambda.ts",
+                            "environment": {
+                              "variables": {
+                                "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+                                "CDK_ATMOSPHERE_ENDPOINT_URL": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "https://",
+                                      {
+                                        "Ref": "AtmosphereEndpointApi64E91738"
+                                      },
+                                      ".execute-api.",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ".",
+                                      {
+                                        "Ref": "AWS::URLSuffix"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "AtmosphereEndpointApiDeploymentStageprod2712B9E2"
+                                      },
+                                      "/"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "handler": "index.handler",
+                            "reservedConcurrentExecutions": 1,
+                            "role": {
+                              "Fn::GetAtt": [
+                                "AtmosphereAnnonymousAccessCanaryFunctionServiceRole7EA4F180",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 30
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "2.177.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "2.177.0"
+                    }
+                  },
+                  "Schedule": {
+                    "id": "Schedule",
+                    "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Schedule",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Schedule/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                          "aws:cdk:cloudformation:props": {
+                            "description": "Periodically runs the annonymous canary function (atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Function)",
+                            "scheduleExpression": "rate(1 minute)",
+                            "state": "ENABLED",
+                            "targets": [
+                              {
+                                "id": "Target0",
+                                "arn": {
+                                  "Fn::GetAtt": [
+                                    "AtmosphereAnnonymousAccessCanaryFunctionE20BE215",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                          "version": "2.177.0"
+                        }
+                      },
+                      "AllowEventRuleatmosphereintegdevAtmosphereAnnonymousAccessCanaryFunction9D6AC076": {
+                        "id": "AllowEventRuleatmosphereintegdevAtmosphereAnnonymousAccessCanaryFunction9D6AC076",
+                        "path": "atmosphere-integ-dev/Atmosphere/AnnonymousAccessCanary/Schedule/AllowEventRuleatmosphereintegdevAtmosphereAnnonymousAccessCanaryFunction9D6AC076",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                          "aws:cdk:cloudformation:props": {
+                            "action": "lambda:InvokeFunction",
+                            "functionName": {
+                              "Fn::GetAtt": [
+                                "AtmosphereAnnonymousAccessCanaryFunctionE20BE215",
+                                "Arn"
+                              ]
+                            },
+                            "principal": "events.amazonaws.com",
+                            "sourceArn": {
+                              "Fn::GetAtt": [
+                                "AtmosphereAnnonymousAccessCanarySchedule243383A3",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                          "version": "2.177.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.Rule",
                       "version": "2.177.0"
                     }
                   }
@@ -3753,6 +4084,14 @@
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.177.0"
                 }
+              },
+              "Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}",
+                "path": "atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.177.0"
+                }
               }
             },
             "constructInfo": {
@@ -3790,75 +4129,6 @@
             "id": "Assert",
             "path": "atmosphere-integ-dev-assertions/Assert",
             "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "atmosphere-integ-dev-assertions/Assert/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "atmosphere-integ-dev-assertions/Assert/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.177.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "atmosphere-integ-dev-assertions/Assert/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          },
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/AdministratorAccess"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.177.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.177.0"
-                }
-              },
               "Code": {
                 "id": "Code",
                 "path": "atmosphere-integ-dev-assertions/Assert/Code",
@@ -3980,10 +4250,7 @@
                     },
                     "handler": "index.handler",
                     "role": {
-                      "Fn::GetAtt": [
-                        "AssertServiceRoleE8D7787D",
-                        "Arn"
-                      ]
+                      "Fn::ImportValue": "atmosphere-integ-dev:ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
                     },
                     "runtime": "nodejs18.x",
                     "timeout": 900
@@ -4171,7 +4438,7 @@
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                  "version": "2.177.0-alpha.0"
+                  "version": "2.178.1-alpha.0"
                 }
               },
               "Default": {
@@ -4211,7 +4478,7 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
-              "version": "2.177.0-alpha.0"
+              "version": "2.178.1-alpha.0"
             }
           },
           "SingletonFunction1488541a7b23466481b69b4408076b81": {
@@ -4297,13 +4564,13 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "2.177.0-alpha.0"
+              "version": "2.178.1-alpha.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "2.177.0-alpha.0"
+          "version": "2.178.1-alpha.0"
         }
       },
       "Tree": {

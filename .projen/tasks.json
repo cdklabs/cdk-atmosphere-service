@@ -51,7 +51,10 @@
           "spawn": "bundle:allocate/allocate.lambda"
         },
         {
-          "spawn": "bundle:canaries/annonymous-access/annonymous-access.canary.lambda"
+          "spawn": "bundle:canaries/anonymous-access/anonymous-access.canary.lambda"
+        },
+        {
+          "spawn": "bundle:canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda"
         },
         {
           "spawn": "bundle:deallocate/deallocate.lambda"
@@ -103,21 +106,39 @@
         }
       ]
     },
-    "bundle:canaries/annonymous-access/annonymous-access.canary.lambda": {
-      "name": "bundle:canaries/annonymous-access/annonymous-access.canary.lambda",
-      "description": "Create a JavaScript bundle from src/canaries/annonymous-access/annonymous-access.canary.lambda.ts",
+    "bundle:canaries/anonymous-access/anonymous-access.canary.lambda": {
+      "name": "bundle:canaries/anonymous-access/anonymous-access.canary.lambda",
+      "description": "Create a JavaScript bundle from src/canaries/anonymous-access/anonymous-access.canary.lambda.ts",
       "steps": [
         {
-          "exec": "esbuild --bundle src/canaries/annonymous-access/annonymous-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/annonymous-access/annonymous-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+          "exec": "esbuild --bundle src/canaries/anonymous-access/anonymous-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/anonymous-access/anonymous-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
-    "bundle:canaries/annonymous-access/annonymous-access.canary.lambda:watch": {
-      "name": "bundle:canaries/annonymous-access/annonymous-access.canary.lambda:watch",
-      "description": "Continuously update the JavaScript bundle from src/canaries/annonymous-access/annonymous-access.canary.lambda.ts",
+    "bundle:canaries/anonymous-access/anonymous-access.canary.lambda:watch": {
+      "name": "bundle:canaries/anonymous-access/anonymous-access.canary.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/canaries/anonymous-access/anonymous-access.canary.lambda.ts",
       "steps": [
         {
-          "exec": "esbuild --bundle src/canaries/annonymous-access/annonymous-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/annonymous-access/annonymous-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+          "exec": "esbuild --bundle src/canaries/anonymous-access/anonymous-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/anonymous-access/anonymous-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
+        }
+      ]
+    },
+    "bundle:canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda": {
+      "name": "bundle:canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda",
+      "description": "Create a JavaScript bundle from src/canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda:watch": {
+      "name": "bundle:canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/canaries/unauthorized-role-access/unauthorized-role-access.canary.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/* --watch"
         }
       ]
     },
