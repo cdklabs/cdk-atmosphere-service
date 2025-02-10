@@ -1,0 +1,13 @@
+{
+  "version": "39.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "atmosphere-integ-unauthorized-role-access"
+      ],
+      "diffAssets": true,
+      "assertionStack": "atmosphere-integ-unauthorized-role-access-assertions",
+      "assertionStackName": "atmosphere-integ-unauthorized-role-access-assertions"
+    }
+  }
+}

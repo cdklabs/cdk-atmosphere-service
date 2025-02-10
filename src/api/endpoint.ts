@@ -86,8 +86,11 @@ export class Endpoint extends Construct {
     ];
 
     if (props.allowedPrincipals) {
-
+      // explicitly deny any other principal to also reject
+      // same account access, allowing out integration tests
+      // to use a single account while still validating the security posture.
       policyStatements.push(new iam.PolicyStatement({
+        sid: 'DenySameAccountAccess',
         effect: iam.Effect.DENY,
         actions: ['execute-api:Invoke'],
         notPrincipals: props.allowedPrincipals,
