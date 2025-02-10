@@ -76,19 +76,31 @@ export class Endpoint extends Construct {
       'execute-api:/prod/DELETE/allocations/*',
     ] : ['*'];
 
+    const policyStatements = [
+      new iam.PolicyStatement({
+        effect,
+        actions: ['execute-api:Invoke'],
+        principals,
+        resources,
+      }),
+    ];
+
+    if (props.allowedPrincipals) {
+
+      policyStatements.push(new iam.PolicyStatement({
+        effect: iam.Effect.DENY,
+        actions: ['execute-api:Invoke'],
+        notPrincipals: props.allowedPrincipals,
+        resources: ['*'],
+      }));
+    }
+
     // Create the API Gateway
     this.api = new apigateway.RestApi(this, 'Api', {
       description: 'RESTful endpoint for the Atmosphere service',
       restApiName: 'Atmosphere',
       policy: new iam.PolicyDocument({
-        statements: [
-          new iam.PolicyStatement({
-            effect,
-            actions: ['execute-api:Invoke'],
-            principals,
-            resources,
-          }),
-        ],
+        statements: policyStatements,
       }),
       endpointTypes: [apigateway.EndpointType.REGIONAL],
       disableExecuteApiEndpoint: props.hostedZone ? true : false,
