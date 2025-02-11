@@ -50,28 +50,56 @@ test('can add principals to resource policy', () => {
 
   template.hasResourceProperties('AWS::ApiGateway::RestApi', {
     Policy: {
-      Statement: [{
-        Action: 'execute-api:Invoke',
-        Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':iam::2222:root',
+      Statement: [
+        {
+          Action: 'execute-api:Invoke',
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::2222:root',
+                ],
               ],
-            ],
+            },
+          },
+          Resource: [
+            'execute-api:/prod/POST/allocations',
+            'execute-api:/prod/DELETE/allocations/*',
+          ],
+        },
+        {
+          Action: 'execute-api:Invoke',
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Resource: '*',
+          Condition: {
+            'ForAllValues:ArnNotEquals': {
+              'aws:PrincipalArn': [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::2222:root',
+                    ],
+                  ],
+                },
+              ],
+            },
           },
         },
-        Resource: [
-          'execute-api:/prod/POST/allocations',
-          'execute-api:/prod/DELETE/allocations/*',
-        ],
-      }],
+      ],
     },
   });
 

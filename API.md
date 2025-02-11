@@ -1955,7 +1955,7 @@ const endpointOptions: EndpointOptions = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.ArnPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | Providing a hosted zone will create a custom domain for the API endpoint. |
 
 ---
@@ -1963,10 +1963,10 @@ const endpointOptions: EndpointOptions = { ... }
 ##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedPrincipals"></a>
 
 ```typescript
-public readonly allowedPrincipals: IPrincipal[];
+public readonly allowedPrincipals: ArnPrincipal[];
 ```
 
-- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
+- *Type:* aws-cdk-lib.aws_iam.ArnPrincipal[]
 - *Default:* endpoint is not accessible by anyone.
 
 List of principals that are allowed to access the endpoint.
@@ -2006,7 +2006,7 @@ const endpointProps: EndpointProps = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.IPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.ArnPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | Providing a hosted zone will create a custom domain for the API endpoint. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allocate">allocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate">Allocate</a></code> | Allocate function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Deallocate function. |
@@ -2016,10 +2016,10 @@ const endpointProps: EndpointProps = { ... }
 ##### `allowedPrincipals`<sup>Optional</sup> <a name="allowedPrincipals" id="@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedPrincipals"></a>
 
 ```typescript
-public readonly allowedPrincipals: IPrincipal[];
+public readonly allowedPrincipals: ArnPrincipal[];
 ```
 
-- *Type:* aws-cdk-lib.aws_iam.IPrincipal[]
+- *Type:* aws-cdk-lib.aws_iam.ArnPrincipal[]
 - *Default:* endpoint is not accessible by anyone.
 
 List of principals that are allowed to access the endpoint.
