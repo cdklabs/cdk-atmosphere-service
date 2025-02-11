@@ -12736,7 +12736,7 @@ var Runner = class _Runner {
 
 // test/integ/anonymous-access/assert.lambda.ts
 async function handler6(_) {
-  return Runner.assert("creates-the-right-resources", async (session) => {
+  return Runner.assert("endpoint-access-is-denied", async (session) => {
     const endpoint = session.vars[ENDPOINT_URL_ENV];
     await ensureDenined(endpoint, "POST", "allocations");
     await ensureDenined(endpoint, "DELETE", "allocations/some-id");
@@ -12750,6 +12750,9 @@ async function ensureDenined(endpoint, method, path2) {
     throw new Error(`Unexpected status on request ${method} ${url} (expected 403, got ${response.status})`);
   }
   console.log("Receieved exepcted status: 403");
+}
+if (Runner.isLocal()) {
+  void handler6({});
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

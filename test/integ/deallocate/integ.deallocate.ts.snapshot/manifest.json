@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe173ccdb147d2a5418f516064ed44eec7cbe442014143ed6eb17a4c2eb49f6c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9828220ddb16e83d775dd36a54cf93219ae34540d3fdf8dcb8540d8f75bd2001.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AdminC75D2A91"
+          }
+        ],
+        "/atmosphere-integ-deallocate/AssertRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertRoleD3BBCB18"
           }
         ],
         "/atmosphere-integ-deallocate/Atmosphere/Configuration/AccessLogs/Resource": [
@@ -325,7 +331,7 @@
         "/atmosphere-integ-deallocate/Atmosphere/Endpoint/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBE8a51507bf59673cf8318352f428c7177"
           }
         ],
         "/atmosphere-integ-deallocate/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource": [
@@ -560,6 +566,12 @@
             "data": "ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
           }
         ],
+        "/atmosphere-integ-deallocate/Exports/Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
+          }
+        ],
         "/atmosphere-integ-deallocate/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -572,10 +584,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366": [
+        "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366",
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -601,7 +613,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c9da2b1d86ff258960a0d584a4a7b1c84ed0f627ed509677c644ac8a5908312f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee1def8d03fc53068a7da15702bdc6f464d68574fface68818c0f2e9800dbeff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -618,12 +630,6 @@
         "atmosphere-integ-deallocate-assertions.assets"
       ],
       "metadata": {
-        "/atmosphere-integ-deallocate-assertions/Assert/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertServiceRoleE8D7787D"
-          }
-        ],
         "/atmosphere-integ-deallocate-assertions/Assert/Resource": [
           {
             "type": "aws:cdk:logicalId",

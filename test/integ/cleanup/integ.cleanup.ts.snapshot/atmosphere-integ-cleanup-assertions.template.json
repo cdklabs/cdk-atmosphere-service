@@ -1,105 +1,5 @@
 {
  "Resources": {
-  "AssertServiceRoleE8D7787D": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AdministratorAccess"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "AssertServiceRoleDefaultPolicyEF886BAB": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           },
-           "/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           }
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "AssertServiceRoleDefaultPolicyEF886BAB",
-    "Roles": [
-     {
-      "Ref": "AssertServiceRoleE8D7787D"
-     }
-    ]
-   }
-  },
   "AssertC205B4DA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -196,18 +96,11 @@
     },
     "Handler": "index.handler",
     "Role": {
-     "Fn::GetAtt": [
-      "AssertServiceRoleE8D7787D",
-      "Arn"
-     ]
+     "Fn::ImportValue": "atmosphere-integ-cleanup:ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
     },
     "Runtime": "nodejs18.x",
     "Timeout": 900
-   },
-   "DependsOn": [
-    "AssertServiceRoleDefaultPolicyEF886BAB",
-    "AssertServiceRoleE8D7787D"
-   ]
+   }
   },
   "LambdaInvoke2f913ec1967134622ebb03d58dfcaef8": {
    "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
@@ -236,7 +129,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1738704797524"
+    "salt": "1739259386135"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -344,7 +237,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f692c9f68e4daba2abc99103efd3518bced1e9d7a2a89847b9b5d5473c64f1bd.zip"
+     "S3Key": "50cc710fdaff3ff8ce06bf73945fa958504d45c5f63a093feddbc4e349dbac93.zip"
     },
     "Timeout": 900,
     "Handler": "index.handler",

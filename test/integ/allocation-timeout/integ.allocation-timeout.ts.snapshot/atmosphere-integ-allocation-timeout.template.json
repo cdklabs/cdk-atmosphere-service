@@ -49,6 +49,51 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AssertRoleD3BBCB18": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AdministratorAccess"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AtmosphereConfigurationAccessLogs46D18306": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
@@ -1801,27 +1846,63 @@
        "Action": "execute-api:Invoke",
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
+        "AWS": [
+         {
+          "Fn::GetAtt": [
+           "AssertRoleD3BBCB18",
+           "Arn"
           ]
-         ]
-        }
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":role/Admin"
+           ]
+          ]
+         }
+        ]
        },
        "Resource": [
         "execute-api:/prod/DELETE/allocations/*",
         "execute-api:/prod/POST/allocations"
        ]
+      },
+      {
+       "Action": "execute-api:Invoke",
+       "Condition": {
+        "ForAllValues:ArnNotEquals": {
+         "aws:PrincipalArn": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:iam::",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":role/Admin"
+            ]
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "AssertRoleD3BBCB18",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -1830,7 +1911,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5": {
+  "AtmosphereEndpointApiDeployment2DF1AFBE8a51507bf59673cf8318352f428c7177": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "RESTful endpoint for the Atmosphere service",
@@ -1851,7 +1932,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE8a51507bf59673cf8318352f428c7177"
     },
     "RestApiId": {
      "Ref": "AtmosphereEndpointApi64E91738"
@@ -2664,6 +2745,17 @@
    },
    "Export": {
     "Name": "atmosphere-integ-allocation-timeout:ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
+   }
+  },
+  "ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AssertRoleD3BBCB18",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "atmosphere-integ-allocation-timeout:ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
    }
   }
  },
