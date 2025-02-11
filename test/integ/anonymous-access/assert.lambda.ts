@@ -3,7 +3,7 @@ import { Runner } from '../atmosphere.runner';
 
 export async function handler(_: any) {
 
-  return Runner.assert('creates-the-right-resources', async (session: Runner) => {
+  return Runner.assert('endpoint-access-is-denied', async (session: Runner) => {
     const endpoint = session.vars[envars.ENDPOINT_URL_ENV];
 
     await ensureDenined(endpoint, 'POST', 'allocations');

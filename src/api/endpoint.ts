@@ -17,7 +17,7 @@ export interface EndpointOptions {
    *
    * @default - endpoint is not accessible by anyone.
    */
-  readonly allowedPrincipals?: iam.IPrincipal[];
+  readonly allowedPrincipals?: iam.ArnPrincipal[];
 
   /**
    * Providing a hosted zone will create a custom domain for the API endpoint.
@@ -67,44 +67,13 @@ export class Endpoint extends Construct {
   constructor(scope: Construct, id: string, props: EndpointProps) {
     super(scope, id);
 
-    // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-resource-policy-only
-    // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-cross-account-example
-    const principals = props.allowedPrincipals ?? [new iam.AnyPrincipal()];
-    const effect = props.allowedPrincipals ? iam.Effect.ALLOW: iam.Effect.DENY;
-    const resources = props.allowedPrincipals ? [
-      'execute-api:/prod/POST/allocations',
-      'execute-api:/prod/DELETE/allocations/*',
-    ] : ['*'];
-
-    const policyStatements = [
-      new iam.PolicyStatement({
-        effect,
-        actions: ['execute-api:Invoke'],
-        principals,
-        resources,
-      }),
-    ];
-
-    if (props.allowedPrincipals) {
-      // explicitly deny any other principal to also reject
-      // same account access, allowing out integration tests
-      // to use a single account while still validating the security posture.
-      policyStatements.push(new iam.PolicyStatement({
-        sid: 'DenySameAccountAccess',
-        effect: iam.Effect.DENY,
-        actions: ['execute-api:Invoke'],
-        notPrincipals: props.allowedPrincipals,
-        resources: ['*'],
-      }));
-    }
+    const policy = props.allowedPrincipals ? this.allowOnlyPolicy(props.allowedPrincipals) : this.denyAllPolicy();
 
     // Create the API Gateway
     this.api = new apigateway.RestApi(this, 'Api', {
       description: 'RESTful endpoint for the Atmosphere service',
       restApiName: 'Atmosphere',
-      policy: new iam.PolicyDocument({
-        statements: policyStatements,
-      }),
+      policy,
       endpointTypes: [apigateway.EndpointType.REGIONAL],
       disableExecuteApiEndpoint: props.hostedZone ? true : false,
     });
@@ -146,5 +115,47 @@ export class Endpoint extends Construct {
       proxy: true,
     }), { authorizationType: apigateway.AuthorizationType.IAM });
 
+  }
+
+  private denyAllPolicy(): iam.PolicyDocument {
+    return new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          actions: ['execute-api:Invoke'],
+          principals: [new iam.AnyPrincipal()],
+          resources: ['*'],
+        }),
+      ],
+    });
+  }
+
+  private allowOnlyPolicy(allowed: iam.ArnPrincipal[]): iam.PolicyDocument {
+    return new iam.PolicyDocument({
+      statements: [
+        // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html#apigateway-authorization-flow-resource-policy-only
+        // see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies-examples.html#apigateway-resource-policies-cross-account-example
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['execute-api:Invoke'],
+          principals: allowed,
+          resources: ['execute-api:/prod/POST/allocations', 'execute-api:/prod/DELETE/allocations/*'],
+        }),
+        // explicit deny to block same account access. this allows us to
+        // create both an authorized and unauthorized role within the same account
+        // and run integration tests more easily.
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          actions: ['execute-api:Invoke'],
+          principals: [new iam.AnyPrincipal()],
+          resources: ['*'],
+          conditions: {
+            'ForAllValues:ArnNotEquals': {
+              'aws:PrincipalArn': allowed.map(p => p.arn),
+            },
+          },
+        }),
+      ],
+    });
   }
 }

@@ -31,6 +31,7 @@ export interface AtmosphereIntegTestProps {
 
   /**
    * Whether to allow the assertion function to access the service.
+   * Set this to `false` if your assertion tests unauthorized endpoint access.
    *
    * @default true
    */
@@ -89,8 +90,10 @@ export class AtmosphereIntegTest {
       throw new Error(`Bundle not found: ${bundlePath}. Add your test to .projenrc.ts so that a bundle will be created during build.`);
     }
 
-    // create the assertion role in the service stack because we need to configure it
-    // as an allowed principal, which creates a circular dependency otherwise
+    // intentionally create the assertion role in the service stack to prevent a circular dependency.
+    //
+    // - assertion stack grabs runtime information from service stack: assertion stack --> service stack
+    // - assertion role needs to be configured as an allowed role in the service endpoint: service stack --> assertion stack
     const assertRole = new iam.Role(serviceStack, 'AssertRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],

@@ -12591,7 +12591,7 @@ var Runner = class _Runner {
   static async create(testCase) {
     let envValue;
     if (_Runner.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev-assertions" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-anonymous-access-assertions" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
