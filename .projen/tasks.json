@@ -66,6 +66,9 @@
           "spawn": "bundle:test/integ/allocation-timeout/assert.lambda.ts"
         },
         {
+          "spawn": "bundle:test/integ/anonymous-access/assert.lambda.ts"
+        },
+        {
           "spawn": "bundle:test/integ/cleanup/assert.lambda.ts"
         },
         {
@@ -76,6 +79,9 @@
         },
         {
           "spawn": "bundle:test/integ/dev/assert.lambda.ts"
+        },
+        {
+          "spawn": "bundle:test/integ/unauthorized-role-access/assert.lambda.ts"
         },
         {
           "spawn": "bundle:cleanup"
@@ -178,6 +184,14 @@
         }
       ]
     },
+    "bundle:test/integ/anonymous-access/assert.lambda.ts": {
+      "name": "bundle:test/integ/anonymous-access/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/anonymous-access/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/anonymous-access/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
     "bundle:test/integ/cleanup-timeout/assert.lambda.ts": {
       "name": "bundle:test/integ/cleanup-timeout/assert.lambda.ts",
       "steps": [
@@ -207,6 +221,14 @@
       "steps": [
         {
           "exec": "esbuild --bundle test/integ/dev/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/dev/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
+        }
+      ]
+    },
+    "bundle:test/integ/unauthorized-role-access/assert.lambda.ts": {
+      "name": "bundle:test/integ/unauthorized-role-access/assert.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle test/integ/unauthorized-role-access/assert.lambda.ts --target=\"node18\" --platform=\"node\" --outfile=\"assets/test/integ/unauthorized-role-access/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:@aws-sdk/*"
         }
       ]
     },
@@ -343,6 +365,9 @@
           "spawn": "integ:test/allocation-timeout:assert"
         },
         {
+          "spawn": "integ:test/anonymous-access:assert"
+        },
+        {
           "spawn": "integ:test/cleanup:assert"
         },
         {
@@ -353,6 +378,9 @@
         },
         {
           "spawn": "integ:test/dev:assert"
+        },
+        {
+          "spawn": "integ:test/unauthorized-role-access:assert"
         }
       ]
     },
@@ -521,6 +549,75 @@
         },
         {
           "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/allocation-timeout --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/anonymous-access": {
+      "name": "integ:test/anonymous-access",
+      "description": "Deploy -> Update Snapshot -> Destroy",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/anonymous-access"
+        }
+      ]
+    },
+    "integ:test/anonymous-access:assert": {
+      "name": "integ:test/anonymous-access:assert",
+      "description": "Run the assertion locally",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/anonymous-access/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/anonymous-access:deploy": {
+      "name": "integ:test/anonymous-access:deploy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/anonymous-access --force --disable-update-workflow --no-clean"
+        }
+      ]
+    },
+    "integ:test/anonymous-access:force": {
+      "name": "integ:test/anonymous-access:force",
+      "description": "Force Deploy -> Update Snapshot -> Destroy",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/anonymous-access --force"
+        }
+      ]
+    },
+    "integ:test/anonymous-access:snapshot": {
+      "name": "integ:test/anonymous-access:snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/anonymous-access --dry-run --force"
+        }
+      ]
+    },
+    "integ:test/anonymous-access:update": {
+      "name": "integ:test/anonymous-access:update",
+      "description": "Deploy -> Update Snapshot (if needed)",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/anonymous-access --update-on-failed"
         }
       ]
     },
@@ -797,6 +894,75 @@
         },
         {
           "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/dev --update-on-failed"
+        }
+      ]
+    },
+    "integ:test/unauthorized-role-access": {
+      "name": "integ:test/unauthorized-role-access",
+      "description": "Deploy -> Update Snapshot -> Destroy",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/unauthorized-role-access"
+        }
+      ]
+    },
+    "integ:test/unauthorized-role-access:assert": {
+      "name": "integ:test/unauthorized-role-access:assert",
+      "description": "Run the assertion locally",
+      "steps": [
+        {
+          "exec": "ts-node test/integ/unauthorized-role-access/assert.lambda.ts"
+        }
+      ]
+    },
+    "integ:test/unauthorized-role-access:deploy": {
+      "name": "integ:test/unauthorized-role-access:deploy",
+      "description": "Force Deploy -> Update Snapshot -> Dont Destroy",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/unauthorized-role-access --force --disable-update-workflow --no-clean"
+        }
+      ]
+    },
+    "integ:test/unauthorized-role-access:force": {
+      "name": "integ:test/unauthorized-role-access:force",
+      "description": "Force Deploy -> Update Snapshot -> Destroy",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/unauthorized-role-access --force"
+        }
+      ]
+    },
+    "integ:test/unauthorized-role-access:snapshot": {
+      "name": "integ:test/unauthorized-role-access:snapshot",
+      "description": "Dont Deploy -> Update snapshot (discoureged)",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/unauthorized-role-access --dry-run --force"
+        }
+      ]
+    },
+    "integ:test/unauthorized-role-access:update": {
+      "name": "integ:test/unauthorized-role-access:update",
+      "description": "Deploy -> Update Snapshot (if needed)",
+      "steps": [
+        {
+          "spawn": "bundle"
+        },
+        {
+          "exec": "yarn integ-runner --parallel-regions us-east-1 --parallel-regions us-east-2 --parallel-regions us-west-1 --parallel-regions us-west-2 --language typescript --directory test/integ/unauthorized-role-access --update-on-failed"
         }
       ]
     },

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c6c84b2c0ac05f848f8cccd07bbeb3d634f2b4f1bd200872f3e29bdf4cca360.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec19fb69e1883cc73ac1a584a720b8bc782c6278e485189eff9dc03284b5bd38.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AdminC75D2A91"
+          }
+        ],
+        "/atmosphere-integ-allocation-timeout/AssertRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertRoleD3BBCB18"
           }
         ],
         "/atmosphere-integ-allocation-timeout/Atmosphere/Configuration/AccessLogs/Resource": [
@@ -325,7 +331,7 @@
         "/atmosphere-integ-allocation-timeout/Atmosphere/Endpoint/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBE8a51507bf59673cf8318352f428c7177"
           }
         ],
         "/atmosphere-integ-allocation-timeout/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource": [
@@ -560,6 +566,12 @@
             "data": "ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
           }
         ],
+        "/atmosphere-integ-allocation-timeout/Exports/Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
+          }
+        ],
         "/atmosphere-integ-allocation-timeout/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -572,10 +584,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366": [
+        "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366",
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -601,7 +613,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/84c2a6dc8c7ac3d2b3817ce73829280515677dff793371d7ef0b30ae752f2ca3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7be6f704f8c31af4be27fe56c1ccc4f56ca0041b757eaedeb94dee4c868fa426.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -618,12 +630,6 @@
         "atmosphere-integ-allocation-timeout-assertions.assets"
       ],
       "metadata": {
-        "/atmosphere-integ-allocation-timeout-assertions/Assert/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertServiceRoleE8D7787D"
-          }
-        ],
         "/atmosphere-integ-allocation-timeout-assertions/Assert/Resource": [
           {
             "type": "aws:cdk:logicalId",

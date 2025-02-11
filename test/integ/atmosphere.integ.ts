@@ -28,6 +28,14 @@ export interface AtmosphereIntegTestProps {
    * It must contain a file named `assert.lambda.ts`.
    */
   readonly dir: string;
+
+  /**
+   * Whether to allow the assertion function to access the service.
+   * Set this to `false` if your assertion tests unauthorized endpoint access.
+   *
+   * @default true
+   */
+  readonly allowAccess?: boolean;
 }
 
 /**
@@ -70,15 +78,6 @@ export class AtmosphereIntegTest {
       }
     }
 
-    const service = new AtmosphereService(serviceStack, 'Atmosphere', {
-      config: { environments },
-      endpoint: {
-        // allow any role in the deployment account to access the service
-        // during integ tests so we can run assertions locally.
-        allowedPrincipals: [new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID)],
-      },
-    });
-
     const assertionPath = path.join(__dirname, props.dir, ASSERT_HANDLER_FILE);
     const bundlePath = path.join(__dirname, `../../assets/test/integ/${props.dir}/index.js`);
     const stacksPath = path.join(__dirname, props.dir, 'stacks');
@@ -91,12 +90,22 @@ export class AtmosphereIntegTest {
       throw new Error(`Bundle not found: ${bundlePath}. Add your test to .projenrc.ts so that a bundle will be created during build.`);
     }
 
+    // intentionally create the assertion role in the service stack to prevent a circular dependency.
+    //
+    // - assertion stack grabs runtime information from service stack: assertion stack --> service stack
+    // - assertion role needs to be configured as an allowed role in the service endpoint: service stack --> assertion stack
+    const assertRole = new iam.Role(serviceStack, 'AssertRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+    });
+
     const assert = new lambda.Function(assertionsStack, 'Assert', {
       description: `test/integ/${props.dir}/assert.lambda.ts`,
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       code: lambda.Code.fromAsset(path.dirname(bundlePath)),
+      role: assertRole,
     });
     assert.role!.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
 
@@ -117,6 +126,21 @@ export class AtmosphereIntegTest {
       assert.addEnvironment(runner.CDK_ATMOSPHERE_INTEG_STACKS_KEY_ENV, stacksAsset.s3ObjectKey);
       stacksAsset.grantRead(assert);
     }
+
+    const allowedPrincipals = [
+      // so that we can run assertions locally using our own Admin role
+      new iam.ArnPrincipal(`arn:aws:iam::${cdk.Aws.ACCOUNT_ID}:role/Admin`),
+    ];
+
+    if (props.allowAccess ?? true) {
+      // so that the deployed assertion can invoke the service
+      allowedPrincipals.push(new iam.ArnPrincipal(assert.role!.roleArn));
+    }
+
+    const service = new AtmosphereService(serviceStack, 'Atmosphere', {
+      config: { environments },
+      endpoint: { allowedPrincipals },
+    });
 
     assert.node.addDependency(service);
 

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a129fb58626073caf2793156995409ac65e72afecbd99e307c5551d2ec8c46d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21505da5f8d57032d676694c194a359c75dc92c490bd8522256cc789c0eb7118.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AdminC75D2A91"
+          }
+        ],
+        "/atmosphere-integ-dev/AssertRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertRoleD3BBCB18"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Configuration/AccessLogs/Resource": [
@@ -325,7 +331,7 @@
         "/atmosphere-integ-dev/Atmosphere/Endpoint/Api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5"
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBE8a51507bf59673cf8318352f428c7177"
           }
         ],
         "/atmosphere-integ-dev/Atmosphere/Endpoint/Api/DeploymentStage.prod/Resource": [
@@ -560,6 +566,12 @@
             "data": "ExportsOutputFnGetAttAtmosphereCleanupSecurityGroupFA8836F2GroupId4DC90321"
           }
         ],
+        "/atmosphere-integ-dev/Exports/Output{\"Fn::GetAtt\":[\"AssertRoleD3BBCB18\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAssertRoleD3BBCB18Arn66E513DD"
+          }
+        ],
         "/atmosphere-integ-dev/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -572,10 +584,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366": [
+        "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AtmosphereEndpointApiDeployment2DF1AFBEd3a90f691daa48e6bec2c149a5daf366",
+            "data": "AtmosphereEndpointApiDeployment2DF1AFBEef1e60dfb935ea3946af0b04b5eb1de5",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -601,7 +613,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a1d9752e4003ef8e7a942fb5c69dc8cf73726d706664c49825bb47a3b69aa0d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/143fa4de9659b61768459a7f3810ee77c54fc1a94f66eab2d7b6e07ed806f602.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -618,12 +630,6 @@
         "atmosphere-integ-dev-assertions.assets"
       ],
       "metadata": {
-        "/atmosphere-integ-dev-assertions/Assert/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertServiceRoleE8D7787D"
-          }
-        ],
         "/atmosphere-integ-dev-assertions/Assert/Resource": [
           {
             "type": "aws:cdk:logicalId",
