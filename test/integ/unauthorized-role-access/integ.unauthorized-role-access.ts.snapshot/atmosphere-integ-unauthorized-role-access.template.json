@@ -1867,7 +1867,7 @@
       {
        "Action": "execute-api:Invoke",
        "Condition": {
-        "ForAllValues:StringNotEquals": {
+        "ForAllValues:ArnNotEquals": {
          "aws:PrincipalArn": [
           {
            "Fn::Join": [
@@ -1888,8 +1888,7 @@
        "Principal": {
         "AWS": "*"
        },
-       "Resource": "*",
-       "Sid": "DenySameAccountAccess"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -1898,7 +1897,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AtmosphereEndpointApiDeployment2DF1AFBE278b4a2fe90e311ec4c4fca8b485230d": {
+  "AtmosphereEndpointApiDeployment2DF1AFBE1a6c142c0d2006a5f0d4beb51d56a33f": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "RESTful endpoint for the Atmosphere service",
@@ -1919,7 +1918,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE278b4a2fe90e311ec4c4fca8b485230d"
+     "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE1a6c142c0d2006a5f0d4beb51d56a33f"
     },
     "RestApiId": {
      "Ref": "AtmosphereEndpointApi64E91738"

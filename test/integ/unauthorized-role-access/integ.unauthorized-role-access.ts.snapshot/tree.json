@@ -1558,9 +1558,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.4]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.4]}eu-central-1",
-                    "path": "atmosphere-integ-unauthorized-role-access/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.7]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.7]}eu-central-1",
+                    "path": "atmosphere-integ-unauthorized-role-access/Atmosphere/Cleanup/AdminRole${Token[AWS.AccountId.7]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2537,9 +2537,9 @@
                       "version": "2.177.0"
                     }
                   },
-                  "AdminRole${Token[AWS.AccountId.4]}eu-central-1": {
-                    "id": "AdminRole${Token[AWS.AccountId.4]}eu-central-1",
-                    "path": "atmosphere-integ-unauthorized-role-access/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.4]}eu-central-1",
+                  "AdminRole${Token[AWS.AccountId.7]}eu-central-1": {
+                    "id": "AdminRole${Token[AWS.AccountId.7]}eu-central-1",
+                    "path": "atmosphere-integ-unauthorized-role-access/Atmosphere/Allocate/AdminRole${Token[AWS.AccountId.7]}eu-central-1",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "2.177.0"
@@ -2893,7 +2893,7 @@
                                 {
                                   "Action": "execute-api:Invoke",
                                   "Condition": {
-                                    "ForAllValues:StringNotEquals": {
+                                    "ForAllValues:ArnNotEquals": {
                                       "aws:PrincipalArn": [
                                         {
                                           "Fn::Join": [
@@ -2914,8 +2914,7 @@
                                   "Principal": {
                                     "AWS": "*"
                                   },
-                                  "Resource": "*",
-                                  "Sid": "DenySameAccountAccess"
+                                  "Resource": "*"
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -2965,7 +2964,7 @@
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                               "aws:cdk:cloudformation:props": {
                                 "deploymentId": {
-                                  "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE278b4a2fe90e311ec4c4fca8b485230d"
+                                  "Ref": "AtmosphereEndpointApiDeployment2DF1AFBE1a6c142c0d2006a5f0d4beb51d56a33f"
                                 },
                                 "restApiId": {
                                   "Ref": "AtmosphereEndpointApi64E91738"
@@ -3926,7 +3925,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "134d1a217b4a055ea8d8b7455a79c5cabb5837088e35e253a9ee529fd164e28f.zip"
+                      "s3Key": "8e973f5bd1565d77e0bcd283cf054911a05097751063cf2873e659af9b5307af.zip"
                     },
                     "description": "test/integ/unauthorized-role-access/assert.lambda.ts",
                     "environment": {

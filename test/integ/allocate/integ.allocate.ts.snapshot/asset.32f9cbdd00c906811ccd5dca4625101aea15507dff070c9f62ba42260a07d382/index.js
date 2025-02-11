@@ -30,421 +30,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// node_modules/aws4fetch/dist/aws4fetch.cjs.js
-var require_aws4fetch_cjs = __commonJS({
-  "node_modules/aws4fetch/dist/aws4fetch.cjs.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var encoder = new TextEncoder();
-    var HOST_SERVICES = {
-      appstream2: "appstream",
-      cloudhsmv2: "cloudhsm",
-      email: "ses",
-      marketplace: "aws-marketplace",
-      mobile: "AWSMobileHubService",
-      pinpoint: "mobiletargeting",
-      queue: "sqs",
-      "git-codecommit": "codecommit",
-      "mturk-requester-sandbox": "mturk-requester",
-      "personalize-runtime": "personalize"
-    };
-    var UNSIGNABLE_HEADERS = /* @__PURE__ */ new Set([
-      "authorization",
-      "content-type",
-      "content-length",
-      "user-agent",
-      "presigned-expires",
-      "expect",
-      "x-amzn-trace-id",
-      "range",
-      "connection"
-    ]);
-    var AwsClient = class {
-      constructor({ accessKeyId, secretAccessKey, sessionToken, service, region, cache, retries, initRetryMs }) {
-        if (accessKeyId == null) throw new TypeError("accessKeyId is a required option");
-        if (secretAccessKey == null) throw new TypeError("secretAccessKey is a required option");
-        this.accessKeyId = accessKeyId;
-        this.secretAccessKey = secretAccessKey;
-        this.sessionToken = sessionToken;
-        this.service = service;
-        this.region = region;
-        this.cache = cache || /* @__PURE__ */ new Map();
-        this.retries = retries != null ? retries : 10;
-        this.initRetryMs = initRetryMs || 50;
-      }
-      async sign(input, init) {
-        if (input instanceof Request) {
-          const { method, url, headers, body } = input;
-          init = Object.assign({ method, url, headers }, init);
-          if (init.body == null && headers.has("Content-Type")) {
-            init.body = body != null && headers.has("X-Amz-Content-Sha256") ? body : await input.clone().arrayBuffer();
-          }
-          input = url;
-        }
-        const signer = new AwsV4Signer(Object.assign({ url: input.toString() }, init, this, init && init.aws));
-        const signed = Object.assign({}, init, await signer.sign());
-        delete signed.aws;
-        try {
-          return new Request(signed.url.toString(), signed);
-        } catch (e) {
-          if (e instanceof TypeError) {
-            return new Request(signed.url.toString(), Object.assign({ duplex: "half" }, signed));
-          }
-          throw e;
-        }
-      }
-      async fetch(input, init) {
-        for (let i = 0; i <= this.retries; i++) {
-          const fetched = fetch(await this.sign(input, init));
-          if (i === this.retries) {
-            return fetched;
-          }
-          const res = await fetched;
-          if (res.status < 500 && res.status !== 429) {
-            return res;
-          }
-          await new Promise((resolve) => setTimeout(resolve, Math.random() * this.initRetryMs * Math.pow(2, i)));
-        }
-        throw new Error("An unknown error occurred, ensure retries is not negative");
-      }
-    };
-    var AwsV4Signer = class {
-      constructor({ method, url, headers, body, accessKeyId, secretAccessKey, sessionToken, service, region, cache, datetime, signQuery, appendSessionToken, allHeaders, singleEncode }) {
-        if (url == null) throw new TypeError("url is a required option");
-        if (accessKeyId == null) throw new TypeError("accessKeyId is a required option");
-        if (secretAccessKey == null) throw new TypeError("secretAccessKey is a required option");
-        this.method = method || (body ? "POST" : "GET");
-        this.url = new URL(url);
-        this.headers = new Headers(headers || {});
-        this.body = body;
-        this.accessKeyId = accessKeyId;
-        this.secretAccessKey = secretAccessKey;
-        this.sessionToken = sessionToken;
-        let guessedService, guessedRegion;
-        if (!service || !region) {
-          [guessedService, guessedRegion] = guessServiceRegion(this.url, this.headers);
-        }
-        this.service = service || guessedService || "";
-        this.region = region || guessedRegion || "us-east-1";
-        this.cache = cache || /* @__PURE__ */ new Map();
-        this.datetime = datetime || (/* @__PURE__ */ new Date()).toISOString().replace(/[:-]|\.\d{3}/g, "");
-        this.signQuery = signQuery;
-        this.appendSessionToken = appendSessionToken || this.service === "iotdevicegateway";
-        this.headers.delete("Host");
-        if (this.service === "s3" && !this.signQuery && !this.headers.has("X-Amz-Content-Sha256")) {
-          this.headers.set("X-Amz-Content-Sha256", "UNSIGNED-PAYLOAD");
-        }
-        const params = this.signQuery ? this.url.searchParams : this.headers;
-        params.set("X-Amz-Date", this.datetime);
-        if (this.sessionToken && !this.appendSessionToken) {
-          params.set("X-Amz-Security-Token", this.sessionToken);
-        }
-        this.signableHeaders = ["host", ...this.headers.keys()].filter((header) => allHeaders || !UNSIGNABLE_HEADERS.has(header)).sort();
-        this.signedHeaders = this.signableHeaders.join(";");
-        this.canonicalHeaders = this.signableHeaders.map((header) => header + ":" + (header === "host" ? this.url.host : (this.headers.get(header) || "").replace(/\s+/g, " "))).join("\n");
-        this.credentialString = [this.datetime.slice(0, 8), this.region, this.service, "aws4_request"].join("/");
-        if (this.signQuery) {
-          if (this.service === "s3" && !params.has("X-Amz-Expires")) {
-            params.set("X-Amz-Expires", "86400");
-          }
-          params.set("X-Amz-Algorithm", "AWS4-HMAC-SHA256");
-          params.set("X-Amz-Credential", this.accessKeyId + "/" + this.credentialString);
-          params.set("X-Amz-SignedHeaders", this.signedHeaders);
-        }
-        if (this.service === "s3") {
-          try {
-            this.encodedPath = decodeURIComponent(this.url.pathname.replace(/\+/g, " "));
-          } catch (e) {
-            this.encodedPath = this.url.pathname;
-          }
-        } else {
-          this.encodedPath = this.url.pathname.replace(/\/+/g, "/");
-        }
-        if (!singleEncode) {
-          this.encodedPath = encodeURIComponent(this.encodedPath).replace(/%2F/g, "/");
-        }
-        this.encodedPath = encodeRfc3986(this.encodedPath);
-        const seenKeys = /* @__PURE__ */ new Set();
-        this.encodedSearch = [...this.url.searchParams].filter(([k]) => {
-          if (!k) return false;
-          if (this.service === "s3") {
-            if (seenKeys.has(k)) return false;
-            seenKeys.add(k);
-          }
-          return true;
-        }).map((pair) => pair.map((p) => encodeRfc3986(encodeURIComponent(p)))).sort(([k1, v1], [k2, v2]) => k1 < k2 ? -1 : k1 > k2 ? 1 : v1 < v2 ? -1 : v1 > v2 ? 1 : 0).map((pair) => pair.join("=")).join("&");
-      }
-      async sign() {
-        if (this.signQuery) {
-          this.url.searchParams.set("X-Amz-Signature", await this.signature());
-          if (this.sessionToken && this.appendSessionToken) {
-            this.url.searchParams.set("X-Amz-Security-Token", this.sessionToken);
-          }
-        } else {
-          this.headers.set("Authorization", await this.authHeader());
-        }
-        return {
-          method: this.method,
-          url: this.url,
-          headers: this.headers,
-          body: this.body
-        };
-      }
-      async authHeader() {
-        return [
-          "AWS4-HMAC-SHA256 Credential=" + this.accessKeyId + "/" + this.credentialString,
-          "SignedHeaders=" + this.signedHeaders,
-          "Signature=" + await this.signature()
-        ].join(", ");
-      }
-      async signature() {
-        const date = this.datetime.slice(0, 8);
-        const cacheKey = [this.secretAccessKey, date, this.region, this.service].join();
-        let kCredentials = this.cache.get(cacheKey);
-        if (!kCredentials) {
-          const kDate = await hmac("AWS4" + this.secretAccessKey, date);
-          const kRegion = await hmac(kDate, this.region);
-          const kService = await hmac(kRegion, this.service);
-          kCredentials = await hmac(kService, "aws4_request");
-          this.cache.set(cacheKey, kCredentials);
-        }
-        return buf2hex(await hmac(kCredentials, await this.stringToSign()));
-      }
-      async stringToSign() {
-        return [
-          "AWS4-HMAC-SHA256",
-          this.datetime,
-          this.credentialString,
-          buf2hex(await hash(await this.canonicalString()))
-        ].join("\n");
-      }
-      async canonicalString() {
-        return [
-          this.method.toUpperCase(),
-          this.encodedPath,
-          this.encodedSearch,
-          this.canonicalHeaders + "\n",
-          this.signedHeaders,
-          await this.hexBodyHash()
-        ].join("\n");
-      }
-      async hexBodyHash() {
-        let hashHeader = this.headers.get("X-Amz-Content-Sha256") || (this.service === "s3" && this.signQuery ? "UNSIGNED-PAYLOAD" : null);
-        if (hashHeader == null) {
-          if (this.body && typeof this.body !== "string" && !("byteLength" in this.body)) {
-            throw new Error("body must be a string, ArrayBuffer or ArrayBufferView, unless you include the X-Amz-Content-Sha256 header");
-          }
-          hashHeader = buf2hex(await hash(this.body || ""));
-        }
-        return hashHeader;
-      }
-    };
-    async function hmac(key, string) {
-      const cryptoKey = await crypto.subtle.importKey(
-        "raw",
-        typeof key === "string" ? encoder.encode(key) : key,
-        { name: "HMAC", hash: { name: "SHA-256" } },
-        false,
-        ["sign"]
-      );
-      return crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(string));
-    }
-    async function hash(content) {
-      return crypto.subtle.digest("SHA-256", typeof content === "string" ? encoder.encode(content) : content);
-    }
-    var HEX_CHARS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
-    function buf2hex(arrayBuffer) {
-      const buffer = new Uint8Array(arrayBuffer);
-      let out = "";
-      for (let idx = 0; idx < buffer.length; idx++) {
-        const n = buffer[idx];
-        out += HEX_CHARS[n >>> 4 & 15];
-        out += HEX_CHARS[n & 15];
-      }
-      return out;
-    }
-    function encodeRfc3986(urlEncodedStr) {
-      return urlEncodedStr.replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
-    }
-    function guessServiceRegion(url, headers) {
-      const { hostname, pathname } = url;
-      if (hostname.endsWith(".on.aws")) {
-        const match2 = hostname.match(/^[^.]{1,63}\.lambda-url\.([^.]{1,63})\.on\.aws$/);
-        return match2 != null ? ["lambda", match2[1] || ""] : ["", ""];
-      }
-      if (hostname.endsWith(".r2.cloudflarestorage.com")) {
-        return ["s3", "auto"];
-      }
-      if (hostname.endsWith(".backblazeb2.com")) {
-        const match2 = hostname.match(/^(?:[^.]{1,63}\.)?s3\.([^.]{1,63})\.backblazeb2\.com$/);
-        return match2 != null ? ["s3", match2[1] || ""] : ["", ""];
-      }
-      const match = hostname.replace("dualstack.", "").match(/([^.]{1,63})\.(?:([^.]{0,63})\.)?amazonaws\.com(?:\.cn)?$/);
-      let service = match && match[1] || "";
-      let region = match && match[2];
-      if (region === "us-gov") {
-        region = "us-gov-west-1";
-      } else if (region === "s3" || region === "s3-accelerate") {
-        region = "us-east-1";
-        service = "s3";
-      } else if (service === "iot") {
-        if (hostname.startsWith("iot.")) {
-          service = "execute-api";
-        } else if (hostname.startsWith("data.jobs.iot.")) {
-          service = "iot-jobs-data";
-        } else {
-          service = pathname === "/mqtt" ? "iotdevicegateway" : "iotdata";
-        }
-      } else if (service === "autoscaling") {
-        const targetPrefix = (headers.get("X-Amz-Target") || "").split(".")[0];
-        if (targetPrefix === "AnyScaleFrontendService") {
-          service = "application-autoscaling";
-        } else if (targetPrefix === "AnyScaleScalingPlannerFrontendService") {
-          service = "autoscaling-plans";
-        }
-      } else if (region == null && service.startsWith("s3-")) {
-        region = service.slice(3).replace(/^fips-|^external-1/, "");
-        service = "s3";
-      } else if (service.endsWith("-fips")) {
-        service = service.slice(0, -5);
-      } else if (region && /-\d$/.test(service) && !/-\d$/.test(region)) {
-        [service, region] = [region, service];
-      }
-      return [HOST_SERVICES[service] || service, region || ""];
-    }
-    exports2.AwsClient = AwsClient;
-    exports2.AwsV4Signer = AwsV4Signer;
-  }
-});
-
-// node_modules/@cdklabs/cdk-atmosphere-client/lib/client.js
-var require_client = __commonJS({
-  "node_modules/@cdklabs/cdk-atmosphere-client/lib/client.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AtmosphereClient = exports2.ServiceError = void 0;
-    var credential_providers_1 = require("@aws-sdk/credential-providers");
-    var aws4fetch_1 = require_aws4fetch_cjs();
-    var ServiceError3 = class extends Error {
-      constructor(statusCode, message, statusText) {
-        super(`${statusCode} ${statusText ? `(${statusText})` : ""}: ${message}`);
-        this.statusCode = statusCode;
-      }
-    };
-    exports2.ServiceError = ServiceError3;
-    var AtmosphereClient3 = class {
-      constructor(endpoint) {
-        this.endpoint = endpoint;
-        if (global.crypto == null) {
-          global.crypto = require("crypto");
-        }
-      }
-      /**
-       * Waits until an environment could be allocated by the service.
-       *
-       * @returns allocation information.
-       * @throws if an environment could not be acquired within the specified timeout.
-       */
-      async acquire(options) {
-        var _a;
-        const timeoutSeconds = (_a = options.timeoutSeconds) !== null && _a !== void 0 ? _a : 600;
-        const startTime = Date.now();
-        const timeoutMs = timeoutSeconds * 1e3;
-        let retryDelay = 1e3;
-        const maxRetryDelay = 6e4;
-        this.log(`Acquire | environment from pool '${options.pool}' (requester: '${options.requester}')`);
-        while (true) {
-          try {
-            const acquired = await this.request("POST", "/allocations", {
-              pool: options.pool,
-              requester: options.requester
-            });
-            this.log(`Acquire | Successfully acquired environment from pool ${options.pool} (requester: ${options.requester})`);
-            return acquired;
-          } catch (error) {
-            if (error.statusCode === 423) {
-              const elapsed = Date.now() - startTime;
-              if (elapsed >= timeoutMs) {
-                throw error;
-              }
-              this.log(`Acquire | Retrying due to: ${error.message}`);
-              await new Promise((resolve) => setTimeout(resolve, retryDelay));
-              retryDelay = Math.min(retryDelay * 2, maxRetryDelay);
-              continue;
-            }
-            throw error;
-          }
-        }
-      }
-      /**
-       * Release an environment based on the allocation id. After releasing an environment,
-       * its provided credentials are deactivated.
-       */
-      async release(allocationId, outcome) {
-        this.log(`Release | Allocation '${allocationId}' (outcome: '${outcome}')`);
-        const released = await this.request("DELETE", `/allocations/${allocationId}`, { outcome });
-        this.log(`Release | Successfully released allocation '${allocationId}' (outcome: '${outcome}')`);
-        return released;
-      }
-      async aws() {
-        if (!this._aws) {
-          const provider = (0, credential_providers_1.fromNodeProviderChain)();
-          const creds = await provider();
-          this._aws = new aws4fetch_1.AwsClient({
-            accessKeyId: creds.accessKeyId,
-            secretAccessKey: creds.secretAccessKey,
-            sessionToken: creds.sessionToken,
-            service: "execute-api"
-          });
-        }
-        return this._aws;
-      }
-      async request(method, path2, body) {
-        var _a;
-        const aws = await this.aws();
-        const response = await aws.fetch(`${this.endpoint}${path2}`, {
-          method,
-          body: JSON.stringify(body)
-        });
-        const responseBody = await response.json();
-        if (response.status === 200) {
-          return responseBody;
-        }
-        throw new ServiceError3(response.status, (_a = responseBody.message) !== null && _a !== void 0 ? _a : "Unknown error", response.statusText);
-      }
-      log(message) {
-        console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`);
-      }
-    };
-    exports2.AtmosphereClient = AtmosphereClient3;
-  }
-});
-
-// node_modules/@cdklabs/cdk-atmosphere-client/lib/index.js
-var require_lib = __commonJS({
-  "node_modules/@cdklabs/cdk-atmosphere-client/lib/index.js"(exports2) {
-    "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
-      var desc = Object.getOwnPropertyDescriptor(m, k);
-      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
-      }
-      Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
-      o[k2] = m[k];
-    });
-    var __exportStar = exports2 && exports2.__exportStar || function(m, exports3) {
-      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding(exports3, m, p);
-    };
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    __exportStar(require_client(), exports2);
-  }
-});
-
 // node_modules/unzipper/lib/PullStream.js
 var require_PullStream = __commonJS({
   "node_modules/unzipper/lib/PullStream.js"(exports2, module2) {
@@ -5160,7 +4745,7 @@ var require_move2 = __commonJS({
 });
 
 // node_modules/unzipper/node_modules/fs-extra/lib/index.js
-var require_lib2 = __commonJS({
+var require_lib = __commonJS({
   "node_modules/unzipper/node_modules/fs-extra/lib/index.js"(exports2, module2) {
     "use strict";
     module2.exports = {
@@ -5186,7 +4771,7 @@ var require_extract = __commonJS({
     "use strict";
     module2.exports = Extract2;
     var Parse = require_parse();
-    var fs2 = require_lib2();
+    var fs2 = require_lib();
     var path2 = require("path");
     var stream = require("stream");
     var duplexer2 = require_duplexer2();
@@ -10881,7 +10466,7 @@ var require_directory = __commonJS({
     var BufferStream = require_BufferStream();
     var parseExtraField = require_parseExtraField();
     var path2 = require("path");
-    var fs2 = require_lib2();
+    var fs2 = require_lib();
     var parseDateTime = require_parseDateTime();
     var parseBuffer = require_parseBuffer();
     var Bluebird = require_bluebird();
@@ -11132,11 +10717,11 @@ var require_Open = __commonJS({
         };
         return directory(source, options);
       },
-      s3: function(client2, params, options) {
+      s3: function(client, params, options) {
         const source = {
           size: function() {
             return new Promise(function(resolve, reject) {
-              client2.headObject(params, function(err, d) {
+              client.headObject(params, function(err, d) {
                 if (err)
                   reject(err);
                 else
@@ -11150,16 +10735,16 @@ var require_Open = __commonJS({
               d[key] = params[key];
             const end = length ? offset + length : "";
             d.Range = "bytes=" + offset + "-" + end;
-            return client2.getObject(d).createReadStream();
+            return client.getObject(d).createReadStream();
           }
         };
         return directory(source, options);
       },
-      s3_v3: function(client2, params, options) {
+      s3_v3: function(client, params, options) {
         const { GetObjectCommand, HeadObjectCommand } = require("@aws-sdk/client-s3");
         const source = {
           size: async () => {
-            const head = await client2.send(
+            const head = await client.send(
               new HeadObjectCommand({
                 Bucket: params.Bucket,
                 Key: params.Key
@@ -11173,7 +10758,7 @@ var require_Open = __commonJS({
           stream: (offset, length) => {
             const stream = Stream.PassThrough();
             const end = length ? offset + length : "";
-            client2.send(
+            client.send(
               new GetObjectCommand({
                 Bucket: params.Bucket,
                 Key: params.Key,
@@ -11207,13 +10792,431 @@ var require_unzip2 = __commonJS({
   }
 });
 
-// test/integ/unauthorized-role-access/assert.lambda.ts
+// node_modules/aws4fetch/dist/aws4fetch.cjs.js
+var require_aws4fetch_cjs = __commonJS({
+  "node_modules/aws4fetch/dist/aws4fetch.cjs.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    var encoder = new TextEncoder();
+    var HOST_SERVICES = {
+      appstream2: "appstream",
+      cloudhsmv2: "cloudhsm",
+      email: "ses",
+      marketplace: "aws-marketplace",
+      mobile: "AWSMobileHubService",
+      pinpoint: "mobiletargeting",
+      queue: "sqs",
+      "git-codecommit": "codecommit",
+      "mturk-requester-sandbox": "mturk-requester",
+      "personalize-runtime": "personalize"
+    };
+    var UNSIGNABLE_HEADERS = /* @__PURE__ */ new Set([
+      "authorization",
+      "content-type",
+      "content-length",
+      "user-agent",
+      "presigned-expires",
+      "expect",
+      "x-amzn-trace-id",
+      "range",
+      "connection"
+    ]);
+    var AwsClient = class {
+      constructor({ accessKeyId, secretAccessKey, sessionToken, service, region, cache, retries, initRetryMs }) {
+        if (accessKeyId == null) throw new TypeError("accessKeyId is a required option");
+        if (secretAccessKey == null) throw new TypeError("secretAccessKey is a required option");
+        this.accessKeyId = accessKeyId;
+        this.secretAccessKey = secretAccessKey;
+        this.sessionToken = sessionToken;
+        this.service = service;
+        this.region = region;
+        this.cache = cache || /* @__PURE__ */ new Map();
+        this.retries = retries != null ? retries : 10;
+        this.initRetryMs = initRetryMs || 50;
+      }
+      async sign(input, init) {
+        if (input instanceof Request) {
+          const { method, url, headers, body } = input;
+          init = Object.assign({ method, url, headers }, init);
+          if (init.body == null && headers.has("Content-Type")) {
+            init.body = body != null && headers.has("X-Amz-Content-Sha256") ? body : await input.clone().arrayBuffer();
+          }
+          input = url;
+        }
+        const signer = new AwsV4Signer(Object.assign({ url: input.toString() }, init, this, init && init.aws));
+        const signed = Object.assign({}, init, await signer.sign());
+        delete signed.aws;
+        try {
+          return new Request(signed.url.toString(), signed);
+        } catch (e) {
+          if (e instanceof TypeError) {
+            return new Request(signed.url.toString(), Object.assign({ duplex: "half" }, signed));
+          }
+          throw e;
+        }
+      }
+      async fetch(input, init) {
+        for (let i = 0; i <= this.retries; i++) {
+          const fetched = fetch(await this.sign(input, init));
+          if (i === this.retries) {
+            return fetched;
+          }
+          const res = await fetched;
+          if (res.status < 500 && res.status !== 429) {
+            return res;
+          }
+          await new Promise((resolve) => setTimeout(resolve, Math.random() * this.initRetryMs * Math.pow(2, i)));
+        }
+        throw new Error("An unknown error occurred, ensure retries is not negative");
+      }
+    };
+    var AwsV4Signer = class {
+      constructor({ method, url, headers, body, accessKeyId, secretAccessKey, sessionToken, service, region, cache, datetime, signQuery, appendSessionToken, allHeaders, singleEncode }) {
+        if (url == null) throw new TypeError("url is a required option");
+        if (accessKeyId == null) throw new TypeError("accessKeyId is a required option");
+        if (secretAccessKey == null) throw new TypeError("secretAccessKey is a required option");
+        this.method = method || (body ? "POST" : "GET");
+        this.url = new URL(url);
+        this.headers = new Headers(headers || {});
+        this.body = body;
+        this.accessKeyId = accessKeyId;
+        this.secretAccessKey = secretAccessKey;
+        this.sessionToken = sessionToken;
+        let guessedService, guessedRegion;
+        if (!service || !region) {
+          [guessedService, guessedRegion] = guessServiceRegion(this.url, this.headers);
+        }
+        this.service = service || guessedService || "";
+        this.region = region || guessedRegion || "us-east-1";
+        this.cache = cache || /* @__PURE__ */ new Map();
+        this.datetime = datetime || (/* @__PURE__ */ new Date()).toISOString().replace(/[:-]|\.\d{3}/g, "");
+        this.signQuery = signQuery;
+        this.appendSessionToken = appendSessionToken || this.service === "iotdevicegateway";
+        this.headers.delete("Host");
+        if (this.service === "s3" && !this.signQuery && !this.headers.has("X-Amz-Content-Sha256")) {
+          this.headers.set("X-Amz-Content-Sha256", "UNSIGNED-PAYLOAD");
+        }
+        const params = this.signQuery ? this.url.searchParams : this.headers;
+        params.set("X-Amz-Date", this.datetime);
+        if (this.sessionToken && !this.appendSessionToken) {
+          params.set("X-Amz-Security-Token", this.sessionToken);
+        }
+        this.signableHeaders = ["host", ...this.headers.keys()].filter((header) => allHeaders || !UNSIGNABLE_HEADERS.has(header)).sort();
+        this.signedHeaders = this.signableHeaders.join(";");
+        this.canonicalHeaders = this.signableHeaders.map((header) => header + ":" + (header === "host" ? this.url.host : (this.headers.get(header) || "").replace(/\s+/g, " "))).join("\n");
+        this.credentialString = [this.datetime.slice(0, 8), this.region, this.service, "aws4_request"].join("/");
+        if (this.signQuery) {
+          if (this.service === "s3" && !params.has("X-Amz-Expires")) {
+            params.set("X-Amz-Expires", "86400");
+          }
+          params.set("X-Amz-Algorithm", "AWS4-HMAC-SHA256");
+          params.set("X-Amz-Credential", this.accessKeyId + "/" + this.credentialString);
+          params.set("X-Amz-SignedHeaders", this.signedHeaders);
+        }
+        if (this.service === "s3") {
+          try {
+            this.encodedPath = decodeURIComponent(this.url.pathname.replace(/\+/g, " "));
+          } catch (e) {
+            this.encodedPath = this.url.pathname;
+          }
+        } else {
+          this.encodedPath = this.url.pathname.replace(/\/+/g, "/");
+        }
+        if (!singleEncode) {
+          this.encodedPath = encodeURIComponent(this.encodedPath).replace(/%2F/g, "/");
+        }
+        this.encodedPath = encodeRfc3986(this.encodedPath);
+        const seenKeys = /* @__PURE__ */ new Set();
+        this.encodedSearch = [...this.url.searchParams].filter(([k]) => {
+          if (!k) return false;
+          if (this.service === "s3") {
+            if (seenKeys.has(k)) return false;
+            seenKeys.add(k);
+          }
+          return true;
+        }).map((pair) => pair.map((p) => encodeRfc3986(encodeURIComponent(p)))).sort(([k1, v1], [k2, v2]) => k1 < k2 ? -1 : k1 > k2 ? 1 : v1 < v2 ? -1 : v1 > v2 ? 1 : 0).map((pair) => pair.join("=")).join("&");
+      }
+      async sign() {
+        if (this.signQuery) {
+          this.url.searchParams.set("X-Amz-Signature", await this.signature());
+          if (this.sessionToken && this.appendSessionToken) {
+            this.url.searchParams.set("X-Amz-Security-Token", this.sessionToken);
+          }
+        } else {
+          this.headers.set("Authorization", await this.authHeader());
+        }
+        return {
+          method: this.method,
+          url: this.url,
+          headers: this.headers,
+          body: this.body
+        };
+      }
+      async authHeader() {
+        return [
+          "AWS4-HMAC-SHA256 Credential=" + this.accessKeyId + "/" + this.credentialString,
+          "SignedHeaders=" + this.signedHeaders,
+          "Signature=" + await this.signature()
+        ].join(", ");
+      }
+      async signature() {
+        const date = this.datetime.slice(0, 8);
+        const cacheKey = [this.secretAccessKey, date, this.region, this.service].join();
+        let kCredentials = this.cache.get(cacheKey);
+        if (!kCredentials) {
+          const kDate = await hmac("AWS4" + this.secretAccessKey, date);
+          const kRegion = await hmac(kDate, this.region);
+          const kService = await hmac(kRegion, this.service);
+          kCredentials = await hmac(kService, "aws4_request");
+          this.cache.set(cacheKey, kCredentials);
+        }
+        return buf2hex(await hmac(kCredentials, await this.stringToSign()));
+      }
+      async stringToSign() {
+        return [
+          "AWS4-HMAC-SHA256",
+          this.datetime,
+          this.credentialString,
+          buf2hex(await hash(await this.canonicalString()))
+        ].join("\n");
+      }
+      async canonicalString() {
+        return [
+          this.method.toUpperCase(),
+          this.encodedPath,
+          this.encodedSearch,
+          this.canonicalHeaders + "\n",
+          this.signedHeaders,
+          await this.hexBodyHash()
+        ].join("\n");
+      }
+      async hexBodyHash() {
+        let hashHeader = this.headers.get("X-Amz-Content-Sha256") || (this.service === "s3" && this.signQuery ? "UNSIGNED-PAYLOAD" : null);
+        if (hashHeader == null) {
+          if (this.body && typeof this.body !== "string" && !("byteLength" in this.body)) {
+            throw new Error("body must be a string, ArrayBuffer or ArrayBufferView, unless you include the X-Amz-Content-Sha256 header");
+          }
+          hashHeader = buf2hex(await hash(this.body || ""));
+        }
+        return hashHeader;
+      }
+    };
+    async function hmac(key, string) {
+      const cryptoKey = await crypto.subtle.importKey(
+        "raw",
+        typeof key === "string" ? encoder.encode(key) : key,
+        { name: "HMAC", hash: { name: "SHA-256" } },
+        false,
+        ["sign"]
+      );
+      return crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(string));
+    }
+    async function hash(content) {
+      return crypto.subtle.digest("SHA-256", typeof content === "string" ? encoder.encode(content) : content);
+    }
+    var HEX_CHARS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+    function buf2hex(arrayBuffer) {
+      const buffer = new Uint8Array(arrayBuffer);
+      let out = "";
+      for (let idx = 0; idx < buffer.length; idx++) {
+        const n = buffer[idx];
+        out += HEX_CHARS[n >>> 4 & 15];
+        out += HEX_CHARS[n & 15];
+      }
+      return out;
+    }
+    function encodeRfc3986(urlEncodedStr) {
+      return urlEncodedStr.replace(/[!'()*]/g, (c) => "%" + c.charCodeAt(0).toString(16).toUpperCase());
+    }
+    function guessServiceRegion(url, headers) {
+      const { hostname, pathname } = url;
+      if (hostname.endsWith(".on.aws")) {
+        const match2 = hostname.match(/^[^.]{1,63}\.lambda-url\.([^.]{1,63})\.on\.aws$/);
+        return match2 != null ? ["lambda", match2[1] || ""] : ["", ""];
+      }
+      if (hostname.endsWith(".r2.cloudflarestorage.com")) {
+        return ["s3", "auto"];
+      }
+      if (hostname.endsWith(".backblazeb2.com")) {
+        const match2 = hostname.match(/^(?:[^.]{1,63}\.)?s3\.([^.]{1,63})\.backblazeb2\.com$/);
+        return match2 != null ? ["s3", match2[1] || ""] : ["", ""];
+      }
+      const match = hostname.replace("dualstack.", "").match(/([^.]{1,63})\.(?:([^.]{0,63})\.)?amazonaws\.com(?:\.cn)?$/);
+      let service = match && match[1] || "";
+      let region = match && match[2];
+      if (region === "us-gov") {
+        region = "us-gov-west-1";
+      } else if (region === "s3" || region === "s3-accelerate") {
+        region = "us-east-1";
+        service = "s3";
+      } else if (service === "iot") {
+        if (hostname.startsWith("iot.")) {
+          service = "execute-api";
+        } else if (hostname.startsWith("data.jobs.iot.")) {
+          service = "iot-jobs-data";
+        } else {
+          service = pathname === "/mqtt" ? "iotdevicegateway" : "iotdata";
+        }
+      } else if (service === "autoscaling") {
+        const targetPrefix = (headers.get("X-Amz-Target") || "").split(".")[0];
+        if (targetPrefix === "AnyScaleFrontendService") {
+          service = "application-autoscaling";
+        } else if (targetPrefix === "AnyScaleScalingPlannerFrontendService") {
+          service = "autoscaling-plans";
+        }
+      } else if (region == null && service.startsWith("s3-")) {
+        region = service.slice(3).replace(/^fips-|^external-1/, "");
+        service = "s3";
+      } else if (service.endsWith("-fips")) {
+        service = service.slice(0, -5);
+      } else if (region && /-\d$/.test(service) && !/-\d$/.test(region)) {
+        [service, region] = [region, service];
+      }
+      return [HOST_SERVICES[service] || service, region || ""];
+    }
+    exports2.AwsClient = AwsClient;
+    exports2.AwsV4Signer = AwsV4Signer;
+  }
+});
+
+// node_modules/@cdklabs/cdk-atmosphere-client/lib/client.js
+var require_client = __commonJS({
+  "node_modules/@cdklabs/cdk-atmosphere-client/lib/client.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.AtmosphereClient = exports2.ServiceError = void 0;
+    var credential_providers_1 = require("@aws-sdk/credential-providers");
+    var aws4fetch_1 = require_aws4fetch_cjs();
+    var ServiceError2 = class extends Error {
+      constructor(statusCode, message, statusText) {
+        super(`${statusCode} ${statusText ? `(${statusText})` : ""}: ${message}`);
+        this.statusCode = statusCode;
+      }
+    };
+    exports2.ServiceError = ServiceError2;
+    var AtmosphereClient2 = class {
+      constructor(endpoint) {
+        this.endpoint = endpoint;
+        if (global.crypto == null) {
+          global.crypto = require("crypto");
+        }
+      }
+      /**
+       * Waits until an environment could be allocated by the service.
+       *
+       * @returns allocation information.
+       * @throws if an environment could not be acquired within the specified timeout.
+       */
+      async acquire(options) {
+        var _a;
+        const timeoutSeconds = (_a = options.timeoutSeconds) !== null && _a !== void 0 ? _a : 600;
+        const startTime = Date.now();
+        const timeoutMs = timeoutSeconds * 1e3;
+        let retryDelay = 1e3;
+        const maxRetryDelay = 6e4;
+        this.log(`Acquire | environment from pool '${options.pool}' (requester: '${options.requester}')`);
+        while (true) {
+          try {
+            const acquired = await this.request("POST", "/allocations", {
+              pool: options.pool,
+              requester: options.requester
+            });
+            this.log(`Acquire | Successfully acquired environment from pool ${options.pool} (requester: ${options.requester})`);
+            return acquired;
+          } catch (error) {
+            if (error.statusCode === 423) {
+              const elapsed = Date.now() - startTime;
+              if (elapsed >= timeoutMs) {
+                throw error;
+              }
+              this.log(`Acquire | Retrying due to: ${error.message}`);
+              await new Promise((resolve) => setTimeout(resolve, retryDelay));
+              retryDelay = Math.min(retryDelay * 2, maxRetryDelay);
+              continue;
+            }
+            throw error;
+          }
+        }
+      }
+      /**
+       * Release an environment based on the allocation id. After releasing an environment,
+       * its provided credentials are deactivated.
+       */
+      async release(allocationId, outcome) {
+        this.log(`Release | Allocation '${allocationId}' (outcome: '${outcome}')`);
+        const released = await this.request("DELETE", `/allocations/${allocationId}`, { outcome });
+        this.log(`Release | Successfully released allocation '${allocationId}' (outcome: '${outcome}')`);
+        return released;
+      }
+      async aws() {
+        if (!this._aws) {
+          const provider = (0, credential_providers_1.fromNodeProviderChain)();
+          const creds = await provider();
+          this._aws = new aws4fetch_1.AwsClient({
+            accessKeyId: creds.accessKeyId,
+            secretAccessKey: creds.secretAccessKey,
+            sessionToken: creds.sessionToken,
+            service: "execute-api"
+          });
+        }
+        return this._aws;
+      }
+      async request(method, path2, body) {
+        var _a;
+        const aws = await this.aws();
+        const response = await aws.fetch(`${this.endpoint}${path2}`, {
+          method,
+          body: JSON.stringify(body)
+        });
+        const responseBody = await response.json();
+        if (response.status === 200) {
+          return responseBody;
+        }
+        throw new ServiceError2(response.status, (_a = responseBody.message) !== null && _a !== void 0 ? _a : "Unknown error", response.statusText);
+      }
+      log(message) {
+        console.log(`[${(/* @__PURE__ */ new Date()).toISOString()}] ${message}`);
+      }
+    };
+    exports2.AtmosphereClient = AtmosphereClient2;
+  }
+});
+
+// node_modules/@cdklabs/cdk-atmosphere-client/lib/index.js
+var require_lib2 = __commonJS({
+  "node_modules/@cdklabs/cdk-atmosphere-client/lib/index.js"(exports2) {
+    "use strict";
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    } : function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    });
+    var __exportStar = exports2 && exports2.__exportStar || function(m, exports3) {
+      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding(exports3, m, p);
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    __exportStar(require_client(), exports2);
+  }
+});
+
+// test/integ/allocate/assert.lambda.ts
 var assert_lambda_exports = {};
 __export(assert_lambda_exports, {
   handler: () => handler6
 });
 module.exports = __toCommonJS(assert_lambda_exports);
-var client = __toESM(require_lib());
+var assert2 = __toESM(require("assert"));
+
+// src/cleanup/cleanup.client.ts
+var import_client_ecs = require("@aws-sdk/client-ecs");
 
 // src/envars.ts
 var ENV_PREFIX = "CDK_ATMOSPHERE_";
@@ -11251,40 +11254,7 @@ var Envars = class _Envars {
   }
 };
 
-// test/integ/atmosphere.runner.ts
-var assert = __toESM(require("assert"));
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
-var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
-var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
-var import_client_s32 = require("@aws-sdk/client-s3");
-var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
-var unzipper = __toESM(require_unzip2());
-
-// test/with.ts
-async function env2(envVars, fn) {
-  const originalEnv = { ...process.env };
-  try {
-    Object.entries(envVars).forEach(([key, value]) => {
-      process.env[key] = value;
-    });
-    return await fn();
-  } finally {
-    process.env = originalEnv;
-  }
-}
-
-// test/integ/atmosphere.runtime.ts
-var import_client_ecs2 = require("@aws-sdk/client-ecs");
-var import_client_lambda2 = require("@aws-sdk/client-lambda");
-var import_cdk_atmosphere_client = __toESM(require_lib());
-
-// src/allocate/allocate.lambda.ts
-var crypto2 = __toESM(require("crypto"));
-var import_client_sts = require("@aws-sdk/client-sts");
-
 // src/cleanup/cleanup.client.ts
-var import_client_ecs = require("@aws-sdk/client-ecs");
 var CleanupClient = class {
   constructor(props) {
     this.props = props;
@@ -11847,6 +11817,38 @@ var RuntimeClients = class _RuntimeClients {
     return this._cleanup;
   }
 };
+
+// test/integ/atmosphere.runner.ts
+var assert = __toESM(require("assert"));
+var fs = __toESM(require("fs"));
+var path = __toESM(require("path"));
+var import_client_cloudformation4 = require("@aws-sdk/client-cloudformation");
+var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
+var import_client_s32 = require("@aws-sdk/client-s3");
+var import_client_scheduler2 = require("@aws-sdk/client-scheduler");
+var unzipper = __toESM(require_unzip2());
+
+// test/with.ts
+async function env2(envVars, fn) {
+  const originalEnv = { ...process.env };
+  try {
+    Object.entries(envVars).forEach(([key, value]) => {
+      process.env[key] = value;
+    });
+    return await fn();
+  } finally {
+    process.env = originalEnv;
+  }
+}
+
+// test/integ/atmosphere.runtime.ts
+var import_client_ecs2 = require("@aws-sdk/client-ecs");
+var import_client_lambda2 = require("@aws-sdk/client-lambda");
+var import_cdk_atmosphere_client = __toESM(require_lib2());
+
+// src/allocate/allocate.lambda.ts
+var crypto2 = __toESM(require("crypto"));
+var import_client_sts = require("@aws-sdk/client-sts");
 
 // src/logging.ts
 var Logger = class {
@@ -12494,9 +12496,9 @@ var Runtime = class _Runtime {
   }
   async deallocateRemote(id, jsonBody) {
     this.log(`Sending deallocation request for allocation '${id}' with body: ${jsonBody}`);
-    const client2 = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
+    const client = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
     try {
-      const body = await client2.release(id, JSON.parse(jsonBody).outcome);
+      const body = await client.release(id, JSON.parse(jsonBody).outcome);
       return { status: 200, body: JSON.stringify(body) };
     } catch (e) {
       if (e instanceof import_cdk_atmosphere_client.ServiceError) {
@@ -12516,9 +12518,9 @@ var Runtime = class _Runtime {
   }
   async allocateRemote(jsonBody) {
     this.log(`Sending allocation request with body: ${jsonBody}`);
-    const client2 = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
+    const client = new import_cdk_atmosphere_client.AtmosphereClient(this.vars[ENDPOINT_URL_ENV]);
     try {
-      const allocation = await client2.acquire({ ...JSON.parse(jsonBody), timeoutSeconds: 5 });
+      const allocation = await client.acquire({ ...JSON.parse(jsonBody), timeoutSeconds: 5 });
       return { status: 200, body: JSON.stringify(allocation) };
     } catch (e) {
       if (e instanceof import_cdk_atmosphere_client.ServiceError) {
@@ -12589,7 +12591,7 @@ var Runner = class _Runner {
   static async create(testCase) {
     let envValue;
     if (_Runner.isLocal()) {
-      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-anonymous-access-assertions" })).Stacks ?? [])[0];
+      const devStack = ((await cfn.describeStacks({ StackName: "atmosphere-integ-dev-assertions" })).Stacks ?? [])[0];
       assert.ok(devStack, "Missing dev stack. Deploy by running: 'yarn integ:dev'");
       envValue = (name) => {
         const value = (devStack.Outputs ?? []).find((o) => o.OutputKey === name.replace(/_/g, "0"))?.OutputValue;
@@ -12735,26 +12737,31 @@ var Runner = class _Runner {
   }
 };
 
-// test/integ/unauthorized-role-access/assert.lambda.ts
+// test/integ/allocate/assert.lambda.ts
+var clients7 = RuntimeClients.getOrCreate();
 async function handler6(_) {
-  return Runner.assert("creates-the-right-resources", async (session) => {
-    const endpoint = session.vars[ENDPOINT_URL_ENV];
-    const atmo = new client.AtmosphereClient(endpoint);
-    await ensureDenined(async () => atmo.acquire({ pool: "some-pool", requester: "unauthorized-role-access-canary", timeoutSeconds: 1 }));
-    await ensureDenined(async () => atmo.release("some-id", "success"));
+  await Runner.assert("creates-the-right-resources", async (session) => {
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 200);
+    const body = JSON.parse(response.body);
+    const environment = await clients7.environments.get(body.environment.account, body.environment.region);
+    assert2.strictEqual(environment.status, "in-use");
+    assert2.strictEqual(environment.allocation, body.id);
+    const allocation = await clients7.allocations.get(environment.allocation);
+    assert2.strictEqual(allocation.account, body.environment.account);
+    assert2.strictEqual(allocation.region, body.environment.region);
+    const timeoutSchedule = await session.fetchAllocationTimeoutSchedule(body.id);
+    assert2.ok(timeoutSchedule);
   });
+  await Runner.assert("responds-with-locked-when-no-environments-are-available", async (session) => {
+    await session.runtime.allocate({ pool: "release", requester: "test" });
+    const response = await session.runtime.allocate({ pool: "release", requester: "test" });
+    assert2.strictEqual(response.status, 423);
+  });
+  return SUCCESS_PAYLOAD;
 }
-async function ensureDenined(call) {
-  try {
-    await call();
-    throw new Error("Expected service call to fail with 403 status");
-  } catch (e) {
-    if (e instanceof client.ServiceError && e.statusCode === 403) {
-      console.log("Receieved exepcted status: 403");
-      return;
-    }
-    throw new Error(`Expected service call to fail with 403 status, but instead got: ${e.message}`);
-  }
+if (Runner.isLocal()) {
+  void handler6({});
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
