@@ -1565,7 +1565,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "37e3c66e28149d7cff384ce6917d5bace794f64d0136160a483af6d3965753f0.zip"
+     "S3Key": "ae8248f842df42eeea2b54b60f83f3050610a0c6526c5a2f13837ea7f40e6207.zip"
     },
     "Description": "src/allocate/allocate.lambda.ts",
     "Environment": {
