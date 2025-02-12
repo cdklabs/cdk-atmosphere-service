@@ -1,6 +1,4 @@
-import { AssumeRoleCommand, STSClient } from '@aws-sdk/client-sts';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { mockClient } from 'aws-sdk-client-mock';
 import { handler } from '../../../src/allocate/allocate.lambda';
 import { RuntimeClients } from '../../../src/clients';
 import * as envars from '../../../src/envars';
@@ -16,10 +14,7 @@ const clients = RuntimeClients.getOrCreate();
 
 describe('handler', () => {
 
-  const stsMock = mockClient(STSClient);
-
   beforeEach(() => {
-    stsMock.reset();
     RuntimeClientsMock.mock();
     jest.clearAllMocks();
   });
@@ -85,15 +80,6 @@ describe('handler', () => {
 
   test('returns 200 on success', async () => {
 
-    stsMock.on(AssumeRoleCommand).resolves({
-      Credentials: {
-        AccessKeyId: 'key',
-        SecretAccessKey: 'secret',
-        SessionToken: 'token',
-        Expiration: new Date(),
-      },
-    });
-
     jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([{
       account: '1111',
       region: 'us-east-1',
@@ -115,11 +101,6 @@ describe('handler', () => {
       pool: 'canary',
       adminRoleArn: 'arn:aws:iam::1111:role/Admin',
     });
-    expect(body.credentials).toEqual({
-      accessKeyId: 'key',
-      secretAccessKey: 'secret',
-      sessionToken: 'token',
-    });
 
     expect(clients.environments.acquire).toHaveBeenCalledWith(expect.any(String), '1111', 'us-east-1');
     expect(clients.allocations.start).toHaveBeenCalledWith({
@@ -135,24 +116,9 @@ describe('handler', () => {
       timeoutDate: expect.any(Date),
     });
 
-    expect(stsMock).toHaveReceivedCommandTimes(AssumeRoleCommand, 1);
-    expect(stsMock).toHaveReceivedCommandWith(AssumeRoleCommand, {
-      RoleArn: 'arn:aws:iam::1111:role/Admin',
-      RoleSessionName: `atmosphere.allocation.${body.id}`,
-    });
-
   });
 
   test('will try acquiring multiple environments if needed', async () => {
-
-    stsMock.on(AssumeRoleCommand).resolves({
-      Credentials: {
-        AccessKeyId: 'key',
-        SecretAccessKey: 'secret',
-        SessionToken: 'token',
-        Expiration: new Date(),
-      },
-    });
 
     jest.spyOn(clients.configuration, 'listEnvironments').mockReturnValue(Promise.resolve([
       {

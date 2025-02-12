@@ -2084,7 +2084,7 @@ const environment: Environment = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.account">account</a></code> | <code>string</code> | Account ID. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.adminRoleArn">adminRoleArn</a></code> | <code>string</code> | ARN of an Admin role in the account. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.adminRoleArn">adminRoleArn</a></code> | <code>string</code> | ARN of an Admin role in the account. This role must be pre-created and. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.pool">pool</a></code> | <code>string</code> | Which pool does this environment belong to. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.region">region</a></code> | <code>string</code> | Region. |
 
@@ -2110,10 +2110,10 @@ public readonly adminRoleArn: string;
 
 - *Type:* string
 
-ARN of an Admin role in the account.
+ARN of an Admin role in the account. This role must be pre-created and.
 
-This role must be pre-created
-and allow the service to assume it.
+Allow the service itself to assume it. (for cleanup)
+- Allow the service caller to assume it. (for executing tests)
 
 ---
 

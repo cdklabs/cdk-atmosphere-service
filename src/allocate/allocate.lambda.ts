@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as crypto from 'crypto';
-import { STS } from '@aws-sdk/client-sts';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { RuntimeClients } from '../clients';
@@ -35,7 +34,6 @@ export interface Credentials {
 export interface AllocateResponse {
   readonly id: string;
   readonly environment: Environment;
-  readonly credentials: Credentials;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -75,12 +73,9 @@ async function doHandler(allocationId: string, request: AllocateRequest, log: Lo
   log.info(`Starting allocation of 'aws://${environment.account}/${environment.region}'`);
   await startAllocation(allocationId, environment, request.requester);
 
-  log.info(`Grabbing credentials to aws://${environment.account}/${environment.region} using role: ${environment.adminRoleArn}`);
-  const credentials = await grabCredentials(allocationId, environment);
-
   log.info('Allocation started successfully');
 
-  const response: AllocateResponse = { id: allocationId, environment, credentials };
+  const response: AllocateResponse = { id: allocationId, environment };
 
   log.info(`Scheduling allocation timeout to ${timeoutDate}`);
   await clients.scheduler.scheduleAllocationTimeout({
@@ -147,36 +142,6 @@ async function startAllocation(id: string, environment: Environment, requester: 
     }
     throw e;
   }
-}
-
-async function grabCredentials(id: string, environment: Environment): Promise<Credentials> {
-  const sts = new STS();
-  const assumed = await sts.assumeRole({
-    RoleArn: environment.adminRoleArn,
-    RoleSessionName: `atmosphere.allocation.${id}`,
-  });
-
-  if (!assumed.Credentials) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return credentials`);
-  }
-
-  if (!assumed.Credentials.AccessKeyId) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return an access key id`);
-  }
-
-  if (!assumed.Credentials.SecretAccessKey) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a secret access key`);
-  }
-
-  if (!assumed.Credentials.SessionToken) {
-    throw new Error(`Assumed ${environment.adminRoleArn} role did not return a session token`);
-  }
-
-  return {
-    accessKeyId: assumed.Credentials.AccessKeyId,
-    secretAccessKey: assumed.Credentials.SecretAccessKey,
-    sessionToken: assumed.Credentials.SessionToken,
-  };
 }
 
 function success(body: any) {
