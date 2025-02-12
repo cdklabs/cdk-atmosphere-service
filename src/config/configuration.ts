@@ -26,8 +26,10 @@ export interface Environment {
   readonly pool: string;
 
   /**
-   * ARN of an Admin role in the account. This role must be pre-created
-   * and allow the service to assume it.
+   * ARN of an Admin role in the account. This role must be pre-created and
+   *
+   * - Allow the service itself to assume it. (for cleanup)
+   * - Allow the service caller to assume it. (for executing tests)
    */
   readonly adminRoleArn: string;
 

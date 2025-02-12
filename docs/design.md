@@ -15,9 +15,8 @@ allocation requests. Timeouts will be imposed to make sure integration tests don
 environment for an undetermined period of time.
 
 While the service is publicly available, it will not allow anonymous access. During service deployment,
-an operator will configure a list of accounts that will have access to the service. These are the
-accounts that test runners will be executed in. (note: these are not the target accounts
-where test resources are deployed to).
+an operator will configure a list of roles that will have access to the service. These are the
+roles that test runners will be executed with.
 
 ### Registration
 
@@ -26,7 +25,9 @@ be allocated to an integration test, it must first be registered with the servic
 Registration is a manual process that involves:
 
 1. Creating an AWS account.
-2. Creating an Admin Role that the service can assume to offer temporary credentials.
+2. Creating an Admin Role that that:
+    * Allows the service itself to assume it for performing cleanup.
+    * Allows the allow-listed roles to assume it for executing tests.
 3. Manually provisioning any desired resources in the account.
 4. Manually pushing a configuration update to the service codebase.
 5. Deploying the service.
@@ -60,8 +61,7 @@ request on behalf of the integration test.
 
 Whenever an integration test finishes execution, whether it failed or succeeded, it must
 issue an environment deallocation request. Upon receiving such a request, the service begins
-cleaning up the environment. In order to guarantee tests are unable to create resources after
-they have relinquished their environments, the service also deactivates all provided credentials.
+cleaning up the environment.
 
 Once cleanup completes successfully, the environment is marked as available and reinstated back
 to the list of available environments. This ensures tests are given a fresh environment,
@@ -113,7 +113,9 @@ Each environment can expose certain optional capabilities that are recorded in t
 **Registration consists of:**
 
 1. Creating an AWS account.
-2. Creating an Admin Role that the service can assume to offer temporary credentials.
+2. Creating an Admin Role that that:
+    * Allows the service itself to assume it for performing cleanup.
+    * Allows the allow-listed roles to assume it for executing tests.
 3. Manually provisioning any desired resources in the account.
 4. Adding a record to the service configuration.
 5. Deploying the service.
@@ -291,17 +293,18 @@ This allows the service to scale in response of higher demand.
 
 Allocation is a lambda function that allocates an existing environment upon request. It is invoked upon integration test request. Environments are allocated until the integration test relinquishes them, or until the 60 min allocation session expires. During the allocation duration, an environment is locked, and cannot be allocated to any other integration test.
 
-**Environment Credentials:**
+**Environment Authentication:**
 
-In order for integration tests to interact with the target environment, the service will provide it with explicit AWS credentials obtained by assuming an Admin role on its behalf. Session duration will be set to the allocation timeout, ensuring tests cannot create resources after the allocation has ended.
+In order for integration tests to interact with the target environment, the service will
+provide it with the ARN of an Admin role in said environment. The Admin role will be pre-configured
+in a way to allow the integration test runner to assume it.
 
 <img src="./images/allocate-diagram.png" width="250"/>
 
 1. Discover all registered environments from [Configuration (S3 Bucket)](#configuration-s3-bucket).
-2. Update status in [Environments (DynamoDB Table)](#environments-dynamodb-table).
-3. Grab credentials.
-4. Create allocation in [Allocations (DynamoDB Table)](#allocations-dynamodb-table).
-5. Create [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule).
+2. Insert environment to [Environments (DynamoDB Table)](#environments-dynamodb-table).
+3. Create allocation in [Allocations (DynamoDB Table)](#allocations-dynamodb-table).
+4. Create [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule).
 
 > Steps 2 through 5 are executed in a transactional manner.
 
@@ -321,10 +324,9 @@ It is invoked either upon integration test request, or by the [Allocation Timeou
 
 1. Update Allocations (DynamoDB Table) to mark that the allocation has ended. Event payload
 will be used to determine and mark whether the lambda was invoked by the [Allocation Timeout Event (EventBridge Schedule)](#allocation-timeout-event-eventbridge-schedule) or by the integration test.
-2. Deactivate all credentials that were provided to the integration test.
-3. Update [Environments (DynamoDB Table)](#environments-dynamodb-table) to mark the allocated environment is currently being cleaned.
-4. Create [Cleanup Timeout Event (EventBridge Schedule)](#cleanup-timeout-event-eventbridge-schedule) to ensure cleanup doesn’t hold the environment forever.
-5. Start [Cleanup (ECS Task)](#cleanup-ecs-task) to kick-off the environment cleanup process.
+2. Update [Environments (DynamoDB Table)](#environments-dynamodb-table) to mark the allocated environment is currently being cleaned.
+3. Create [Cleanup Timeout Event (EventBridge Schedule)](#cleanup-timeout-event-eventbridge-schedule) to ensure cleanup doesn’t hold the environment forever.
+4. Start [Cleanup (ECS Task)](#cleanup-ecs-task) to kick-off the environment cleanup process.
 
 > Steps 1 through 5 are executed in a transactional manner.
 
