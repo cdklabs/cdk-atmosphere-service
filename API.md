@@ -1820,17 +1820,17 @@ const configurationData: ConfigurationData = { ... }
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Environment">Environment</a>[]</code> | List of environments, configured by the service operator. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.ConfigurationData.property.environments">environments</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment">RegisteredEnvironment</a>[]</code> | List of environments, configured by the service operator. |
 
 ---
 
 ##### `environments`<sup>Required</sup> <a name="environments" id="@cdklabs/cdk-atmosphere-service.ConfigurationData.property.environments"></a>
 
 ```typescript
-public readonly environments: Environment[];
+public readonly environments: RegisteredEnvironment[];
 ```
 
-- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.Environment">Environment</a>[]
+- *Type:* <a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment">RegisteredEnvironment</a>[]
 
 List of environments, configured by the service operator.
 
@@ -2067,30 +2067,30 @@ Deallocate function.
 
 ---
 
-### Environment <a name="Environment" id="@cdklabs/cdk-atmosphere-service.Environment"></a>
+### RegisteredEnvironment <a name="RegisteredEnvironment" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment"></a>
 
 Environment Configuration.
 
-#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.Environment.Initializer"></a>
+#### Initializer <a name="Initializer" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.Initializer"></a>
 
 ```typescript
-import { Environment } from '@cdklabs/cdk-atmosphere-service'
+import { RegisteredEnvironment } from '@cdklabs/cdk-atmosphere-service'
 
-const environment: Environment = { ... }
+const registeredEnvironment: RegisteredEnvironment = { ... }
 ```
 
 #### Properties <a name="Properties" id="Properties"></a>
 
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.account">account</a></code> | <code>string</code> | Account ID. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.adminRoleArn">adminRoleArn</a></code> | <code>string</code> | ARN of an Admin role in the account. This role must be pre-created and. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.pool">pool</a></code> | <code>string</code> | Which pool does this environment belong to. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.Environment.property.region">region</a></code> | <code>string</code> | Region. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.account">account</a></code> | <code>string</code> | Account ID. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.pool">pool</a></code> | <code>string</code> | Which pool does this environment belong to. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.region">region</a></code> | <code>string</code> | Region. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.roleArn">roleArn</a></code> | <code>string</code> | ARN of a role in the account. This role must be pre-created and:. |
 
 ---
 
-##### `account`<sup>Required</sup> <a name="account" id="@cdklabs/cdk-atmosphere-service.Environment.property.account"></a>
+##### `account`<sup>Required</sup> <a name="account" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.account"></a>
 
 ```typescript
 public readonly account: string;
@@ -2102,22 +2102,7 @@ Account ID.
 
 ---
 
-##### `adminRoleArn`<sup>Required</sup> <a name="adminRoleArn" id="@cdklabs/cdk-atmosphere-service.Environment.property.adminRoleArn"></a>
-
-```typescript
-public readonly adminRoleArn: string;
-```
-
-- *Type:* string
-
-ARN of an Admin role in the account. This role must be pre-created and.
-
-Allow the service itself to assume it. (for cleanup)
-- Allow the service caller to assume it. (for executing tests)
-
----
-
-##### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.Environment.property.pool"></a>
+##### `pool`<sup>Required</sup> <a name="pool" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.pool"></a>
 
 ```typescript
 public readonly pool: string;
@@ -2129,7 +2114,7 @@ Which pool does this environment belong to.
 
 ---
 
-##### `region`<sup>Required</sup> <a name="region" id="@cdklabs/cdk-atmosphere-service.Environment.property.region"></a>
+##### `region`<sup>Required</sup> <a name="region" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.region"></a>
 
 ```typescript
 public readonly region: string;
@@ -2138,6 +2123,21 @@ public readonly region: string;
 - *Type:* string
 
 Region.
+
+---
+
+##### `roleArn`<sup>Required</sup> <a name="roleArn" id="@cdklabs/cdk-atmosphere-service.RegisteredEnvironment.property.roleArn"></a>
+
+```typescript
+public readonly roleArn: string;
+```
+
+- *Type:* string
+
+ARN of a role in the account. This role must be pre-created and:.
+
+1. Allow the service itself to assume it. (for cleanup)
+2. Allow the service caller to assume it. (for executing tests)
 
 ---
 

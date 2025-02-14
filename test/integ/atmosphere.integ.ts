@@ -10,7 +10,7 @@ import { IConstruct } from 'constructs';
 import * as runner from './atmosphere.runner';
 import * as runtime from './atmosphere.runtime';
 import { INTEG_RUNNER_REGIONS, ASSERT_HANDLER_FILE } from '../../projenrc/integ-tests';
-import { AtmosphereService, Environment } from '../../src';
+import { AtmosphereService, RegisteredEnvironment } from '../../src';
 import * as envars from '../../src/envars';
 
 /**
@@ -61,7 +61,7 @@ export class AtmosphereIntegTest {
       principals: [new iam.ServicePrincipal('cloudformation.amazonaws.com')],
     }));
 
-    const environments: Environment[] = [];
+    const environments: RegisteredEnvironment[] = [];
     for (const [pool, regions] of Object.entries(props.pools)) {
       for (const region of regions) {
         if (INTEG_RUNNER_REGIONS.includes(region)) {
@@ -72,7 +72,7 @@ export class AtmosphereIntegTest {
         environments.push({
           account: cdk.Aws.ACCOUNT_ID,
           region,
-          adminRoleArn: adminRole.roleArn,
+          roleArn: adminRole.roleArn,
           pool,
         });
       }

@@ -64982,7 +64982,7 @@ var Cleaner = class {
     this.log = log;
     this.credentials = (0, import_credential_providers.fromTemporaryCredentials)({
       params: {
-        RoleArn: this.environment.adminRoleArn,
+        RoleArn: this.environment.roleArn,
         RoleSessionName: `atmosphere.cleanup.${this.environment.account}.${this.environment.region}`
       }
     });
@@ -65024,7 +65024,7 @@ var Cleaner = class {
           EnableTerminationProtection: false
         }));
         this.log.info(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
-        await this.cfn.send(new import_client_cloudformation3.DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
+        await this.cfn.send(new import_client_cloudformation3.DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.roleArn }));
       }
       const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1e3;
       this.log.info(`Stack ${stack.StackName} deleting. Waiting ${maxWaitSeconds} seconds for completion`);

@@ -24,13 +24,13 @@ describe('ConfigurationClient', () => {
             account: '1111',
             region: 'us-east-1',
             pool: 'canary',
-            adminRoleArn: 'adminRoleArn',
+            roleArn: 'roleArn',
           },
           {
             account: '2222',
             region: 'us-east-1',
             pool: 'canary',
-            adminRoleArn: 'adminRoleArn',
+            roleArn: 'roleArn',
           },
         ],
       };
@@ -44,7 +44,7 @@ describe('ConfigurationClient', () => {
         account: '1111',
         region: 'us-east-1',
         pool: 'canary',
-        adminRoleArn: 'adminRoleArn',
+        roleArn: 'roleArn',
       });
 
     });
@@ -67,13 +67,13 @@ describe('ConfigurationClient', () => {
             account: '1111',
             region: 'us-east-1',
             pool: 'canary',
-            adminRoleArn: 'adminRoleArn',
+            roleArn: 'roleArn',
           },
           {
             account: '1111',
             region: 'us-east-1',
             pool: 'canary',
-            adminRoleArn: 'adminRoleArn',
+            roleArn: 'roleArn',
           },
         ],
       };
@@ -105,7 +105,7 @@ describe('ConfigurationClient', () => {
           account: '1111',
           region: 'us-east-1',
           pool: 'canary',
-          adminRoleArn: 'adminRoleArn',
+          roleArn: 'roleArn',
         }],
       };
 
@@ -125,7 +125,7 @@ describe('ConfigurationClient', () => {
           account: '1111',
           region: 'us-east-1',
           pool: 'canary',
-          adminRoleArn: 'adminRoleArn',
+          roleArn: 'roleArn',
         }],
       };
 
@@ -144,7 +144,7 @@ describe('ConfigurationClient', () => {
           account: '1111',
           region: 'us-east-1',
           pool: 'canary',
-          adminRoleArn: 'adminRoleArn',
+          roleArn: 'roleArn',
         }],
       };
 
@@ -164,13 +164,13 @@ describe('ConfigurationClient', () => {
             account: '1111',
             region: 'us-east-1',
             pool: 'canary',
-            adminRoleArn: 'adminRoleArn',
+            roleArn: 'roleArn',
           },
           {
             account: '2222',
             region: 'us-east-1',
             pool: 'test',
-            adminRoleArn: 'adminRoleArn',
+            roleArn: 'roleArn',
           },
         ],
       };

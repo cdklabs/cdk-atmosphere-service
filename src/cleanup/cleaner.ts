@@ -4,7 +4,7 @@ import { CloudFormation, DeleteStackCommand, paginateDescribeStacks, Stack, Upda
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AwsCredentialIdentityProvider } from '@smithy/types';
-import type { Environment } from '../config';
+import type { RegisteredEnvironment } from '../config';
 import { BucketsCleaner } from './cleaner.buckets';
 import { ReposCleaner } from './cleaner.repos';
 import { Logger } from '../logging';
@@ -30,11 +30,11 @@ export class Cleaner {
   private readonly cfn: CloudFormation;
 
   constructor(
-    private readonly environment: Environment,
+    private readonly environment: RegisteredEnvironment,
     private readonly log: Logger) {
     this.credentials = fromTemporaryCredentials({
       params: {
-        RoleArn: this.environment.adminRoleArn,
+        RoleArn: this.environment.roleArn,
         RoleSessionName: `atmosphere.cleanup.${this.environment.account}.${this.environment.region}`,
       },
     });
@@ -102,7 +102,7 @@ export class Cleaner {
         }));
 
         this.log.info(`Initiating stack deletion: ${stack.StackName} [Current Status: ${stack.StackStatus}]`);
-        await this.cfn.send(new DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.adminRoleArn }));
+        await this.cfn.send(new DeleteStackCommand({ StackName: stack.StackName, RoleARN: this.environment.roleArn }));
       }
 
       const maxWaitSeconds = (timeoutDate.getTime() - Date.now()) / 1000;

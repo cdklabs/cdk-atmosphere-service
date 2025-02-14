@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { RuntimeClients } from '../clients';
-import type { Environment } from '../config';
+import type { RegisteredEnvironment } from '../config';
 import * as envars from '../envars';
 import { Logger } from '../logging';
 import { InvalidInputError } from '../storage/allocations.client';
@@ -33,7 +33,7 @@ export interface Credentials {
 
 export interface AllocateResponse {
   readonly id: string;
-  readonly environment: Environment;
+  readonly environment: RegisteredEnvironment;
 }
 
 const clients = RuntimeClients.getOrCreate();
@@ -106,7 +106,7 @@ function parseRequestBody(body: string | null): AllocateRequest {
   return parsed;
 }
 
-async function acquireEnvironment(allocaionId: string, pool: string): Promise<Environment> {
+async function acquireEnvironment(allocaionId: string, pool: string): Promise<RegisteredEnvironment> {
 
   const candidates = await clients.configuration.listEnvironments({ pool });
   console.log(`Found ${candidates.length} environments in pool '${pool}'`);
@@ -127,7 +127,7 @@ async function acquireEnvironment(allocaionId: string, pool: string): Promise<En
   throw new ProxyError(423, `No environments available in pool '${pool}'`);
 }
 
-async function startAllocation(id: string, environment: Environment, requester: string) {
+async function startAllocation(id: string, environment: RegisteredEnvironment, requester: string) {
   try {
     await clients.allocations.start({
       id,

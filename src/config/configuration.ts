@@ -8,7 +8,7 @@ import { Construct } from 'constructs';
 /**
  * Environment Configuration.
  */
-export interface Environment {
+export interface RegisteredEnvironment {
 
   /**
    * Account ID.
@@ -26,12 +26,12 @@ export interface Environment {
   readonly pool: string;
 
   /**
-   * ARN of an Admin role in the account. This role must be pre-created and
+   * ARN of a role in the account. This role must be pre-created and:
    *
-   * - Allow the service itself to assume it. (for cleanup)
-   * - Allow the service caller to assume it. (for executing tests)
+   * 1. Allow the service itself to assume it. (for cleanup)
+   * 2. Allow the service caller to assume it. (for executing tests)
    */
-  readonly adminRoleArn: string;
+  readonly roleArn: string;
 
 }
 
@@ -43,7 +43,7 @@ export interface ConfigurationData {
   /**
    * List of environments, configured by the service operator.
    */
-  readonly environments: Environment[];
+  readonly environments: RegisteredEnvironment[];
 
 }
 

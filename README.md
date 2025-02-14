@@ -19,7 +19,7 @@ new AtmosphereService(stack, 'AtmosphereService', {
         account: '1111',
         region: 'us-east-1',
         pool: 'release',
-        adminRoleArn: 'arn:aws:iam::1111:role/Admin'
+        roleArn: 'arn:aws:iam::1111:role/Admin'
       }
     ]
   }

@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as s3 from '@aws-sdk/client-s3';
-import type { ConfigurationData, Environment } from './configuration';
+import type { ConfigurationData, RegisteredEnvironment } from './configuration';
 
 /**
  * Error thrown when an environment is not found.
@@ -41,14 +41,14 @@ export class ConfigurationClient {
   /**
    * Retrieve environments belonging to a specific pool.
    */
-  public async listEnvironments(opts: ListEnvironmentsOptions = {}): Promise<Environment[]> {
+  public async listEnvironments(opts: ListEnvironmentsOptions = {}): Promise<RegisteredEnvironment[]> {
     return (await this.data).environments.filter(e => opts.pool ? e.pool === opts.pool : true);
   }
 
   /**
    * Retrieve a single environment based on account + region.
    */
-  public async getEnvironment(account: string, region: string): Promise<Environment> {
+  public async getEnvironment(account: string, region: string): Promise<RegisteredEnvironment> {
     const envs = (await this.data).environments.filter(e => e.account === account && e.region === region);
     if (envs.length === 0) {
       throw new EnvironmentNotFoundError(account, region);

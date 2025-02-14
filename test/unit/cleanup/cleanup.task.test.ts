@@ -17,7 +17,7 @@ describe('handler', () => {
   test('cleans stacks', async () => {
 
     jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1', id: 'id', pool: 'pool' } as any);
-    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
+    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', roleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'release').mockImplementation(jest.fn());
 
     const mockClean = jest.fn();
@@ -33,7 +33,7 @@ describe('handler', () => {
   test('marks an environment as dirty if cleaner fails', async () => {
 
     jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1', id: 'id', pool: 'pool' } as any);
-    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
+    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', roleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
     jest.spyOn(Cleaner.prototype, 'clean').mockRejectedValue(new CleanerError([{ name: 'stack', error: new Error() }]));
@@ -47,7 +47,7 @@ describe('handler', () => {
   test('rethrows when the environment is already in-use', async () => {
 
     jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1' } as any);
-    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
+    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', roleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'release').mockRejectedValue(new EnvironmentAlreadyInUseError('1111', 'us-east-1'));
     jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
@@ -62,7 +62,7 @@ describe('handler', () => {
   test('rethrows on unexpected cleaner error', async () => {
 
     jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1' } as any);
-    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
+    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', roleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
     jest.spyOn(Cleaner.prototype, 'clean').mockRejectedValue(new Error('unexpected'));
@@ -74,7 +74,7 @@ describe('handler', () => {
   test('marks an environment as dirty on unexpected cleaner error', async () => {
 
     jest.spyOn(clients.allocations, 'get').mockResolvedValue({ account: '1111', region: 'us-east-1', id: 'id', pool: 'pool' } as any);
-    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', adminRoleArn: 'role', pool: 'release' });
+    jest.spyOn(clients.configuration, 'getEnvironment').mockResolvedValue({ account: '1111', region: 'us-east-1', roleArn: 'role', pool: 'release' });
     jest.spyOn(clients.environments, 'dirty').mockImplementation(jest.fn());
 
     jest.spyOn(Cleaner.prototype, 'clean').mockRejectedValue(new Error('unexpected'));

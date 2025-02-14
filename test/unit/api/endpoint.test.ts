@@ -11,7 +11,7 @@ test('default resource policy', () => {
 
   new AtmosphereService(stack, 'AtmosphereService', {
     config: {
-      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
+      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', roleArn: 'arn:aws:iam::1111:role/Admin' }],
     },
   });
 
@@ -39,7 +39,7 @@ test('can add principals to resource policy', () => {
 
   new AtmosphereService(stack, 'AtmosphereService', {
     config: {
-      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
+      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', roleArn: 'arn:aws:iam::1111:role/Admin' }],
     },
     endpoint: {
       allowedPrincipals: [new AccountPrincipal('2222')],
@@ -112,7 +112,7 @@ test('a custom domain is created if hosted zone is provided', () => {
 
   new AtmosphereService(stack, 'AtmosphereService', {
     config: {
-      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', adminRoleArn: 'arn:aws:iam::1111:role/Admin' }],
+      environments: [{ account: '1111', region: 'us-east-1', pool: 'canary', roleArn: 'arn:aws:iam::1111:role/Admin' }],
     },
     endpoint: {
       allowedPrincipals: [new AccountPrincipal('2222')],

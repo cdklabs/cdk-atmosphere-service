@@ -68,7 +68,7 @@ export class Allocate extends Construct {
     // allocation must be able to assume admin roles for all its environments
     // because it passes credentials to clients.
     for (const env of props.configuration.data.environments) {
-      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}${env.region}`, env.adminRoleArn);
+      const adminRole = iam.Role.fromRoleArn(this, `AdminRole${env.account}${env.region}`, env.roleArn);
       adminRole.grantAssumeRole(this.function.grantPrincipal);
     }
 
