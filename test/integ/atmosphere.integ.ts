@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ExpectedResult, IApiCall, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3Assets from 'aws-cdk-lib/aws-s3-assets';
@@ -141,6 +142,10 @@ export class AtmosphereIntegTest {
       config: { environments },
       endpoint: { allowedPrincipals },
     });
+
+    // we don't have a funtioning hosted zone during integ tests so
+    // we hit the service using its default execute-api endpoint.
+    (service.endpoint.node.findChild('Api').node.defaultChild as apigateway.CfnRestApi).disableExecuteApiEndpoint = false;
 
     assert.node.addDependency(service);
 

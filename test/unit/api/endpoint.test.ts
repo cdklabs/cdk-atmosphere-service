@@ -127,3 +127,19 @@ test('a custom domain is created if hosted zone is provided', () => {
   template.hasResourceProperties('AWS::ApiGateway::DomainName', {});
 
 });
+
+test('default endpoint is disabled by default', () => {
+
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  new AtmosphereService(stack, 'AtmosphereService', {
+    config: { environments: [] },
+  });
+
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ApiGateway::RestApi', {
+    DisableExecuteApiEndpoint: true,
+  });
+
+});

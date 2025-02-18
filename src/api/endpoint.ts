@@ -20,12 +20,14 @@ export interface EndpointOptions {
   readonly allowedPrincipals?: iam.ArnPrincipal[];
 
   /**
-   * Providing a hosted zone will create a custom domain for the API endpoint.
-   * The FQDN will be the same as the domain name of the hosted zone.
+   * Hosted zone that provides DNS resolution for the endpoint custom domain.
+   * Domain FQDN will be the same as the hosted zone name.
    *
-   * Sub domains are not currently supported.
+   * If this not specified, a custom domain will not be created. Note that since
+   * the default execute-api endpoint is disabled, this will render the service
+   * inaccessible for HTTP calls.
    *
-   * @default - no custom domain is created.
+   * @default - no custom domain is created and the service endpoint is not accessible.
    */
   readonly hostedZone?: r53.IHostedZone;
 
@@ -75,7 +77,7 @@ export class Endpoint extends Construct {
       restApiName: 'Atmosphere',
       policy,
       endpointTypes: [apigateway.EndpointType.REGIONAL],
-      disableExecuteApiEndpoint: props.hostedZone ? true : false,
+      disableExecuteApiEndpoint: true,
     });
 
     if (props.hostedZone) {
