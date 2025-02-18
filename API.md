@@ -1956,7 +1956,7 @@ const endpointOptions: EndpointOptions = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.ArnPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | Providing a hosted zone will create a custom domain for the API endpoint. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointOptions.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | Hosted zone that provides DNS resolution for the endpoint custom domain. |
 
 ---
 
@@ -1980,13 +1980,15 @@ public readonly hostedZone: IHostedZone;
 ```
 
 - *Type:* aws-cdk-lib.aws_route53.IHostedZone
-- *Default:* no custom domain is created.
+- *Default:* no custom domain is created and the service endpoint is not accessible.
 
-Providing a hosted zone will create a custom domain for the API endpoint.
+Hosted zone that provides DNS resolution for the endpoint custom domain.
 
-The FQDN will be the same as the domain name of the hosted zone.
+Domain FQDN will be the same as the hosted zone name.
 
-Sub domains are not currently supported.
+If this not specified, a custom domain will not be created. Note that since
+the default execute-api endpoint is disabled, this will render the service
+inaccessible for HTTP calls.
 
 ---
 
@@ -2007,7 +2009,7 @@ const endpointProps: EndpointProps = { ... }
 | **Name** | **Type** | **Description** |
 | --- | --- | --- |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allowedPrincipals">allowedPrincipals</a></code> | <code>aws-cdk-lib.aws_iam.ArnPrincipal[]</code> | List of principals that are allowed to access the endpoint. |
-| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | Providing a hosted zone will create a custom domain for the API endpoint. |
+| <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.hostedZone">hostedZone</a></code> | <code>aws-cdk-lib.aws_route53.IHostedZone</code> | Hosted zone that provides DNS resolution for the endpoint custom domain. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.allocate">allocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Allocate">Allocate</a></code> | Allocate function. |
 | <code><a href="#@cdklabs/cdk-atmosphere-service.EndpointProps.property.deallocate">deallocate</a></code> | <code><a href="#@cdklabs/cdk-atmosphere-service.Deallocate">Deallocate</a></code> | Deallocate function. |
 
@@ -2033,13 +2035,15 @@ public readonly hostedZone: IHostedZone;
 ```
 
 - *Type:* aws-cdk-lib.aws_route53.IHostedZone
-- *Default:* no custom domain is created.
+- *Default:* no custom domain is created and the service endpoint is not accessible.
 
-Providing a hosted zone will create a custom domain for the API endpoint.
+Hosted zone that provides DNS resolution for the endpoint custom domain.
 
-The FQDN will be the same as the domain name of the hosted zone.
+Domain FQDN will be the same as the hosted zone name.
 
-Sub domains are not currently supported.
+If this not specified, a custom domain will not be created. Note that since
+the default execute-api endpoint is disabled, this will render the service
+inaccessible for HTTP calls.
 
 ---
 
