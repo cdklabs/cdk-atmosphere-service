@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0689eaddc22514c1bb7cdf4712a102687d8d5f5f64c0990e88033c6d1fdf706e.zip"
+     "S3Key": "081f1913b1dab68ca12f44923b10b8fa26be7106144ef760fdf5cf3bc28d8370.zip"
     },
     "Description": "test/integ/unauthorized-role-access/assert.lambda.ts",
     "Environment": {
@@ -125,7 +125,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1739347742088"
+    "salt": "1739880347319"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -374,7 +374,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "f54ff5e30d8684c1490fe25762635bf0ba9e3eb203efd35ebdb2ce43a81bf92f.zip"
+     "9a6c92fe5f1206f3deca7e84875041d74488ab01315f2d95e7efaa8b9de923c0.zip"
     ],
     "SourceMarkers": [
      {
@@ -869,7 +869,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2e3999ff2475f90ac94c1e982c007049f27cb3ba109b7572f115e24b009c3bcf"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:37fe5c3deadee98d94f239e660b70dbba78b55f17c1b24f87053d5e0878b5b53"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
